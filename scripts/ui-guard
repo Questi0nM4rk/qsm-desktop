@@ -1,0 +1,177 @@
+#!/usr/bin/env bash
+# Geometry laws, checked against the LIVE item tree instead of against taste.
+#
+# WHY this exists: two defects that no amount of reading the code will show,
+# because both emerge from RUNTIME relationships rather than from a value
+# anyone typed. Everything a call site can simply get right — a radius off the
+# scale, a pixel size off the type scale, a spacing off the grid — belongs in
+# the code and in review, not here.
+#
+#   radius-nesting  a rounded thing inside a rounded thing with the SAME
+#                   radius. The concentric rule is inner = outer - inset;
+#                   equal radii read as a seam between the two surfaces.
+#                   Style.childRadius(this) does the arithmetic so a call site
+#                   cannot get it wrong; this catches the call site that did
+#                   not ask.
+#   clip-growth     hover GROWS the affordance (09 interaction law) and an
+#                   ancestor with clip:true shaves the growth off. This is the
+#                   one that cannot be caught by reading code: it depends on
+#                   the run-time rect, the scale factor, and which ancestor
+#                   happens to clip.
+#
+# usage: scripts/ui-guard [output]      # default: focused monitor
+#        scripts/ui-guard --sweep       # drive every surface, union the findings
+#        scripts/ui-guard --baseline    # rewrite the accepted-findings file
+#
+# One resting frame is not an audit: most of this shell is hidden until
+# something opens it, so --sweep is the mode that actually covers it.
+#
+# Findings are compared against scripts/ui-guard.baseline the same way
+# qml-lint compares against its own: a NEW finding fails, an already-recorded
+# one does not. That is what lets the check land before every old finding is
+# fixed.
+set -euo pipefail
+
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+baseline="$root/scripts/ui-guard.baseline"
+command -v jq >/dev/null || { printf 'ui-guard needs jq\n' >&2; exit 1; }
+
+write_baseline=0
+sweep=0
+while :; do
+  case "${1:-}" in
+    --baseline) write_baseline=1; shift ;;
+    --sweep) sweep=1; shift ;;
+    *) break ;;
+  esac
+done
+output="${1:-}"
+
+ipc() { qs ipc --path "$root/shell" call qsm "$@" >/dev/null 2>&1 || true; }
+
+# Theme's own scales (shell/theme/Theme.qml). A value outside them is either a
+# new token that belongs in Theme or a number someone typed.
+spaces='[2,4,8,12,16,24,32]'
+
+# One state's worth of findings, read from the live tree.
+collect() {
+  local tree
+  tree="$(qs ipc --path "$root/shell" call qsm inspect "$output" true)"
+  printf '%s' "$tree" | jq -e '.tree' >/dev/null 2>&1 || {
+    printf 'ui-guard: no live shell tree (is the shell running?)\n' >&2
+    exit 1
+  }
+  printf '%s' "$tree" | jq -r --argjson spaces "$spaces" '
+  def near($a; $b): (($a - $b) | fabs) <= 1;
+  def rectOf: {x: .x, y: .y, w: .w, h: .h};
+
+  # A pill and a circle state their radius as half an edge; both are token use.
+  def shapedRadius($n):
+    near($n.radius; $n.w / 2) or near($n.radius; $n.h / 2);
+
+  def scan($parent; $clip):
+    . as $n
+    | (if $n.clip == true then ($n | rectOf) else $clip end) as $clipNow
+    | (
+        (if $parent != null
+            and ($parent.radius // 0) > 0 and ($n.radius // 0) > 0
+            and $parent.radius < 999 and $n.radius < 999
+            and (shapedRadius($n) | not)
+         then
+           ([ $n.x - $parent.x,
+              $n.y - $parent.y,
+              ($parent.x + $parent.w) - ($n.x + $n.w),
+              ($parent.y + $parent.h) - ($n.y + $n.h) ] | min) as $inset
+           # Concentric nesting is about PADDED containers: a child inset by a
+           # spacing token. A child at an arbitrary inset is not nested inside
+           # the parent, it is placed on it: the scaled window miniatures in a
+           # workspace tile are the case that taught this.
+           # The tight step is a hairline, not a padded nest: at 2px the
+           # concentric arithmetic is noise, and it fires on every scaled
+           # diagram.
+           | if ($spaces | map(select(. >= 4)) | map(near($inset; .)) | any)
+                and (near($n.radius; $parent.radius - $inset) | not)
+             then ["radius-nesting|\($n.type)|radius \($n.radius) in \($parent.type) radius \($parent.radius) at inset \($inset | round)\tconcentric wants \(($parent.radius - ($inset | round))), at \($n.w)x\($n.h)@\($n.x),\($n.y)"]
+             else [] end
+         else [] end)
+      + (if $n.growth != null and $clipNow != null
+         then
+           ($n.growth) as $g
+           | (($g.w * ($g.scale - 1)) / 2) as $padX
+           | (($g.h * ($g.scale - 1)) / 2) as $padY
+           | [ ($clipNow.x - ($g.x - $padX)),
+               ($clipNow.y - ($g.y - $padY)),
+               (($g.x + $g.w + $padX) - ($clipNow.x + $clipNow.w)),
+               (($g.y + $g.h + $padY) - ($clipNow.y + $clipNow.h)) ] as $over
+           | [ ($clipNow.x - $g.x),
+               ($clipNow.y - $g.y),
+               (($g.x + $g.w) - ($clipNow.x + $clipNow.w)),
+               (($g.y + $g.h) - ($clipNow.y + $clipNow.h)) ] as $restOver
+           | ($over | max) as $worst
+           # A row scrolled past the fold is already outside its clip; that is
+           # the list working, not the hover losing. Only the affordance that
+           # FITS at rest and stops fitting once it grows is a finding.
+           | if ($restOver | max) <= 0.5 and $worst > 0.5
+             then ["clip-growth|\($n.type)|\($g.w)x\($g.h) grown x\($g.scale)\ta clipping ancestor shaves \(($worst * 10 | round) / 10)px, at \($g.x),\($g.y)"]
+             else [] end
+         else [] end)
+      + (($n.children // []) | map(scan($n; $clipNow)) | flatten)
+      );
+
+  .tree | scan(null; null) | .[]
+'
+}
+
+# Every surface this shell can show, driven over its own IPC. A surface that
+# needs a settle beat gets one: hit rects and rollout geometry only join the
+# live registries NEAR-SETTLED (09 input law), so measuring mid-reveal reports
+# a rect that never renders.
+sweep_states() {
+  collect
+  local modal tab kind
+  for modal in launcher session clipboard cheatsheet; do
+    ipc toggle "$modal"; sleep 0.45; collect; ipc toggle "$modal"; sleep 0.3
+  done
+  for tab in dashboard media performance workspaces notifications; do
+    ipc toggle "$tab"; sleep 0.45; collect
+  done
+  ipc close; sleep 0.3
+  for kind in network bluetooth battery sound calendar tray colorpick nightlight brightness; do
+    ipc popoutTest "$kind" 1 true "$output"; sleep 0.45; collect
+    ipc popoutTest "$kind" 1 false "$output"; sleep 0.2
+  done
+}
+
+# The KEY (everything before the tab) carries no absolute position, so the
+# baseline survives a different monitor, a different app list, and a different
+# day. The detail after the tab is for the human reading the report.
+if [ "$sweep" -eq 1 ]; then
+  findings="$(sweep_states | sort -u -t"$(printf '\t')" -k1,1)"
+else
+  findings="$(collect | sort -u -t"$(printf '\t')" -k1,1)"
+fi
+keys="$(printf '%s' "$findings" | cut -f1 | grep . | sort -u || true)"
+
+if [ "$write_baseline" -eq 1 ]; then
+  printf '%s\n' "$keys" > "$baseline"
+  printf 'ui-guard: baseline rewritten (%d findings)\n' "$(printf '%s' "$keys" | grep -c . || true)"
+  exit 0
+fi
+
+printf 'ui-guard: %d findings\n' "$(printf '%s' "$keys" | grep -c . || true)"
+# grep exits 1 on an empty stream, and this script runs under pipefail: a
+# CLEAN sweep must not read as a failed one.
+printf '%s\n' "$keys" | cut -d'|' -f1 | grep . | sort | uniq -c | sed 's/^/  /' || true
+
+[ -f "$baseline" ] || { printf '%s\n' "$keys" > "$baseline"; printf 'ui-guard: baseline created\n'; exit 0; }
+
+new="$(comm -13 <(sort -u "$baseline") <(printf '%s\n' "$keys") || true)"
+if [ -n "$new" ]; then
+  printf 'ui-guard: NEW findings\n' >&2
+  while IFS= read -r key; do
+    [ -n "$key" ] || continue
+    printf '%s\n' "$findings" | grep -F "$key	" | sed "s/^/  + /" >&2 || printf '  + %s\n' "$key" >&2
+  done <<< "$new"
+  exit 1
+fi
+printf 'ui-guard: no new findings (baseline: %s)\n' "$baseline"

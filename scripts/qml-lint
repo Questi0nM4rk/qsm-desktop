@@ -1,0 +1,168 @@
+#!/usr/bin/env bash
+# Type-aware QML lint for the shell, with a committed baseline.
+#
+# WHY the shadow root: Quickshell maps the config root to the `qs` import
+# namespace at runtime and generates no qmldir files. qmllint cannot see that
+# mapping, so unaided it fails every `import qs.*`, then reports every singleton
+# access as unqualified and every local type as unresolved — ~1600 cascade
+# warnings that bury the real ones. This builds a throwaway import root
+# (.qmllint/qs/**: generated qmldir + symlinks to the real files) and lints
+# THROUGH it, so the module graph resolves and each type has ONE identity.
+#
+# WHY a baseline: the remaining findings are dominated by qmllint's
+# introspection limits (Quickshell C++ types not declaratively exposed,
+# aliases into nested objects, dynamically created objects typed as QObject)
+# and by pre-existing unqualified-access style debt. A pass/fail on raw counts
+# would be permanent red. New warning signatures and increased occurrences fail;
+# current findings are diffed against scripts/qml-lint.baseline.
+# Reviewed upstream metadata limits remain baseline findings: Bluetooth exports
+# qs::bluetooth::BluetoothAdapter but defaultAdapter names BluetoothAdapter;
+# Io omits QProcess::ExitStatus and describes environment as QVariantHash while
+# its documented QML object literal is inferred as QVariantMap. Isolated runtime
+# probes exercise adapter absence, environment, stdin and process exit verdicts.
+# Do not baseline source errors merely because a fixture flow passes.
+#
+# WHY unqualified-access stays: every residual finding is an id used across a
+# component scope boundary — either already fully qualified (`root.x` inside
+# a delegate, which qmllint rejects unless ComponentBehavior is Bound) or a
+# bare id of an id-only object, for which QML has no qualifier syntax.
+# Qualification alone burned what it could (75 -> 73, 2026-08); going further
+# means the pragma — a delegate-context semantic migration, deliberately out
+# of scope for a lint chore — or rewrites: `FileView.adapter` chains merely
+# trade each warning for an `unresolved-type` (FileViewAdapter is not exposed
+# declaratively), and `parent.children` in place of an id silently couples
+# the expression to reparenting.
+#
+# WHY the Qt6 binary: /usr/bin/qmllint is Qt5 — syntax-only, it silently passes
+# unknown types and unknown properties. Only the Qt6 one type-checks.
+#
+# usage: scripts/qml-lint [--update]
+#   --update   rewrite the baseline from the current findings (review the diff)
+set -euo pipefail
+
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+shadow="$root/.qmllint"
+baseline="$root/scripts/qml-lint.baseline"
+qmllint="${QMLLINT:-/usr/lib/qt6/bin/qmllint}"
+qt_qml="${QT_QML_PATH:-/usr/lib/qt6/qml}"
+update=0
+if [[ $# -gt 1 || ( $# -eq 1 && "$1" != "--update" ) ]]; then
+  printf 'usage: %s [--update]\n' "$0" >&2
+  exit 2
+fi
+[ "${1:-}" = "--update" ] && update=1
+
+command -v "$qmllint" >/dev/null || {
+  printf 'missing Qt6 qmllint at %s (set QMLLINT=)\n' "$qmllint" >&2
+  exit 1
+}
+case "$("$qmllint" --version)" in
+  *" 6."*) ;;
+  *) printf 'not a Qt6 qmllint: %s\n' "$("$qmllint" --version)" >&2; exit 1 ;;
+esac
+
+# ---- shadow import root ------------------------------------------------------
+rm -rf "$shadow"
+while read -r dir; do
+  rel="${dir#"$root"/shell}"; rel="${rel#/}"
+  target="$shadow/qs${rel:+/$rel}"
+  mkdir -p "$target"
+  module="qs${rel:+.${rel//\//.}}"
+  qmldir="$target/qmldir"
+  printf 'module %s\n' "$module" > "$qmldir"
+  for file in "$dir"/*.qml; do
+    [ -e "$file" ] || continue
+    name="$(basename "$file" .qml)"
+    ln -sfn "$file" "$target/$name.qml"
+    if grep -q '^pragma Singleton' "$file"; then
+      printf 'singleton %s 1.0 %s.qml\n' "$name" "$name" >> "$qmldir"
+    else
+      printf '%s 1.0 %s.qml\n' "$name" "$name" >> "$qmldir"
+    fi
+  done
+done < <(find "$root/shell" -type d -exec sh -c 'ls "$1"/*.qml >/dev/null 2>&1' _ {} \; -print)
+
+mapfile -t files < <(find "$shadow/qs" -name '*.qml' | sort)
+if ((${#files[@]} == 0)); then
+  printf 'qml-lint: no QML sources found under %s/shell\n' "$root" >&2
+  exit 1
+fi
+report="$shadow/report.txt"
+current="$shadow/current.txt"
+
+# Warning signatures are gated below; hard errors and tool failures never belong
+# in a baseline. Remove the warning-count cap, not the warning diagnostics.
+lint_status=0
+"$qmllint" --max-warnings -1 -I "$qt_qml" -I "$shadow" -I "$root/vendor/qsm-shell/qml" \
+  "${files[@]}" > "$report" 2>&1 || lint_status=$?
+
+# Map shadow paths back to real ones so findings are clickable.
+sed -i "s#$shadow/qs/#shell/#g" "$report"
+if ((lint_status != 0)) || grep -q '^Error:' "$report"; then
+  printf 'qml-lint: hard failure (exit %d); baseline left unchanged\n' "$lint_status" >&2
+  cat "$report" >&2
+  exit 1
+fi
+
+# ---- normalize: <path>|<category>|<message>, position stripped ---------------
+# Line/column are dropped on purpose: they churn on every unrelated edit and
+# would make the baseline useless as a signal.
+awk '
+  # Only lines carrying a trailing [category] are findings. qmllint also emits
+  # bare "Info:" continuation lines (the suggested fix, the source excerpt);
+  # those belong to the finding above and must not be counted separately.
+  /^(Warning|Error|Info):/ && /\[[A-Za-z0-9.-]+\]$/ {
+    line = $0
+    rest = line; sub(/^[A-Za-z]+: /, "", rest)
+    cat = ""
+    if (match(rest, /\[[A-Za-z0-9.-]+\]$/)) {
+      cat = substr(rest, RSTART + 1, RLENGTH - 2)
+      rest = substr(rest, 1, RSTART - 2)
+    }
+    path = "-"
+    if (match(rest, /^shell\/[^:]+:/)) {
+      path = substr(rest, RSTART, RLENGTH - 1)
+      sub(/^shell\/[^:]+:[0-9]*:?[0-9]*:? ?/, "", rest)
+    }
+    gsub(/^ +| +$/, "", rest)
+    print path "|" cat "|" rest
+  }
+' "$report" | sort | uniq -c | awk '{c=$1; $1=""; sub(/^ /,""); print c "\t" $0}' | sort -k2 > "$current"
+
+total="$(awk -F'\t' '{s+=$1} END {print s+0}' "$current")"
+printf 'qml-lint: %d files, %d findings\n' "${#files[@]}" "$total"
+awk -F'|' '{split($0,a,"\t"); print a[2]}' "$current" >/dev/null 2>&1 || true
+awk -F'\t' '{n=$1; split($2,p,"|"); c[p[2]]+=n} END {for (k in c) printf "  %5d %s\n", c[k], k}' "$current" | sort -rn
+
+if [ "$update" -eq 1 ]; then
+  cp "$current" "$baseline"
+  printf 'baseline updated: %s\n' "$baseline"
+  exit 0
+fi
+
+if [ ! -f "$baseline" ]; then
+  printf 'no baseline at %s — run: scripts/qml-lint --update\n' "$baseline" >&2
+  exit 1
+fi
+
+increases() {
+  awk -F'\t' '
+    FILENAME == ARGV[1] { counts[$2] = $1; next }
+    $1 > counts[$2] { printf "%s (current %d, previous %d)\n", $2, $1, counts[$2] }
+  ' "$1" "$2"
+}
+new="$(increases "$baseline" "$current")"
+gone="$(increases "$current" "$baseline")"
+
+if [ -n "$gone" ]; then
+  printf '\nfixed since baseline (refresh it with --update):\n'
+  printf '%s\n' "$gone" | sed 's/^/  - /'
+fi
+if [ -n "$new" ]; then
+  printf '\nNEW or increased findings beyond baseline:\n' >&2
+  printf '%s\n' "$new" | sed 's/^/  + /' >&2
+  printf '\nfull report: %s\n' "$report" >&2
+  exit 1
+fi
+
+printf 'qml-lint: no new findings (report: %s)\n' "$report"

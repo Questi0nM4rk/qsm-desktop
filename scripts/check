@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# The fast half of `validate`: everything that answers "does this QML still
+# load and lint", and nothing that needs the shell stopped.
+#
+# WHY it exists separately: `validate` kills a live shell, runs the whole IPC
+# smoke suite and rebuilds every shader. That is the right gate before a
+# production trial and the wrong one after editing one binding — it costs a
+# shell restart and a couple of minutes to answer a question qmllint answers
+# in seconds. Run either gate only when explicitly requested.
+#
+# It is safe beside a running shell: everything here is static or offscreen.
+set -euo pipefail
+root="$(cd "$(dirname "$0")/.." && pwd)"
+
+"$root/scripts/qml-lint"
+
+# Loads the library through the same import root the shell uses, so a broken
+# type or a property that no longer exists fails here rather than at runtime.
+QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software QT_FORCE_STDERR_LOGGING=1 \
+  /usr/lib/qt6/bin/qml -I "$root/vendor/qsm-shell/qml" \
+  "$root/shell/preview/QsmShellImport.qml"
+
+"$root/scripts/check-theme-contract"
+
+# Shaders only when one actually changed — the .qsb rebuild is the slow part.
+# The pair lives in the library, so ask the library's git, not this one.
+lib="$root/vendor/qsm-shell"
+if ! git -C "$lib" diff --quiet -- qml/QsmShell/shaders 2>/dev/null; then
+  before="$(sha256sum "$lib"/qml/QsmShell/shaders/*.qsb)"
+  "$lib/scripts/build-shaders" >/dev/null
+  [[ "$before" == "$(sha256sum "$lib"/qml/QsmShell/shaders/*.qsb)" ]] || {
+    printf 'shader .qsb drift: commit the rebuilt .qsb in qsm-shell\n' >&2; exit 1; }
+fi
+
+printf 'quick check passed; production smoke is separate and requires explicit permission\n'

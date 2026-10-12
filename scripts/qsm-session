@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# Import only present compositor/session variables, then start the one
+# systemd-owned shell unit and wait for its own notification-server PID.
+set -euo pipefail
+
+: "${WAYLAND_DISPLAY:?qsm-session must run inside the Wayland session}"
+
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+for command in systemctl qs jq busctl awk timeout; do
+  if ! command -v "$command" >/dev/null 2>&1; then
+    printf 'qsm-session needs %s to start and verify the notification server\n' "$command" >&2
+    exit 1
+  fi
+done
+
+import=(WAYLAND_DISPLAY)
+unset_vars=()
+for name in DISPLAY XDG_CURRENT_DESKTOP HYPRLAND_INSTANCE_SIGNATURE; do
+  if [[ -v $name ]]; then
+    import+=("$name")
+  else
+    unset_vars+=("$name")
+  fi
+done
+if [[ -v PATH ]]; then
+  import+=(PATH)
+fi
+
+if ((${#unset_vars[@]})); then
+  systemctl --user unset-environment "${unset_vars[@]}"
+fi
+systemctl --user import-environment "${import[@]}"
+if ! timeout --foreground 10s systemctl --user start qsm-desktop.service; then
+  printf 'qsm-session could not start qsm-desktop.service within 10 seconds\n' >&2
+  exit 1
+fi
+
+deadline=$((SECONDS + 57))
+while ((SECONDS < deadline)); do
+  qsm_pid="$(timeout --foreground 1s qs ipc --path "$root/shell" call qsm status 2>/dev/null \
+    | jq -r '.pid // empty' 2>/dev/null || true)"
+  owner_pid="$(timeout --foreground 1s busctl --user call org.freedesktop.DBus /org/freedesktop/DBus \
+    org.freedesktop.DBus GetConnectionUnixProcessID s org.freedesktop.Notifications \
+    2>/dev/null | awk '$1 == "u" { print $2 }' || true)"
+  if [[ "$qsm_pid" =~ ^[0-9]+$ && "$qsm_pid" == "$owner_pid" ]]; then
+    exit 0
+  fi
+  sleep 0.25
+done
+
+printf 'qsm-session timed out after 60 seconds waiting for %s to own org.freedesktop.Notifications; unit left untouched and no fallback server started\n' \
+  "$root/shell" >&2
+exit 1

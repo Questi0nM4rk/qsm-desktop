@@ -1,0 +1,8 @@
+module qs.modules.panel
+DashboardTab 1.0 DashboardTab.qml
+MediaTab 1.0 MediaTab.qml
+NotificationCenterTab 1.0 NotificationCenterTab.qml
+PanelSurface 1.0 PanelSurface.qml
+PanelHandle 1.0 PanelHandle.qml
+PerformanceTab 1.0 PerformanceTab.qml
+WorkspacesTab 1.0 WorkspacesTab.qml

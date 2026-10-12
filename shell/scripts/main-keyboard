@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+action="${1:-status}"
+if [[ $# -gt 1 ]]; then
+  printf 'Usage: main-keyboard [enable|disable|toggle|status]\n' >&2
+  exit 2
+fi
+case "$action" in
+  enable|disable|toggle|status) ;;
+  -h|--help)
+    printf 'Usage: main-keyboard [enable|disable|toggle|status]\n'
+    printf 'Controls only the built-in keyboard; status prints ENABLED or DISABLED.\n'
+    exit 0 ;;
+  *) printf 'Usage: main-keyboard [enable|disable|toggle|status]\n' >&2; exit 2 ;;
+esac
+
+for dependency in hyprctl jq timeout; do
+  if ! command -v "$dependency" >/dev/null 2>&1; then
+    printf 'main-keyboard needs %s\n' "$dependency" >&2
+    exit 1
+  fi
+done
+
+devices="$(timeout 3s hyprctl -j devices)"
+if ! jq -e '.keyboards | any(.name == "at-translated-set-2-keyboard")' \
+    >/dev/null <<<"$devices"; then
+  printf 'Main keyboard unavailable: at-translated-set-2-keyboard\n' >&2
+  exit 1
+fi
+
+# action is allowlisted above, never arbitrary Lua or a synthesized shortcut.
+state="$(timeout 3s hyprctl repl "return qsm_main_keyboard and qsm_main_keyboard.command(\"$action\") or \"UNKNOWN\"")"
+case "$state" in
+  ENABLED|DISABLED) printf '%s\n' "$state" ;;
+  UNKNOWN)
+    printf 'Main keyboard state unknown; load main-keyboard.lua in hyprland.lua first\n' >&2
+    exit 1 ;;
+  *) printf 'main-keyboard: %s\n' "$state" >&2; exit 1 ;;
+esac

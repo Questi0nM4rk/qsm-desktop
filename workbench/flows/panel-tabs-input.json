@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "key": "panel-tabs-input",
+  "target": { "story": "panel-tabs" },
+  "steps": [
+    { "type": "reset" },
+    { "type": "action", "name": "open-panel" },
+    { "type": "await", "observable": "panel-open", "equals": true },
+    { "type": "expect", "observable": "tab-count", "equals": 5 },
+    { "type": "expect", "observable": "panel-tab", "equals": "dashboard" },
+    { "type": "key", "target": "tabs", "key": "Tab" },
+    { "type": "expect", "observable": "panel-tab", "equals": "media" },
+    { "type": "key", "target": "tabs", "key": "Tab" },
+    { "type": "expect", "observable": "panel-tab", "equals": "performance" },
+    { "type": "key", "target": "tabs", "key": "Backtab" },
+    { "type": "expect", "observable": "panel-tab", "equals": "media" },
+    { "type": "key", "target": "tabs", "key": "Right" },
+    { "type": "expect", "observable": "panel-tab", "equals": "performance" },
+    { "type": "key", "target": "tabs", "key": "Left" },
+    { "type": "expect", "observable": "panel-tab", "equals": "media" },
+    { "type": "key", "target": "tabs", "key": "End" },
+    { "type": "expect", "observable": "panel-tab", "equals": "notifications" },
+    { "type": "key", "target": "tabs", "key": "Tab" },
+    { "type": "expect", "observable": "panel-tab", "equals": "notifications" },
+    { "type": "key", "target": "tabs", "key": "Home" },
+    { "type": "expect", "observable": "panel-tab", "equals": "dashboard" },
+    { "type": "key", "target": "tabs", "key": "Left" },
+    { "type": "expect", "observable": "panel-tab", "equals": "dashboard" },
+    { "type": "action", "name": "close-panel" },
+    { "type": "expect", "observable": "panel-open", "equals": false }
+  ]
+}

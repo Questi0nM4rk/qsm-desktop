@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+# Hover-coverage trial: what would the pointer actually reach at this point?
+#
+# WHY this exists: a screenshot cannot explain why a cell ignores the pointer,
+# and geometry alone cannot either. The failure mode is ORDERING — content
+# painted after a hover surface sits above it and eats the event. That cost us
+# the BLE cell twice: once as a dead rollout, once as a shadowed property that
+# only looked fine because a hand-rolled handler was masking it.
+#
+# usage: scripts/hover-probe <output> <sceneX> <sceneY>
+#        scripts/hover-probe <output> --item <TypeName>   # probe that item's centre
+#
+# Coordinates are LOGICAL scene pixels — what inspect() reports, not device
+# pixels (a 1920x1080 @ scale 1.2 monitor is a 1600x900 scene).
+#
+# Two modes:
+#   default   COVERAGE — which items could receive hover here, topmost first.
+#             Reads nothing but the live tree; never touches the pointer.
+#   --move    DELIVERY — warps the real pointer onto the point (the
+#             marketplace qsm-compuse `drive move`, via calibrated ydotool),
+#             settles a frame, reads the live `hovered` flags and the
+#             resulting popout kind, then puts the cursor back exactly where
+#             it was. Do not use mid-drag.
+set -euo pipefail
+
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+move=0
+if [ "${1:-}" = "--move" ]; then
+  move=1
+  shift
+fi
+
+output="${1:?usage: hover-probe [--move] <output> <sceneX> <sceneY> | [--move] <output> --item <Type>}"
+shift
+
+command -v jq >/dev/null || { printf 'hover-probe needs jq\n' >&2; exit 1; }
+
+if [ "${1:-}" = "--item" ]; then
+  type_name="${2:?--item needs a type name}"
+  point="$(qs ipc --path "$root/shell" call qsm inspect "$output" true \
+    | jq -r --arg t "$type_name" '
+      [.. | objects | select(.type == $t)] | .[0]
+      | if . == null then "" else "\(.x + .w / 2) \(.y + .h / 2)" end')"
+  [ -n "$point" ] || { printf 'no %s on %s\n' "$type_name" "$output" >&2; exit 1; }
+  set -- $point
+fi
+
+scene_x="${1:?missing sceneX}"
+scene_y="${2:?missing sceneY}"
+
+if [ "$move" -eq 1 ]; then
+  origin="$(hyprctl monitors -j | jq -r --arg n "$output" '.[] | select(.name == $n) | "\(.x) \(.y)"')"
+  [ -n "$origin" ] || { printf 'no such output: %s\n' "$output" >&2; exit 1; }
+  read -r origin_x origin_y <<<"$origin"
+  # Pointer motion goes through the marketplace compuse drive (owner ruling
+  # 2026-08-21): calibrated ydotool movement, one implementation shared with
+  # everything else that drives this desktop. The repo-local cursor-warp is
+  # gone; drive move is its replacement.
+  drive="${QSM_MARKETPLACE:-$HOME/Projects/FullStack.qsm/qsm-marketplace}/tools/qsm-compuse/scripts/drive"
+  [ -x "$drive" ] || { printf 'hover-probe needs the qsm-compuse drive: %s\n' "$drive" >&2; exit 1; }
+  # drive pos prints hyprctl cursorpos ("x, y"); strip the space so the
+  # comma-split below yields clean numbers.
+  before="$("$drive" pos | tr -d ' ')"
+  restore() { "$drive" move "${before%,*}" "${before#*,}" >/dev/null 2>&1 || true; }
+  trap restore EXIT
+  "$drive" move $(( origin_x + ${scene_x%.*} )) $(( origin_y + ${scene_y%.*} )) >/dev/null
+  # Hover lands next frame; the rollout's open path needs a beat more.
+  sleep 0.35
+fi
+
+probe="$(qs ipc --path "$root/shell" call qsm hitProbe "$output" "$scene_x" "$scene_y")"
+status="$(qs ipc --path "$root/shell" call qsm status)"
+
+printf '%s' "$probe" | jq --argjson st "$status" '{
+  at,
+  # Handlers do not consume: outermost catcher first, the specific cell last.
+  topmostHandler, deepestHandler,
+  hoveredNow: [.stack[] | select(any(.handlers[]?; .hovered)) | .type],
+  stack: [.stack[] | select(.handlers | length > 0) | {type, y, h, handlers}],
+  popoutKind: ($st.popout // "")
+}'

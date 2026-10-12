@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "id": "qsm-desktop",
+  "title": "QSM Desktop",
+  "description": "Live desktop shell compositions.",
+  "capabilities": [
+    "stories",
+    "flows",
+    "tasks"
+  ]
+}

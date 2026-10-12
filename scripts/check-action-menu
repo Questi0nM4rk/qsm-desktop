@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+set -euo pipefail
+# The action menu and panel tab group, driven through the installed Workbench
+# against the desktop's own isolated services. Native input only; no production
+# instance, no real hardware, no capture.
+export QT_QPA_PLATFORM=offscreen
+
+PROVIDER="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+LOG_DIR="${QSM_MENU_NIGHT_LOG_DIR:-/tmp/opencode/am}"
+mkdir -p "$LOG_DIR"
+
+qsm-workbench --provider "$PROVIDER" --check > "$LOG_DIR/provider-check.log" 2>&1
+
+failed=0
+for key in action-menu-audio-input action-menu-wifi-input \
+    action-menu-wifi-lifecycle action-menu-bluetooth-input action-menu-toggles-input panel-tabs-input; do
+    log="$LOG_DIR/$key.log"
+    if timeout 90s qsm-workbench flow run "$PROVIDER/workbench/flows/$key.json" \
+        --provider "$PROVIDER" --timeout-ms=30000 --verbose \
+        > "$log" 2>&1; then
+        grep -e 'flow pass' "$log" || true
+    else
+        failed=1
+        printf 'flow failed: %s (log: %s)\n' "$key" "$log" >&2
+        tail -n 12 "$log" >&2
+    fi
+done
+
+exit "$failed"

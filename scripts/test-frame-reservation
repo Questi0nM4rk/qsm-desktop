@@ -1,0 +1,114 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+config="$root/shell"
+before="$(mktemp "${XDG_RUNTIME_DIR:-/tmp}/qsm-reserved-before.XXXXXX.json")"
+after="$(mktemp "${XDG_RUNTIME_DIR:-/tmp}/qsm-reserved-after.XXXXXX.json")"
+log="$(mktemp "${XDG_RUNTIME_DIR:-/tmp}/qsm-reservation.XXXXXX.log")"
+pid=""
+fullscreen_toggled=false
+fullscreen_dispatch='hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" })'
+
+wait_for_frame_reservations() {
+  for _ in {1..30}; do
+    local clients
+    clients="$(hyprctl clients -j)"
+    if hyprctl monitors -j | jq -e --argjson clients "$clients" '
+      all(.[];
+        . as $monitor
+        | ($clients | any(.monitor == $monitor.id
+            and .workspace.id == $monitor.activeWorkspace.id
+            and .fullscreen > 0)) as $fullscreen
+        | if $fullscreen then
+            $monitor.reserved == [0, 0, 0, 0]
+          else
+            ($monitor.reserved | sort) == [10, 10, 10, 60]
+          end)
+    ' >/dev/null; then
+      return 0
+    fi
+    sleep 0.1
+  done
+  return 1
+}
+
+cleanup() {
+  if [[ "$fullscreen_toggled" == true ]]; then
+    hyprctl dispatch "$fullscreen_dispatch" >/dev/null 2>&1 || true
+  fi
+  qs kill --path "$config" >/dev/null 2>&1 || true
+  if [[ -n "$pid" ]]; then wait "$pid" 2>/dev/null || true; fi
+  rm -f "$before" "$after"
+}
+trap cleanup EXIT
+
+hyprctl monitors -j | jq '[.[] | {name, reserved}]' > "$before"
+qs --no-duplicate --path "$config" >"$log" 2>&1 &
+pid=$!
+
+ready=false
+for _ in {1..30}; do
+  if qs ipc --path "$config" call qsm status 2>/dev/null | jq -e '.sceneRailMaskWidth > 0' >/dev/null; then
+    ready=true
+    break
+  fi
+  if ! kill -0 "$pid" 2>/dev/null; then
+    printf 'Quickshell exited during reservation test; log: %s\n' "$log" >&2
+    exit 1
+  fi
+  sleep 0.1
+done
+[[ "$ready" == true ]] || {
+  printf 'frame reservation IPC did not become ready; log: %s\n' "$log" >&2
+  exit 1
+}
+
+wait_for_frame_reservations || {
+  printf 'frame reservations did not settle; log: %s\n' "$log" >&2
+  exit 1
+}
+
+if [[ "$(hyprctl activewindow -j | jq -r '.fullscreen')" == 0 ]]; then
+  hyprctl dispatch "$fullscreen_dispatch" >/dev/null
+  fullscreen_toggled=true
+
+  released=false
+  for _ in {1..30}; do
+    if hyprctl monitors -j | jq -e '(.[] | select(.focused) | .reserved) == [0, 0, 0, 0]' >/dev/null; then
+      released=true
+      break
+    fi
+    sleep 0.1
+  done
+  [[ "$released" == true ]] || {
+    printf 'focused-monitor reservations were not released in fullscreen; log: %s\n' "$log" >&2
+    exit 1
+  }
+
+  hyprctl dispatch "$fullscreen_dispatch" >/dev/null
+  fullscreen_toggled=false
+  wait_for_frame_reservations || {
+    printf 'frame reservations did not return after fullscreen; log: %s\n' "$log" >&2
+    exit 1
+  }
+fi
+
+qs kill --path "$config" >/dev/null
+wait "$pid" 2>/dev/null || true
+pid=""
+restored=false
+for _ in {1..30}; do
+  hyprctl monitors -j | jq '[.[] | {name, reserved}]' > "$after"
+  if cmp -s "$before" "$after"; then
+    restored=true
+    break
+  fi
+  sleep 0.1
+done
+[[ "$restored" == true ]] || {
+  printf 'monitor reservations were not restored; log: %s\n' "$log" >&2
+  exit 1
+}
+
+printf 'Frame reservation test passed\n'

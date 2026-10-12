@@ -1,0 +1,29 @@
+{
+  "version": 1, "key": "network-popout-input", "target": { "story": "network-popout" },
+  "steps": [
+    { "type": "reset" },
+    { "type": "action", "name": "join-network" },
+    { "type": "await", "observable": "prompt", "equals": "Guest" },
+    { "type": "expect", "observable": "prompt-state", "equals": "failed" },
+    { "type": "expect", "observable": "keyboard-grab", "equals": "wifi-password" },
+    { "type": "write", "target": "password", "text": "preview-passphrase" },
+    { "type": "key", "target": "password", "key": "Enter" },
+    { "type": "await", "observable": "connected", "equals": true },
+    { "type": "await", "observable": "prompt", "equals": "" },
+    { "type": "expect", "observable": "keyboard-grab", "equals": "" },
+    { "type": "expect", "observable": "draft-empty", "equals": true },
+    { "type": "action", "name": "toggle-radio" },
+    { "type": "expect", "observable": "radio-armed", "equals": true },
+    { "type": "expect", "observable": "radio", "equals": true },
+    { "type": "action", "name": "toggle-radio" },
+    { "type": "await", "observable": "radio", "equals": false },
+    { "type": "action", "name": "toggle-radio" },
+    { "type": "await", "observable": "radio", "equals": true },
+    { "type": "reset" },
+    { "type": "action", "name": "join-network" },
+    { "type": "action", "name": "close-password" },
+    { "type": "await", "observable": "operation-state", "equals": "failed" },
+    { "type": "expect", "observable": "prompt", "equals": "" },
+    { "type": "expect", "observable": "keyboard-grab", "equals": "" }
+  ]
+}

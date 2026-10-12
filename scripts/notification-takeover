@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+# Hand org.freedesktop.Notifications to the running qsm shell (spec 09).
+#
+# WHY a script and not just "kill dunst": the bus name is single-owner and
+# first-come. Quickshell claims it at startup and re-claims it the moment the
+# current owner unregisters, so the swap itself is simple — what is NOT simple
+# is being SURE it worked. A desktop that silently drops every notification
+# looks exactly like a quiet one. So this stops the old daemon, waits for the
+# name to land on the shell's own pid, sends a real notification through the
+# bus, confirms the shell received it, and cleans it up again. If any of that
+# fails the old daemon comes straight back — the desktop never ends up with
+# NO notification server.
+#
+# usage: scripts/notification-takeover [--status]
+set -euo pipefail
+
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+config="$root/shell"
+
+need() { command -v "$1" >/dev/null || { printf 'notification-takeover needs %s\n' "$1" >&2; exit 1; }; }
+need busctl; need notify-send; need qs; need jq
+
+bus_owner_pid() {
+  busctl --user call org.freedesktop.DBus /org/freedesktop/DBus org.freedesktop.DBus \
+    GetConnectionUnixProcessID s org.freedesktop.Notifications 2>/dev/null \
+    | awk '{print $2}'
+}
+
+owner_name() {
+  local pid="$1"
+  [ -n "$pid" ] && [ -r "/proc/$pid/comm" ] && cat "/proc/$pid/comm" || printf 'none'
+}
+
+qsm() { qs ipc --path "$config" call qsm "$@"; }
+
+# Ask the shell itself. A `qs` process cmdline does not say which config it
+# serves (`--path shell` is relative to wherever it was launched), so matching
+# on the command line picks the wrong instance as soon as there are two.
+qsm_pid="$(qsm status 2>/dev/null | jq -r '.pid // empty' || true)"
+if [ -z "$qsm_pid" ]; then
+  printf 'no qsm shell running for %s — start it first\n' "$config" >&2
+  exit 1
+fi
+
+current_pid="$(bus_owner_pid || true)"
+if [ "$current_pid" = "$qsm_pid" ]; then
+  printf 'org.freedesktop.Notifications already owned by qsm (pid %s)\n' "$qsm_pid"
+  [ "${1:-}" = "--status" ] && exit 0
+fi
+
+if [ "${1:-}" = "--status" ]; then
+  printf 'org.freedesktop.Notifications owner: %s (pid %s); qsm pid %s\n' \
+    "$(owner_name "$current_pid")" "${current_pid:-none}" "$qsm_pid"
+  exit 0
+fi
+
+previous="$(owner_name "$current_pid")"
+restore() {
+  # Only ever restart something we recognise as a notification daemon: this
+  # runs on the failure path, and re-exec'ing an arbitrary process name would
+  # be worse than having no server.
+  case "$previous" in
+    dunst|mako|swaync|xfce4-notifyd) setsid "$previous" >/dev/null 2>&1 & ;;
+    *) printf 'no previous daemon to restore (was: %s)\n' "$previous" >&2 ;;
+  esac
+}
+
+if [ -n "${current_pid:-}" ] && [ "$current_pid" != "$qsm_pid" ]; then
+  printf 'stopping previous notification daemon: %s (pid %s)\n' "$previous" "$current_pid"
+  kill "$current_pid" 2>/dev/null || true
+fi
+
+# Quickshell re-registers on the NameOwnerChanged it is already watching, so
+# this is a wait, not a retry loop against the shell.
+for _ in $(seq 1 40); do
+  [ "$(bus_owner_pid || true)" = "$qsm_pid" ] && break
+  sleep 0.1
+done
+
+if [ "$(bus_owner_pid || true)" != "$qsm_pid" ]; then
+  printf 'qsm never claimed the bus; restoring %s\n' "$previous" >&2
+  restore
+  exit 1
+fi
+
+# Round-trip proof: a notification sent over the REAL bus has to appear in the
+# shell's own model. Nothing else proves the two halves are connected.
+before="$(qsm status | jq -r '.notificationCount')"
+# --transient: a plumbing self-test must not pile up in the archive — every
+# restart was adding one more 'Notifications active' row to history.
+notify-send --app-name=qsm-takeover --expire-time=2000 --transient \
+  'Notifications active' 'qsm owns org.freedesktop.Notifications'
+for _ in $(seq 1 20); do
+  after="$(qsm status | jq -r '.notificationCount')"
+  [ "$after" -gt "$before" ] && break
+  sleep 0.1
+done
+
+if [ "${after:-0}" -le "$before" ]; then
+  printf 'bus claimed but no notification arrived; restoring %s\n' "$previous" >&2
+  restore
+  exit 1
+fi
+
+printf 'qsm owns org.freedesktop.Notifications (pid %s); round-trip verified\n' "$qsm_pid"

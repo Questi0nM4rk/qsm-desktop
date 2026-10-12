@@ -1,0 +1,18 @@
+module qs.services
+singleton AudioService 1.0 AudioService.qml
+singleton BluetoothService 1.0 BluetoothService.qml
+singleton AwakeService 1.0 AwakeService.qml
+singleton MainKeyboardService 1.0 MainKeyboardService.qml
+singleton BrightnessService 1.0 BrightnessService.qml
+singleton CacheService 1.0 CacheService.qml
+singleton ColorPickService 1.0 ColorPickService.qml
+singleton FullscreenService 1.0 FullscreenService.qml
+singleton NightLightService 1.0 NightLightService.qml
+singleton NetworkService 1.0 NetworkService.qml
+ConnectivityState 1.0 ConnectivityState.qml
+singleton PowerProfileService 1.0 PowerProfileService.qml
+singleton Delegate 1.0 Delegate.qml
+singleton PerformanceService 1.0 PerformanceService.qml
+singleton NotificationService 1.0 NotificationService.qml
+NotificationEntry 1.0 NotificationEntry.qml
+NotificationStore 1.0 NotificationStore.qml

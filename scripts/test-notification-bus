@@ -1,0 +1,381 @@
+#!/usr/bin/env bash
+# Exercise the production NotificationServer on a private session bus. The
+# service/store/entry sources are symlinked from shell/; only ShellState is
+# replaced, with the two fields NotificationService consumes (DND + history).
+set -euo pipefail
+
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+need() { command -v "$1" >/dev/null 2>&1 || { printf 'test-notification-bus: missing dependency: %s\n' "$1" >&2; exit 1; }; }
+need dbus-run-session
+need qs
+need gdbus
+need jq
+need mktemp
+need od
+need tr
+need sed
+need grep
+need cat
+need ln
+need mkdir
+need rm
+
+if [[ "${1:-}" != --private-bus ]]; then
+  private_token="$(od -An -N16 -tx1 /dev/urandom | tr -d ' \n')"
+  exec dbus-run-session -- env QSM_NOTIFICATION_BUS_TEST_TOKEN="$private_token" "$0" --private-bus "$private_token"
+fi
+
+[[ -n "${2:-}" && "${2:-}" == "${QSM_NOTIFICATION_BUS_TEST_TOKEN:-}" ]] || {
+  printf 'test-notification-bus: refusing private-bus mode without the launcher token\n' >&2
+  exit 1
+}
+[[ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ]] || {
+  printf 'test-notification-bus: refusing to run without dbus-run-session bus\n' >&2
+  exit 1
+}
+need chmod
+need sleep
+
+tmp="$(mktemp -d "${XDG_RUNTIME_DIR:-/tmp}/qsm-notification-bus.XXXXXX")"
+chmod 700 "$tmp"
+config="$tmp/config"
+runtime="$tmp/runtime"
+log="$tmp/quickshell.log"
+monitor_log="$tmp/signals.log"
+mkdir -p "$config/services" "$config/state" "$config/theme" \
+  "$config/modules" "$runtime"
+chmod 700 "$runtime"
+pid=""
+monitor_pid=""
+passed=false
+
+cleanup() {
+  if [[ -n "$monitor_pid" ]]; then kill "$monitor_pid" 2>/dev/null || true; wait "$monitor_pid" 2>/dev/null || true; fi
+  if [[ -n "$pid" ]]; then
+    qs kill --path "$config" >/dev/null 2>&1 || true
+    wait "$pid" 2>/dev/null || true
+  fi
+  if [[ "$passed" == true ]]; then rm -rf "$tmp"; else printf 'diagnostics retained in %s\n' "$tmp" >&2; fi
+}
+trap cleanup EXIT
+
+services="$config/services"
+printf 'module qs.services\nsingleton NotificationService 1.0 NotificationService.qml\nNotificationStore 1.0 NotificationStore.qml\nNotificationEntry 1.0 NotificationEntry.qml\n' > "$services/qmldir"
+for source in NotificationService NotificationStore NotificationEntry; do
+  ln -s "$root/shell/services/$source.qml" "$services/$source.qml"
+done
+ln -s "$root/shell/modules/notifications" "$config/modules/notifications"
+ln -s "$root/workbench/NotificationStory.qml" "$config/NotificationStory.qml"
+ln -s "$root/shell/QsmShell" "$config/QsmShell"
+ln -s "$root/workbench/theme/Theme.qml" "$config/theme/Theme.qml"
+ln -s "$root/shell/themes" "$config/themes"
+printf 'module qs.theme\nsingleton Theme 1.0 Theme.qml\n' > "$config/theme/qmldir"
+
+state="$config/state"
+printf 'module qs.state\nsingleton ShellState 1.0 ShellState.qml\n' > "$state/qmldir"
+cat > "$state/ShellState.qml" <<'QML'
+pragma Singleton
+import QtQuick
+QtObject {
+    property bool dnd: false
+    property var notificationHistory: []
+    property bool reducedMotion: false
+    property bool reducedEffects: false
+    property string theme: "deep-night"
+}
+QML
+
+cat > "$config/shell.qml" <<'QML'
+import QtQuick
+import Quickshell
+import Quickshell.Io
+import qs.QsmShell.Style as QsmShellStyle
+import qs.services
+import qs.state
+import qs.theme
+
+ShellRoot {
+    id: root
+    property var trackedCard: null
+
+    Binding {
+        target: QsmShellStyle.Style
+        property: "backend"
+        value: Theme
+    }
+
+    Item {
+        id: scene
+        width: 980
+        height: 680
+
+        NotificationStory {
+            id: story
+            anchors.fill: parent
+            notificationService: NotificationService
+            viewportWidth: parent.width
+            viewportHeight: parent.height
+        }
+    }
+
+    IpcHandler {
+        target: "notification-bus-test"
+        function status(): string {
+            return JSON.stringify({
+                dnd: ShellState.dnd,
+                persistedHistory: ShellState.notificationHistory,
+                live: NotificationService.store.live.map(entry => ({
+                    id: entry.notificationId,
+                    createdAt: entry.createdAt,
+                    summary: entry.summary,
+                    body: entry.body,
+                    urgency: entry.urgency,
+                    expiryMs: entry.expiryMs,
+                    paused: entry.paused,
+                    actions: entry.actions
+                })),
+                popups: NotificationService.popups.length,
+                archive: NotificationService.archive,
+                sources: Object.keys(NotificationService.sources).map(key => ({
+                    id: Number(key), sourceId: NotificationService.sources[key].id,
+                    expireTimeout: NotificationService.sources[key].expireTimeout
+                })),
+                links: Object.keys(NotificationService.sourceLinks).map(Number)
+            });
+        }
+        function setDnd(enabled: bool): bool {
+            ShellState.dnd = enabled;
+            return ShellState.dnd;
+        }
+        function invokeAction(id: int, actionId: string): void {
+            NotificationService.store.invokeAction(id, actionId);
+        }
+        function dismiss(id: int): bool { return NotificationService.dismiss(id); }
+        function trackRow(id: int): bool {
+            root.trackedCard = story.integration.targets["transfer-row"]();
+            return root.trackedCard !== null && root.trackedCard.entry.notificationId === id;
+        }
+        function rendererStatus(id: int): string {
+            const obs = story.integration.observables;
+            const row = story.integration.targets["transfer-row"]();
+            return JSON.stringify({
+                serviceLiveCount: obs["live-count"](),
+                serviceLiveIds: obs["live-ids"](),
+                latestSummary: obs["latest-summary"](),
+                latestAppName: obs["latest-app-name"](),
+                latestBody: obs["latest-body"](),
+                renderedRowCount: obs["rendered-row-count"](),
+                geometry: obs["row-geometry"](),
+                rolloutVisible: obs["rollout-visible"](),
+                rolloutClosing: obs["rollout-closing"](),
+                fullscreenMaskIds: obs["fullscreen-mask-ids"](),
+                rolloutRegions: obs["rollout-region-ids"](),
+                rolloutBulges: obs["rollout-bulge-ids"](),
+                row: row ? {
+                    id: row.entry.notificationId,
+                    summary: row.entry.summary,
+                    appName: row.entry.appName,
+                    body: row.entry.body,
+                    phase: row.phase,
+                    inputEnabled: row.inputEnabled,
+                    objectName: row.objectName
+                } : null,
+                sameDelegate: !!row && row === root.trackedCard
+            });
+        }
+        function copyActionProbe(): string {
+            const source = [{ id: "probe", label: "Keep", disabled: true,
+                destructive: false, tooltip: "retained field" }];
+            const copy = NotificationService.store.copyActions(source);
+            source[0].disabled = false;
+            return JSON.stringify({ detached: copy[0] !== source[0], action: copy[0] });
+        }
+    }
+}
+QML
+
+export XDG_RUNTIME_DIR="$runtime"
+export QT_QPA_PLATFORM=offscreen
+
+if gdbus call --session --dest org.freedesktop.DBus --object-path /org/freedesktop/DBus \
+    --method org.freedesktop.DBus.GetNameOwner org.freedesktop.Notifications >/dev/null 2>&1; then
+  printf 'test-notification-bus: unexpected pre-existing notification owner on private bus\n' >&2
+  exit 1
+fi
+
+qs --no-duplicate --path "$config" >"$log" 2>&1 &
+pid=$!
+
+ipc() { qs ipc --path "$config" call notification-bus-test "$@"; }
+wait_ready() {
+  for _ in {1..100}; do
+    if ! kill -0 "$pid" 2>/dev/null; then
+      printf 'Quickshell exited during startup; log: %s\n' "$log" >&2
+      exit 1
+    fi
+    if ipc status >/dev/null 2>&1 && gdbus call --session --dest org.freedesktop.DBus \
+        --object-path /org/freedesktop/DBus --method org.freedesktop.DBus.GetNameOwner \
+        org.freedesktop.Notifications >/dev/null 2>&1; then return; fi
+    sleep 0.1
+  done
+  printf 'production NotificationServer did not become ready; log: %s\n' "$log" >&2
+  exit 1
+}
+wait_ready
+
+# Exercise the production store's action copier with fields not represented by
+# freedesktop's identifier/label pair. This is the real method, not a QML-side
+# reimplementation; protocol actions below separately cover end-to-end mapping.
+ipc copyActionProbe | jq -e '.detached and .action.disabled == true and .action.destructive == false and .action.tooltip == "retained field"' >/dev/null || {
+  printf 'NotificationStore.copyActions failed to preserve and detach action fields\n' >&2; exit 1;
+}
+
+status() { ipc status | jq -c .; }
+renderer_status() { ipc rendererStatus "$1" | jq -c .; }
+wait_for() {
+  local expr="$1" message="$2" current
+  for _ in {1..60}; do
+    current="$(status)"
+    if jq -e "$expr" <<<"$current" >/dev/null; then return; fi
+    sleep 0.05
+  done
+  printf '%s; last service state: %s; log: %s\n' "$message" "$current" "$log" >&2
+  exit 1
+}
+wait_renderer_for() {
+  local id="$1" expr="$2" message="$3" current
+  for _ in {1..80}; do
+    current="$(renderer_status "$id")"
+    if jq -e "$expr" <<<"$current" >/dev/null; then return; fi
+    sleep 0.05
+  done
+  printf '%s; last Workbench renderer state: %s; log: %s\n' "$message" "$current" "$log" >&2
+  exit 1
+}
+notify() {
+  gdbus call --session --dest org.freedesktop.Notifications \
+    --object-path /org/freedesktop/Notifications \
+    --method org.freedesktop.Notifications.Notify -- "$@"
+}
+close_protocol() {
+  gdbus call --session --dest org.freedesktop.Notifications \
+    --object-path /org/freedesktop/Notifications \
+    --method org.freedesktop.Notifications.CloseNotification "$1" >/dev/null
+}
+protocol_id() { sed -E 's/.*uint32 ([0-9]+).*/\1/'; }
+
+# Monitor the real service signal; the harness only calls the production
+# service's action route and does not synthesize an ActionInvoked signal.
+gdbus monitor --session --dest org.freedesktop.Notifications >"$monitor_log" 2>&1 &
+monitor_pid=$!
+
+first_result="$(notify 'Bus integration client' 0 '' 'Bus original' 'first body' \
+  "['open','Open']" "{'urgency': <byte 1>, 'resident': <true>}" 0)"
+first_source="$(sed -E 's/.*uint32 ([0-9]+).*/\1/' <<<"$first_result")"
+[[ "$first_source" =~ ^[0-9]+$ && "$first_source" -gt 0 ]] || {
+  printf 'Notify did not return a protocol ID: %s\n' "$first_result" >&2; exit 1;
+}
+wait_for '(.live|length) == 1 and (.sources|length) == 1 and (.links|length) == 1' 'initial bus notification was not admitted'
+first_state="$(status)"
+internal_id="$(jq -r '.live[0].id' <<<"$first_state")"
+created_at="$(jq -r '.live[0].createdAt' <<<"$first_state")"
+[[ "$(jq -r '.sources[0].sourceId' <<<"$first_state")" == "$first_source" ]]
+jq -e '.live[0].expiryMs == 0 and .sources[0].expireTimeout == 0 and .live[0].actions == [{"id":"open","label":"Open"}]' \
+  <<<"$first_state" >/dev/null || { printf 'sticky timeout/action fields were not retained: %s\n' "$first_state" >&2; exit 1; }
+wait_renderer_for "$internal_id" '.serviceLiveCount == 1 and .row.summary == "Bus original" and .row.appName == "Bus integration client" and .row.body == "first body" and .row.phase == "active" and .row.inputEnabled == true and .renderedRowCount == 1 and .rolloutVisible == true and (.rolloutRegions|length) == 1 and (.rolloutBulges|length) == 1' \
+  'actual bus notification did not reach NotificationStory production rendering'
+ipc trackRow "$internal_id" | grep -q '^true$' || {
+  printf 'Workbench story did not expose the rendered production row for identity tracking\n' >&2; exit 1;
+}
+
+replace_result="$(notify 'Bus integration client' "$first_source" '' 'Bus replacement' 'updated body' \
+  "['reply','Reply']" "{'urgency': <byte 1>, 'resident': <true>}" 0)"
+replace_source="$(sed -E 's/.*uint32 ([0-9]+).*/\1/' <<<"$replace_result")"
+[[ "$replace_source" == "$first_source" ]] || { printf 'replacement changed protocol ID: %s\n' "$replace_result" >&2; exit 1; }
+wait_for '(.live|length) == 1 and .live[0].id == '"$internal_id"' and .live[0].createdAt == '"$created_at"' and .live[0].summary == "Bus replacement" and .live[0].actions == [{"id":"reply","label":"Reply"}] and (.sources|length) == 1 and .sources[0].sourceId == '"$first_source" \
+  'replacement did not preserve the row/source identity and timestamp while copying new action fields'
+wait_renderer_for "$internal_id" '.row.summary == "Bus replacement" and .row.id == '"$internal_id"' and .sameDelegate == true and .renderedRowCount == 1' \
+  'same-ID bus replacement did not update the existing Workbench delegate'
+jq -e '.live[0].expiryMs == 0' <<<"$(status)" >/dev/null || {
+  printf 'D-Bus zero timeout did not preserve sticky replacement: %s\n' "$(status)" >&2; exit 1;
+}
+sleep 0.15
+wait_for '(.live|length) == 1 and .live[0].id == '"$internal_id"' and (.sources|length) == 1 and .sources[0].sourceId == '"$first_source"' and ([.archive[]|select(.summary == "Bus replacement")]|length) == 0' \
+  'retired source close signal removed or archived its same-ID replacement'
+
+action_source="$(notify 'Bus integration client' 0 '' 'Action target' '' \
+  "['launch','Launch']" "{'urgency': <byte 1>, 'resident': <true>}" 0 | protocol_id)"
+wait_for '(.live|any(.summary == "Action target")) and (.live[]|select(.summary == "Action target")|.actions == [{"id":"launch","label":"Launch"}])' 'production action fields were not copied from the protocol object'
+action_internal="$(status | jq -r '.live[]|select(.summary == "Action target")|.id')"
+ipc invokeAction "$action_internal" launch >/dev/null
+for _ in {1..40}; do
+  grep -q "ActionInvoked.*$action_source.*launch" "$monitor_log" && break
+  sleep 0.05
+done
+grep -q "ActionInvoked.*$action_source.*launch" "$monitor_log" || {
+  printf 'production action route did not emit ActionInvoked for protocol ID %s; signals: %s\n' "$action_source" "$(cat "$monitor_log")" >&2
+  exit 1
+}
+wait_for '(.live|any(.summary == "Action target")) and (.sources|any(.sourceId == '"$action_source"'))' 'resident action invocation unexpectedly lost its source'
+close_protocol "$action_source"
+
+# DND is the exact ShellState projection consumed by the production store.
+ipc setDnd true >/dev/null
+normal_id="$(notify 'Bus integration client' 0 '' 'DND normal' '' '[]' "{'urgency': <byte 1>}" 0 | protocol_id)"
+wait_for '(.live|length) == 2 and .popups == 0' 'DND did not suppress normal bus popups'
+critical_id="$(notify 'Bus integration client' 0 '' 'DND critical' '' '[]' "{'urgency': <byte 2>}" 0 | protocol_id)"
+wait_for '(.live|length) == 3 and .popups == 1 and .live[0].urgency == "critical"' 'critical bus notification was not projected through DND'
+close_protocol "$normal_id"
+close_protocol "$critical_id"
+ipc setDnd false >/dev/null
+
+# CloseNotification must detach both adapters and archive once, even if the
+# peer repeats a close against the same protocol ID.
+close_protocol "$first_source"
+wait_renderer_for "$internal_id" '.rolloutClosing == true and .row.phase == "retained" and .row.inputEnabled == false and .row.summary == "Bus replacement" and .renderedRowCount == 1 and (.geometry|length) == 1' \
+  'actual CloseNotification did not withdraw input while retaining the painted row through retract'
+wait_renderer_for "$internal_id" '.rolloutVisible == false and .renderedRowCount == 0 and .geometry == [] and .rolloutRegions == [] and .rolloutBulges == [] and (.fullscreenMaskIds|length) == 0' \
+  'production rollout did not clear retained rows and host masks at its hidden endpoint'
+wait_for '(.live|map(.id)|index('"$internal_id"')) == null and (.sources|length) == 0 and (.links|length) == 0 and (.archive|map(select(.summary == "Bus replacement"))|length) == 1' \
+  'CloseNotification did not detach and archive the production source'
+wait_for '.persistedHistory|any(.summary == "Bus replacement")' 'archive was not projected to the isolated ShellState persistence adapter'
+close_protocol "$first_source"
+sleep 0.1
+closed_state="$(status)"
+jq -e '[.archive[]|select(.summary == "Bus replacement")]|length == 1' <<<"$closed_state" >/dev/null || {
+  printf 'repeated CloseNotification archived more than once: %s\n' "$closed_state" >&2; exit 1;
+}
+
+# Positive expiry is exercised through NotificationServer's actual timeout;
+# a zero timeout is the protocol's sticky sentinel. Explicit dismissal
+# also verifies that a stopped expiry timer cannot archive the same entry later.
+positive_source="$(notify 'Bus integration client' 0 '' 'Positive timeout' '' '[]' "{'urgency': <byte 1>}" 350 | protocol_id)"
+wait_for '.live|any(.summary == "Positive timeout" and .expiryMs > 0)' 'positive bus timeout was not armed'
+wait_for '([.live[]|select(.summary == "Positive timeout")]|length) == 0 and ([.archive[]|select(.summary == "Positive timeout")]|length) == 1' \
+  'positive bus timeout did not expire and archive exactly once'
+[[ -n "$positive_source" ]]
+
+default_source="$(notify 'Bus integration client' 0 '' 'Default timeout' '' '[]' "{'urgency': <byte 1>}" -1 | protocol_id)"
+wait_for '.live|any(.summary == "Default timeout" and .expiryMs == 5000)' 'D-Bus timeout -1 did not resolve to the normal urgency default'
+close_protocol "$default_source"
+
+cancel_source="$(notify 'Bus integration client' 0 '' 'Cancelled timeout' '' '[]' "{'urgency': <byte 1>}" 700 | protocol_id)"
+wait_for '.live|any(.summary == "Cancelled timeout")' 'cancellation notification was not admitted'
+cancel_internal="$(status | jq -r '.live[]|select(.summary == "Cancelled timeout")|.id')"
+ipc dismiss "$cancel_internal" >/dev/null
+wait_for '([.live[]|select(.summary == "Cancelled timeout")]|length) == 0 and ([.archive[]|select(.summary == "Cancelled timeout")]|length) == 1 and (.sources|length) == 0' \
+  'service dismissal did not close the protocol source and archive once'
+sleep 0.85
+cancelled_state="$(status)"
+jq -e '[.archive[]|select(.summary == "Cancelled timeout")]|length == 1' <<<"$cancelled_state" >/dev/null || {
+  printf 'cancelled expiry timer produced duplicate work: %s\n' "$cancelled_state" >&2; exit 1;
+}
+
+sticky_source="$(notify 'Bus integration client' 0 '' 'Sticky sentinel' '' '[]' "{'urgency': <byte 1>}" 0 | protocol_id)"
+wait_for '.live|any(.summary == "Sticky sentinel" and .expiryMs == 0)' 'D-Bus zero timeout did not map to the sticky sentinel'
+sleep 0.8
+wait_for '.live|any(.summary == "Sticky sentinel")' 'sticky sentinel expired unexpectedly'
+close_protocol "$sticky_source"
+
+passed=true
+printf 'Production bus-to-Workbench renderer integration passed: private DBus Notify/replacement/action/DND/CloseNotification/expiry/cancellation through the same NotificationStory, production NotificationStack/Rollout, and ShellBorder; stable IDs/delegate, exact-once archive, retained paint without input until hidden, then empty rows/masks; isolated history/DND state.\n'

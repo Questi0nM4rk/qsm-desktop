@@ -1,0 +1,22 @@
+{
+  "version": 1, "key": "network-connectivity-input",
+  "target": { "story": "action-menu-wifi" },
+  "steps": [
+    { "type": "reset" },
+    { "type": "control", "group": "internet", "option": "offline-sample" },
+    { "type": "expect", "observable": "internet-losses", "equals": 0 },
+    { "type": "control", "group": "internet", "option": "offline-sample" },
+    { "type": "expect", "observable": "internet-losses", "equals": 1 },
+    { "type": "control", "group": "internet", "option": "portal-sample" },
+    { "type": "expect", "observable": "internet-losses", "equals": 1 },
+    { "type": "control", "group": "internet", "option": "unknown-sample" },
+    { "type": "expect", "observable": "internet-recoveries", "equals": 0 },
+    { "type": "control", "group": "internet", "option": "online" },
+    { "type": "expect", "observable": "internet-recoveries", "equals": 1 },
+    { "type": "control", "group": "internet", "option": "online" },
+    { "type": "expect", "observable": "internet-recoveries", "equals": 1 },
+    { "type": "reset" },
+    { "type": "expect", "observable": "internet-losses", "equals": 0 },
+    { "type": "expect", "observable": "internet-recoveries", "equals": 0 }
+  ]
+}

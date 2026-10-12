@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "key": "notification-native-dismiss",
+  "target": { "story": "notification-layer" },
+  "steps": [
+    { "type": "reset" },
+    { "type": "action", "name": "publish-transfer" },
+    { "type": "await", "observable": "rollout-open", "equals": true },
+    { "type": "pointer", "target": "transfer-row", "event": "move" },
+    { "type": "await", "observable": "latest-paused", "equals": true },
+    { "type": "await", "observable": "transfer-expanded-settled", "equals": true },
+    { "type": "action", "name": "replace-transfer" },
+    { "type": "await", "observable": "replacement-kept-row", "equals": true },
+    { "type": "await", "observable": "transfer-expanded-settled", "equals": true },
+    { "type": "expect", "observable": "transfer-input-enabled", "equals": true },
+    { "type": "pointer", "target": "transfer-row", "event": "click", "button": "middle", "y": 0.1 },
+    { "type": "expectEvent", "event": "dismissed", "origin": "component", "payload": { "notificationId": 1 } },
+    { "type": "await", "observable": "live-count", "equals": 0 },
+    { "type": "expect", "observable": "archive-count", "equals": 1 },
+    { "type": "expect", "observable": "archive-summaries", "equals": ["Transfer complete"] },
+    { "type": "expect", "observable": "last-dismissed-id", "equals": 1 },
+    { "type": "await", "observable": "retained-row", "equals": true },
+    { "type": "expect", "observable": "retained-frozen", "equals": true },
+    { "type": "expect", "observable": "retained-height-matches", "equals": true },
+    { "type": "expect", "observable": "retained-content", "equals": "Transfer complete" },
+    { "type": "await", "observable": "rollout-visible", "equals": false },
+    { "type": "expect", "observable": "rollout-bulge-ids", "equals": [] },
+    { "type": "expect", "observable": "rollout-region-ids", "equals": [] },
+    { "type": "expect", "observable": "retained-row", "equals": false },
+    { "type": "expect", "observable": "row-geometry", "equals": [] }
+  ]
+}

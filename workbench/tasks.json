@@ -1,0 +1,5 @@
+{
+  "validate": { "operation": "validate", "label": "Check provider" },
+  "story-capture": { "operation": "story-capture", "label": "Capture isolated story" },
+  "flow": { "operation": "flow", "label": "Run isolated flow" }
+}

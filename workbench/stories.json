@@ -1,0 +1,132 @@
+{
+  "version": 1,
+  "stories": {
+    "network-popout": {
+      "component": "network-popout", "variant": "network", "viewport": [980, 760],
+      "title": "Network popout",
+      "description": "Production rail networking and shared service lifetime with isolated Wi-Fi: credential retry, disposal and confirm-off. No NetworkManager writes.",
+      "tags": ["desktop", "network", "keyboard"],
+      "source": "shell/modules/bar/NetworkPopoutContent.qml"
+    },
+    "notification-center": {
+      "component": "notification-center", "variant": "history", "viewport": [980, 680],
+      "title": "Notification center",
+      "description": "Production history tab with an in-memory production store: searchable live/archive records, individual archive removal and legacy records. No D-Bus or persistence writes.",
+      "tags": ["desktop", "notifications", "keyboard"],
+      "source": "shell/modules/panel/NotificationCenterTab.qml"
+    },
+    "panel-resources": {
+      "component": "panel-tabs", "variant": "resources", "viewport": [980, 680],
+      "title": "Panel resource handle",
+      "description": "CPU/RAM handle on the production panel rim, with isolated readings and missing-sensor states.",
+      "tags": ["desktop", "performance", "panel"],
+      "source": "shell/modules/panel/PanelHandle.qml"
+    },
+    "action-menu-brightness": {
+      "component": "action-menu", "variant": "brightness", "viewport": [980, 760],
+      "title": "Action menu / Brightness",
+      "description": "Production brightness editor and dim/restore with isolated backlight service. No hardware changes.",
+      "tags": ["desktop", "brightness", "keyboard"],
+      "source": "shell/modules/launcher/LauncherSurface.qml"
+    },
+    "action-menu-audio": {
+      "component": "action-menu",
+      "variant": "audio",
+      "viewport": [980, 760],
+      "title": "Action menu / Audio",
+      "description": "Production launcher with isolated audio: attached output Slider, repeated mute, Colemak-DH NEIO and slash-to-search. No live device changes.",
+      "tags": ["desktop", "audio", "keyboard"],
+      "source": "shell/modules/launcher/LauncherSurface.qml"
+    },
+    "action-menu-wifi": {
+      "component": "action-menu",
+      "variant": "network",
+      "viewport": [980, 760],
+      "title": "Action menu / Wi-Fi",
+      "description": "Production launcher with synthetic networks and an isolated network service: radio, rescan, connect, disconnect and the password editor attached to its own row. No live network changes.",
+      "tags": ["desktop", "network", "keyboard"],
+      "source": "shell/modules/launcher/LauncherSurface.qml"
+    },
+    "action-menu-bluetooth": {
+      "component": "action-menu",
+      "variant": "bluetooth",
+      "viewport": [980, 760],
+      "title": "Action menu / Bluetooth",
+      "description": "Production launcher with synthetic devices and an isolated Bluetooth service: adapter power, discovery, connect and disconnect with real pending and failed outcomes.",
+      "tags": ["desktop", "bluetooth", "keyboard"],
+      "source": "shell/modules/launcher/LauncherSurface.qml"
+    },
+    "action-menu-toggles": {
+      "component": "action-menu",
+      "variant": "toggles",
+      "viewport": [980, 760],
+      "title": "Action menu / Toggles",
+      "description": "Production launcher with isolated main-keyboard, Keep awake and Night light routes. Main keyboard exposes enabled, disabled, unavailable and failed changes without touching hardware.",
+      "tags": ["desktop", "toggles", "keyboard"],
+      "source": "shell/modules/launcher/LauncherSurface.qml"
+    },
+    "panel-tabs": {
+      "component": "panel-tabs",
+      "variant": "tabs",
+      "viewport": [980, 760],
+      "title": "Panel tab group",
+      "description": "Production top panel with its tab contents unloaded: Tab/Shift+Tab and arrows move the host-owned tab, stop at the visible ends, and Down enters the tab content.",
+      "tags": ["desktop", "panel", "keyboard"],
+      "source": "shell/modules/panel/PanelSurface.qml"
+    },
+    "rail-popouts": {
+      "component": "rail-popouts",
+      "variant": "actions",
+      "viewport": [
+        980,
+        680
+      ],
+      "title": "Rail Popouts",
+      "description": "Desktop rail rollouts with anchored and nested states.",
+      "tags": [
+        "desktop",
+        "rail",
+        "rollout"
+      ],
+      "source": "shell/modules/bar/BarPopouts.qml",
+      "tests": [
+        {
+          "label": "desktop smoke",
+          "path": "scripts/test-quickshell"
+        }
+      ]
+    },
+    "osd-layer": {
+      "component": "osd-layer",
+      "variant": "presentation",
+      "viewport": [
+        980,
+        680
+      ],
+      "title": "OSD Layer",
+      "description": "Production OSD with isolated preview services: shared frame expansion around stationary content, or its separate fullscreen DataCapsule presentation.",
+      "tags": [
+        "desktop",
+        "osd",
+        "presentation"
+      ],
+      "source": "workbench/OsdStory.qml"
+    },
+    "notification-layer": {
+      "component": "notification-layer",
+      "variant": "transfer",
+      "viewport": [
+        980,
+        680
+      ],
+      "title": "Notification Layer",
+      "description": "Transfer feedback through the production notification store, rollout and stack.",
+      "tags": [
+        "desktop",
+        "notifications",
+        "rollout"
+      ],
+      "source": "workbench/NotificationStory.qml"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "key": "action-menu-brightness-input",
+  "target": { "story": "action-menu-brightness" },
+  "steps": [
+    { "type": "reset" },
+    { "type": "action", "name": "open-brightness" },
+    { "type": "await", "observable": "active-level", "equals": "brightness-level" },
+    { "type": "key", "target": "level-editor", "key": "Home" },
+    { "type": "expect", "observable": "brightness-value", "equals": 0.01 },
+    { "type": "key", "target": "level-editor", "key": "End" },
+    { "type": "expect", "observable": "brightness-value", "equals": 1 },
+    { "type": "key", "target": "level-editor", "key": "Escape" },
+    { "type": "expect", "observable": "active-level", "equals": "" },
+    { "type": "key", "target": "menu", "key": "Up" },
+    { "type": "key", "target": "menu", "key": "Enter" },
+    { "type": "expect", "observable": "brightness-value", "equals": 0.01 },
+    { "type": "key", "target": "menu", "key": "Enter" },
+    { "type": "expect", "observable": "brightness-value", "equals": 1 },
+    { "type": "control", "group": "backlight", "option": "unavailable" },
+    { "type": "expect", "observable": "brightness-available", "equals": false }
+  ]
+}

@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+# The production launcher: run the shell under a supervisor.
+#
+# WHY (backlog "Own the crash UX"): the shell IS the desktop — a crash with no
+# restart is a dead session. Quickshell's built-in handler restarts, but it is
+# a foreign Qt dialog in a light palette, with no backoff and no report into
+# the shell's own notification bus. This wrapper owns the lifecycle instead:
+# QS_DISABLE_CRASH_HANDLER=1 suppresses the upstream dialog, non-zero exits
+# relaunch with a crash-loop cap, and the crash is reported as a NORMAL
+# notification once the shell is back (the shell owns the bus, so it can
+# announce its own resurrection).
+#
+# STOP PROTOCOL: every Quickshell shutdown aborts in PipeWire teardown
+# (upstream, recorded in docs/BACKLOG.md), so exit codes cannot tell a crash
+# from `qs kill`. An INTENTIONAL stop is therefore `qsm-run --stop`, which
+# drops a stopfile before killing; the supervisor sees it and stands down.
+# A bare `qs kill` against a supervised shell WILL be relaunched — that is
+# the supervisor doing its one job.
+set -u
+
+root="$(cd "$(dirname "$0")/.." && pwd)"
+runtime="${XDG_RUNTIME_DIR:-/tmp}"
+stopfile="$runtime/qsm-run.stop"
+lockfile="$runtime/qsm-run.lock"
+log="$runtime/qsm-run.log"
+
+if [ "${1:-}" = "--stop" ]; then
+  touch "$stopfile"
+  qs kill --path "$root/shell" >/dev/null 2>&1
+  # Let the supervisor observe the stopfile and reap only its own Quickshell
+  # child. The lock is held for the supervisor's lifetime, so this waits for
+  # its intentional exit instead of letting systemd race it with a signal.
+  for _ in $(seq 1 150); do
+    if flock -n "$lockfile" -c true; then
+      exit 0
+    fi
+    sleep 0.1
+  done
+  printf 'qsm-run supervisor did not stop within 15 seconds\n' >&2
+  exit 1
+fi
+
+# One supervisor, ever. Config reloads re-run the autostart; flock makes the
+# second invocation a no-op instead of a second relaunch loop.
+exec 9>"$lockfile"
+if ! flock -n 9; then
+  exit 0
+fi
+
+rm -f "$stopfile"
+
+# Crash-dir hygiene: the built-in handler left one dir per abort and nothing
+# prunes them (20 when this was written). Keep the newest 5.
+crashes="$HOME/.cache/quickshell/crashes"
+if [ -d "$crashes" ]; then
+  /usr/bin/ls -1t "$crashes" 2>/dev/null | tail -n +6 \
+    | while read -r stale; do rm -rf "${crashes:?}/$stale"; done
+fi
+
+export QS_DISABLE_CRASH_HANDLER=1
+export QS_NO_RELOAD_POPUP=1
+
+declare -a crash_times=()
+launches=0
+
+while :; do
+  launches=$((launches + 1))
+  printf '%s launch #%d\n' "$(date '+%F %T')" "$launches" >> "$log"
+  # Do not let qsm-spawned children inherit the supervisor lock: a surviving
+  # helper (for example hyprsunset) must never prevent a later shell restart.
+  qs --no-duplicate --path "$root/shell" 9>&- >> "$log" 2>&1
+  code=$?
+  printf '%s exited (%d)\n' "$(date '+%F %T')" "$code" >> "$log"
+
+  if [ -e "$stopfile" ]; then
+    printf '%s stopped by request\n' "$(date '+%F %T')" >> "$log"
+    exit 0
+  fi
+
+  # Crash-loop cap: 3 exits inside 60s means something is genuinely broken —
+  # stop churning and leave the corpse visible instead of hiding it behind
+  # an endless relaunch flicker.
+  now=$(date +%s)
+  crash_times+=("$now")
+  recent=0
+  for t in "${crash_times[@]}"; do
+    [ $((now - t)) -le 60 ] && recent=$((recent + 1))
+  done
+  if [ "$recent" -ge 3 ]; then
+    printf '%s crash loop (3 in 60s) — giving up\n' "$(date '+%F %T')" >> "$log"
+    exit 1
+  fi
+
+  sleep 1
+  # Report through the shell's OWN bus once the relaunch is answering. Done
+  # in the background so a hung relaunch cannot wedge the supervisor loop.
+  (
+    for _ in $(seq 1 30); do
+      if qs ipc --path "$root/shell" call qsm status >/dev/null 2>&1; then
+        newest="$(/usr/bin/ls -1t "$crashes" 2>/dev/null | head -1)"
+        notify-send --app-name=qsm 'Shell restarted after a crash' \
+          "exit $code${newest:+ — report: $crashes/$newest}" 2>/dev/null
+        break
+      fi
+      sleep 0.5
+    done
+  ) &
+done

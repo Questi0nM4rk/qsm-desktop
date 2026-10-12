@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+# Reclaim disk from caches, safely, and report what was actually freed.
+#
+# SAFETY IS THE WHOLE DESIGN HERE. This runs from a glyph in a hover popout
+# with no label, so it must never be able to break a running program:
+#
+#   * /tmp is NEVER touched by hand. It is a live tmpfs holding sockets, the
+#     compositor's runtime state and editor scratch files; `rm -rf /tmp/*`
+#     kills running applications, including this shell. The only /tmp sweep
+#     here is systemd-tmpfiles, which honours the age and in-use rules the
+#     system already declares.
+#   * ~/.cache is trimmed BY AGE, never wholesale. A file untouched for
+#     $AGE_DAYS days is not in use by definition; today's cache is left alone,
+#     so nothing an open program is mid-write on disappears underneath it.
+#   * Thumbnails are the one directory cleared outright — regenerating a
+#     thumbnail costs a redraw and nothing else.
+#
+# Prints one line: the bytes freed, as a plain integer. The caller turns that
+# into a human reading, because an irreversible action that reports nothing is
+# worse than no button at all.
+set -uo pipefail
+
+AGE_DAYS="${QSM_CACHE_AGE_DAYS:-30}"
+CACHE="${XDG_CACHE_HOME:-$HOME/.cache}"
+DRY=0
+[ "${1:-}" = "--dry-run" ] && DRY=1
+
+# Apparent size in bytes. `du -s` counts what the tree occupies; measuring the
+# same way before and after is what makes the difference meaningful.
+usage() { du -sb "$1" 2>/dev/null | cut -f1 || echo 0; }
+
+[ -d "$CACHE" ] || { echo 0; exit 0; }
+
+before="$(usage "$CACHE")"
+
+DERIVED="thumbnails mesa_shader_cache mesa_shader_cache_db radv_builtin_shaders nvidia qtshadercache-*"
+
+if [ "$DRY" = 1 ]; then
+  aged="$(find "$CACHE" -type f -atime "+$AGE_DAYS" -printf '%s\n' 2>/dev/null \
+    | awk '{total += $1} END {print total + 0}')"
+  derived_bytes=0
+  for derived in $DERIVED; do
+    for dir in "$CACHE"/$derived; do
+      [ -d "$dir" ] || continue
+      derived_bytes=$(( derived_bytes + $(usage "$dir") ))
+    done
+  done
+  printf 'dry-run: aged=%s bytes, derived=%s bytes, total=%s bytes\n' \
+    "$aged" "$derived_bytes" "$(( aged + derived_bytes ))"
+  exit 0
+fi
+
+# 1. Age-trimmed cache files. -atime, not -mtime: a file written long ago but
+#    read yesterday is a cache doing its job.
+find "$CACHE" -type f -atime "+$AGE_DAYS" -delete 2>/dev/null
+
+# 2. PURE DERIVED DATA, cleared in full regardless of age. These hold nothing
+#    that cannot be recomputed from something still on disk: thumbnails redraw,
+#    and a shader cache repopulates on the next frame that needs it (the first
+#    launch after this is marginally slower, and that is the entire cost).
+#    Age-trimming these is pointless — a shader cache is hot by definition, so
+#    -atime never matches and the biggest safely-reclaimable directories on the
+#    disk would be skipped.
+for derived in $DERIVED; do
+  for dir in "$CACHE"/$derived; do
+    [ -d "$dir" ] && find "$dir" -type f -delete 2>/dev/null
+  done
+done
+
+# 3. Directories left empty by the two passes above. Depth-first so a nest of
+#    empties collapses in one go; $CACHE itself is preserved.
+find "$CACHE" -mindepth 1 -type d -empty -delete 2>/dev/null
+
+# 4. The only /tmp involvement: the system's own declared rules, user scope.
+#    Usually reclaims little without root, which is why it is last and its
+#    failure is ignored rather than reported.
+command -v systemd-tmpfiles >/dev/null 2>&1 \
+  && systemd-tmpfiles --clean >/dev/null 2>&1
+
+after="$(usage "$CACHE")"
+freed=$(( before - after ))
+[ "$freed" -lt 0 ] && freed=0
+echo "$freed"

@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "key": "action-menu-levels-input",
+  "target": { "story": "action-menu-audio" },
+  "steps": [
+    { "type": "reset" },
+    { "type": "action", "name": "open-microphone" },
+    { "type": "await", "observable": "active-level", "equals": "microphone-volume" },
+    { "type": "key", "target": "level-editor", "key": "End" },
+    { "type": "expect", "observable": "microphone-value", "equals": 1 },
+    { "type": "expect", "observable": "output-value", "equals": 0.62 },
+    { "type": "key", "target": "level-editor", "key": "Home" },
+    { "type": "expect", "observable": "microphone-value", "equals": 0 },
+    { "type": "action", "name": "focus-search" },
+    { "type": "expect", "observable": "active-level", "equals": "" },
+    { "type": "write", "target": "search", "text": "keyboard" },
+    { "type": "expect", "observable": "query", "equals": ">action keyboard" },
+    { "type": "expect", "observable": "input-region", "equals": "search" },
+    { "type": "await", "observable": "search-focused", "equals": true },
+    { "type": "control", "group": "microphone", "option": "unavailable" },
+    { "type": "expect", "observable": "microphone-available", "equals": false }
+  ]
+}

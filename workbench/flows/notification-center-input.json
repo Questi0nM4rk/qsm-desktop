@@ -1,0 +1,27 @@
+{
+  "version": 1, "key": "notification-center-input",
+  "target": { "story": "notification-center" },
+  "steps": [
+    { "type": "reset" },
+    { "type": "await", "observable": "visible-count", "equals": 3 },
+    { "type": "expect", "observable": "live-count", "equals": 1 },
+    { "type": "expect", "observable": "first-source-summary", "equals": "Saved message" },
+    { "type": "write", "target": "search", "text": "Mail" },
+    { "type": "await", "observable": "visible-count", "equals": 1 },
+    { "type": "expect", "observable": "selected-summary", "equals": "Saved message" },
+    { "type": "key", "target": "search", "key": "Delete" },
+    { "type": "expect", "observable": "archive-count", "equals": 1 },
+    { "type": "expect", "observable": "live-count", "equals": 1 },
+    { "type": "await", "observable": "visible-count", "equals": 0 },
+    { "type": "control", "group": "history", "option": "legacy-archive" },
+    { "type": "await", "observable": "selected-summary", "equals": "Imported message" },
+    { "type": "key", "target": "search", "key": "Delete" },
+    { "type": "expect", "observable": "archive-count", "equals": 0 },
+    { "type": "await", "observable": "visible-count", "equals": 0 },
+    { "type": "reset" },
+    { "type": "await", "observable": "selected-summary", "equals": "Build finished" },
+    { "type": "key", "target": "search", "key": "Delete" },
+    { "type": "expect", "observable": "live-count", "equals": 0 },
+    { "type": "expect", "observable": "archive-count", "equals": 3 }
+  ]
+}

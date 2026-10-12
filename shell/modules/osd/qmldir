@@ -1,0 +1,5 @@
+module qs.modules.osd
+OsdChannel 1.0 OsdChannel.qml
+OsdContent 1.0 OsdContent.qml
+OsdHandle 1.0 OsdHandle.qml
+OsdSurface 1.0 OsdSurface.qml

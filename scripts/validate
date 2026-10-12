@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+# Core files that must exist for the shell to boot and the spec to be served.
+required=(
+  "spec/00-overview.md"
+  "spec/13-implementation.md"
+  "shell/shell.qml"
+  "shell/theme/Theme.qml"
+  "shell/theme/Motion.qml"
+  "shell/screen/EdgeScene.qml"
+  "shell/screen/WallpaperWindow.qml"
+  "shell/screen/FrameExclusions.qml"
+  "scripts/ui-guard"
+  "scripts/ui-guard.baseline"
+  "shell/preview/QsmShellImport.qml"
+  "shell/QsmShell"
+  "vendor/qsm-shell"
+  "vendor/qsm-shell/qml/QsmShell/shaders/edgemelt.frag"
+  "vendor/qsm-shell/qml/QsmShell/shaders/edgemelt.frag.qsb"
+  "vendor/qsm-shell/scripts/build-shaders"
+  "shell/scripts/awake"
+  "shell/assets/wallpapers/deep-night.png"
+  "shell/assets/wallpapers/mountain-dusk.png"
+)
+for path in "${required[@]}"; do
+  test -e "$root/$path" || { printf 'missing required file: %s\n' "$path" >&2; exit 1; }
+done
+
+bash -n "$root/shell/scripts/awake"
+bash -n "$root/scripts/check-theme-contract"
+
+bash -n "$root/scripts/test-frame-reservation"
+bash -n "$root/vendor/qsm-shell/scripts/build-shaders"
+bash -n "$root/scripts/qml-lint"
+bash -n "$root/scripts/ui-guard"
+
+# Type-aware QML lint against a committed baseline (new findings fail; the
+# baseline holds qmllint's introspection blind spots and the unqualified-access
+# debt). Static — safe to run beside a live shell.
+"$root/scripts/qml-lint"
+
+QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software QT_FORCE_STDERR_LOGGING=1 \
+  /usr/lib/qt6/bin/qml -I "$root/vendor/qsm-shell/qml" \
+  "$root/shell/preview/QsmShellImport.qml"
+
+command -v qs >/dev/null || { printf 'missing required command: qs (quickshell)\n' >&2; exit 1; }
+qs --version | grep -q 'Quickshell 0\.3\.' || {
+  printf 'unsupported Quickshell version; expected 0.3.x\n' >&2
+  exit 1
+}
+
+# The IPC smoke suite runs ONCE, and here rather than earlier: it needs `qs`,
+# so it belongs after the guards that prove `qs` exists at the right version.
+# It used to run twice -- once above those guards and once here -- which
+# doubled the slowest step in the gate for nothing. Nothing in either call site
+# explained the second one; it was almost certainly added with the version
+# guard by someone who did not notice the suite already ran.
+"$root/scripts/test-quickshell"
+
+# Shader freshness: committed .qsb must match what build-shaders regenerates
+# from the committed .frag (deterministic output; catches source edits that
+# landed without a rebuild).
+#
+# The pair lives in the library now, and the library gates it too. This check
+# stays because THIS repo is what loads the .qsb at runtime: a vendor checkout
+# with a stale binary renders the wrong silhouette here, and the library's own
+# gate does not run when only this repo is being committed.
+shaders_dir="$root/vendor/qsm-shell/qml/QsmShell/shaders"
+before="$(sha256sum "$shaders_dir"/*.qsb 2>/dev/null)"
+"$root/vendor/qsm-shell/scripts/build-shaders"
+after="$(sha256sum "$shaders_dir"/*.qsb 2>/dev/null)"
+if [[ "$before" != "$after" ]]; then
+  printf 'shader .qsb drift: run scripts/build-shaders and commit the result\n' >&2
+  exit 1
+fi
+
+printf 'qsm-shell validation passed\n'

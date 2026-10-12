@@ -1,0 +1,21 @@
+{
+    "name": "Mountain Dusk",
+    "wallpaper": "assets/wallpapers/mountain-dusk.png",
+    "tokens": {
+        "background": "#202833",
+        "backgroundMid": "#2B3948",
+        "backgroundEnd": "#34495A",
+        "surface": "#2A3542",
+        "surfaceRaised": "#344252",
+        "surfaceHover": "#405065",
+        "text": "#E6EDF4",
+        "textMuted": "#AEBBC7",
+        "accent": "#A8C7D8",
+        "secondary": "#C1B6D8",
+        "success": "#9FCBC3",
+        "warning": "#D8B9A5",
+        "danger": "#D99098",
+        "outline": "#536476",
+        "bandFill": "#1B1439"
+    }
+}

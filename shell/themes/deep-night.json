@@ -1,0 +1,21 @@
+{
+    "name": "Deep Night",
+    "wallpaper": "assets/wallpapers/deep-night.png",
+    "tokens": {
+        "background": "#1C0E27",
+        "backgroundMid": "#251733",
+        "backgroundEnd": "#2E203E",
+        "surface": "#21142B",
+        "surfaceRaised": "#2D1F3A",
+        "surfaceHover": "#382A48",
+        "text": "#F6F1F9",
+        "textMuted": "#B6A8C2",
+        "accent": "#C5A5E9",
+        "secondary": "#E1B7E1",
+        "success": "#91D6C2",
+        "warning": "#E8C58A",
+        "danger": "#FF8B94",
+        "outline": "#4E3F62",
+        "bandFill": "#15081E"
+    }
+}

@@ -1,0 +1,4 @@
+module qs.modules.launcher
+LauncherSurface 1.0 LauncherSurface.qml
+ThemeCard 1.0 ThemeCard.qml
+ThemeCarousel 1.0 ThemeCarousel.qml

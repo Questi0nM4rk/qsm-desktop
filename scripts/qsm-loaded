@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+# Did the live shell's LAST config load succeed?
+#
+# WHY this exists. `qml-lint` is static and passes things that fail at load:
+# duplicate signal handlers on one signal, and assignments to properties that no
+# longer exist. And the shell log is append-only across every hot reload, so
+# `tail` happily shows a "Configuration Loaded" from three edits ago while the
+# newest reload sat failed. That combination cost real time: lint green plus a
+# stale success line read as "it works" while the shell was running the last
+# good version of the code.
+#
+# So: find the LAST load verdict, not any verdict, and on failure print the
+# errors that belong to it.
+#
+# usage: scripts/qsm-loaded [--quiet]
+#   exit 0 = the running shell loaded the current code
+#   exit 1 = the last reload FAILED (the shell is running older code)
+#   exit 2 = no live instance to ask
+set -euo pipefail
+
+quiet=0
+[[ "${1:-}" == "--quiet" ]] && quiet=1
+
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+# A LIVE instance first. `qs log` happily serves the persisted log of a shell
+# that is no longer running, so without this the tool reported "OK" three times
+# in a row while nothing was up at all -- a false green from the very tool built
+# to stop false greens.
+if ! qs list --all 2>/dev/null | grep -q 'Config path: .*/shell/shell\.qml'; then
+  (( quiet )) || printf 'qsm-loaded: no live instance (start it with scripts/qsm-run)\n' >&2
+  exit 2
+fi
+
+log="$(qs log --path "$root/shell" 2>/dev/null || true)"
+if [[ -z "$log" ]]; then
+  (( quiet )) || printf 'qsm-loaded: no log yet\n' >&2
+  exit 2
+fi
+
+# Strip the ANSI colouring the log carries so the greps below are honest.
+plain="$(printf '%s\n' "$log" | sed -E 's/\x1b\[[0-9;]*m//g')"
+
+verdict="$(printf '%s\n' "$plain" \
+  | grep -nE 'Configuration Loaded|Failed to load configuration' \
+  | tail -1)"
+
+if [[ -z "$verdict" ]]; then
+  (( quiet )) || printf 'qsm-loaded: log carries no load verdict yet\n' >&2
+  exit 2
+fi
+
+line="${verdict%%:*}"
+
+if [[ "$verdict" == *"Configuration Loaded"* ]]; then
+  (( quiet )) || printf 'qsm-loaded: OK (loaded at log line %s)\n' "$line"
+  exit 0
+fi
+
+# Failed. The causes are the ERROR lines immediately before the verdict, and
+# they are the whole point of running this.
+(( quiet )) || {
+  printf 'qsm-loaded: FAILED — the shell is running OLDER code than the tree\n' >&2
+  printf '%s\n' "$plain" | sed -n "$(( line > 12 ? line - 12 : 1 )),${line}p" \
+    | grep -E 'ERROR|caused by' >&2 || true
+}
+exit 1

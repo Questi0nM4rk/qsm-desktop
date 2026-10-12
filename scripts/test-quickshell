@@ -1,0 +1,676 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+config="$root/shell"
+state_dir="$(mktemp -d "${XDG_RUNTIME_DIR:-/tmp}/qsm-state.XXXXXX")"
+log="$(mktemp "${XDG_RUNTIME_DIR:-/tmp}/qsm-smoke.XXXXXX.log")"
+pid=""
+fullscreen_toggled=false
+fullscreen_dispatch='hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" })'
+
+suite_passed=false
+
+cleanup() {
+  if [[ "$fullscreen_toggled" == true ]]; then
+    hyprctl dispatch "$fullscreen_dispatch" >/dev/null 2>&1 || true
+  fi
+  qs kill --path "$config" >/dev/null 2>&1 || true
+  if [[ -n "$pid" ]]; then wait "$pid" 2>/dev/null || true; fi
+  rm -rf "$state_dir"
+  # Keep the quickshell log only for failed runs — green runs were leaking
+  # one log file per invocation into XDG_RUNTIME_DIR.
+  if [[ "$suite_passed" == true ]]; then rm -f "$log"; fi
+}
+trap cleanup EXIT
+
+start_shell() {
+  # A fullscreen client hides the band/rail by design (spec 09), which poisons
+  # every mask-width assertion below. This used to REFUSE and tell the owner to
+  # unfullscreen -- but the fullscreen window is routinely his session terminal,
+  # so refusing meant the suite simply never ran (owner 2026-08-24: "the tests
+  # should unfullscreen by default, i can fullscreen what i need after again").
+  #
+  # So clear them instead. The fullscreen STATE is deliberately not restored,
+  # per the owner -- putting a window back to fullscreen behind his back is the
+  # more surprising act.
+  #
+  # Each window is addressed DIRECTLY. The previous version focused the window,
+  # toggled the state of whatever was then active, and focused back, which was
+  # two ways to be wrong at once: `hyprctl dispatch fullscreenstate 0 0` is the
+  # pre-Lua syntax and this config's Lua dispatcher rejects it outright (exit
+  # 7, one line of stderr, and `set -e` took the suite down before it ran a
+  # single assertion), and focusing across workspaces does not reliably put the
+  # intended window under the toggle anyway. Naming the window needs neither.
+  local fs_addrs
+  fs_addrs="$(hyprctl clients -j | jq -r '.[] | select(.fullscreen != 0) | .address')"
+  if [[ -n "$fs_addrs" ]]; then
+    while read -r addr; do
+      [[ -z "$addr" ]] && continue
+      printf 'unfullscreening %s for the suite\n' "$addr" >&2
+      hyprctl dispatch "hl.dsp.window.fullscreen({ window = \"address:$addr\", mode = \"fullscreen\", action = \"unset\" })" >/dev/null 2>&1 || true
+      hyprctl dispatch "hl.dsp.window.fullscreen({ window = \"address:$addr\", mode = \"maximized\", action = \"unset\" })" >/dev/null 2>&1 || true
+    done <<< "$fs_addrs"
+    # Verify, because a compositor that refused leaves the assertions poisoned
+    # and a cryptic mid-suite failure is exactly what the old refusal avoided.
+    if [[ "$(hyprctl clients -j | jq '[.[] | select(.fullscreen != 0)] | length')" != 0 ]]; then
+      printf 'could not clear every fullscreen client; the mask assertions would be poisoned\n' >&2
+      trap - EXIT
+      rm -rf "$state_dir"
+      exit 1
+    fi
+  fi
+
+  # A live qsm instance shares this config path and would both poison the
+  # assertions (non-zero counters) and be KILLED by our cleanup. Refuse
+  # loudly instead of silently murdering the user's session.
+  if qs ipc --path "$config" show 2>/dev/null | grep -q '^target qsm$'; then
+    printf 'a live qsm instance is already running for this config; stop it first: qs kill --path %s\n' "$config" >&2
+    trap - EXIT # do NOT let cleanup kill the instance we refused to touch
+    rm -rf "$state_dir"
+    exit 1
+  fi
+
+  XDG_STATE_HOME="$state_dir" \
+    qs --no-duplicate --path "$config" >"$log" 2>&1 &
+  pid=$!
+
+  for _ in {1..30}; do
+    if qs ipc --path "$config" show 2>/dev/null | grep -q '^target qsm$'; then
+      return
+    fi
+    if ! kill -0 "$pid" 2>/dev/null; then
+      printf 'Quickshell exited during startup; log: %s\n' "$log" >&2
+      exit 1
+    fi
+    sleep 0.1
+  done
+
+  printf 'qsm IPC target unavailable; log: %s\n' "$log" >&2
+  exit 1
+}
+
+stop_shell() {
+  qs kill --path "$config" >/dev/null
+  wait "$pid" 2>/dev/null || true
+  pid=""
+}
+
+# Poll a status jq expression to true. Hit rects join the mask only
+# NEAR-SETTLED (09-input law), so any assertion after a reveal must wait
+# out the 250/500ms tier instead of reading immediately.
+wait_status() {
+  local expr="$1" msg="$2" status=""
+  for _ in {1..40}; do
+    status="$(qs ipc --path "$config" call qsm status)"
+    if jq -e "$expr" <<<"$status" >/dev/null; then
+      return 0
+    fi
+    sleep 0.1
+  done
+  printf '%s; last status: %s; log: %s\n' "$msg" "$status" "$log" >&2
+  exit 1
+}
+
+start_shell
+
+# Single-scene architecture (adopt-single-scene-rendering): the legacy
+# per-window path is gone entirely, so no qsm-bar / qsm-osd / qsm-notify-* /
+# qsm-launcher namespace can ever exist. Everything the shell PAINTS lives on
+# qsm-edge-scene, qsm-wallpaper, or qsm-session-backdrop (08's sanctioned
+# blur surface). The qsm-frame-*-exclusion surfaces are the one other kind
+# allowed: 1x1, masked, invisible — they exist only to hold the frame's
+# exclusive zone off the tiling area, and they paint nothing.
+qsm_namespaces="$(hyprctl layers -j | jq -r '[.[] | .levels[][] | .namespace] | unique | .[]' | grep '^qsm-' || true)"
+unexpected_namespaces="$(grep -vE '^(qsm-edge-scene|qsm-wallpaper|qsm-session-backdrop|qsm-frame-(top|bottom|left|right)-exclusion)$' <<<"$qsm_namespaces" || true)"
+if [[ -n "$unexpected_namespaces" ]]; then
+  printf 'unexpected qsm layer namespace present:\n%s\n' "$unexpected_namespaces" >&2
+  exit 1
+fi
+
+qs ipc --path "$config" call qsm toggle launcher >/dev/null
+qs ipc --path "$config" call qsm status | grep -q '"modal":"launcher"'
+qs ipc --path "$config" call qsm toggle launcher >/dev/null
+qs ipc --path "$config" call qsm status | grep -q '"modal":"none"'
+# Super+A seam: exercise the same ShellState launcher seed pathway as the
+# global shortcut. LauncherSurface consumes the seed synchronously when it
+# opens, so IPC status must observe the consumed state rather than a stale one.
+qs ipc --path "$config" call qsm close >/dev/null
+qs ipc --path "$config" call qsm quickControlsTest | grep -q '^true$'
+qs ipc --path "$config" call qsm status | jq -e '.modal == "launcher" and .launcherSeed == ""' >/dev/null
+qs ipc --path "$config" call qsm quickControlsTest | grep -q '^true$'
+qs ipc --path "$config" call qsm status | jq -e '.modal == "none"' >/dev/null
+qs ipc --path "$config" call qsm quickControlsTest | grep -q '^true$'
+qs ipc --path "$config" call qsm status | jq -e '.launcherResultLabels[0] != "Panel tabs"' >/dev/null
+qs ipc --path "$config" call qsm commandCentreEnterControlTest panel | grep -q '^true$'
+qs ipc --path "$config" call qsm status | jq -e '.launcherDetail == "panel"' >/dev/null
+qs ipc --path "$config" call qsm commandCentreBackTest | grep -q '^true$'
+qs ipc --path "$config" call qsm status | jq -e '.launcherDetail == "" and .launcherQuery == ">action "' >/dev/null
+awake_before="$(qs ipc --path "$config" call qsm status | jq -r '.awake')"
+qs ipc --path "$config" call qsm commandCentreActivateControlTest awake | grep -q '^true$'
+wait_status ".launcherDetail == \"\" and .awake != $awake_before" 'awake control did not enable'
+qs ipc --path "$config" call qsm commandCentreActivateControlTest awake | grep -q '^true$'
+wait_status ".awake == $awake_before" 'awake control did not restore its initial state'
+qs ipc --path "$config" call qsm status | jq -e '.launcherDetail == "" and .launcherCursor >= 0' >/dev/null
+qs ipc --path "$config" call qsm commandCentreEnterControlTest panel | grep -q '^true$'
+qs ipc --path "$config" call qsm commandCentreSetQueryTest ">action notif" | grep -q '^true$'
+wait_status '.launcherResultLabels == ["Notifications"]' 'panel detail search did not filter its results'
+qs ipc --path "$config" call qsm commandCentreActivateDetailTest notifications | grep -q '^true$'
+qs ipc --path "$config" call qsm status | jq -e '.modal == "panel" and .panelTab == "notifications"' >/dev/null
+qs ipc --path "$config" call qsm close >/dev/null
+# Parent restoration is exact, including the selected command-centre control;
+# back also clears a pending destructive confirmation.
+qs ipc --path "$config" call qsm quickControlsTest | grep -q '^true$'
+parent_cursor="$(qs ipc --path "$config" call qsm status | jq -r '.launcherResultLabels | index("Clean caches")')"
+qs ipc --path "$config" call qsm commandCentreEnterControlTest cache | grep -q '^true$'
+qs ipc --path "$config" call qsm commandCentreActivateDetailTest cache | grep -q '^true$'
+qs ipc --path "$config" call qsm status | jq -e '.launcherConfirm == "cache"' >/dev/null
+qs ipc --path "$config" call qsm commandCentreBackTest | grep -q '^true$'
+wait_status ".launcherDetail == \"\" and .launcherConfirm == \"\" and .launcherCursor == $parent_cursor and .launcherRestoredParentActionId == \"cache\" and .launcherQuery == \">action \"" 'command-centre parent selection did not restore'
+qs ipc --path "$config" call qsm commandCentreEnterControlTest network | grep -q '^true$'
+qs ipc --path "$config" call qsm status | jq -e '(.launcherResultLabels | index("Refresh network status")) != null and (.launcherResultLabels | index("Network settings")) != null' >/dev/null
+qs ipc --path "$config" call qsm commandCentreActivateDetailTest network-refresh | grep -q '^true$'
+qs ipc --path "$config" call qsm commandCentreBackTest | grep -q '^true$'
+qs ipc --path "$config" call qsm commandCentreEnterControlTest bluetooth | grep -q '^true$'
+qs ipc --path "$config" call qsm status | jq -e '(.launcherResultLabels | index("Bluetooth settings")) != null and (.launcherResultLabels | index("Start discovery")) != null' >/dev/null
+qs ipc --path "$config" call qsm commandCentreBackTest | grep -q '^true$'
+qs ipc --path "$config" call qsm close >/dev/null
+# First-enter safety: these rows arm confirmation without invoking their
+# effects. Each branch is conditional on the live capability being present.
+qs ipc --path "$config" call qsm quickControlsTest | grep -q '^true$'
+qs ipc --path "$config" call qsm commandCentreEnterControlTest colorpick | grep -q '^true$'
+pick_before="$(qs ipc --path "$config" call qsm status)"
+qs ipc --path "$config" call qsm commandCentreActivateDetailTest colorpick | grep -q '^true$'
+qs ipc --path "$config" call qsm status | jq -e --arg busy "$(jq -r '.pickBusy' <<<"$pick_before")" --arg last "$(jq -r '.pickLast' <<<"$pick_before")" --argjson history "$(jq -r '.pickHistory' <<<"$pick_before")" '.launcherConfirm == "colorpick" and (.pickBusy|tostring) == $busy and .pickLast == $last and .pickHistory == $history' >/dev/null
+qs ipc --path "$config" call qsm commandCentreBackTest | grep -q '^true$'
+
+qs ipc --path "$config" call qsm commandCentreEnterControlTest network | grep -q '^true$'
+network_before="$(qs ipc --path "$config" call qsm status)"
+if jq -e '.wifiEnabled == true' <<<"$network_before" >/dev/null; then
+  qs ipc --path "$config" call qsm commandCentreActivateDetailTest wifi-off | grep -q '^true$'
+  qs ipc --path "$config" call qsm status | jq -e --argjson wifi "$(jq -r '.wifiEnabled' <<<"$network_before")" '.launcherConfirm == "wifi-off" and .wifiEnabled == $wifi' >/dev/null
+fi
+if jq -e '.vpnAvailable == true and .vpnActive == true' <<<"$network_before" >/dev/null; then
+  qs ipc --path "$config" call qsm commandCentreActivateDetailTest vpn | grep -q '^true$'
+  qs ipc --path "$config" call qsm status | jq -e --argjson vpn "$(jq -r '.vpnActive' <<<"$network_before")" '.launcherConfirm == "vpn-off" and .vpnActive == $vpn' >/dev/null
+fi
+qs ipc --path "$config" call qsm commandCentreBackTest | grep -q '^true$'
+
+qs ipc --path "$config" call qsm commandCentreEnterControlTest sound | grep -q '^true$'
+sound_status="$(qs ipc --path "$config" call qsm status)"
+qs ipc --path "$config" call qsm status | jq -e '(.launcherResultLabels | index("Mute output") != null or index("Unmute output") != null) and (.launcherResultLabels | index("Mute microphone") != null or index("Unmute microphone") != null) and (.launcherResultLabels | index("Decrease output volume")) == null and (.launcherResultLabels | index("Increase microphone level")) == null and (.launcherResultLabels | index("Zen")) == null' >/dev/null
+if [[ "$(jq '.launcherResultLabels | length' <<<"$sound_status")" -gt 7 ]]; then
+  qs ipc --path "$config" call qsm commandCentreDeviceInfoTest device 0 \
+    | jq -e '.label != "" and .hasData == true' >/dev/null
+fi
+qs ipc --path "$config" call qsm commandCentreBackTest | grep -q '^true$'
+
+qs ipc --path "$config" call qsm status | jq -e '(.launcherResultLabels | index("Brightness")) != null and (.launcherResultLabels | index("Dim display")) == null and (.launcherResultLabels | index("Restore brightness")) == null' >/dev/null
+
+qs ipc --path "$config" call qsm commandCentreEnterControlTest bluetooth | grep -q '^true$'
+bluetooth_status="$(qs ipc --path "$config" call qsm status)"
+if [[ "$(jq '.launcherResultLabels | length' <<<"$bluetooth_status")" -gt 3 ]]; then
+  qs ipc --path "$config" call qsm commandCentreDeviceInfoTest bluetooth-device 0 \
+    | jq -e '.label != "" and .hasData == true' >/dev/null
+  qs ipc --path "$config" call qsm commandCentreActivateConfirmPrefixTest forget- | grep -q '^true$'
+  qs ipc --path "$config" call qsm status | jq -e '.launcherConfirm | startswith("forget-")' >/dev/null
+fi
+qs ipc --path "$config" call qsm commandCentreBackTest | grep -q '^true$'
+qs ipc --path "$config" call qsm close >/dev/null
+# Revised command-centre coverage: settings delegates and live level controls
+# are keyboard-reachable from the same nested detail path. Destructive actions
+# must visibly arm before their service is called.
+qs ipc --path "$config" call qsm quickControlsTest | grep -q '^true$'
+qs ipc --path "$config" call qsm commandCentreEnterControlTest sound | grep -q '^true$'
+qs ipc --path "$config" call qsm commandCentreActivateDetailTest output-mute | grep -q '^true$'
+qs ipc --path "$config" call qsm commandCentreActivateDetailTest output-mute | grep -q '^true$'
+qs ipc --path "$config" call qsm commandCentreBackTest | grep -q '^true$'
+qs ipc --path "$config" call qsm commandCentreEnterControlTest cache | grep -q '^true$'
+qs ipc --path "$config" call qsm commandCentreActivateDetailTest cache | grep -q '^true$'
+qs ipc --path "$config" call qsm status | jq -e '.launcherConfirm == "cache"' >/dev/null
+qs ipc --path "$config" call qsm commandCentreActivateDetailTest cache | grep -q '^true$'
+qs ipc --path "$config" call qsm commandCentreBackTest | grep -q '^true$'
+qs ipc --path "$config" call qsm close >/dev/null
+# The accelerator must also take over an already-active modal before publishing
+# its seed; otherwise LauncherSurface sees the seed while the old modal is live.
+qs ipc --path "$config" call qsm toggle panel >/dev/null
+qs ipc --path "$config" call qsm status | grep -q '"modal":"panel"'
+qs ipc --path "$config" call qsm quickControlsTest | grep -q '^true$'
+qs ipc --path "$config" call qsm status | jq -e '.modal == "launcher" and .launcherSeed == ""' >/dev/null
+qs ipc --path "$config" call qsm close >/dev/null
+# Super+A takes over every keyboard modal, clears the old modal, and seeds the
+# launcher before it is observed by the new surface.
+for modal in session clipboard cheatsheet; do
+  qs ipc --path "$config" call qsm toggle "$modal" | grep -q '^true$'
+  qs ipc --path "$config" call qsm status | jq -e --arg modal "$modal" '.modal == $modal' >/dev/null
+  qs ipc --path "$config" call qsm quickControlsTest | grep -q '^true$'
+qs ipc --path "$config" call qsm status | jq -e '.modal == "launcher" and .launcherSeed == ""' >/dev/null
+  qs ipc --path "$config" call qsm close >/dev/null
+done
+# Panel tabs are IPC toggle aliases (06): a tab name opens the panel on
+# that tab and takes over from the launcher; another tab just switches.
+qs ipc --path "$config" call qsm toggle notifications | grep -q '^true$'
+qs ipc --path "$config" call qsm status | grep -q '"modal":"panel"'
+qs ipc --path "$config" call qsm toggle dashboard | grep -q '^true$'
+qs ipc --path "$config" call qsm status | grep -q '"modal":"panel"'
+# Panel tabs answer the keyboard (06 RATIFIED 2026-08-25): the seam drives
+# the same stepTab the Left/Right keys call — forward, back, and clamped.
+qs ipc --path "$config" call qsm panelTabStepTest 1 | grep -q '^true$'
+qs ipc --path "$config" call qsm status | grep -q '"panelTab":"media"'
+qs ipc --path "$config" call qsm panelTabStepTest -1 | grep -q '^true$'
+qs ipc --path "$config" call qsm status | grep -q '"panelTab":"dashboard"'
+qs ipc --path "$config" call qsm panelTabStepTest -1 | grep -q '^true$'
+qs ipc --path "$config" call qsm status | grep -q '"panelTab":"dashboard"'
+qs ipc --path "$config" call qsm close >/dev/null
+qs ipc --path "$config" call qsm status | grep -q '"modal":"none"'
+qs ipc --path "$config" call qsm themeToggle | grep -q '^false$'
+qs ipc --path "$config" call qsm status | grep -Eq '"screenCount":[1-9][0-9]*'
+qs ipc --path "$config" call qsm status | grep -Eq '"workspaceCount":[1-9][0-9]*'
+qs ipc --path "$config" call qsm status | grep -Eq '"applicationCount":[1-9][0-9]*'
+# Updates cell (owner 2026-08-25, HyDE parity): the count field exists and is
+# a number (-1 unknown / 0 none / N pending). The VALUE is machine state, not
+# an assertion.
+qs ipc --path "$config" call qsm status | grep -Eq '"updates":-?[0-9]+'
+qs ipc --path "$config" call qsm osd output 0.42 false >/dev/null
+qs ipc --path "$config" call qsm status | grep -q '"osdKind":"output"'
+qs ipc --path "$config" call qsm status | grep -q '"osdVisible":true'
+# Activation (13 phase 9): a bare environment brings up the real desktop —
+# scene mapped, preview sheet OFF. The trial env flags are gone, so the proof
+# is the scene's own geometry, not a flag echo.
+qs ipc --path "$config" call qsm status | grep -q '"preview":false'
+qs ipc --path "$config" call qsm status | jq -e '.sceneRailMaskWidth > 0' >/dev/null
+# UI forensics seam: inspect dumps a parseable item tree with real geometry
+# for the focused monitor, and errors cleanly for an unknown screen name.
+qs ipc --path "$config" call qsm inspect "" true | jq -e '.tree.w > 0 and (.tree | has("children"))' >/dev/null
+qs ipc --path "$config" call qsm inspect no-such-screen false | jq -e 'has("error")' >/dev/null
+# Notification model + popup stack (task 5.1): previewable over IPC, no bus
+# claim. Six posts -> six live, popups capped at 4; dismissing one drops both;
+# a critical notification has no expiry (still alive after the normal 5s
+# window would have long passed for the short-timeout one we post).
+qs ipc --path "$config" call qsm status | grep -q '"notificationCount":0'
+first_id="$(qs ipc --path "$config" call qsm notifyTest "Test 1" "body" normal 0)"
+[[ "$first_id" =~ ^[0-9]+$ && "$first_id" -gt 0 ]]
+for i in 2 3 4 5; do
+  qs ipc --path "$config" call qsm notifyTest "Test $i" "body" normal 0 >/dev/null
+done
+crit_id="$(qs ipc --path "$config" call qsm notifyTest "Critical" "body" critical 0)"
+qs ipc --path "$config" call qsm status | grep -q '"notificationCount":6'
+# 6 live, window caps at 5 (04 RATIFIED; was 4 before the S1 choreography).
+qs ipc --path "$config" call qsm status | grep -q '"popupCount":5'
+# a short-timeout notification expires on its own; the critical one and the
+# 5s-default ones must survive the same window
+qs ipc --path "$config" call qsm notifyTest "Short" "body" normal 1000 >/dev/null
+qs ipc --path "$config" call qsm status | grep -q '"notificationCount":7'
+sleep 1.4
+qs ipc --path "$config" call qsm status | grep -q '"notificationCount":6'
+qs ipc --path "$config" call qsm notifyDismiss "$crit_id" | grep -q '^true$'
+qs ipc --path "$config" call qsm status | grep -q '"notificationCount":5'
+qs ipc --path "$config" call qsm notifyDismiss 99999 | grep -q '^false$'
+# Model depth (task 5.2). Everything closed so far (Short, the critical, and
+# the five 5s-default posts once they expire) is non-transient -> archived.
+sleep 5
+qs ipc --path "$config" call qsm status | grep -q '"notificationCount":0'
+qs ipc --path "$config" call qsm status | grep -q '"archiveCount":7'
+# transient notifications never reach the archive
+qs ipc --path "$config" call qsm notifyPost "Gone" "b" normal 500 0 true >/dev/null
+sleep 0.9
+qs ipc --path "$config" call qsm status | grep -q '"archiveCount":7'
+# replacement updates in place: same id back, still one live notification
+orig_id="$(qs ipc --path "$config" call qsm notifyPost "Original" "one" normal 0 0 false)"
+repl_id="$(qs ipc --path "$config" call qsm notifyPost "Updated" "two" normal 0 "$orig_id" false)"
+[[ "$repl_id" == "$orig_id" ]]
+qs ipc --path "$config" call qsm status | grep -q '"notificationCount":1'
+qs ipc --path "$config" call qsm notifyDismiss "$orig_id" >/dev/null
+qs ipc --path "$config" call qsm status | grep -q '"archiveCount":8'
+# sanitizer: disallowed tags stripped (inner text kept), allowed tags bare
+qs ipc --path "$config" call qsm notifySanitize "<script>x</script><b class=\"y\">ok</b><img src=\"f\"/>break<br/>" \
+  | grep -q '^x<b>ok</b>break<br>$'
+# DND: ordinary popups suppressed but live (and later archived); critical shows
+qs ipc --path "$config" call qsm notifyDnd true >/dev/null
+qs ipc --path "$config" call qsm notifyPost "Quiet" "b" normal 0 0 false >/dev/null
+qs ipc --path "$config" call qsm status | grep -q '"notificationCount":1'
+qs ipc --path "$config" call qsm status | grep -q '"popupCount":0'
+dnd_crit="$(qs ipc --path "$config" call qsm notifyPost "Loud" "b" critical 0 0 false)"
+qs ipc --path "$config" call qsm status | grep -q '"popupCount":1'
+qs ipc --path "$config" call qsm notifyDnd false >/dev/null
+qs ipc --path "$config" call qsm notifyDismiss "$dnd_crit" >/dev/null
+# the DND'd normal is still live and stays live across the DND toggle
+qs ipc --path "$config" call qsm status | grep -Eq '"notificationCount":1'
+qs ipc --path "$config" call qsm status | grep -q '"archiveCount":9'
+# archive survives a shell restart; live entries do not
+stop_shell
+start_shell
+qs ipc --path "$config" call qsm status | grep -q '"notificationCount":0'
+qs ipc --path "$config" call qsm status | grep -q '"archiveCount":9'
+qs ipc --path "$config" call qsm notifyClearArchive >/dev/null
+qs ipc --path "$config" call qsm status | grep -q '"archiveCount":0'
+# Per-monitor collapsible rail: toggling flips the focused monitor's state
+qs ipc --path "$config" call qsm status | grep -q '"railCollapsed":false'
+qs ipc --path "$config" call qsm railToggle | grep -q '^true$'
+qs ipc --path "$config" call qsm status | grep -q '"railCollapsed":true'
+qs ipc --path "$config" call qsm railToggle | grep -q '^false$'
+qs ipc --path "$config" call qsm status | grep -q '"railCollapsed":false'
+qs ipc --path "$config" call qsm status | grep -Eq '"fullscreenScreens":[0-9]+'
+stop_shell
+
+# ONE state file since the 09 merge (~/.local/state/qsm/state.json under the
+# suite's isolated XDG_STATE_HOME); theme/shell/notification keys share it.
+state_json="$state_dir/qsm/state.json"
+if [[ ! -f "$state_json" ]]; then
+  printf 'expected the persisted state file at %s, found none\n' "$state_json" >&2
+  exit 1
+fi
+printf '{invalid json\n' > "$state_json"
+
+start_shell
+qs ipc --path "$config" call qsm status | grep -q '"dark":true'
+stop_shell
+
+# Single-scene architecture (adopt-single-scene-rendering, activated 3.2):
+# a fresh restart to prove the scene's own existence, its input mask, and
+# every migrated surface's IPC-driven reveal, starting from a clean model.
+start_shell
+
+# Exactly one EdgeScene layer surface per monitor. hyprctl sees the real wlr
+# layer-shell surface; the shell's own screenCount is the expected count.
+# EdgeScene stays mapped through fullscreen by design (only its border
+# painting suppresses, not the window) so this count needs no
+# fullscreen-aware adjustment.
+scene_layers="$(hyprctl layers -j | jq '[.[] | .levels[][] | select(.namespace == "qsm-edge-scene")] | length')"
+screen_count="$(qs ipc --path "$config" call qsm status | jq '.screenCount')"
+[[ "$scene_layers" == "$screen_count" ]]
+# Hyprland serializes WlrLayer.Overlay as enum key 3 rather than the
+# human-readable "overlay" key it uses in documentation.
+overlay_scene_layers="$(hyprctl layers -j | jq '[.[] | .levels["3"][]? | select(.namespace == "qsm-edge-scene")] | length')"
+[[ "$overlay_scene_layers" == "$screen_count" ]]
+
+# Mask rect math (design.md decision 2) is exposed over IPC because hyprctl
+# reports surface geometry, not the wlr input region the mask actually sets.
+# Pinned (rail not collapsed): mask width is the full reserved-left strip.
+qs ipc --path "$config" call qsm status | jq -e '.sceneRailMaskWidth == 60' >/dev/null
+# Unpinned (rail collapsed, not peeking): mask narrows to the frame strip
+# (01-frame band thickness, 16).
+qs ipc --path "$config" call qsm railToggle | grep -q '^true$'
+qs ipc --path "$config" call qsm status | jq -e '.sceneRailMaskWidth == 16' >/dev/null
+qs ipc --path "$config" call qsm railToggle | grep -q '^false$'
+qs ipc --path "$config" call qsm status | jq -e '.sceneRailMaskWidth == 60' >/dev/null
+
+# Rollout mask merge (design.md decision 2, the OPEN mechanism from task 1):
+# the bar popout is the first real registerRolloutRegion caller. Opening it
+# joins the live mask; retracting it leaves. The test-only IPC drives the
+# real PopoutController.show/dismiss path, not a synthetic hover.
+#
+# A real audio/brightness device event can pop the OSD once at shell boot
+# (AudioService/BrightnessService's own startup signal — reproduces
+# identically with the flag off, unrelated to the scene mask); settle to
+# zero before asserting the pre-rollout baseline.
+# Both registries must settle together: with the near-settled hit law the
+# hit rect leaves at retract START while the bulge stays until the animation
+# rests — polling only one of them races the other.
+wait_status '.sceneRolloutRects == 0 and .sceneBulges == 0' 'scene registries did not settle after boot'
+qs ipc --path "$config" call qsm railPopoutTest true | grep -q '^true$'
+qs ipc --path "$config" call qsm status | jq -e '.sceneRolloutRects == 1 and .sceneBulges == 1' >/dev/null
+qs ipc --path "$config" call qsm railPopoutTest false | grep -q '^true$'
+wait_status '.sceneRolloutRects == 0 and .sceneBulges == 0' 'rail popout did not leave the registries'
+
+# Nested rail rollout: the colour menu starts at the quick-actions column's
+# SETTLED right edge and fills its vertical span. This catches a child host
+# reading its parent's animated width, which makes it pop in detached and only
+# connect after the parent finishes revealing.
+# Open parent, open child, and close parent on the focused scene so popoutTest
+# and status() intentionally observe the same scene.
+qs ipc --path "$config" call qsm popoutTest actions 1 true "" | grep -q '^true$'
+wait_status '.popout == "actions" and .sceneBulges == 1' 'quick-actions parent did not open'
+qs ipc --path "$config" call qsm popoutTest colorpick 2 true "" | grep -q '^true$'
+wait_status '.subPopout == "colorpick" and .sceneBulges == 2 and .subPopoutOriginX == .popoutSettledRight and .subPopoutTop == .sceneBulgeDump[0].rect[1] and .subPopoutHeight == .sceneBulgeDump[0].rect[3]' \
+  'nested colour rollout did not attach to the parent seam'
+qs ipc --path "$config" call qsm popoutTest actions 1 false "" | grep -q '^true$'
+wait_status '.sceneRolloutRects == 0 and .sceneBulges == 0' 'nested rail rollouts did not leave the registries'
+
+# Task 2.3: OSD migrated in-scene. The real `qsm osd` IPC proves the connected
+# right-frame rollout joins/leaves the live mask with only its free left edge
+# rounded.
+qs ipc --path "$config" call qsm osd output 0.5 false >/dev/null
+wait_status '.sceneRolloutRects == 1 and .sceneBulges == 1 and (.sceneBulgeDump | length == 1) and .sceneBulgeDump[0].edgeBits == 2 and .sceneBulgeDump[0].radius[0] > 0 and .sceneBulgeDump[0].radius[1] == 0 and .sceneBulgeDump[0].radius[2] == 0 and .sceneBulgeDump[0].radius[3] > 0' \
+  'OSD right rollout did not join the registries'
+
+osd_retracted=false
+for _ in {1..40}; do
+  if qs ipc --path "$config" call qsm status | jq -e '.sceneRolloutRects == 0 and .sceneBulges == 0' >/dev/null; then
+    osd_retracted=true
+    break
+  fi
+  sleep 0.1
+done
+[[ "$osd_retracted" == true ]] || {
+  printf 'OSD right rollout did not leave the scene mask after expiry; log: %s\n' "$log" >&2
+  exit 1
+}
+
+# Task 2.4: notification popups + sidebar migrated in-scene.
+# Notification model is fresh in this shell instance (in-memory `live` does
+# not survive the restart above; the baseline is 0, unlike the rail-popout
+# check which had to settle a startup device event).
+qs ipc --path "$config" call qsm status | jq -e '.sceneRolloutRects == 0 and .sceneBulges == 0 and .notificationCount == 0' >/dev/null
+
+# Posting a popup joins the live mask (registerRolloutRegion "notify-popups");
+# dismissing it leaves. Mirrors the rail-popout/OSD proof above but through
+# the real notification post/dismiss path.
+popup_id="$(qs ipc --path "$config" call qsm notifyTest "Scene popup" "body" normal 0)"
+wait_status '.sceneRolloutRects == 1 and .sceneBulges == 1 and .popupCount == 1' 'notify popup did not join the registries'
+qs ipc --path "$config" call qsm notifyDismiss "$popup_id" >/dev/null
+popup_retracted=false
+for _ in {1..40}; do
+  if qs ipc --path "$config" call qsm status | jq -e '.sceneRolloutRects == 0 and .sceneBulges == 0' >/dev/null; then
+    popup_retracted=true
+    break
+  fi
+  sleep 0.1
+done
+[[ "$popup_retracted" == true ]] || {
+  printf 'notify popup rollout rect did not leave the scene mask; log: %s\n' "$log" >&2
+  exit 1
+}
+
+# DND/critical policy under the scene: an ordinary popup is suppressed, a
+# critical one still shows and joins mask.
+qs ipc --path "$config" call qsm notifyDnd true >/dev/null
+qs ipc --path "$config" call qsm notifyPost "Quiet" "b" normal 0 0 false >/dev/null
+qs ipc --path "$config" call qsm status | jq -e '.popupCount == 0 and .sceneRolloutRects == 0 and .sceneBulges == 0' >/dev/null
+dnd_crit_scene="$(qs ipc --path "$config" call qsm notifyPost "Loud" "b" critical 0 0 false)"
+wait_status '.popupCount == 1 and .sceneRolloutRects == 1 and .sceneBulges == 1' 'DND critical popup did not join the registries'
+qs ipc --path "$config" call qsm notifyDnd false >/dev/null
+qs ipc --path "$config" call qsm notifyDismiss "$dnd_crit_scene" >/dev/null
+dnd_crit_retracted=false
+for _ in {1..40}; do
+  if qs ipc --path "$config" call qsm status | jq -e '.sceneRolloutRects == 0 and .sceneBulges == 0' >/dev/null; then
+    dnd_crit_retracted=true
+    break
+  fi
+  sleep 0.1
+done
+[[ "$dnd_crit_retracted" == true ]] || {
+  printf 'notify popup rollout rect did not leave the scene mask after DND critical dismissal; log: %s\n' "$log" >&2
+  exit 1
+}
+
+# Panel toggle: opening the notification-center tab joins the catch region
+# + panel bulge; closing leaves. Popups stay hidden while the tab is open.
+qs ipc --path "$config" call qsm toggle notifications | grep -q '^true$'
+wait_status '.sceneRolloutRects == 1 and .sceneBulges == 1' 'panel did not join the registries'
+qs ipc --path "$config" call qsm close >/dev/null
+sidebar_retracted=false
+for _ in {1..40}; do
+  if qs ipc --path "$config" call qsm status | jq -e '.sceneRolloutRects == 0 and .sceneBulges == 0' >/dev/null; then
+    sidebar_retracted=true
+    break
+  fi
+  sleep 0.1
+done
+[[ "$sidebar_retracted" == true ]] || {
+  printf 'notify sidebar rollout rect did not leave the scene mask; log: %s\n' "$log" >&2
+  exit 1
+}
+
+# Task 2.5: launcher migrated in-scene.
+# Toggling the launcher modal joins its own mask rect (registerRolloutRegion
+# "launcher"); closing it leaves. Mirrors the notify-sidebar proof above but
+# through the launcher modal. sceneBulges is the exact case registerBulge
+# exists for (task 4.1): the mask rect is deliberately full-scene
+# (click-anywhere-closes), but the melt bulge is the drawer's own bounds —
+# two different rects, same "one open rollout" count.
+qs ipc --path "$config" call qsm toggle launcher | grep -q '^true$'
+qs ipc --path "$config" call qsm status | grep -q '"modal":"launcher"'
+wait_status '.sceneRolloutRects == 1 and .sceneBulges == 1' 'launcher did not join the registries'
+qs ipc --path "$config" call qsm close >/dev/null
+qs ipc --path "$config" call qsm status | grep -q '"modal":"none"'
+launcher_retracted=false
+for _ in {1..40}; do
+  if qs ipc --path "$config" call qsm status | jq -e '.sceneRolloutRects == 0 and .sceneBulges == 0' >/dev/null; then
+    launcher_retracted=true
+    break
+  fi
+  sleep 0.1
+done
+[[ "$launcher_retracted" == true ]] || {
+  printf 'launcher rollout rect did not leave the scene mask; log: %s\n' "$log" >&2
+  exit 1
+}
+
+# Phase 2 Rollout component: each per-edge test rollout joins both
+# registries when opened (bulge immediately, hit rect near-settled) and
+# leaves both when retracted.
+for edge in top bottom right left; do
+  qs ipc --path "$config" call qsm rolloutTest "$edge" true | grep -q '^true$'
+  rollout_open=false
+  for _ in {1..40}; do
+    if qs ipc --path "$config" call qsm status | jq -e '.sceneRolloutRects == 1 and .sceneBulges == 1' >/dev/null; then
+      rollout_open=true
+      break
+    fi
+    sleep 0.1
+  done
+  [[ "$rollout_open" == true ]] || {
+    printf 'test rollout (%s) did not join both registries; log: %s\n' "$edge" "$log" >&2
+    exit 1
+  }
+  qs ipc --path "$config" call qsm rolloutTest "$edge" false | grep -q '^true$'
+  rollout_closed=false
+  for _ in {1..40}; do
+    if qs ipc --path "$config" call qsm status | jq -e '.sceneRolloutRects == 0 and .sceneBulges == 0' >/dev/null; then
+      rollout_closed=true
+      break
+    fi
+    sleep 0.1
+  done
+  [[ "$rollout_closed" == true ]] || {
+    printf 'test rollout (%s) did not leave the registries; log: %s\n' "$edge" "$log" >&2
+    exit 1
+  }
+done
+qs ipc --path "$config" call qsm rolloutTest diagonal true | grep -q '^false$'
+
+# Fullscreen collapse: only run against a real focused window (mirrors
+# scripts/test-frame-reservation), and always revert via the cleanup trap.
+if [[ "$(hyprctl activewindow -j | jq -r '.fullscreen // 0')" == 0 ]]; then
+  # Fullscreen is a modal boundary, not a visual pause. Each keyboard modal
+  # must be closed on entry and remain closed after the scene is restored.
+  for modal in launcher panel session clipboard cheatsheet; do
+    qs ipc --path "$config" call qsm toggle "$modal" | grep -q '^true$'
+    qs ipc --path "$config" call qsm status | jq -e --arg modal "$modal" '.modal == $modal' >/dev/null
+    hyprctl dispatch "$fullscreen_dispatch" >/dev/null
+    fullscreen_toggled=true
+   wait_status '.modal == "none" and .sceneRailMaskWidth == 0 and .sceneRailMaskHeight == 0' \
+      "modal $modal was not closed at fullscreen"
+    hyprctl dispatch "$fullscreen_dispatch" >/dev/null
+    fullscreen_toggled=false
+    wait_status '.modal == "none" and .sceneRailMaskWidth == 60' \
+      "modal $modal resurrected after fullscreen"
+  done
+
+  hyprctl dispatch "$fullscreen_dispatch" >/dev/null
+  fullscreen_toggled=true
+
+  collapsed=false
+  for _ in {1..30}; do
+    if qs ipc --path "$config" call qsm status | jq -e '.sceneRailMaskWidth == 0 and .sceneRailMaskHeight == 0' >/dev/null; then
+      collapsed=true
+      break
+    fi
+    sleep 0.1
+  done
+   [[ "$collapsed" == true ]] || {
+     printf 'scene mask did not collapse on fullscreen; log: %s\n' "$log" >&2
+     exit 1
+   }
+
+   # A new modal request is rejected at the state boundary, not merely hidden
+   # by a rollout, so no launcher can resurrect after fullscreen exits.
+   qs ipc --path "$config" call qsm quickControlsTest | grep -q '^false$'
+   qs ipc --path "$config" call qsm status | jq -e '.modal == "none"' >/dev/null
+
+   # Fullscreen notification allowlist: the rail base region collapses but
+   # popup rollouts remain interactive above fullscreen clients. DND still
+   # suppresses normal rows, and each visible row owns its own SDF capsule.
+   qs ipc --path "$config" call qsm notifyDnd true >/dev/null
+   quiet_fs_id="$(qs ipc --path "$config" call qsm notifyTest "Quiet FS" "body" normal 0)"
+   qs ipc --path "$config" call qsm status | jq -e '.popupCount == 0 and .sceneFullscreenCapsules == 0' >/dev/null
+   crit_fs_id="$(qs ipc --path "$config" call qsm notifyTest "Crit FS" "body" critical 0)"
+    wait_status '.fullscreenSdf == true and .sceneRolloutRects == 1 and .sceneBulges == 1 and .sceneFullscreenCapsules == 1 and (.sceneInputIds | index("notify-popups")) != null' \
+     'critical-on-fullscreen popup did not join the input registry'
+   qs ipc --path "$config" call qsm notifyDismiss "$quiet_fs_id" >/dev/null
+   qs ipc --path "$config" call qsm notifyDnd false >/dev/null
+   normal_fs_id="$(qs ipc --path "$config" call qsm notifyTest "Normal FS" "body" normal 0)"
+   qs ipc --path "$config" call qsm status | jq -e '.popupCount == 2 and .sceneRolloutRects == 1 and .sceneBulges == 1 and .sceneFullscreenCapsules == 2 and (.sceneInputIds | index("notify-popups")) != null' >/dev/null
+  qs ipc --path "$config" call qsm notifyDismiss "$crit_fs_id" >/dev/null
+  qs ipc --path "$config" call qsm notifyDismiss "$normal_fs_id" >/dev/null
+  fs_popups_retracted=false
+  for _ in {1..40}; do
+    if qs ipc --path "$config" call qsm status | jq -e '.sceneRolloutRects == 0 and .sceneBulges == 0' >/dev/null; then
+      fs_popups_retracted=true
+      break
+    fi
+    sleep 0.1
+  done
+  [[ "$fs_popups_retracted" == true ]] || {
+    printf 'critical-on-fullscreen popup rect did not leave the scene mask; log: %s\n' "$log" >&2
+    exit 1
+  }
+
+  # Event-driven OSD is the second fullscreen allowlisted surface. It must
+  # enter the same live silhouette and input registries while the client stays
+  # fullscreen; idle handle regions remain zero-sized and inert.
+   qs ipc --path "$config" call qsm osd output 0.5 false >/dev/null
+   wait_status '.sceneRolloutRects == 1 and .sceneBulges == 1 and .sceneFullscreenCapsules >= 1 and .osdVisible == true and (.sceneInputIds | index("osd")) != null' \
+    'OSD did not surface over fullscreen with an input region'
+   qs ipc --path "$config" call qsm status | jq -e '.sceneRolloutRects == 1 and .sceneBulges == 1 and .sceneFullscreenCapsules >= 1 and .sceneRailMaskWidth == 0 and (.sceneInputIds | index("osd")) != null and (.sceneInputIds | index("launcher-catch")) == null' >/dev/null
+
+  hyprctl dispatch "$fullscreen_dispatch" >/dev/null
+  fullscreen_toggled=false
+  restored=false
+  for _ in {1..30}; do
+    if qs ipc --path "$config" call qsm status | jq -e '.sceneRailMaskWidth == 60' >/dev/null; then
+      restored=true
+      break
+    fi
+    sleep 0.1
+  done
+  [[ "$restored" == true ]] || {
+    printf 'scene mask did not restore after fullscreen; log: %s\n' "$log" >&2
+    exit 1
+  }
+fi
+# Geometry laws, on the live tree. This runs HERE because it is the one place
+# the suite already has a shell up: ui-guard reads real rects, so a radius off
+# the scale, a non-concentric nesting, or a hover growth that a clipping
+# ancestor eats is caught as a REGRESSION rather than noticed months later in
+# a screenshot. New findings against scripts/ui-guard.baseline fail the suite.
+"$root/scripts/ui-guard" --sweep || {
+  printf 'ui-guard found new geometry findings\n' >&2
+  exit 1
+}
+
+stop_shell
+
+suite_passed=true
+printf 'Quickshell foundation smoke test passed\n'

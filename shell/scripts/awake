@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+pid_file="/tmp/awake-inhibit.pid"
+
+is_awake() {
+  [[ -f "$pid_file" ]] && kill -0 "$(<"$pid_file")" 2>/dev/null
+}
+
+start() {
+  if is_awake; then
+    printf 'Already awake (PID %s)\n' "$(<"$pid_file")"
+    return
+  fi
+
+  pkill -x hypridle 2>/dev/null || true
+  systemd-inhibit --what=idle:sleep:handle-lid-switch --who=awake \
+    --why="Performance mode - overnight session" --mode=block sleep infinity &
+  printf '%s\n' "$!" > "$pid_file"
+  hyprctl dispatch 'hl.dsp.dpms({ action = "on" })' >/dev/null
+  pkill -RTMIN+7 waybar 2>/dev/null || true
+  printf 'Awake mode ON - no sleep, dim, or hibernate\n'
+}
+
+stop() {
+  if [[ -f "$pid_file" ]]; then
+    kill "$(<"$pid_file")" 2>/dev/null || true
+    rm -f "$pid_file"
+  fi
+  pgrep -x hypridle >/dev/null || hypridle >/dev/null 2>&1 &
+  pkill -RTMIN+7 waybar 2>/dev/null || true
+  printf 'Awake mode OFF - normal power management restored\n'
+}
+
+waybar_output() {
+  if is_awake; then
+    printf '{"text":"󰅶","class":"active","tooltip":"Awake mode ON - click to disable"}\n'
+  else
+    printf '{"text":"󰛊","class":"inactive","tooltip":"Normal power management - click to enable awake"}\n'
+  fi
+}
+
+case "${1:-on}" in
+  on|start) start ;;
+  off|stop) stop ;;
+  toggle) is_awake && stop || start ;;
+  status) is_awake && printf 'AWAKE\n' || printf 'NORMAL\n' ;;
+  waybar) waybar_output ;;
+  *) printf 'Usage: awake [on|off|status|toggle|waybar]\n' >&2; exit 2 ;;
+esac

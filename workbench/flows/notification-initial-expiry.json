@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "key": "notification-initial-expiry",
+  "target": { "story": "notification-layer" },
+  "steps": [
+    { "type": "reset" },
+    { "type": "action", "name": "publish-short" },
+    { "type": "expect", "observable": "live-count", "equals": 1 },
+    { "type": "await", "observable": "live-count", "equals": 0 },
+    { "type": "expect", "observable": "archive-count", "equals": 1 },
+    { "type": "expect", "observable": "expiry-completions", "equals": 1 },
+    { "type": "await", "observable": "rollout-visible", "equals": false },
+    { "type": "expect", "observable": "row-geometry", "equals": [] }
+  ]
+}

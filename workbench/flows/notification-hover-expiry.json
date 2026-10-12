@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "key": "notification-hover-expiry",
+  "target": { "story": "notification-layer" },
+  "steps": [
+    { "type": "reset" },
+    { "type": "control", "group": "timeout", "option": "2500ms-override" },
+    { "type": "action", "name": "publish-transfer" },
+    { "type": "await", "observable": "rollout-open", "equals": true },
+    { "type": "pointer", "target": "transfer-row", "event": "move" },
+    { "type": "expectEvent", "event": "hovered", "origin": "component" },
+    { "type": "await", "observable": "latest-paused", "equals": true },
+    { "type": "action", "name": "replace-transfer" },
+    { "type": "await", "observable": "replacement-kept-row", "equals": true },
+    { "type": "expect", "observable": "latest-paused", "equals": true },
+    { "type": "pointer", "target": "outside", "event": "move" },
+    { "type": "await", "observable": "latest-paused", "equals": false },
+    { "type": "await", "observable": "live-count", "equals": 0 },
+    { "type": "expect", "observable": "archive-count", "equals": 1 },
+    { "type": "expect", "observable": "expiry-completions", "equals": 1 }
+  ]
+}

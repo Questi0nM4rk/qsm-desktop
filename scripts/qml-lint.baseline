@@ -1,0 +1,56 @@
+1	-|import|Type Delegate not declared as singleton in qmldir but using pragma Singleton
+1	-|import|Type Theme not declared as singleton in qmldir but using pragma Singleton
+1	shell/input/Keybind.qml|import|PostReloadHook was not found. Did you add all imports and dependencies?
+1	shell/input/Keybind.qml|unresolved-type|Type Keybind is used but it is not resolved
+1	shell/input/Shortcuts.qml|import|PostReloadHook was not found. Did you add all imports and dependencies?
+19	shell/input/Shortcuts.qml|unresolved-type|Type Keybind is used but it is not resolved
+12	shell/modules/bar/BarPopouts.qml|unqualified|Unqualified access
+5	shell/modules/bar/BatteryPopoutContent.qml|unqualified|Unqualified access
+1	shell/modules/bar/BluetoothPopoutContent.qml|unresolved-type|Type "BluetoothAdapter" of property "defaultAdapter" not found. This is likely due to a missing dependency entry or a type not being exposed declaratively.
+1	shell/modules/bar/BluetoothPopoutContent.qml|unresolved-type|Type "UntypedObjectModel" of property "devices" not found. This is likely due to a missing dependency entry or a type not being exposed declaratively.
+1	shell/modules/bar/BluetoothPopoutContent.qml|unused-imports|Unused import
+1	shell/modules/bar/MenuRow.qml|unqualified|Unqualified access
+1	shell/modules/bar/NetworkPopoutContent.qml|signal-handler-parameters|Type QProcess::ExitStatus of parameter exitStatus in signal called exited was not found, but is required to compile onExited. Did you add all imports and dependencies?
+1	shell/modules/bar/NetworkPopoutContent.qml|unused-imports|Unused import
+2	shell/modules/bar/RailAppList.qml|unqualified|Unqualified access
+11	shell/modules/bar/RailDeviceCell.qml|unqualified|Unqualified access
+4	shell/modules/bar/RailDeviceCell.qml|unresolved-type|Type "BluetoothAdapter" of property "defaultAdapter" not found. This is likely due to a missing dependency entry or a type not being exposed declaratively.
+1	shell/modules/bar/RailDeviceCell.qml|unresolved-type|Type "UntypedObjectModel" of property "devices" not found. This is likely due to a missing dependency entry or a type not being exposed declaratively.
+1	shell/modules/bar/Rail.qml|unqualified|Unqualified access
+2	shell/modules/bar/SoundPopoutContent.qml|unqualified|Unqualified access
+1	shell/modules/bar/SoundPopoutContent.qml|unused-imports|Unused import
+1	shell/modules/bar/TrayMenuContent.qml|redundant-optional-chaining|Redundant optional chaining for lookup on non-voidable and non-nullable type QObjectList
+2	shell/modules/bar/WorkspaceStrip.qml|unqualified|Unqualified access
+2	shell/modules/clipboard/ClipboardSurface.qml|signal-handler-parameters|Type QProcess::ExitStatus of parameter exitStatus in signal called exited was not found, but is required to compile onExited. Did you add all imports and dependencies?
+1	shell/modules/launcher/LauncherSurface.qml|signal-handler-parameters|Type QProcess::ExitStatus of parameter exitStatus in signal called exited was not found, but is required to compile onExited. Did you add all imports and dependencies?
+1	shell/modules/launcher/LauncherSurface.qml|unresolved-type|Property "adapter" has incomplete type "FileViewAdapter". You may be missing an import.
+2	shell/modules/launcher/ThemeCarousel.qml|unqualified|Unqualified access
+1	shell/modules/panel/PanelSurface.qml|unqualified|Unqualified access
+1	shell/modules/panel/WorkspacesTab.qml|signal-handler-parameters|Type QProcess::ExitStatus of parameter exitStatus in signal called exited was not found, but is required to compile onExited. Did you add all imports and dependencies?
+18	shell/modules/panel/WorkspacesTab.qml|unqualified|Unqualified access
+1	shell/screen/EdgeScene.qml|uncreatable-type|Type PanelWindow is not creatable.
+1	shell/screen/FrameExclusions.qml|uncreatable-type|Type PanelWindow is not creatable.
+2	shell/screen/FrameExclusions.qml|unqualified|Unqualified access
+1	shell/screen/SessionBackdrop.qml|signal-handler-parameters|Type QProcess::ExitStatus of parameter exitStatus in signal called exited was not found, but is required to compile onExited. Did you add all imports and dependencies?
+1	shell/screen/SessionBackdrop.qml|uncreatable-type|Type PanelWindow is not creatable.
+1	shell/screen/WallpaperWindow.qml|uncreatable-type|Type PanelWindow is not creatable.
+1	shell/services/AwakeService.qml|signal-handler-parameters|Type QProcess::ExitStatus of parameter exitStatus in signal called exited was not found, but is required to compile onExited. Did you add all imports and dependencies?
+1	shell/services/BluetoothService.qml|unresolved-type|Type "BluetoothAdapter" of property "defaultAdapter" not found. This is likely due to a missing dependency entry or a type not being exposed declaratively.
+1	shell/services/BrightnessService.qml|import|Type warnings occurred while evaluating file:
+1	shell/services/BrightnessService.qml|missing-property|Member "argv" not found on type "Delegate"
+2	shell/services/BrightnessService.qml|signal-handler-parameters|Type QProcess::ExitStatus of parameter exitStatus in signal called exited was not found, but is required to compile onExited. Did you add all imports and dependencies?
+1	shell/services/CacheService.qml|signal-handler-parameters|Type QProcess::ExitStatus of parameter exitStatus in signal called exited was not found, but is required to compile onExited. Did you add all imports and dependencies?
+1	shell/services/ColorPickService.qml|missing-property|Member "argv" not found on type "Delegate"
+2	shell/services/ColorPickService.qml|signal-handler-parameters|Type QProcess::ExitStatus of parameter exitStatus in signal called exited was not found, but is required to compile onExited. Did you add all imports and dependencies?
+1	shell/services/HyprClientsService.qml|missing-property|Member "argv" not found on type "Delegate"
+5	shell/services/NetworkService.qml|incompatible-type|Cannot assign binding of type QVariantMap to QVariantHash
+3	shell/services/NetworkService.qml|signal-handler-parameters|Type QProcess::ExitStatus of parameter exitStatus in signal called exited was not found, but is required to compile onExited. Did you add all imports and dependencies?
+2	shell/services/NightLightService.qml|signal-handler-parameters|Type QProcess::ExitStatus of parameter exitStatus in signal called exited was not found, but is required to compile onExited. Did you add all imports and dependencies?
+2	shell/services/PowerProfileService.qml|missing-property|Member "argv" not found on type "Delegate"
+2	shell/services/PowerProfileService.qml|signal-handler-parameters|Type QProcess::ExitStatus of parameter exitStatus in signal called exited was not found, but is required to compile onExited. Did you add all imports and dependencies?
+1	shell/services/UpdateService.qml|signal-handler-parameters|Type QProcess::ExitStatus of parameter exitStatus in signal called exited was not found, but is required to compile onExited. Did you add all imports and dependencies?
+1	shell/state/ShellState.qml|signal-handler-parameters|Type QProcess::ExitStatus of parameter exitStatus in signal called exited was not found, but is required to compile onExited. Did you add all imports and dependencies?
+2	shell/state/ShellState.qml|unqualified|Unqualified access
+1	shell/state/ShellState.qml|unresolved-type|Property "adapter" has incomplete type "FileViewAdapter". You may be missing an import.
+1	shell/theme/Motion.qml|import|Type warnings occurred while evaluating file:
+6	shell/theme/Motion.qml|missing-property|Member "reducedMotion" not found on type "Theme"

@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# The Style.backend contract, checked.
+#
+# The library resolves every token as `backend?.x ?? Tokens.x`. That fallback
+# is a feature (a consumer only overrides what it cares about) and a trap: a
+# name the Theme does not answer keeps working, reads the library's own
+# deep-night default, and stops responding to a theme swap. Nothing warns.
+#
+# So: every name Style asks the backend for must exist on Theme.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+python3 - "$@" <<'PY'
+import re, sys, pathlib
+style = pathlib.Path('vendor/qsm-shell/qml/QsmShell/Style/Style.qml').read_text()
+theme = pathlib.Path('shell/theme/Theme.qml').read_text()
+asked = sorted(set(re.findall(r'backend\?\.(\w+)', style)))
+
+# ROOT-LEVEL DECLARATIONS ONLY, at exactly four spaces of indent.
+#
+# The first version also accepted any line beginning `<name>:`, which is not a
+# declaration at all — it matched the entries inside the `baseline` fallback
+# object. So deleting Theme's own `property color background` left the check
+# green, because `background:` still appeared inside baseline. A contract check
+# that passes on a broken contract is worse than no check.
+declared = set(re.findall(r'^    (?:readonly )?property\s+\w+\s+(\w+)\b', theme, re.M))
+missing = sorted(set(asked) - declared)
+if missing:
+    print(f"Theme does not answer {len(missing)} of the {len(asked)} names Style asks for:")
+    for k in missing:
+        print(f"  {k}")
+    sys.exit(1)
+print(f"theme contract: {len(asked)}/{len(asked)} names answered")
+PY

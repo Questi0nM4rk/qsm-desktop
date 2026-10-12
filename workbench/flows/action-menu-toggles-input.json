@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "key": "action-menu-toggles-input",
+  "target": {
+    "story": "action-menu-toggles"
+  },
+  "steps": [
+    {
+      "type": "reset"
+    },
+    {
+      "type": "expect",
+      "observable": "detail",
+      "equals": "nightlight"
+    },
+    {
+      "type": "key",
+      "target": "menu",
+      "key": "Enter"
+    },
+    {
+      "type": "expect",
+      "observable": "night-light",
+      "equals": true
+    },
+    {
+      "type": "expect",
+      "observable": "selected-identity",
+      "equals": "action-detail:toggle"
+    },
+    {
+      "type": "key",
+      "target": "menu",
+      "key": "Enter"
+    },
+    {
+      "type": "expect",
+      "observable": "night-light",
+      "equals": false
+    },
+    {
+      "type": "key",
+      "target": "menu",
+      "key": "Escape"
+    },
+    {
+      "type": "key",
+      "target": "menu",
+      "key": "Down"
+    },
+    {
+      "type": "expect",
+      "observable": "selected-identity",
+      "equals": "action:awake"
+    },
+    {
+      "type": "key",
+      "target": "menu",
+      "key": "Enter"
+    },
+    {
+      "type": "expect",
+      "observable": "awake",
+      "equals": true
+    },
+    {
+      "type": "expect",
+      "observable": "selected-identity",
+      "equals": "action:awake"
+    },
+    {
+      "type": "key",
+      "target": "menu",
+      "key": "Enter"
+    },
+    {
+      "type": "expect",
+      "observable": "awake",
+      "equals": false
+    },
+    {
+      "type": "reset"
+    },
+    {
+      "type": "expect",
+      "observable": "awake",
+      "equals": false
+    },
+    {
+      "type": "expect",
+      "observable": "night-light",
+      "equals": false
+    },
+    { "type": "await", "observable": "menu-ready", "equals": true },
+    { "type": "pointer", "target": "nightlight-switch", "event": "click" },
+    { "type": "expect", "observable": "night-light", "equals": true },
+    { "type": "pointer", "target": "nightlight-switch", "event": "click" },
+    { "type": "expect", "observable": "night-light", "equals": false },
+    { "type": "key", "target": "menu", "key": "Escape" },
+    { "type": "await", "observable": "menu-ready", "equals": true },
+    { "type": "pointer", "target": "awake-switch", "event": "click" },
+    { "type": "expect", "observable": "awake", "equals": true },
+    { "type": "pointer", "target": "awake-switch", "event": "click" },
+    { "type": "expect", "observable": "awake", "equals": false }
+  ]
+}

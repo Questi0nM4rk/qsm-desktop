@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "key": "notification-native-swipe",
+  "target": { "story": "notification-layer" },
+  "steps": [
+    { "type": "reset" },
+    { "type": "action", "name": "publish-transfer" },
+    { "type": "await", "observable": "rollout-open", "equals": true },
+    { "type": "pointer", "target": "transfer-row", "event": "move", "x": 0.85, "y": 0.1 },
+    { "type": "await", "observable": "latest-paused", "equals": true },
+    { "type": "await", "observable": "transfer-expanded-settled", "equals": true },
+    { "type": "pointer", "target": "transfer-row", "event": "press", "x": 0.85, "y": 0.1, "button": "left" },
+    { "type": "pointer", "target": "transfer-row", "event": "move", "x": 0.5, "y": 0.1 },
+    { "type": "pointer", "target": "transfer-row", "event": "move", "x": 0.1, "y": 0.1 },
+    { "type": "await", "observable": "transfer-drag-active", "equals": true },
+    { "type": "expect", "observable": "transfer-input-enabled", "equals": true },
+    { "type": "pointer", "target": "transfer-row", "event": "release", "x": 0.1, "y": 0.1, "button": "left" },
+    { "type": "await", "observable": "transfer-drag-active", "equals": false },
+    { "type": "expectEvent", "event": "dismissed", "origin": "component", "payload": { "notificationId": 1 } },
+    { "type": "await", "observable": "live-count", "equals": 0 },
+    { "type": "expect", "observable": "archive-count", "equals": 1 },
+    { "type": "expect", "observable": "archive-summaries", "equals": ["Transfer started"] },
+    { "type": "expect", "observable": "last-dismissed-id", "equals": 1 },
+    { "type": "await", "observable": "retained-row", "equals": true },
+    { "type": "expect", "observable": "retained-frozen", "equals": true },
+    { "type": "expect", "observable": "retained-height-matches", "equals": true },
+    { "type": "expect", "observable": "retained-content", "equals": "Transfer started" },
+    { "type": "await", "observable": "rollout-visible", "equals": false },
+    { "type": "expect", "observable": "retained-row", "equals": false },
+    { "type": "expect", "observable": "row-geometry", "equals": [] }
+  ]
+}

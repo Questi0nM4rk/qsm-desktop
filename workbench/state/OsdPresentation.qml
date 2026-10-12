@@ -1,0 +1,1 @@
+../../shell/state/OsdPresentation.qml
