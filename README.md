@@ -8,6 +8,8 @@
 [![Quickshell](https://img.shields.io/badge/Quickshell-0.3.x-7e57c2)](https://quickshell.org)
 [![QML](https://img.shields.io/badge/QML-Qt%206-41cd52)](https://doc.qt.io/qt-6/qmlapplications.html)
 [![Hyprland](https://img.shields.io/badge/Hyprland-compositor-58e1ff)](https://hypr.land)
+[![top language](https://img.shields.io/github/languages/top/Questi0nM4rk/qsm-desktop)](https://github.com/Questi0nM4rk/qsm-desktop)
+[![code size](https://img.shields.io/github/languages/code-size/Questi0nM4rk/qsm-desktop)](https://github.com/Questi0nM4rk/qsm-desktop)
 
 </div>
 
@@ -24,7 +26,7 @@ It would have no reason to exist if a shell fit the way I work without changes.
 Requirements:
 
 - Arch Linux with Hyprland.
-- Quickshell 0.3.x and Qt 6. Tested with Quickshell 0.3.2.
+- Quickshell 0.3.x and Qt 6.
 - The `qsm-shell` QML library, checked out next to this repo as `../qsm-shell`. `vendor/qsm-shell` is a relative symlink to it. `qsm-shell` is not published yet, so this repo does not run on its own.
 - PipeWire, NetworkManager (`nmcli`), BlueZ. The commands the shell hands work to are listed in `shell/services/Delegate.qml`.
 
@@ -62,13 +64,15 @@ Where code and spec disagree, the spec wins.
 
 ## Numbers
 
-Measured on 2026-10-12.
+[![top language](https://img.shields.io/github/languages/top/Questi0nM4rk/qsm-desktop)](https://github.com/Questi0nM4rk/qsm-desktop)
+[![code size](https://img.shields.io/github/languages/code-size/Questi0nM4rk/qsm-desktop)](https://github.com/Questi0nM4rk/qsm-desktop)
 
-| What | Value | How measured |
-| --- | --- | --- |
-| QML files | 104 (80 in `shell/`) | `scc --no-cocomo --include-ext qml shell workbench` |
-| QML code lines | 12,916 (9,966 in `shell/`) | same command |
-| Spec files | 14 in `spec/` | `ls spec/*.md \| wc -l` |
+| What | How to measure |
+| --- | --- |
+| QML files and code lines in `shell/` and `workbench/` | `scc --no-cocomo --include-ext qml shell workbench` |
+| Spec files in `spec/` | `ls spec/*.md \| wc -l` |
+
+Commits include agent-authored work under my identity; design, orchestration and review are mine.
 
 ## Status
 
@@ -76,7 +80,7 @@ Measured on 2026-10-12.
 - **Experimental:** most work is source-reviewed and waits for owner review on the live desktop. See [docs/BACKLOG.md](docs/BACKLOG.md).
 - **Known gaps:**
   - It needs the unpublished `qsm-shell` library next to it.
-  - `scripts/qml-lint` fails against its committed baseline: 128 findings across 80 files when last run. The baseline is out of date.
+  - `scripts/qml-lint` fails against its committed baseline. The baseline is out of date.
   - Spec references to screenshots point to images that are not distributed. See [spec/references/README.md](spec/references/README.md).
   - The default wallpapers are plain gradients. Put your own image in `shell/assets/wallpapers/` and set it in a theme file.
   - Tested on one machine only.
