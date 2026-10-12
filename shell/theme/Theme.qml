@@ -116,7 +116,7 @@ QtObject {
     Behavior on shadow { ColorAnimation { duration: root.themeSwapDuration } }
     Behavior on bandFill { ColorAnimation { duration: root.themeSwapDuration } }
 
-    readonly property string wallpaper: currentTheme?.wallpaper ?? "assets/wallpapers/deep-night.png"
+    readonly property string wallpaper: currentTheme?.wallpaper ?? "assets/wallpapers/dark-rain-world.png"
 
     readonly property real surfaceOpacity: reducedEffects ? 1 : dark ? 0.9 : 0.94
     // Disabled-affordance opacity — icon-buttons whose action is currently

@@ -17,6 +17,7 @@ PanelWindow {
     required property var modelData
     readonly property bool active: ShellState.modal === "session"
         && ShellState.focusedScreen === modelData
+        && !root.fullscreen && !FocusModeService.focusFor(modelData)
     readonly property bool fullscreen: FullscreenService.fullscreenFor(modelData)
 
     screen: modelData
@@ -26,7 +27,7 @@ PanelWindow {
     WlrLayershell.layer: WlrLayer.Top
     WlrLayershell.exclusionMode: ExclusionMode.Ignore
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
-    WlrLayershell.namespace: "qsm-session-backdrop"
+    WlrLayershell.namespace: "qsm-session-backdrop-" + modelData.name
 
     anchors {
         top: true
@@ -72,7 +73,11 @@ PanelWindow {
         }
 
         command: Delegate.argv("compositor", ["eval",
-            "hl.layer_rule({ name = \"blur-qsm-session\", match = { namespace = \"qsm-session-backdrop\" }, blur = "
+            // Retire the old all-output rule before writing this output's rule.
+            'hl.layer_rule({ name = "blur-qsm-session", match = { namespace = "qsm-session-backdrop" }, blur = false })\n'
+            + "hl.layer_rule({ name = " + JSON.stringify("blur-qsm-session-" + root.modelData.name)
+            + ", match = { namespace = " + JSON.stringify("qsm-session-backdrop-" + root.modelData.name)
+            + " }, blur = "
             + (writing ? "true" : "false") + " })"])
 
         onWantBlurChanged: sync()

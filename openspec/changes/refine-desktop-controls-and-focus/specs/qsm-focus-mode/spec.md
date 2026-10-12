@@ -3,8 +3,8 @@
 ### Requirement: QSM focus mode frames the active client
 The shell SHALL provide qsm focus mode distinct from native fullscreen.
 `FocusModeService` SHALL own an address-keyed snapshot of the eligible active
-client and focused-monitor rail state. On entry it SHALL collapse the focused
-monitor's rail and place the active client inside the opaque viewport bounded
+client. On entry it SHALL collapse the rail presentation only on that client's
+visible workspace and place the active client inside the opaque viewport bounded
 by the 16px qsm frame.
 
 #### Scenario: Enter focus mode
@@ -14,26 +14,31 @@ by the 16px qsm frame.
 
 ### Requirement: Focus mode restores prior client and rail state
 FocusModeService SHALL snapshot client placement, monitor, workspace,
-floating/fullscreen state, and rail state before entering focus mode. It SHALL
-restore them on explicit exit or when the mode becomes invalid. On shell
+floating/fullscreen state before entering focus mode. It SHALL restore them on
+explicit exit or when the mode becomes invalid, without changing persisted rail
+preferences. Snapshots made by the old rail-mutating route SHALL restore its saved
+rail state. On shell
 startup it SHALL clear or restore an unfinished focus transformation before
 allowing another focus entry.
 
 #### Scenario: Exit focus mode
 - **WHEN** the user exits qsm focus mode
-- **THEN** the client and rail MUST return to their saved state without leaving
+- **THEN** the client MUST return to its saved state and the normal rail presentation
+  MUST return without leaving
   a forced floating, fullscreen, or collapsed-rail state behind
 
 #### Scenario: Focus target disappears
 - **WHEN** the focus-mode client closes, moves to another monitor, or otherwise
   becomes ineligible
-- **THEN** qsm focus mode MUST exit and restore the saved rail state
+- **THEN** qsm focus mode MUST exit and remove its workspace-local presentation
 
 ### Requirement: Focus mode is quiet and native fullscreen remains available
-Focus mode SHALL allow only notifications and event-driven OSD. After focus
-mode restoration is proven, `Super+F` SHALL invoke it and `Super+Shift+F` MUST
-invoke native Hyprland fullscreen for games and clients that require true
-fullscreen behavior.
+The optional geometry transformation SHALL allow only notifications and
+event-driven OSD on its target's visible workspace. It MUST NOT block UI on
+another monitor or workspace. It remains available through its explicit IPC seam,
+not the fullscreen keyboard route. `Super+F` and `Super+Shift+F` SHALL invoke native
+Hyprland fullscreen, independently on each workspace. The old `qsm:focusMode`
+shortcut name SHALL forward to native fullscreen for already-loaded configs.
 
 #### Scenario: Notification arrives in focus mode
 - **WHEN** a notification arrives during qsm focus mode

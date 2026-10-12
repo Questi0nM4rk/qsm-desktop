@@ -30,8 +30,10 @@ QtObject {
     property string modal: "none"
     // Fullscreen and qsm focus mode are hard modal boundaries: suppressed
     // surfaces must not leave latent state that reappears when the boundary
-    // clears. FocusModeService owns the second half to avoid a singleton cycle.
-    property bool focusModeActive: false
+    // clears. The optional geometry transformation publishes its workspace
+    // here to avoid a singleton cycle; it must never block another workspace.
+    property string focusModeScreen: ""
+    property int focusModeWorkspaceId: 0
     property alias panelTab: persisted.lastPanelTab
     // A keyboard accelerator can enter the launcher at a specific command
     // without giving that command a duplicate surface.
@@ -81,8 +83,10 @@ QtObject {
 
         return Quickshell.screens.length > 0 ? Quickshell.screens[0] : null;
     }
-    readonly property bool modalBlocked: focusModeActive
-        || (focusedScreen !== null && FullscreenService.fullscreenFor(focusedScreen))
+    readonly property bool modalBlocked: focusedScreen !== null
+        && (FullscreenService.fullscreenFor(focusedScreen)
+            || (focusModeScreen === focusedScreen.name
+                && FullscreenService.workspaceFor(focusedScreen)?.id === focusModeWorkspaceId))
 
     onModalBlockedChanged: {
         if (modalBlocked)

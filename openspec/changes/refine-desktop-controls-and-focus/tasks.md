@@ -27,7 +27,7 @@
 - [x] 4.2 Implement opaque framed viewport entry, collapsed rail behavior, client placement, and deterministic restoration for one tiled or floating target.
 - [x] 4.3 Add target-loss handling for closed, moved, workspace-changed, and monitor-changed clients.
 - [x] 4.4 Restrict focus mode to notifications and event-driven OSD, then add IPC and smoke coverage for entry, restore, and target loss.
-- [x] 4.5 After restore coverage is green, bind `Super+F` to qsm focus mode and `Super+Shift+F` to true Hyprland fullscreen.
+- [x] 4.5 Bind `Super+F` and `Super+Shift+F` to native workspace-local Hyprland fullscreen; retain the geometry transformation only as an explicit IPC facility.
 
 ## 5. Per-Capability Acceptance
 

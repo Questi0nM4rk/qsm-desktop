@@ -26,8 +26,8 @@ explicitly asked.
 Design from task to consequence: choose semantic iconography and concise copy that match the
 consequence, define supported states, then resolve spacing, typography, tokens and motion.
 Aim for cosy, minimal dusk/night: calm dark bases and diffuse lilac light informed by
-`shell/assets/wallpapers/deep-night.png` and
-`shell/assets/wallpapers/mountain-dusk.png`. Take inspiration without tracing the
+`shell/assets/wallpapers/dark-rain-world.png` and
+`shell/assets/wallpapers/light-forest-dark-winter.jpg`. Take inspiration without tracing the
 art or adding floating marketing chrome. Ask the owner when a product decision is unresolved.
 
 ## Prime law

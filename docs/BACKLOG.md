@@ -7,6 +7,14 @@ Current checks and the remaining release gates: [Release handoff](#release-hando
 
 ## Source-reviewed interaction gaps
 
+- Workspace-local fullscreen and restored theme artwork are source-prepared,
+  not runtime-exercised or owner-accepted. Inspect fullscreen retained on two
+  workspaces, normal UI on the other monitor, workspace/special-workspace switches,
+  client moves, and wallpaper readiness/rapid theme swaps. Super+F now requests
+  native fullscreen, including the legacy `qsm:focusMode` shortcut name. Local
+  Hyprland config names `qsm:fullscreen`; no compositor reload, production restart,
+  input injection or hardware operation was performed for this repair.
+
 - Launcher audio, Wi-Fi, Bluetooth, repeatable toggles and panel tabs are
   source-prepared and exercised through isolated desktop Workbench stories.
   Live owner review, actual hardware and screen-reader behavior remain open

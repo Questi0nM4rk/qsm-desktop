@@ -13,8 +13,7 @@ Scope {
 
     required property var modelData
     readonly property bool fullscreen: FullscreenService.fullscreenFor(modelData)
-    readonly property bool focusMode: FocusModeService.active
-        && FocusModeService.targetScreen === modelData.name
+    readonly property bool focusMode: FocusModeService.focusFor(modelData)
 
     // The left zone reserves the rail — unless this monitor's rail is
     // collapsed, in which case only the frame strip stays reserved and the

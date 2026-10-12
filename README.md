@@ -82,7 +82,6 @@ Commits include agent-authored work under my identity; design, orchestration and
   - It needs the unpublished `qsm-shell` library next to it.
   - `scripts/qml-lint` fails against its committed baseline. The baseline is out of date.
   - Spec references to screenshots point to images that are not distributed. See [spec/references/README.md](spec/references/README.md).
-  - The default wallpapers are plain gradients. Put your own image in `shell/assets/wallpapers/` and set it in a theme file.
   - Tested on one machine only.
 
 ## License

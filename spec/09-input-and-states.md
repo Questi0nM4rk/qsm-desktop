@@ -2,11 +2,41 @@
 
 ## Fullscreen
 
-- **RATIFIED (2026-08-25, owner)**: on a monitor with a fullscreen client, the band, rail,
+- Fullscreen belongs to a workspace, not the session or focused window. Each monitor
+  uses its currently displayed workspace (the special workspace when one is open).
+  Fullscreen clients on hidden workspaces never suppress another workspace's UI.
+  Several workspaces and monitors can retain independent native fullscreen clients.
+  Compositor maximization is not fullscreen; client-only fullscreen hints do not
+  suppress chrome when the compositor still displays a normal window.
+- On a visible workspace with a true fullscreen client, the band, rail,
   rail popouts, invisible handles, launcher, panel, clipboard, cheat sheet and session hide.
   Notification popups and the event-driven right-edge OSD remain above fullscreen clients on the
   compositor overlay layer; the OSD's idle hover handle stays inert. Other monitors are
   unaffected. This is an explicit allowlist, not a general exemption for shell surfaces.
+- Super+F and Super+Shift+F toggle native Hyprland fullscreen for the active client.
+  They do not enter the single-target QSM geometry transformation. Browser F11 and
+  application fullscreen requests use the same per-workspace presentation policy.
+- `FullscreenService.workspaceFor` resolves the displayed workspace;
+  `fullscreenFor` reads compositor fullscreen from the shared client snapshot.
+  Workspace, special-workspace, client moves and monitor changes refresh the
+  metadata. Frame paint, input masks, exclusion zones, modals, backdrop, OSD and
+  notifications all consume this screen-local state. A blocked workspace cannot
+  block a modal on another monitor's normal workspace.
+
+## Wallpaper
+
+- Each monitor has an always-mapped, click-through Background-layer wallpaper.
+  Fullscreen neither unloads it nor changes its source: the compositor covers it
+  only where a fullscreen client is displayed. It fills the output with aspect crop,
+  has no keyboard, pointer, wheel or accessibility target, and reserves no space.
+- Deep Night uses `dark-rain-world.png`; Mountain Dusk uses
+  `light-forest-dark-winter.jpg`. Theme selection owns the source and palette.
+- `WallpaperWindow` loads the incoming image asynchronously, keeps the current
+  image until readiness, then crossfades using the theme clock. Output geometry
+  stays constant; missing/failed images keep the previous image or theme ground.
+  This follows Caelestia's Background-layer host and ready-image handoff, not its
+  desktop widgets or missing-wallpaper interaction. No interactive control pattern
+  from Material, Radix or Fluent applies to a passive compositor background.
 
 ## Multi-monitor
 
@@ -98,6 +128,9 @@
   close (RATIFIED in 08-session — that file owns the law). NOTE: the blur backdrop is a
   second, dedicated overlay layer surface (compositor blurs beneath it) — the ONE sanctioned
   exception to the one-scene-window rule, since compositor blur requires its own surface.
+- Backdrop namespaces and blur rules are output-specific. Opening or suppressing the
+  session on one workspace must not blur another monitor; fullscreen/focus suppression
+  disables both its dim paint and its compositor blur.
 
 ## Interaction laws (RATIFIED 2026-08-19, owner)
 

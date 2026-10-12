@@ -570,6 +570,12 @@ ShellRoot {
                 "popoutInRegion": scene ? scene.popoutInRegion : false,
                 "subPopoutInRegion": scene ? scene.subPopoutInRegion : false,
                 "fullscreenScreens": FullscreenService.fullscreenCount,
+                "workspacePresentation": Quickshell.screens.map(screen => ({
+                    screen: screen.name,
+                    workspaceId: FullscreenService.workspaceFor(screen)?.id ?? null,
+                    fullscreen: FullscreenService.fullscreenFor(screen),
+                    focusMode: FocusModeService.focusFor(screen)
+                })),
                 "osdKind": OsdState.kind,
                 "osdVisible": OsdState.visible,
                 "notificationCount": NotificationService.live.length,

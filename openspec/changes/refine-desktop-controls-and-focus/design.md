@@ -120,15 +120,19 @@ shell chrome. Frame-attached rollouts remain exclusive to qsm focus mode.
 ### QSM focus mode is distinct from true fullscreen
 
 `FocusModeService` owns qsm focus mode. It saves an address-keyed snapshot of
-the active client's placement, monitor, workspace, floating/fullscreen state,
-and focused monitor rail state; collapses the rail; supplies an opaque qsm
+the active client's placement, monitor, workspace and floating/fullscreen state;
+collapses the rail presentation on that workspace without changing persisted
+preferences; supplies an opaque qsm
 viewport background; and places the client exactly inside the 16px frame. On
 exit, target loss, or shell startup recovery it restores or clears that
-transformation. It permits only notifications and OSD.
+transformation. It permits only notifications and OSD on the target's visible
+workspace and never blocks another workspace's UI.
 
-After focus-mode restoration is proven, `Super+F` invokes it and native
-Hyprland fullscreen moves to `Super+Shift+F`, preserving game,
-direct-scanout, HDR/VRR, browser F11, and client fullscreen protocol behavior.
+`Super+F` and `Super+Shift+F` both invoke native Hyprland fullscreen. The geometry
+transformation remains an explicit IPC facility, not a replacement for fullscreen.
+Native fullscreen belongs to each workspace; shell suppression depends only on
+the workspace currently displayed by each monitor, including special workspaces.
+This preserves game, direct-scanout, HDR/VRR, browser F11 and client protocol behavior.
 Focus mode MUST NOT send a fake fullscreen state to clients as its primary
 mechanism; its viewport is compositor-managed client geometry.
 
@@ -158,8 +162,8 @@ mechanism; its viewport is compositor-managed client geometry.
    completed.
 2. Add qsm focus mode behind its own test seam and prove enter/restore across
    tiled and floating windows.
-3. Move `Super+F` to qsm focus mode and bind native Hyprland fullscreen to the
-   documented alternate shortcut.
+3. Route both fullscreen shortcuts to native Hyprland fullscreen and keep the
+   optional geometry transformation behind its explicit IPC seam.
 4. Roll back by restoring the original Hyprland binding and disabling the focus
   mode service; startup recovery clears any stale focus transformation rather
   than relying on a persisted snapshot.

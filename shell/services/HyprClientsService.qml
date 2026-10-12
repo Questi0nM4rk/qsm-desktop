@@ -16,10 +16,14 @@ QtObject {
     property var clients: []
     // address (without 0x prefix differences) -> client record.
     property var byAddress: ({})
+    property bool refreshPending: false
 
     function refresh(): void {
-        if (!probe.running)
-            probe.running = true;
+        if (probe.running) {
+            refreshPending = true;
+            return;
+        }
+        probe.running = true;
     }
 
     function infoFor(address: string): var {
@@ -74,6 +78,12 @@ QtObject {
         id: probe
         command: Delegate.argv("compositor", ["clients", "-j"])
         running: true
+        onExited: {
+            if (root.refreshPending) {
+                root.refreshPending = false;
+                root.refresh();
+            }
+        }
 
         stdout: StdioCollector {
             onStreamFinished: {

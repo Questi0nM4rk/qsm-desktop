@@ -31,8 +31,7 @@ PanelWindow {
 
     required property var modelData
     readonly property bool fullscreen: FullscreenService.fullscreenFor(modelData)
-    readonly property bool focusMode: FocusModeService.active
-        && FocusModeService.targetScreen === modelData.name
+    readonly property bool focusMode: FocusModeService.focusFor(modelData)
     // Focus mode always reduces its own left edge to the 16px frame. The
     // persisted rail snapshot still decides what returns after focus exits.
     readonly property bool railCollapsed: root.focusMode || ShellState.isRailCollapsed(modelData.name)

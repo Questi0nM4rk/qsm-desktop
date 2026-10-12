@@ -22,8 +22,8 @@ requested. Ask the owner rather than inventing an unresolved product decision.
 Design in this order: task, semantic icon and copy consistent with the consequence, supported
 states, then spacing, typography, tokens and motion. The visual direction is cosy, minimal
 dusk/night, with calm dark bases and diffuse lilac light informed by
-`shell/assets/wallpapers/deep-night.png` and
-`shell/assets/wallpapers/mountain-dusk.png`; do not trace the art or add floating
+`shell/assets/wallpapers/dark-rain-world.png` and
+`shell/assets/wallpapers/light-forest-dark-winter.jpg`; do not trace the art or add floating
 marketing chrome.
 
 The owner often has a live shell open. Coordinate any requested production restart.

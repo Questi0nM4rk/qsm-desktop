@@ -83,9 +83,16 @@ Scope {
     }
 
     Keybind {
+        name: "fullscreen"
+        description: "Toggle native fullscreen on this workspace"
+        onPressed: FullscreenService.toggle()
+    }
+
+    // Already-loaded compositor configs may still name the previous action.
+    Keybind {
         name: "focusMode"
-        description: "QSM focus mode"
-        onPressed: FocusModeService.active ? FocusModeService.restore() : FocusModeService.enter()
+        description: "Toggle native fullscreen on this workspace"
+        onPressed: FullscreenService.toggle()
     }
 
     Keybind {

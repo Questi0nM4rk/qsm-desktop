@@ -109,6 +109,16 @@ QtObject {
         return Quickshell.screens.find(item => item.name === monitorName) ?? null;
     }
 
+    function focusFor(screen: var): bool {
+        return root.active && !!screen && root.targetScreen === screen.name
+            && FullscreenService.workspaceFor(screen)?.id === root.snapshot?.workspaceId;
+    }
+
+    function publishScope(): void {
+        ShellState.focusModeScreen = root.active ? root.snapshot?.monitor ?? "" : "";
+        ShellState.focusModeWorkspaceId = root.active ? root.snapshot?.workspaceId ?? 0 : 0;
+    }
+
     function floatingViewport(screen: var): var {
         return {
             x: Math.round(screen.x + Theme.frameThickness),
@@ -184,8 +194,7 @@ QtObject {
             clientClass: String(record.class),
             pid: Number(record.pid ?? 0),
             at: record.at ?? [0, 0],
-            size: record.size ?? [0, 0],
-            railCollapsed: ShellState.isRailCollapsed(monitor)
+            size: record.size ?? [0, 0]
         };
         const screen = saved.floating ? screenFor(monitor) : null;
         if (saved.floating && !screen)
@@ -199,9 +208,8 @@ QtObject {
         root.snapshot = saved;
         root.address = addressValue;
         root.active = true;
-        ShellState.focusModeActive = true;
+        publishScope();
         persist();
-        setRail(monitor, true);
         settleTimer.restart();
 
         if (saved.floating) {
@@ -239,7 +247,10 @@ QtObject {
                 setTiledMaximized("unset");
             }
         }
-        setRail(saved.monitor, saved.railCollapsed);
+        // Snapshots from the old shortcut changed persisted rail state.
+        // Current focus presentation is workspace-local and never writes it.
+        if (saved.railCollapsed !== undefined)
+            setRail(saved.monitor, saved.railCollapsed);
         clear();
         return true;
     }
@@ -249,7 +260,7 @@ QtObject {
         root.address = "";
         root.snapshot = null;
         root.recoveryAttempts = 0;
-        ShellState.focusModeActive = false;
+        publishScope();
         stateFile.focusActive = false;
         stateFile.focusAddress = "";
         stateFile.writeAdapter();
@@ -280,7 +291,7 @@ QtObject {
             root.address = normalized(stateFile.focusAddress);
             root.snapshot = stateFile.focusSnapshots[root.address] ?? null;
             root.active = root.snapshot !== null;
-            ShellState.focusModeActive = root.active;
+            publishScope();
             if (root.active) {
                 if (root.targetPresent)
                     root.restore();
@@ -288,7 +299,8 @@ QtObject {
                     root.recoveryAttempts++;
                     recoveryTimer.restart();
                 } else {
-                    setRail(root.snapshot.monitor, root.snapshot.railCollapsed);
+                    if (root.snapshot.railCollapsed !== undefined)
+                        setRail(root.snapshot.monitor, root.snapshot.railCollapsed);
                     clear();
                 }
             } else {
