@@ -21,12 +21,13 @@ rollout attachment, input masks, hover corridors and tiling exclusions MUST agre
 - **THEN** its body joins the current frame and its usable region matches the
   visible geometry without a stale reservation or click-through seam
 
-### Requirement: Equal-size date and time readings
-The clock SHALL show DD/MM above HH/mm as four equally sized vertical readings.
-Digit widths and weights SHALL remain stable. Calendar invocation MUST remain.
+### Requirement: Time above a readable numeric date
+The clock SHALL show larger HH above mm with a smaller single-line `DD.MM`
+underneath. Day and numeric month SHALL sit side by side. Time digit widths and
+weights SHALL remain stable. Calendar invocation MUST remain.
 
 #### Scenario: Date or time changes
-- **WHEN** any of the four values changes
+- **WHEN** the date or time changes
 - **THEN** its value updates without shrinking the date or moving the column,
   and reduced motion avoids a positional digit transition
 

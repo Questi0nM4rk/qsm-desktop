@@ -14,8 +14,8 @@ composition over the owner's wallpapers and applications.
 - Preserve the 60px left band and 40px rail. Reduce the other frame edges from
   16px to a proposed 12 logical px, with matching rollout origins, input masks and
   exclusion zones. Preserve vertical application labels and window identity.
-- Show DD, MM, HH and mm as four equal metric-locked clock rows, with the date
-  above the time. Keep calendar invocation.
+- Show larger metric-locked HH/mm above a smaller single-line `DD.MM` date.
+  Keep day and numeric month side by side and preserve calendar invocation.
 - Give all five upper-panel tabs one responsive outer footprint and stable
   navigation. Scroll or adapt content inside it instead of resizing the body.
 - Replace the metadata-only CPU/RAM handle with one lighter capsule-like button,
@@ -32,7 +32,7 @@ composition over the owner's wallpapers and applications.
 
 ### New Capabilities
 
-- `desktop-visual-coherence`: Theme, frame, equal-size clock, purposeful resource
+- `desktop-visual-coherence`: Theme, frame, readable numeric-date clock, purposeful resource
   presentation, icon selection and reference-informed notification containment.
 - `stable-upper-panel`: Fixed responsive outer size, stable tab navigation and
   bounded overflow for every tab and data-availability state.

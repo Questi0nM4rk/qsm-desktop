@@ -10,8 +10,8 @@ Current checks and the remaining release gates: [Release handoff](#release-hando
 - Owner-directed visual touchups preserve vertical app captions and the acceptable
   menus. The first source-prepared item is the stable upper panel with a preferred
   854x520 logical px footprint, bounded static overflow and unchanged model-tab
-  scrolling. Supporting changes are a shared violet surface ladder, equal-size
-  DD/MM above HH/mm, a 224x36 mirrored CPU/RAM handle and 12px ordinary frame
+  scrolling. Supporting changes are a shared violet surface ladder, larger HH/mm
+  above a smaller single-line DD.MM, a 224x36 mirrored CPU/RAM handle and 12px ordinary frame
   edges with the left band/rail retained at 60/40px. The Performance stories expose
   normal and short/narrow viewports plus unavailable/zero/full samples with a
   fixed battery record. Other preview tabs remain navigation-only until their

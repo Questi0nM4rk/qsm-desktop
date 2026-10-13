@@ -87,9 +87,10 @@ intent separately from the backend result, with no password in event payloads.
 - **RATIFIED (2026-08-16)**: toggle-state entries (awake/coffee, and all future toggles) show
   state by SWAPPING THE ICON (empty cup ↔ full cup), NEVER by a glow/light ring around it.
   The current highlight treatment is abolished.
-- Clock entry = DD/MM above HH/mm as four equally sized vertical readings, with
-  one token gap between date and time. All readings share the technical face,
-  weight and fixed `00` metrics. The date never shrinks to fit a combined line.
+- Clock entry = HH above mm, with a smaller single-line `DD.MM` beneath the time.
+  Day and numeric month sit side by side, never as separate vertical readings
+  or a month name. Time uses the 18px technical reading, the date 12px, with
+  metric-locked time digits and no date auto-shrinking.
   It is text-only, without a clock icon; hovering still opens the calendar popout.
   Reduced motion settles digit changes immediately without positional travel.
 - **RATIFIED (2026-08-16, re-amended 2026-08-18 v2 — owner iterated on glass: reel out,
@@ -140,7 +141,7 @@ intent separately from the backend result, with no password in event payloads.
   the acknowledgement is the shell's, not the tool's).
 - **DEFAULT (2026-08-16)**: awake = idle-inhibitor toggle (inhibits Hypridle via the standard
   inhibit protocol); icons full-cup = on, empty-cup = off. Pin entry icons: pin / pin-off.
-- **DEFAULT (2026-08-16)**: clock is 24h HH:MM, date "DD MMM"; calendar weeks start Monday.
+- Clock is 24h HH:MM, with the rail date `DD.MM`; calendar weeks start Monday.
 - **DEFAULT (2026-08-16, contradiction resolved 2026-08-17 owner)**: which entries popout
   on hover: battery, clock (calendar — matching the RATIFIED hover law above; the earlier
   click-only bullet was a spec self-contradiction, hover won), media when present

@@ -13,7 +13,7 @@ commit is not evidence of live behavior or owner visual acceptance.
 ## Goals / Non-Goals
 
 Goals: coherent violet material, visible control states, stable panel geometry,
-equal-size clock readings, a purposeful resource handle, compact notification
+readable time above a numeric date, a purposeful resource handle, compact notification
 containment and correct ownership of the affected surface lifetimes.
 
 Non-goals are listed in the proposal. In particular, preserve the accepted
@@ -56,9 +56,11 @@ thickness. Preserve exact normative shader formulas and do not rebuild QSB.
 
 ### Clock composition
 
-Replace the fitted `dd MMM` line with DD/MM above HH/mm, all vertically stacked
-in two pairs separated by one token gap. All use the same technical font, size,
-weight and `00` metrics. No HorizontalFit shrinking, year row or clock icon.
+Show HH above mm, then a smaller single-line `DD.MM` beneath the time. Day and
+numeric month sit side by side. The technical time digits use the 18px step and
+fixed bold `00` metrics; the date uses the 12px step and medium weight. The numeric
+date does not need the month name's HorizontalFit shrinking. Separate it from
+the time by one token gap. No year row or clock icon.
 Keep the existing calendar popout route. Digit motion remains local and is
 settled immediately under reduced motion; a value change never moves the column.
 

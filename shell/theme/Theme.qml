@@ -402,8 +402,9 @@ QtObject {
     readonly property int railWorkspaceDotSlot: 9
     readonly property int railWorkspaceActiveSlot: 18
     readonly property int railWorkspacePillWidth: 24
-    // Four metric-locked readings, in two equally sized date/time pairs.
-    readonly property int railClockDigitSize: textMd
+    // Time stays prominent above the smaller single-line numeric date.
+    readonly property int railClockDigitSize: textLg
+    readonly property int railClockDateSize: textSm
     // StatRing (performance tab default; dashboard resources card overrides
     // both to fit three stacked rings in one card).
     readonly property int ringDiameterDefault: 150

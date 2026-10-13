@@ -3,7 +3,7 @@ import Quickshell
 import qs.QsmShell.Components as QsmShellComponents
 import qs.theme
 
-// Date and time share one metric-locked reading; the gap separates the pairs.
+// The larger time sits above one smaller numeric date, all in the technical face.
 Item {
     id: root
 
@@ -105,14 +105,20 @@ Item {
 
         Column {
             anchors.horizontalCenter: parent.horizontalCenter
-            RollingDigits { value: Qt.formatDate(root.now, "dd") }
-            RollingDigits { value: Qt.formatDate(root.now, "MM") }
-        }
-        Item { width: 0; height: Theme.space2 }
-        Column {
-            anchors.horizontalCenter: parent.horizontalCenter
             RollingDigits { value: Qt.formatTime(root.now, "HH") }
             RollingDigits { value: Qt.formatTime(root.now, "mm") }
+        }
+        QsmShellComponents.Prose {
+            anchors.horizontalCenter: parent.horizontalCenter
+            role: "reading"
+            technical: true
+            topPadding: Theme.space1
+            width: Theme.railWidth - Theme.space1
+            horizontalAlignment: Text.AlignHCenter
+            text: Qt.formatDate(root.now, "dd.MM")
+            font.pixelSize: Theme.railClockDateSize
+            font.weight: Theme.weightMedium
+            elide: Text.ElideNone
         }
     }
 }
