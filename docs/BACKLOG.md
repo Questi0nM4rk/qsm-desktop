@@ -7,6 +7,14 @@ Current checks and the remaining release gates: [Release handoff](#release-hando
 
 ## Source-reviewed interaction gaps
 
+- Owner-directed visual touchups preserve vertical app captions and the acceptable
+  menus: a more coherent purple material, equally sized date/time readings,
+  thinner frame with matching rollout/input/exclusion geometry, a stable responsive
+  upper-panel footprint across all tabs, the CPU/RAM capsule-like handle and a
+  contextual icon review. Clock row order, frame versus rail-band narrowing and
+  individual notification containment remain design choices. Reference notification
+  appearance does not authorize changing named-action policy. Prepare one named
+  surface first; no appearance implementation or live visual acceptance is claimed.
 - Workspace-local fullscreen has read-only live evidence for a fullscreen client
   retained on a hidden workspace while both displayed workspaces keep normal
   frame, rail and exclusion state. Fullscreen entry/exit, simultaneous displayed
