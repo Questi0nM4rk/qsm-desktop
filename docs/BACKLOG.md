@@ -8,13 +8,18 @@ Current checks and the remaining release gates: [Release handoff](#release-hando
 ## Source-reviewed interaction gaps
 
 - Owner-directed visual touchups preserve vertical app captions and the acceptable
-  menus: a more coherent purple material, equally sized date/time readings,
-  thinner frame with matching rollout/input/exclusion geometry, a stable responsive
-  upper-panel footprint across all tabs, the CPU/RAM capsule-like handle and a
-  contextual icon review. Clock row order, frame versus rail-band narrowing and
-  individual notification containment remain design choices. Reference notification
-  appearance does not authorize changing named-action policy. Prepare one named
-  surface first; no appearance implementation or live visual acceptance is claimed.
+  menus. The first source-prepared item is the stable upper panel with a preferred
+  854x520 logical px footprint, bounded static overflow and unchanged model-tab
+  scrolling. Supporting changes are a shared violet surface ladder, equal-size
+  DD/MM above HH/mm, a 224x36 mirrored CPU/RAM handle and 12px ordinary frame
+  edges with the left band/rail retained at 60/40px. The Performance stories expose
+  normal and short/narrow viewports plus unavailable/zero/full samples with a
+  fixed battery record. Other preview tabs remain navigation-only until their
+  isolated fixtures are prepared. All live geometry, focus, transitions, both
+  outputs/themes and owner visual acceptance remain unverified because the
+  owner did not request runtime checks. The remaining plan, including rounded
+  notification rows without action-policy changes, is tracked in
+  `openspec/changes/refine-quiet-luminous-desktop/tasks.md` and `qsd-r87.1`.
 - Workspace-local fullscreen has read-only live evidence for a fullscreen client
   retained on a hidden workspace while both displayed workspaces keep normal
   frame, rail and exclusion state. Fullscreen entry/exit, simultaneous displayed
@@ -39,11 +44,6 @@ Current checks and the remaining release gates: [Release handoff](#release-hando
   work on a late failure. `submitNetwork()` also clears the password only after an
   accepted backend start, contrary to the rejected-submission contract. Both paths
   are source-reviewed, not runtime-exercised, and await the launcher lifecycle repair.
-- Dashboard and Performance tab destructors set the singleton `polling` false.
-  Outgoing content remains loaded through retract, so its destruction can cancel
-  an incoming monitor's detailed sampling. CPU/RAM handle subscriptions are separately
-  keyed and do not preserve GPU/storage/network sampling. This overlap route needs
-  a named live check and a single demand owner.
 
 - Launcher audio, Wi-Fi, Bluetooth, repeatable toggles and panel tabs are
   source-prepared and exercised through isolated desktop Workbench stories.

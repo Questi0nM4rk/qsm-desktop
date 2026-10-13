@@ -19,8 +19,7 @@ Item {
     readonly property real progress: (MediaService.lengthSupported && MediaService.length > 0)
         ? Math.max(0, Math.min(1, MediaService.position / MediaService.length)) : 0
 
-    // Content-driven: a fixed 320 left ~90px of dead panel under the transport
-    // row whenever the artwork was the tallest thing in the tab.
+    implicitWidth: Math.max(Theme.mediaContentWidth, mediaRow.implicitWidth + Theme.space4 * 2)
     implicitHeight: Math.max(mediaRow.implicitHeight, Theme.mediaArtSize + Theme.space4 * 2)
 
     // Same empty-state pattern as the launcher and clipboard surfaces.

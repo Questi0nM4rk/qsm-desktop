@@ -14,7 +14,8 @@ import Quickshell.Io
 QtObject {
     id: root
 
-    property bool polling: false
+    property var detailedOwners: []
+    readonly property bool polling: detailedOwners.length > 0
     property var watchers: ({})
     readonly property bool sampling: polling || Object.keys(watchers).length > 0
 
@@ -24,6 +25,13 @@ QtObject {
         if (enabled) next[name] = true;
         else delete next[name];
         watchers = next;
+    }
+
+    // Instance identity, not a tab kind: two panel hosts can overlap at handoff.
+    function watchDetails(owner: var, enabled: bool): void {
+        if (detailedOwners.includes(owner) === enabled) return;
+        detailedOwners = enabled ? detailedOwners.concat([owner])
+            : detailedOwners.filter(candidate => candidate !== owner);
     }
 
     property real cpuUsage: -1

@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell.Services.UPower
 import qs.QsmShell.Components as QsmShellComponents
 import qs.components
 import qs.modules.panel as Panel
@@ -6,10 +7,8 @@ import qs.services
 import qs.state
 import qs.theme
 
-// The production top panel, hosted without its tab CONTENTS: the item under
-// review is the tab group itself (Tab/Shift+Tab, arrows, clamped ends, focus),
-// and loading Dashboard/Media/Performance here would test those surfaces
-// instead. Everything else is the real surface in the real rollout.
+// Navigation-only stories retain their scope. The Performance variant loads
+// that production composition against isolated service readings, never probes.
 Item {
     id: root
 
@@ -36,7 +35,8 @@ Item {
         options: [{ label: "Interactive" }, { label: "Focus mode" }]
     }, {
         label: "Resources",
-        options: [{ label: "Everyday" }, { label: "Busy" }, { label: "Unavailable" }]
+        options: [{ label: "Everyday" }, { label: "Busy" }, { label: "Unavailable" },
+            { label: "Zero" }, { label: "Full" }]
     }]
     readonly property var actions: [
         { label: "Open panel", trigger: "open-panel" },
@@ -54,7 +54,10 @@ Item {
             "focus-suppressed": () => root.focusSuppressed,
             "handle-visible": () => handle.visible,
             "cpu-reading": () => handle.reading(root.cpuUsage),
-            "memory-reading": () => handle.reading(root.memoryUsed)
+            "memory-reading": () => handle.reading(root.memoryUsed),
+            "panel-width": () => panel.bodyWidth,
+            "panel-height": () => panel.bodyHeight,
+            "detailed-sampling": () => PerformanceService.polling
         },
         targets: {
             "scene": () => root,
@@ -79,8 +82,14 @@ Item {
         "Motion": option => { ShellState.reducedMotion = option === 1; return true; },
         "Suppress": option => { root.focusSuppressed = option === 1; return true; },
         "Resources": option => {
-            root.cpuUsage = [0.23, 0.87, -1][option];
-            root.memoryUsed = [0.46, 0.92, -1][option];
+            root.cpuUsage = [0.23, 0.87, -1, 0, 1][option];
+            root.memoryUsed = [0.46, 0.92, -1, 0, 1][option];
+            PerformanceService.cpuUsage = root.cpuUsage;
+            PerformanceService.memUsed = root.memoryUsed;
+            PerformanceService.cpuTemp = option === 2 ? -1 : 52;
+            PerformanceService.gpuUsage = option === 2 ? -1 : 0.18;
+            PerformanceService.gpuTemp = option === 2 ? -1 : 45;
+            PerformanceService.storageUsed = option === 2 ? -1 : 0.38;
             return true;
         }
     })
@@ -96,12 +105,14 @@ Item {
 
     function resetStory(): void {
         root.observing = false;
+        PerformanceService.reset();
         ShellState.reset();
         FullscreenService.reset();
         ShellState.focusedScreen = screenFacts;
         root.focusSuppressed = false;
         root.cpuUsage = 0.23;
         root.memoryUsed = 0.46;
+        if (root.menuVariant === "performance") ShellState.panelTab = "performance";
         restoreObservation.restart();
     }
 
@@ -143,7 +154,7 @@ Item {
     QsmShellComponents.ShellBorder {
         id: border
         anchors.fill: parent
-        leftEdge: Theme.frameThickness
+        leftEdge: Theme.reservedLeft
         pointer: pointer
         entryFilter: id => id === "panel" || id === "panel-catch" || id === "panel-handle"
     }
@@ -155,7 +166,7 @@ Item {
         memoryUsed: root.memoryUsed
         width: implicitWidth
         height: implicitHeight
-        x: root.width / 2 - width / 2
+        x: sceneFacts.panelCenterX - width / 2
         y: panel.leadingEdgeY - height / 2 + Theme.handleProud
         visible: !root.focusSuppressed && root.previewEnvironment?.fullscreen !== true
         onActivated: {
@@ -168,7 +179,7 @@ Item {
         id: sceneFacts
         readonly property var modelData: screenFacts
         readonly property bool focusMode: root.focusSuppressed
-        readonly property real panelCenterX: root.width / 2
+        readonly property real panelCenterX: (Theme.reservedLeft + root.width - Theme.frameThickness) / 2
         readonly property real width: root.width
     }
 
@@ -178,7 +189,13 @@ Item {
         targetScreen: screenFacts
         scene: sceneFacts
         host: border
-        loadContent: false
+        loadContent: root.menuVariant === "performance" && ShellState.panelTab === "performance"
+        performanceContent: Component {
+            Panel.PerformanceTab {
+                batteryDevice: ({ isLaptopBattery: true, percentage: 0.62,
+                    state: UPowerDeviceState.Discharging, timeToEmpty: 12600, timeToFull: 0 })
+            }
+        }
         onTabSelected: key => root.record("component", "tab-selected", { key: key })
     }
 }

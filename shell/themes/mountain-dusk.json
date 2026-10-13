@@ -2,20 +2,18 @@
     "name": "Mountain Dusk",
     "wallpaper": "assets/wallpapers/light-forest-dark-winter.jpg",
     "tokens": {
-        "background": "#202833",
-        "backgroundMid": "#2B3948",
-        "backgroundEnd": "#34495A",
-        "surface": "#2A3542",
-        "surfaceRaised": "#344252",
-        "surfaceHover": "#405065",
-        "text": "#E6EDF4",
-        "textMuted": "#AEBBC7",
-        "accent": "#A8C7D8",
+        "background": "#202332",
+        "backgroundMid": "#282C3E",
+        "backgroundEnd": "#33384B",
+        "surface": "#2D3141",
+        "text": "#EDEAF7",
+        "textMuted": "#B3AEC8",
+        "accent": "#BDAFE5",
+        "info": "#B8B2D0",
         "secondary": "#C1B6D8",
         "success": "#9FCBC3",
         "warning": "#D8B9A5",
         "danger": "#D99098",
-        "outline": "#536476",
-        "bandFill": "#1B1439"
+        "bandFill": "#171322"
     }
 }

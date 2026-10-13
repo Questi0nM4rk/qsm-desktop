@@ -2,20 +2,18 @@
     "name": "Deep Night",
     "wallpaper": "assets/wallpapers/dark-rain-world.png",
     "tokens": {
-        "background": "#1C0E27",
-        "backgroundMid": "#251733",
-        "backgroundEnd": "#2E203E",
-        "surface": "#21142B",
-        "surfaceRaised": "#2D1F3A",
-        "surfaceHover": "#382A48",
-        "text": "#F6F1F9",
-        "textMuted": "#B6A8C2",
-        "accent": "#C5A5E9",
-        "secondary": "#E1B7E1",
+        "background": "#1B1027",
+        "backgroundMid": "#23182F",
+        "backgroundEnd": "#2C203B",
+        "surface": "#2E203C",
+        "text": "#F6F1FB",
+        "textMuted": "#BCAECA",
+        "accent": "#C7A8EB",
+        "secondary": "#DEC0EF",
+        "info": "#B7AECF",
         "success": "#91D6C2",
         "warning": "#E8C58A",
         "danger": "#FF8B94",
-        "outline": "#4E3F62",
-        "bandFill": "#15081E"
+        "bandFill": "#160D20"
     }
 }

@@ -5,16 +5,8 @@ import qs.services
 import qs.state
 import qs.theme
 
-// The top panel (06-top-panel): centerpiece rollout from the top band,
-// horizontally centered, BOTH dimensions content-driven per tab, 48px tab bar
-// at the panel's top. A fixed 854px width left the Media and Workspaces tabs
-// as a strip of content against half a panel of empty ground; the panel now
-// takes the width its tab actually needs (never narrower than the tab bar,
-// never wider than a comfortable reading measure) and MORPHS between tabs, so
-// it reads as one surface resizing rather than five panels of different sizes. Opens on the dot handle's hover (EdgeScene
-// owns handle + intent delay) or via IPC/keybinds; lands on the LAST USED
-// tab. Closes on Escape, click outside (EdgeScene catch), shortcut
-// re-press (togglePanel), or the cursor leaving the panel for 400ms.
+// One responsive shell body. Static tabs overflow inside it; model-backed tabs
+// keep their own scrolling. EdgeScene owns the handle, hover intent and catch.
 Item {
     id: root
 
@@ -26,6 +18,7 @@ Item {
     // is the library's, not a second hand-rolled one.
     readonly property Item tabsTarget: tabBar
     property bool loadContent: true
+    property Component performanceContent: Component { PerformanceTab {} }
     signal tabSelected(string key)
     readonly property bool active: ShellState.modal === "panel"
         && ShellState.focusedScreen === targetScreen
@@ -34,6 +27,24 @@ Item {
     // alive until the retract settles.
     readonly property bool revealed: rollout.visible
     readonly property bool animating: rollout.animating
+    readonly property real bodyWidth: Math.max(0, Math.min(Theme.panelWidth,
+        Math.floor(2 * Math.min(root.scene.panelCenterX - root.host.leftEdge,
+            root.width - Theme.frameThickness - root.scene.panelCenterX) - Theme.space4 * 2)))
+    readonly property real bodyHeight: Math.max(0, Math.min(Theme.panelHeight,
+        Math.floor(root.height - Theme.frameThickness * 2 - Theme.space4
+            - Theme.panelHandleHeight / 2 - Theme.handleProud)))
+    readonly property bool staticContent: ShellState.panelTab !== "notifications"
+        && ShellState.panelTab !== "workspaces"
+    readonly property bool detailedSampling: root.loadContent && root.active
+        && !root.fullscreen && !root.scene.focusMode
+        && (ShellState.panelTab === "dashboard" || ShellState.panelTab === "performance")
+
+    function syncSampling(): void {
+        PerformanceService.watchDetails(root, root.detailedSampling);
+    }
+    onDetailedSamplingChanged: syncSampling()
+    Component.onCompleted: syncSampling()
+    Component.onDestruction: PerformanceService.watchDetails(root, false)
 
     // Handle-ride source of truth (06-top-panel amended 2026-08-18): the
     // rollout's top edge is pinned at the wall (source expansion,
@@ -43,19 +54,12 @@ Item {
     readonly property real leadingEdgeY: rollout.y + rollout.height
 
     readonly property var tabs: [
-        { key: "dashboard", label: "Dashboard", icon: "home", width: Theme.panelWidthGrid },
-        { key: "media", label: "Media", icon: "music", width: Theme.panelWidthColumn },
-        { key: "performance", label: "Performance", icon: "activity", width: Theme.panelWidthGrid },
-        { key: "workspaces", label: "Workspaces", icon: "workspace", width: Theme.panelWidthColumn },
-        { key: "notifications", label: "Notifications", icon: "bell", width: Theme.panelWidthColumn }
+        { key: "dashboard", label: "Dashboard", icon: "layers" },
+        { key: "media", label: "Media", icon: "music" },
+        { key: "performance", label: "Performance", icon: "gauge" },
+        { key: "workspaces", label: "Workspaces", icon: "workspace" },
+        { key: "notifications", label: "Notifications", icon: "bell" }
     ]
-
-    // The open tab's designed width, floored by the tab bar so the set of tabs
-    // is never itself the thing that overflows.
-    readonly property real tabWidth: {
-        const tab = tabs.find(candidate => candidate.key === ShellState.panelTab);
-        return Math.max(tabBar.implicitWidth, tab?.width ?? Theme.panelWidthGrid);
-    }
 
     // Tab stepping is the shared control's own action; Left/Right, Tab/Shift+Tab
     // and Home/End therefore mean exactly what they mean everywhere else. The
@@ -75,8 +79,9 @@ Item {
         registerHitRect: false // the host's full-scene catch region is the hit area
         shouldBeActive: root.active
         suppressed: root.fullscreen || root.scene.focusMode
-        bodyWidth: root.tabWidth + Theme.space4 * 2
-        bodyHeight: panelColumn.implicitHeight + Theme.space4 * 2
+        bodyWidth: root.bodyWidth
+        bodyHeight: root.bodyHeight
+        animateBodySize: false
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.horizontalCenterOffset: root.scene.panelCenterX - root.scene.width / 2
@@ -100,48 +105,99 @@ Item {
                 anchors.margins: Theme.space4
                 spacing: Theme.space3
 
-                // The tab bar: icon + label per tab, active = accent, and the group takes
-                // Tab/Shift+Tab. It is sized to the panel's reading measure, not
-                // stretched across the widest tab's panel, which read as five
-                // separate controls instead of one set.
-                QsmShellComponents.Segmented {
-                    id: tabBar
-                    Layout.alignment: Qt.AlignHCenter
-                    Layout.preferredWidth: Theme.panelWidthColumn
-                    implicitWidth: Theme.panelWidthColumn
-                    barHeight: Theme.panelTabBarHeight
-                    options: root.tabs
-                    currentIndex: Math.max(0, root.tabs.findIndex(tab => tab.key === ShellState.panelTab))
-                    tabNavigation: true
-                    wrapNavigation: false
-                    Accessible.name: "Panel sections"
-                    onSelected: index => {
-                        ShellState.claimKeyboardSelection();
-                        ShellState.panelTab = root.tabs[index].key;
-                        root.tabSelected(root.tabs[index].key);
+                QsmShellComponents.ScrollArea {
+                    id: navigation
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: Theme.panelTabBarHeight
+                    orientation: Qt.Horizontal
+                    fadeColor: Theme.bandFill
+
+                    function revealTab(): void {
+                        const left = tabBar.currentIndex * tabBar.width / root.tabs.length;
+                        const right = left + tabBar.width / root.tabs.length;
+                        const view = navigation.viewport;
+                        view.contentX = Math.max(0, Math.min(view.contentWidth - view.width,
+                            left < view.contentX ? left
+                            : right > view.contentX + view.width ? right - view.width : view.contentX));
                     }
-                    // Down is the way INTO the selected tab; content owns its
-                    // own keys once focus is there.
-                    Keys.onDownPressed: {
-                        const content = contentLoader.item as Item;
-                        if (content) content.forceActiveFocus();
+                    onWidthChanged: Qt.callLater(navigation.revealTab)
+
+                    QsmShellComponents.Segmented {
+                        id: tabBar
+                        objectName: "panelNavigation"
+                        width: Math.max(navigation.width, Theme.panelNavigationWidth)
+                        barHeight: Theme.panelTabBarHeight
+                        options: root.tabs
+                        currentIndex: Math.max(0, root.tabs.findIndex(tab => tab.key === ShellState.panelTab))
+                        tabNavigation: true
+                        wrapNavigation: false
+                        Accessible.name: "Panel sections"
+                        onCurrentIndexChanged: navigation.revealTab()
+                        onSelected: index => {
+                            ShellState.claimKeyboardSelection();
+                            ShellState.panelTab = root.tabs[index].key;
+                            root.tabSelected(root.tabs[index].key);
+                        }
+                        Keys.onDownPressed: {
+                            const content = contentLoader.item as Item;
+                            if (content) content.forceActiveFocus();
+                        }
                     }
                 }
 
-                Loader {
-                    id: contentLoader
+                Item {
+                    id: contentFrame
                     Layout.fillWidth: true
-                    // Content stays loaded through the retract (never a
-                    // blank panel sliding away).
-                    active: root.loadContent && (root.active || rollout.visible)
-                    sourceComponent: {
-                        switch (ShellState.panelTab) {
-                        case "media": return mediaTab;
-                        case "performance": return performanceTab;
-                        case "workspaces": return workspacesTab;
-                        case "notifications": return notificationsTab;
-                        default: return dashboardTab;
+                    Layout.fillHeight: true
+                    clip: true
+
+                    Flickable {
+                        id: contentView
+                        objectName: "panelContentViewport"
+                        anchors.fill: parent
+                        clip: true
+                        interactive: root.staticContent
+                        boundsBehavior: Flickable.StopAtBounds
+                        flickableDirection: Flickable.AutoFlickDirection
+                        contentWidth: root.staticContent
+                            ? Math.max(width, contentLoader.item?.implicitWidth ?? 0) : width
+                        contentHeight: root.staticContent
+                            ? Math.max(height, contentLoader.item?.implicitHeight ?? 0) : height
+
+                        Loader {
+                            id: contentLoader
+                            width: contentView.contentWidth
+                            height: root.staticContent
+                                ? Math.max(0, item?.implicitHeight ?? 0) : contentView.height
+                            y: root.staticContent ? Math.max(0, Math.round((contentView.height - height) / 2)) : 0
+                            // Keep content through the retract, not its demand.
+                            active: root.loadContent && (root.active || rollout.visible)
+                            sourceComponent: {
+                                switch (ShellState.panelTab) {
+                                case "media": return mediaTab;
+                                case "performance": return root.performanceContent;
+                                case "workspaces": return workspacesTab;
+                                case "notifications": return notificationsTab;
+                                default: return dashboardTab;
+                                }
+                            }
+                            onSourceComponentChanged: {
+                                contentView.contentX = 0;
+                                contentView.contentY = 0;
+                            }
                         }
+                    }
+                    QsmShellComponents.ScrollCue {
+                        view: contentView
+                        orientation: Qt.Vertical
+                        visible: root.staticContent
+                        fadeColor: Theme.bandFill
+                    }
+                    QsmShellComponents.ScrollCue {
+                        view: contentView
+                        orientation: Qt.Horizontal
+                        visible: root.staticContent
+                        fadeColor: Theme.bandFill
                     }
                 }
             }
@@ -175,7 +231,6 @@ Item {
 
     Component { id: dashboardTab; DashboardTab {} }
     Component { id: mediaTab; MediaTab {} }
-    Component { id: performanceTab; PerformanceTab {} }
     Component { id: workspacesTab; WorkspacesTab { targetScreen: root.targetScreen } }
     Component { id: notificationsTab; NotificationCenterTab {} }
 }

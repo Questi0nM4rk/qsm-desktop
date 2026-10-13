@@ -22,6 +22,20 @@
       "tags": ["desktop", "performance", "panel"],
       "source": "shell/modules/panel/PanelHandle.qml"
     },
+    "panel-performance": {
+      "component": "panel-tabs", "variant": "performance", "viewport": [980, 680],
+      "title": "Stable panel / Performance",
+      "description": "Production Performance content inside the fixed responsive panel with isolated samples, missing readings and zero/full handle levels. Other tabs remain navigation-only in this first preparation.",
+      "tags": ["desktop", "performance", "panel"],
+      "source": "shell/modules/panel/PanelSurface.qml"
+    },
+    "panel-performance-short": {
+      "component": "panel-tabs", "variant": "performance", "viewport": [720, 460],
+      "title": "Stable panel / Short screen",
+      "description": "The same production Performance composition in a short/narrow viewport, with internal overflow and fixed navigation. No live sampling.",
+      "tags": ["desktop", "performance", "panel", "overflow"],
+      "source": "shell/modules/panel/PanelSurface.qml"
+    },
     "action-menu-brightness": {
       "component": "action-menu", "variant": "brightness", "viewport": [980, 760],
       "title": "Action menu / Brightness",

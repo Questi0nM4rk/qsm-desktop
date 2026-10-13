@@ -3,6 +3,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import qs.QsmShell.Style as QsmShellStyle
 import qs.state
 
 // Theme engine (11-theme / 7b): a theme = palette + wallpaper pair, one
@@ -31,12 +32,11 @@ QtObject {
 
     // The 11-theme baseline (deep dark) — the fallback for missing tokens.
     readonly property var baseline: ({
-        background: "#1C0E27", backgroundMid: "#251733", backgroundEnd: "#2E203E",
-        surface: "#21142B", surfaceRaised: "#2D1F3A", surfaceHover: "#382A48",
-        text: "#F6F1F9", textMuted: "#B6A8C2", accent: "#C5A5E9",
-        secondary: "#E1B7E1", success: "#91D6C2", warning: "#E8C58A",
-        danger: "#FF8B94", outline: "#4E3F62", info: "#9FC2EA",
-        bandFill: "#15081E", shadow: "#000000"
+        background: "#1B1027", backgroundMid: "#23182F", backgroundEnd: "#2C203B",
+        surface: "#2E203C", text: "#F6F1FB", textMuted: "#BCAECA", accent: "#C7A8EB",
+        secondary: "#DEC0EF", success: "#91D6C2", warning: "#E8C58A",
+        danger: "#FF8B94", info: "#B7AECF",
+        bandFill: "#160D20", shadow: "#000000"
     })
 
     function token(name: string): color {
@@ -49,8 +49,8 @@ QtObject {
     property color backgroundMid: token("backgroundMid")
     property color backgroundEnd: token("backgroundEnd")
     property color surface: token("surface")
-    property color surfaceRaised: token("surfaceRaised")
-    property color surfaceHover: token("surfaceHover")
+    readonly property color surfaceRaised: QsmShellStyle.Style.lift(surface, 0.2)
+    readonly property color surfaceHover: QsmShellStyle.Style.lift(surface, 0.4)
     property color text: token("text")
     property color textMuted: token("textMuted")
     property color accent: token("accent")
@@ -59,7 +59,7 @@ QtObject {
     property color warning: token("warning")
     property color info: token("info")
     property color danger: token("danger")
-    property color outline: token("outline")
+    readonly property color outline: QsmShellStyle.Style.lift(surface, 0.8)
     property color shadow: token("shadow")
     // The band's own fill, and the ONE colour drawn from the wallpaper rather
     // than the palette ramp (owner 2026-08-18).
@@ -97,8 +97,6 @@ QtObject {
     Behavior on backgroundMid { ColorAnimation { duration: root.themeSwapDuration } }
     Behavior on backgroundEnd { ColorAnimation { duration: root.themeSwapDuration } }
     Behavior on surface { ColorAnimation { duration: root.themeSwapDuration } }
-    Behavior on surfaceRaised { ColorAnimation { duration: root.themeSwapDuration } }
-    Behavior on surfaceHover { ColorAnimation { duration: root.themeSwapDuration } }
     Behavior on text { ColorAnimation { duration: root.themeSwapDuration } }
     Behavior on textMuted { ColorAnimation { duration: root.themeSwapDuration } }
     Behavior on accent { ColorAnimation { duration: root.themeSwapDuration } }
@@ -112,7 +110,6 @@ QtObject {
     Behavior on warning { ColorAnimation { duration: root.themeSwapDuration } }
     Behavior on danger { ColorAnimation { duration: root.themeSwapDuration } }
     Behavior on info { ColorAnimation { duration: root.themeSwapDuration } }
-    Behavior on outline { ColorAnimation { duration: root.themeSwapDuration } }
     Behavior on shadow { ColorAnimation { duration: root.themeSwapDuration } }
     Behavior on bandFill { ColorAnimation { duration: root.themeSwapDuration } }
 
@@ -259,13 +256,10 @@ QtObject {
     readonly property int launcherThemeCardWidth: 220
     readonly property int launcherThemeCardHeight: 178
 
-    // Top panel (06): TWO widths, not five. A card grid needs three columns
-    // side by side; a single-column tab (media, history, a workspace row) in
-    // that same width is a strip of content against half a panel of empty
-    // ground, which is what the old one-size-fits-all 854 produced. The panel
-    // morphs between them, so it still reads as one surface resizing.
-    readonly property int panelWidthGrid: 854
-    readonly property int panelWidthColumn: 620
+    // One outer footprint; tab content owns overflow, never the shell body.
+    readonly property int panelWidth: 854
+    readonly property int panelHeight: 520
+    readonly property int panelNavigationWidth: 620
     // Top panel tab bar (06 RATIFIED: 48px).
     readonly property int panelTabBarHeight: 48
     // 04 RATIFIED: collapsed notification entry is 36px.
@@ -287,10 +281,10 @@ QtObject {
     readonly property int markThickness: 3
     readonly property int markHeight: 18
     readonly property int railWidth: 40
-    // 01-frame RATIFIED geometry: band 16 everywhere except the 60px left
+    // 01-frame geometry: band 12 everywhere except the 60px left
     // band the rail lives inside; viewport rounding and rollout corners 28
     // (01-frame: 25 was the shell's last off-ladder radius, now gone).
-    readonly property int frameThickness: 16
+    readonly property int frameThickness: 12
     readonly property int frameRadius: radius2xl
     readonly property int reservedLeft: 60
     readonly property int rolloutRadius: radius2xl
@@ -329,8 +323,14 @@ QtObject {
     readonly property real dotRadius: 2
     readonly property real dotSpacing: 6
     readonly property real dotGlyphSize: 2.5
-    readonly property int panelHandleWidth: 160
-    readonly property int panelHandleHeight: 28
+    readonly property int panelHandleWidth: 224
+    readonly property int panelHandleHeight: 36
+    readonly property color resourceSurfaceTop: surfaceRaised
+    readonly property color resourceSurfaceBottom: surface
+    readonly property color resourceTrack: outline
+    readonly property color resourceFillLow: Qt.darker(textMuted, 1.35)
+    readonly property color resourceFillHigh: textMuted
+    readonly property int resourceMeterThickness: 3
     // Rail popouts (03).
     readonly property int popoutWidth: 280
     // Bluetooth popout (03, caelestia-parity B4): device rows cap at N,
@@ -402,14 +402,8 @@ QtObject {
     readonly property int railWorkspaceDotSlot: 9
     readonly property int railWorkspaceActiveSlot: 18
     readonly property int railWorkspacePillWidth: 24
-    // Clock entry (03, amended 2026-08-17 — caelestia anatomy): stacked
-    // hour/minute digits, smaller than the dashboard's textDisplay so the
-    // pair fits the 40px rail without widening it.
+    // Four metric-locked readings, in two equally sized date/time pairs.
     readonly property int railClockDigitSize: textMd
-    // The date under the digits. At textXxs/muted it was there but unreadable
-    // (owner 2026-08-18); 10px at full text colour is the largest that still
-    // fits "18 Aug" inside the 40px pill.
-    readonly property int railClockDateSize: textSm
     // StatRing (performance tab default; dashboard resources card overrides
     // both to fit three stacked rings in one card).
     readonly property int ringDiameterDefault: 150
@@ -429,8 +423,8 @@ QtObject {
     readonly property int performanceBatteryTankWidth: 160
     readonly property int performanceBatteryTankHeight: 220
     // Dashboard tab (06 RATIFIED composition, caelestia-parity card grid).
-    readonly property int dashboardUserCardWidth: 340
-    readonly property int dashboardWeatherCardWidth: 275
+    readonly property int dashboardUserCardWidth: 320
+    readonly property int dashboardWeatherCardWidth: 260
     readonly property int dashboardMediaCardWidth: 200
     // Dashboard cards carry NO per-card radius since 2026-08-22 (owner:
     // "unify into one, on the parent") — Card's own default rules the grid.
@@ -442,6 +436,7 @@ QtObject {
     // Media tab artwork circle. Sized to the panel's COLUMN width: at 220 it
     // owned more than a third of the tab and the title had nowhere to go.
     readonly property int mediaArtSize: 160
+    readonly property int mediaContentWidth: 620
     // Shared Slider geometry: the media
     // tab's seek slider (06 RATIFIED transport + seek), the sound popout's
     // volume, the night-light warmth, and the battery popout's read-only

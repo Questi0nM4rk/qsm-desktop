@@ -2,6 +2,11 @@ Implementation checkboxes mean source-prepared and reviewed, not runtime proof.
 Section 7 remains open until the owner requests and performs the named checks.
 No automatic tests, validation, captures, native input or hardware operations.
 
+The first prepared item is the stable Performance-panel composition and its
+supporting theme/frame, clock and resource handle. Luna high's corrected partial
+source review has zero findings, after fixing live UPower leakage from the
+preview. That does not complete the whole change or its owner-review gate.
+
 ## 1. Plan and contracts
 
 - [x] 1.1 Confirm repository-local OpenSpec root; write proposal, design and capability scenarios before implementation.
@@ -10,23 +15,28 @@ No automatic tests, validation, captures, native input or hardware operations.
 
 ## 2. Shared material and frame foundation
 
-- [ ] 2.1 Update both theme palettes and default fallback; derive desktop raised/hover/outline from the shared Style ladder. Source-review color pairs and dependency direction, without claiming rendered contrast.
-- [ ] 2.2 Reduce only ordinary frame thickness to 12; retain 60px left band and 40px rail. Trace Theme → FrameExclusions → EdgeScene/ShellBorder → rollout origins, bounds and mask regions; preserve shader formulas.
-- [ ] 2.3 Introduce named panel/resource material and footprint tokens needed by later phases. No decorative global gradient flags, new fonts or wholesale icon replacement.
+- [x] 2.1 Update both theme palettes and default fallback; derive desktop raised/hover/outline from the shared Style ladder. Source-review color pairs and dependency direction, without claiming rendered contrast.
+- [x] 2.2 Reduce only ordinary frame thickness to 12; retain 60px left band and 40px rail. Trace Theme → FrameExclusions → EdgeScene/ShellBorder → rollout origins, bounds and mask regions; preserve shader formulas.
+- [x] 2.3 Introduce named panel/resource material and footprint tokens needed by later phases. No decorative global gradient flags, new fonts or wholesale icon replacement.
 
 ## 3. Stable upper panel and sampling demand
 
-- [ ] 3.1 Give PanelSurface one preferred 854x520 outer footprint clamped to available viewport; keep navigation fixed across all five tabs and changing data states.
-- [ ] 3.2 Bound static content inside a scroll viewport, preserve native model-tab scrolling, center short/empty content and retain tab/Down focus routes; account for short/narrow screens.
-- [ ] 3.3 Use source-verified Dashboard/Performance icon alternatives and consistent tokenized spacing without changing tab identities or actions.
-- [ ] 3.4 Move detailed sampling demand to keyed permanent panel hosts; remove Dashboard/Performance destructor writes to a global polling boolean. Keep independent handle watchers and sampling periods.
+- [x] 3.1 Give PanelSurface one preferred 854x520 outer footprint clamped to available viewport; keep navigation fixed across all five tabs and changing data states.
+- [x] 3.2 Bound static content inside a scroll viewport, preserve native model-tab scrolling, center short/empty content and retain tab/Down focus routes; account for short/narrow screens.
+- [x] 3.3 Use source-verified Dashboard/Performance icon alternatives and consistent tokenized spacing without changing tab identities or actions.
+- [x] 3.4 Move detailed sampling demand to keyed permanent panel hosts; remove Dashboard/Performance destructor writes to a global polling boolean. Keep independent handle watchers and sampling periods.
 - [ ] 3.5 Extend existing panel stories with all real tab compositions, safe deterministic service snapshots, short viewport and missing/long-content states. Do not create or run automated flows.
+
+Partial 3.5: `panel-performance` and `panel-performance-short` load the actual
+Performance tab with deterministic resources and battery. Existing panel tab
+group and resource story keys remain available. All other tab fixtures remain
+unloaded to avoid accidental production service calls from the preview.
 
 ## 4. Equal-size clock and purposeful resource handle
 
-- [ ] 4.1 Replace ClockEntry's fitted date line with metric-locked DD/MM above HH/mm; retain calendar behavior and immediate reduced-motion digit updates.
-- [ ] 4.2 Build PanelHandle's fixed 224x36 lighter capsule face, two neutral mirrored level fills, stable labels/values and unavailable/boundary handling from existing service data.
-- [ ] 4.3 Preserve the handle's one action, five states, moving-rim registry, input rectangle and fullscreen/focus withdrawal; add boundary/missing combinations to the existing story controls.
+- [x] 4.1 Replace ClockEntry's fitted date line with metric-locked DD/MM above HH/mm; retain calendar behavior and immediate reduced-motion digit updates.
+- [x] 4.2 Build PanelHandle's fixed 224x36 lighter capsule face, two neutral mirrored level fills, stable labels/values and unavailable/boundary handling from existing service data.
+- [x] 4.3 Preserve the handle's one action, five states, moving-rim registry, input rectangle and fullscreen/focus withdrawal; add boundary/missing combinations to the existing story controls.
 
 ## 5. Related surface ownership
 

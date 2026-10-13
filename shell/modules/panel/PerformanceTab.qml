@@ -15,10 +15,8 @@ import qs.theme
 ColumnLayout {
     id: root
 
+    property var batteryDevice: UPower.displayDevice
     spacing: Theme.space3
-
-    Component.onCompleted: PerformanceService.polling = true
-    Component.onDestruction: PerformanceService.polling = false
 
     // Icon + °C readout + thin thermal bar, shared by the CPU/GPU hero
     // cards. Flips to the danger color (icon swaps to alert-triangle) past
@@ -248,9 +246,11 @@ ColumnLayout {
         QsmShellComponents.Card {
             radius: Theme.rolloutRadius
             Layout.preferredWidth: Theme.performanceNetworkCardWidth
+            Layout.minimumHeight: networkContent.implicitHeight + Theme.space4 * 2
             Layout.fillHeight: true
 
             ColumnLayout {
+                id: networkContent
                 anchors.fill: parent
                 anchors.margins: Theme.space4
                 spacing: Theme.space2
@@ -382,13 +382,13 @@ ColumnLayout {
         // battery exists.
         QsmShellComponents.Card {
             id: batteryCard
-            visible: UPower.displayDevice?.isLaptopBattery ?? false
+            visible: root.batteryDevice?.isLaptopBattery ?? false
             radius: Theme.rolloutRadius
             clip: true
             Layout.preferredWidth: Theme.performanceBatteryTankWidth
             Layout.preferredHeight: Theme.performanceBatteryTankHeight
 
-            readonly property var device: UPower.displayDevice
+            readonly property var device: root.batteryDevice
             readonly property real fraction: Math.max(0, Math.min(1, device?.percentage ?? 0))
             readonly property bool charging: device?.state === UPowerDeviceState.Charging
             readonly property string timeText: {

@@ -18,9 +18,7 @@ GridLayout {
     Component.onCompleted: {
         WeatherService.refresh();
         SystemInfoService.refresh();
-        PerformanceService.polling = true;
     }
-    Component.onDestruction: PerformanceService.polling = false
 
     // 1. User card: avatar + distro badge, WM pill, uptime.
     QsmShellComponents.Card {

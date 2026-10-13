@@ -51,6 +51,7 @@ Item {
     Flickable {
         id: strip
         anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
         width: Math.min(parent.width, row.implicitWidth)
         height: root.tileHeight
         contentWidth: row.implicitWidth
