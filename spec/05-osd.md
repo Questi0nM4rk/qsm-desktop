@@ -142,9 +142,9 @@ Reference: `references/osd-sliders-right.png`.
   APERTURE: the rollout clips at its own edge, so nothing the column draws past that
   edge is visible.
 - **The column's position inside the body is CLAMPED, not nudged.** A `Rollout` centres
-  content in body PLUS band, so `Rollout.contentCenterOffsetX` asks for 8px toward the
-  frame on this surface's 16px band. Half of 56 is 28; the 8px pull leaves 20, which is
-  exactly the track's own half and NOTHING over. But the track is not the envelope: the
+  content in body PLUS band, so `Rollout.contentCenterOffsetX` asks for half the
+  frame thickness toward the frame. The 12px frame requests 6px; the 56px body's
+  half-span minus that request is 22px. The track is not the full envelope: the
   focus ring sits OUTSIDE the track by one half-step (`Style.spaceTight`), a hovered or
   pressed thumb grows further per side, and a clickable channel glyph's hit box is at
   least one large icon tall. The ring's outer 2px therefore drew under the frame, where

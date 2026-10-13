@@ -22,10 +22,13 @@ require review.
   reveal tier (500ms). Over a fullscreen client there is no band to flush into, so the popup
   is the real shell `DataCapsule` inset 8px from the same corner instead (see Presentation
   boundary below).
-- **RATIFIED (2026-08-16)**: entries are INVISIBLE cards — no boxes, no backdrops. Each entry
-  is defined only by minimalist lines:
-  - one THICK short line per entry (the urgency/type tick — this is what "defines what it is"),
-  - one thin separator line between entries — SHORT (not full width) and visibly faded.
+- Popup entries use quiet raised, rounded row surfaces, separated by a token gap
+  rather than a second border/separator. The source icon, urgency tick,
+  source/time and useful message remain legible within the padded body. This
+  is opt-in library presentation, not notification protocol or lifetime policy.
+  Other consumers may retain the transparent card default.
+  Padding and gaps contribute to the actual retained/evicting geometry; removing
+  a row must not introduce an extra extent jump or leave an input hole behind.
 - **RATIFIED (2026-08-16)**: each entry carries an appropriate SVG icon (app/type).
 - **RATIFIED (2026-08-16, clarified 2026-08-27)**: hover expands content and pauses expiry,
   but useful message content is visible at rest: app identity, summary and a bounded readable

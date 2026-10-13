@@ -31,8 +31,9 @@ the SDF shader only.
 
 ## Geometry
 
-- **RATIFIED (2026-08-16)**: band thickness left **60px** (rail lives inside), top/right/bottom
-  **16px**.
+- Band thickness left **60px** (the 40px rail and vertical captions are retained),
+  top/right/bottom **12px**. Thin-frame paint, rollout origins/insets, masks,
+  hover corridors and compositor exclusions share these values.
 - **RATIFIED (2026-08-16)**: bulge/panel corner radius **28px**.
 - **RATIFIED (2026-08-16, amended 2026-08-19)**: viewport corner rounding **28px** — 25 was
   the shell's last off-ladder radius; 28 is the same value the rollout corners already use

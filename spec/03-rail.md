@@ -5,13 +5,13 @@ The 60px left band hosting entries top-to-bottom; the only always-visible surfac
 ## Pin / collapse / peek
 
 - **RATIFIED (2026-08-16)**: pin/unpin stays, **per monitor**. Pinned = band at 60px, windows
-  reserve around it. Unpinned = band collapses to the plain 16px edge, windows take the space;
+  reserve around it. Unpinned = band collapses to the plain 12px edge, windows take the space;
   hovering the collapsed edge peeks the full band OVER the windows (no re-tiling); leaving or
   retracting always clears the peek (explicit state, never a raw hover binding).
 - **DEFAULT (2026-08-16)**: the peeked band renders through the same silhouette shader
   (elevated over windows) and its full 60px is mask-active while peeked; peek and an open
   popout may coexist (leaving both retracts both).
-- **RATIFIED (2026-08-16)**: peek zone = the whole collapsed 16px strip, full height; opens
+- **RATIFIED (2026-08-16)**: peek zone = the whole collapsed 12px strip, full height; opens
   instantly, clears **150ms** after the cursor leaves the revealed band.
 
 ## Entries
@@ -87,11 +87,11 @@ intent separately from the backend result, with no password in event payloads.
 - **RATIFIED (2026-08-16)**: toggle-state entries (awake/coffee, and all future toggles) show
   state by SWAPPING THE ICON (empty cup ↔ full cup), NEVER by a glow/light ring around it.
   The current highlight treatment is abolished.
-- **RATIFIED (2026-08-16, amended 2026-08-17 twice — caelestia anatomy, owner)**: clock
-  entry = caelestia's stacked-digit clock INSIDE its pill: HOURS over MINUTES as the large
-  digits (digit widths metric-locked so 11 vs 08 don't wobble the column), with the DATE
-  kept beneath at the small size (owner: "I want the date there in its pill") — text only,
-  NO clock icon. HOVERING the entry opens the calendar popout like every other hover entry.
+- Clock entry = DD/MM above HH/mm as four equally sized vertical readings, with
+  one token gap between date and time. All readings share the technical face,
+  weight and fixed `00` metrics. The date never shrinks to fit a combined line.
+  It is text-only, without a clock icon; hovering still opens the calendar popout.
+  Reduced motion settles digit changes immediately without positional travel.
 - **RATIFIED (2026-08-16, re-amended 2026-08-18 v2 — owner iterated on glass: reel out,
   traveling pill in)**: workspace indicator = FIXED dots + a TRAVELING numbered pill:
   ALL Hyprland workspaces globally (monitor-synced — every rail renders the identical

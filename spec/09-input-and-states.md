@@ -44,6 +44,13 @@
   popups) appear on the FOCUSED monitor. One global modal open at a time.
 - Rail pin state is per monitor (03-rail).
 
+Non-modal keyboard retention has one explicit owning surface, screen and purpose.
+Only that screen gains exceptional keyboard focus and keeps its owning prompt
+open. Only the owner releases its claim. A new claimant, modal replacement,
+monitor departure, suppression or owner destruction retires the obsolete prompt
+and secret; a kind string is not instance identity. Another monitor's popouts
+and discovery handles remain independent. The global modal policy is unchanged.
+
 ## Click-through
 
 - The scene is click-through everywhere except: the band/rail (peeked band included, full

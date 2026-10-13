@@ -129,6 +129,13 @@ may still complete but must not reopen or refocus the dismissed editor. A reject
 service start never retains the supplied password. VPN availability follows its
 own profile, not the presence of a Wi-Fi adapter; disruptive VPN-off still needs
 confirmation. Busy and unavailable operations remain nonselectable.
+
+Retirement follows the launcher's own host activation, including monitor
+migration while the global modal name remains launcher. The inactive instance
+clears editors/secrets and cancels only its own read-only calculator/probe and
+focus/layout work. Late results cannot publish into or focus the inactive host.
+Only the active host consumes a launcher seed. Intentional clipboard-copy and
+application-launch consequences are not cancelled on dismissal.
 Network operations and rescans have bounded deadlines. Timeout kills only the
 service's own child and reports one failure; a signal-terminated process never
 counts as success merely because its exit code is zero or undefined.

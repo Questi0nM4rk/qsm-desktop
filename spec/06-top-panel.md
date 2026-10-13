@@ -21,14 +21,16 @@ not the library's default.
 
 ## Idle affordance + open
 
-- The panel handle shows labelled CPU and RAM percentages instead of eight dots,
-  following the owner's resource-readout direction. A compact, quiet rounded bulge
+- The panel handle is one lighter capsule-like button with labelled CPU and RAM
+  percentages and neutral mirrored level fills growing from the center outward.
+  It has a fixed 224x36 logical px footprint; unavailable values show an em dash
+  with no fabricated zero fill. A compact, quiet rounded bulge
   sits on the panel's LEADING (bottom) EDGE: as the
   panel rolls out they travel WITH that edge — always at the surface's outermost rim, like
   a tab on a drawer front — and ride it back on retract; never parked at the band while the
   surface moves beneath them. A hover area spanning the reading opens
   the panel on hover, with a **150ms hover-intent delay** (DEFAULT) so a screen-top brush
-  doesn't open an 854px panel.
+  doesn't open the panel.
 - **RATIFIED (2026-08-16)**: also opens via keyboard (09: Super+D last-used, Super+N
   notification center, Super+W workspaces).
 - **RATIFIED (2026-08-25, owner)**: with the panel open, **Left/Right move the tab
@@ -37,7 +39,7 @@ not the library's default.
   keys first; the tab step takes only keys no content claimed.
 - **DEFAULT (2026-08-16)**: closes on: Escape, click outside, shortcut re-press, or cursor
   leaving the panel for 400ms. The panel and handle are horizontally centered in the live
-  frame viewport between the left band edge and the right 16px frame edge; the center follows
+  frame viewport between the left band edge and the right frame edge; the center follows
   the live edge during pin, unpin, and peek. Tab bar at the panel's top, order: Dashboard,
   Media, Performance, Workspaces, Notifications — icon + label.
 
@@ -85,9 +87,13 @@ over title and body (see 04-notifications).
 
 ## Numbers (RATIFIED 2026-08-16)
 
-- Panel width **854px**; height content-driven per tab; tab bar **48px**.
+- Panel preferred outer footprint **854x520 logical px**, clamped to the scene's
+  available viewport. All five tabs share that footprint and a stable navigation
+  strip. Tab choice, empty/missing data and content length never resize the outer
+  body. Static compositions overflow inside a bounded viewport; model-backed
+  tabs keep their own scrolling route. The tab bar baseline is **48px**.
 - Resource handle: `Theme.panelHandleWidth` × `Theme.panelHandleHeight`, fixed
-  footprint independent of readings. CPU/RAM use metadata/technical text and neutral
+  footprint independent of readings. CPU/RAM use readable technical text and neutral
   ink; missing sensors show an em dash, never zero. Fullscreen/focus suppression
   withdraws both paint and input. CPU is averaged before display; detailed sampling
   remains tied to the dashboard/performance tab.
@@ -96,7 +102,7 @@ over title and body (see 04-notifications).
 | --- | --- | --- | --- | --- |
 | posture/task | auxiliary resource glance and entry to the existing panel | owner CPU/RAM direction; no permanent dashboard | existing panel hover/click | inspect reading then open panel |
 | ia/interaction | CPU and RAM labels, percentage each, one panel action | distinguish two readings without learned glyphs | Prose metadata; accessible button | absent sensors and keyboard activation |
-| hierarchy/token | quiet ink, fixed compact pill, no accent on metrics | shell surface ladder | panelHandleWidth/Height; space2; textMuted; radiusMd | live text and containment |
+| hierarchy/token | lighter capsule face, fixed readings, mirrored neutral fills, no passive accent | shell surface ladder; owner touchup direction | panelHandleWidth/Height; resource material roles; text scale | live text, zero/full/unavailable samples and containment |
 | responsive/state | fixed size rides leading edge; hidden in fullscreen/focus | no second travel animation | PanelHandle → host-space rect → ShellBorder registerBulge → existing shader; mask consumes same rect | open/retract and suppression |
 | polish | CPU exponential average, no number animation | instant readings oscillate; one useful value | PerformanceService, two-second lightweight sampling | changing load and missing sample |
 
@@ -104,6 +110,12 @@ The handle registers one undeformed body, with edge snapping disabled because it
 attachment is the moving panel rim rather than a screen edge. It is removed
 immediately on suppression/unload; the parent panel owns all reveal motion.
 No shader formula changes, new global component, or Performance-tab redesign.
+
+The permanent panel host owns keyed detailed-sampling demand while Dashboard or
+Performance is active. A retiring tab never writes a global polling false that
+cancels another monitor's demand. Lightweight handle subscriptions remain
+independently keyed. Empty Media content is deliberately centered, and short or
+narrow screens expose overflow rather than clipping controls or resizing a tab.
 
 ## LIVE-TUNE
 
