@@ -18,7 +18,7 @@
     "panel-resources": {
       "component": "panel-tabs", "variant": "resources", "viewport": [980, 680],
       "title": "Panel resource handle",
-      "description": "CPU/RAM handle on the production panel rim, with isolated readings and missing-sensor states.",
+      "description": "Compact dark CPU/RAM handle with full-height center-out half-meters and fixed inline readings. Isolated zero, low, full, mixed and unavailable states on the production panel rim.",
       "tags": ["desktop", "performance", "panel"],
       "source": "shell/modules/panel/PanelHandle.qml"
     },

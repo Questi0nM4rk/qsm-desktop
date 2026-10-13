@@ -323,14 +323,14 @@ QtObject {
     readonly property real dotRadius: 2
     readonly property real dotSpacing: 6
     readonly property real dotGlyphSize: 2.5
-    readonly property int panelHandleWidth: 224
-    readonly property int panelHandleHeight: 36
-    readonly property color resourceSurfaceTop: surfaceRaised
-    readonly property color resourceSurfaceBottom: surface
-    readonly property color resourceTrack: outline
-    readonly property color resourceFillLow: Qt.darker(textMuted, 1.35)
-    readonly property color resourceFillHigh: textMuted
-    readonly property int resourceMeterThickness: 3
+    readonly property int panelHandleWidth: 160
+    readonly property int panelHandleHeight: 28
+    readonly property color resourceFace: bandFill
+    readonly property color resourceTrack: background
+    readonly property color resourceFillLow: surface
+    readonly property color resourceFillHigh: Qt.tint(surface, Qt.rgba(accent.r, accent.g, accent.b, 0.16))
+    readonly property color resourceText: text
+    readonly property color resourceLabel: textMuted
     // Rail popouts (03).
     readonly property int popoutWidth: 280
     // Bluetooth popout (03, caelestia-parity B4): device rows cap at N,

@@ -36,7 +36,7 @@ Item {
     }, {
         label: "Resources",
         options: [{ label: "Everyday" }, { label: "Busy" }, { label: "Unavailable" },
-            { label: "Zero" }, { label: "Full" }]
+            { label: "Zero" }, { label: "Full" }, { label: "Low" }, { label: "Mixed" }]
     }]
     readonly property var actions: [
         { label: "Open panel", trigger: "open-panel" },
@@ -82,8 +82,8 @@ Item {
         "Motion": option => { ShellState.reducedMotion = option === 1; return true; },
         "Suppress": option => { root.focusSuppressed = option === 1; return true; },
         "Resources": option => {
-            root.cpuUsage = [0.23, 0.87, -1, 0, 1][option];
-            root.memoryUsed = [0.46, 0.92, -1, 0, 1][option];
+            root.cpuUsage = [0.23, 0.87, -1, 0, 1, 0.01, 0][option];
+            root.memoryUsed = [0.46, 0.92, -1, 0, 1, 0.05, 1][option];
             PerformanceService.cpuUsage = root.cpuUsage;
             PerformanceService.memUsed = root.memoryUsed;
             PerformanceService.cpuTemp = option === 2 ? -1 : 52;

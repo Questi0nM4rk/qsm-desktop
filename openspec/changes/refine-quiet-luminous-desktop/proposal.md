@@ -18,8 +18,9 @@ composition over the owner's wallpapers and applications.
   Keep day and numeric month side by side and preserve calendar invocation.
 - Give all five upper-panel tabs one responsive outer footprint and stable
   navigation. Scroll or adapt content inside it instead of resizing the body.
-- Replace the metadata-only CPU/RAM handle with one lighter capsule-like button,
-  fixed readings and two neutral mirrored level meters growing away from center.
+- Replace the metadata-only CPU/RAM handle with one compact dark capsule button.
+  Its full-height half-meters grow away from center beneath one row of stable
+  names at the inner side and percentages at the outer side.
 - Add quiet rounded notification row surfaces, readable source/time/message
   hierarchy and appropriate padding. Preserve expiry, gestures, expansion,
   current default-action behavior and the named-action route through the center.

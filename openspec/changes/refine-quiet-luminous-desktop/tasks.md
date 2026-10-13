@@ -32,10 +32,10 @@ Performance tab with deterministic resources and battery. Existing panel tab
 group and resource story keys remain available. All other tab fixtures remain
 unloaded to avoid accidental production service calls from the preview.
 
-## 4. Equal-size clock and purposeful resource handle
+## 4. Readable clock and purposeful resource handle
 
 - [x] 4.1 Show larger metric-locked HH/mm above a smaller single-line DD.MM date with day/month side by side; retain calendar behavior and immediate reduced-motion digit updates.
-- [x] 4.2 Build PanelHandle's fixed 224x36 lighter capsule face, two neutral mirrored level fills, stable labels/values and unavailable/boundary handling from existing service data.
+- [x] 4.2 Build PanelHandle's compact 160x28 dark capsule with full-height mirrored half-meters; retain one-row inner names, fixed outer percentages and truthful unavailable/boundary handling.
 - [x] 4.3 Preserve the handle's one action, five states, moving-rim registry, input rectangle and fullscreen/focus withdrawal; add boundary/missing combinations to the existing story controls.
 
 ## 5. Related surface ownership

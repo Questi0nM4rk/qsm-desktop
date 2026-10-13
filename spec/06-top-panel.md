@@ -21,10 +21,12 @@ not the library's default.
 
 ## Idle affordance + open
 
-- The panel handle is one lighter capsule-like button with labelled CPU and RAM
-  percentages and neutral mirrored level fills growing from the center outward.
-  It has a fixed 224x36 logical px footprint; unavailable values show an em dash
-  with no fabricated zero fill. A compact, quiet rounded bulge
+- The panel handle is one compact dark capsule button with full-height inner
+  CPU/RAM half-meters growing from the center outward. One row reads
+  `23% CPU | RAM 46%`: names stay at the inner side, percentages at the outer side.
+  The fixed footprint is 160x28 logical px. Unavailable values show an em dash
+  with empty fill, never a fabricated zero or minimum fill to contain text.
+  A compact, quiet rounded bulge
   sits on the panel's LEADING (bottom) EDGE: as the
   panel rolls out they travel WITH that edge — always at the surface's outermost rim, like
   a tab on a drawer front — and ride it back on retract; never parked at the band while the
@@ -102,7 +104,7 @@ over title and body (see 04-notifications).
 | --- | --- | --- | --- | --- |
 | posture/task | auxiliary resource glance and entry to the existing panel | owner CPU/RAM direction; no permanent dashboard | existing panel hover/click | inspect reading then open panel |
 | ia/interaction | CPU and RAM labels, percentage each, one panel action | distinguish two readings without learned glyphs | Prose metadata; accessible button | absent sensors and keyboard activation |
-| hierarchy/token | lighter capsule face, fixed readings, mirrored neutral fills, no passive accent | shell surface ladder; owner touchup direction | panelHandleWidth/Height; resource material roles; text scale | live text, zero/full/unavailable samples and containment |
+| hierarchy/token | dark capsule, full-height half-meters, fixed inner names and outer values | owner rejects pale oversize face; Mantine/Spectrum grouping with Carbon readability constraint, linked in change design | panelHandleWidth/Height; resource material pairs; text scale | live text, zero/full/unavailable samples and containment |
 | responsive/state | fixed size rides leading edge; hidden in fullscreen/focus | no second travel animation | PanelHandle → host-space rect → ShellBorder registerBulge → existing shader; mask consumes same rect | open/retract and suppression |
 | polish | CPU exponential average, no number animation | instant readings oscillate; one useful value | PerformanceService, two-second lightweight sampling | changing load and missing sample |
 

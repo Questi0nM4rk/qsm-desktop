@@ -32,13 +32,16 @@ weights SHALL remain stable. Calendar invocation MUST remain.
   and reduced motion avoids a positional digit transition
 
 ### Requirement: One resource handle with two mirrored levels
-The CPU/RAM handle SHALL be one lighter capsule-like panel action with fixed
-readings and mirrored fills growing away from the center. Missing samples SHALL
-remain unavailable rather than zero. Its body SHALL follow the panel rim.
+The CPU/RAM handle SHALL be one compact dark capsule panel action with a 160x28
+logical px footprint. Full-height inner half-meter fills SHALL grow away from
+the center. Names SHALL remain fixed at the inner side and percentages at the
+outer side, readable on one row at all levels. Missing samples SHALL remain
+unavailable rather than zero. Its body SHALL follow the panel rim.
 
 #### Scenario: Missing and boundary samples
 - **WHEN** CPU or RAM changes between unavailable, zero and full usage
-- **THEN** its value/fill is truthful and the handle keeps the same footprint
+- **THEN** its value/fill is truthful, neither name nor percentage collides or
+  elides, and the handle keeps the same footprint without a false minimum fill
 
 #### Scenario: Handle activation and suppression
 - **WHEN** the owner activates the handle or its workspace enters fullscreen

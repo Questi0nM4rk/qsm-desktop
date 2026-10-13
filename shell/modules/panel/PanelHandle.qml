@@ -61,87 +61,88 @@ Item {
     Rectangle {
         anchors.fill: parent
         radius: height / 2
-        gradient: Gradient {
-            GradientStop {
-                position: 0
-                color: QsmShellStyle.Style.tone(Theme.resourceSurfaceTop,
-                    interaction.hovered, interaction.pressed, false, root.enabled, Theme.accent)
-            }
-            GradientStop {
-                position: 1
-                color: QsmShellStyle.Style.tone(Theme.resourceSurfaceBottom,
-                    interaction.hovered, interaction.pressed, false, root.enabled, Theme.accent)
-            }
-        }
+        color: QsmShellStyle.Style.tone(Theme.resourceFace,
+            interaction.hovered, interaction.pressed, false, root.enabled, Theme.accent)
     }
 
-    component Resource: Item {
+    component Resource: Rectangle {
         id: resource
         required property string label
         required property real value
         property bool mirrored: false
+        objectName: "panel-resource-" + label.toLowerCase()
+        color: root.enabled ? Theme.resourceTrack : QsmShellStyle.Style.disabled(Theme.resourceTrack)
+        topLeftRadius: mirrored ? height / 2 : 0
+        bottomLeftRadius: topLeftRadius
+        topRightRadius: mirrored ? 0 : height / 2
+        bottomRightRadius: topRightRadius
 
-        RowLayout {
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.top: parent.top
-            anchors.topMargin: Theme.space1
-            spacing: Theme.space1
-            QsmShellComponents.Prose {
-                role: "supporting"
-                technical: true
-                text: resource.label
-                color: root.enabled ? Theme.textMuted : QsmShellStyle.Style.disabled(Theme.textMuted)
-            }
-            QsmShellComponents.Prose {
-                role: "reading"
-                technical: true
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                font.pixelSize: Theme.textSm
-                text: root.reading(resource.value)
-                color: root.enabled ? Theme.text : QsmShellStyle.Style.disabled(Theme.text)
+        Rectangle {
+            id: fill
+            width: Math.round(resource.width * root.level(resource.value))
+            height: resource.height
+            x: resource.mirrored ? resource.width - width : 0
+            topLeftRadius: resource.topLeftRadius
+            bottomLeftRadius: topLeftRadius
+            topRightRadius: resource.topRightRadius
+            bottomRightRadius: topRightRadius
+            gradient: Gradient {
+                orientation: Gradient.Horizontal
+                GradientStop {
+                    position: 0
+                    color: root.enabled
+                        ? (resource.mirrored ? Theme.resourceFillHigh : Theme.resourceFillLow)
+                        : QsmShellStyle.Style.disabled(resource.mirrored ? Theme.resourceFillHigh : Theme.resourceFillLow)
+                }
+                GradientStop {
+                    position: 1
+                    color: root.enabled
+                        ? (resource.mirrored ? Theme.resourceFillLow : Theme.resourceFillHigh)
+                        : QsmShellStyle.Style.disabled(resource.mirrored ? Theme.resourceFillLow : Theme.resourceFillHigh)
+                }
             }
         }
-        Rectangle {
-            id: track
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: Theme.space2
-            height: Theme.resourceMeterThickness
-            radius: height / 2
-            color: root.enabled ? Theme.resourceTrack : QsmShellStyle.Style.disabled(Theme.resourceTrack)
 
-            Rectangle {
-                width: Math.round(track.width * root.level(resource.value))
-                height: track.height
-                x: resource.mirrored ? track.width - width : 0
-                radius: height / 2
-                gradient: Gradient {
-                    orientation: Gradient.Horizontal
-                    GradientStop {
-                        position: 0
-                        color: root.enabled
-                            ? (resource.mirrored ? Theme.resourceFillHigh : Theme.resourceFillLow)
-                            : QsmShellStyle.Style.disabled(resource.mirrored ? Theme.resourceFillHigh : Theme.resourceFillLow)
-                    }
-                    GradientStop {
-                        position: 1
-                        color: root.enabled
-                            ? (resource.mirrored ? Theme.resourceFillLow : Theme.resourceFillHigh)
-                            : QsmShellStyle.Style.disabled(resource.mirrored ? Theme.resourceFillLow : Theme.resourceFillHigh)
-                    }
-                }
+        TextMetrics {
+            id: valueMetrics
+            font: valueText.font
+            text: "100%"
+        }
+        RowLayout {
+            anchors.fill: parent
+            anchors.leftMargin: Theme.space2
+            anchors.rightMargin: Theme.space2
+            spacing: Theme.spaceTight
+            layoutDirection: resource.mirrored ? Qt.RightToLeft : Qt.LeftToRight
+
+            QsmShellComponents.Prose {
+                role: "metadata"
+                technical: true
+                text: resource.label
+                color: root.enabled ? Theme.resourceLabel : QsmShellStyle.Style.disabled(Theme.resourceLabel)
+                elide: Text.ElideNone
+            }
+            Item { Layout.fillWidth: true }
+            QsmShellComponents.Prose {
+                id: valueText
+                role: "reading"
+                Layout.preferredWidth: Math.ceil(Math.max(valueMetrics.advanceWidth, valueMetrics.width))
+                Layout.minimumWidth: Layout.preferredWidth
+                Layout.maximumWidth: Layout.preferredWidth
+                horizontalAlignment: resource.mirrored ? Text.AlignLeft : Text.AlignRight
+                text: root.reading(resource.value)
+                // Both backgrounds use the same readable on-color, so values
+                // remain legible when the fill crosses beneath them.
+                color: root.enabled ? Theme.resourceText : QsmShellStyle.Style.disabled(Theme.resourceText)
+                elide: Text.ElideNone
             }
         }
     }
 
     Row {
         anchors.fill: parent
-        anchors.leftMargin: Theme.space3
-        anchors.rightMargin: Theme.space3
-        spacing: Theme.space3
+        anchors.margins: Theme.spaceTight
+        spacing: Theme.spaceTight
         Resource {
             width: (parent.width - parent.spacing) / 2
             height: parent.height

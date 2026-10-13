@@ -90,16 +90,38 @@ unless their actual use exposes a mismatch. No decorative media asset is added.
 
 ### Resource capsule-like handle
 
-Prepare a 224x36 logical px handle, one panel button with a fixed footprint.
-Its lighter violet-gray capsule face lies within its registered body; the same
-body supplies the input region and rides the panel's leading edge. No second
-window, independent travel animation or passive status accent is introduced.
+Prepare a compact 160x28 logical px handle, one panel button with a fixed
+footprint. Its dark band-colored face contains two full-height inner half-meters,
+with a 2px inset and center seam. Do not add a pale plate or thin underline bars.
+The registered body supplies the input region and rides the panel's leading edge.
+No second window, travel animation or separate metric action is introduced.
 
-CPU occupies the left half and RAM the right half. Their thin neutral level
-fills grow from the center toward the outside. Clamp finite samples to 0..1;
-missing readings remain an em dash with no fabricated zero fill. Labels and
-values use readable fixed columns, and unknown/100% changes never change width.
-The service's existing CPU averaging remains the reading source.
+CPU occupies the left half and RAM the right half. Fill grows from the center
+toward the outside over each half's whole inner height. Use background for the
+empty track, surface for the fill's center and surface with a restrained 16%
+accent tint at its outside end. The face remains bandFill. Readings use text,
+names use textMuted; neither is painted in the fill's color. Named Theme roles
+carry these pairs through both themes and disabled state.
+
+On one row, names stay on the inner side and percentages on the outer side:
+`23% CPU | RAM 46%`. Values are fixed, not attached to a moving fill endpoint.
+This deliberately favors persistent identity and readable values over a moving
+label that collides at low usage. Only the fill boundary moves. The 10px name
+and 12px percentage follow the existing compact type steps; measure `100%` using
+the displayed font's advance to reserve sufficient width without eliding.
+Clamp finite samples to 0..1; missing readings remain an em dash with empty fill.
+No fake minimum level is used to contain text. The service's existing CPU
+averaging remains the reading source.
+
+Reference constraints, read 2026-10-14: [Mantine Progress, 9.7.2](https://mantine.dev/core/progress/)
+demonstrates labels in full-height sections; [Spectrum Meter, 1.12.4](https://opensource.adobe.com/spectrum-web-components/components/meter)
+separates label, value, track and fill as required parts; [Carbon v10 guidance](https://v10.carbondesignsystem.com/components/progress-bar/usage/)
+(page updated 2025-08-19) warns about text clutter and inconsistent alignment
+inside bars. These inform the grouping and stable readings, not a copied web
+component or a claim that these libraries prescribe mirrored resource handles.
+The existing library Meter has neither mirrored full-height gradient styling
+nor an inline value slot, so the existing local Resource composition owns this
+paint without extending the library or installing a dependency.
 
 The whole body forwards rest/hover/press/focus/disabled state. Static gradients
 use named Theme roles. Click, Return/Enter/Space and `activate()` preserve the

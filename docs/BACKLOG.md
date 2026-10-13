@@ -11,7 +11,8 @@ Current checks and the remaining release gates: [Release handoff](#release-hando
   menus. The first source-prepared item is the stable upper panel with a preferred
   854x520 logical px footprint, bounded static overflow and unchanged model-tab
   scrolling. Supporting changes are a shared violet surface ladder, larger HH/mm
-  above a smaller single-line DD.MM, a 224x36 mirrored CPU/RAM handle and 12px ordinary frame
+  above a smaller single-line DD.MM, a compact 160x28 dark CPU/RAM handle with
+  full-height half-meters and fixed inner names/outer values, and 12px ordinary frame
   edges with the left band/rail retained at 60/40px. The Performance stories expose
   normal and short/narrow viewports plus unavailable/zero/full samples with a
   fixed battery record. Other preview tabs remain navigation-only until their
