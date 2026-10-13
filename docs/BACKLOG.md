@@ -7,13 +7,35 @@ Current checks and the remaining release gates: [Release handoff](#release-hando
 
 ## Source-reviewed interaction gaps
 
-- Workspace-local fullscreen and restored theme artwork are source-prepared,
-  not runtime-exercised or owner-accepted. Inspect fullscreen retained on two
-  workspaces, normal UI on the other monitor, workspace/special-workspace switches,
-  client moves, and wallpaper readiness/rapid theme swaps. Super+F now requests
-  native fullscreen, including the legacy `qsm:focusMode` shortcut name. Local
-  Hyprland config names `qsm:fullscreen`; no compositor reload, production restart,
-  input injection or hardware operation was performed for this repair.
+- Workspace-local fullscreen has read-only live evidence for a fullscreen client
+  retained on a hidden workspace while both displayed workspaces keep normal
+  frame, rail and exclusion state. Fullscreen entry/exit, simultaneous displayed
+  fullscreen clients, special-workspace switches, client moves and owner acceptance
+  remain unverified. The agent performed no restart, input injection or hardware
+  operation. `qsm status` reports `workspacePresentation` for each output.
+- Theme artwork is local-only: both committed theme JSONs and the Theme fallback
+  reference `dark-rain-world.png` or `light-forest-dark-winter.jpg`, but Git tracks
+  only the generated `deep-night.png` and `mountain-dusk.png` assets. A fresh checkout
+  therefore lacks the referenced images. This is a source-confirmed distribution
+  defect, left unfixed because the scope audit does not choose between distributable
+  artwork and a local override (`qsd-i63`). Mapped wallpaper layers on both outputs do not
+  establish image readiness or rapid-theme-swap behavior.
+- Source-confirmed ownership gaps remain unexercised: `EdgeScene.handlesArmed`
+  disables all monitors for one global modal, although the spec limits suppression
+  to its monitor. `keyboardGrab` names a prompt kind without a surface/screen owner,
+  retains every rail stack, and grants keyboard focus to whichever output is focused.
+  Prompt closure/destruction can release another instance's grab. Left for a named
+  scope repair, not silently changed during the audit (`qsd-om3`).
+- Launcher retirement follows the global modal name rather than each monitor's
+  activation. A hidden instance can retain its password/editor and restart focus
+  work on a late failure. `submitNetwork()` also clears the password only after an
+  accepted backend start, contrary to the rejected-submission contract. Both paths
+  are source-reviewed, not runtime-exercised, and await the launcher lifecycle repair.
+- Dashboard and Performance tab destructors set the singleton `polling` false.
+  Outgoing content remains loaded through retract, so its destruction can cancel
+  an incoming monitor's detailed sampling. CPU/RAM handle subscriptions are separately
+  keyed and do not preserve GPU/storage/network sampling. This overlap route needs
+  a named live check and a single demand owner.
 
 - Launcher audio, Wi-Fi, Bluetooth, repeatable toggles and panel tabs are
   source-prepared and exercised through isolated desktop Workbench stories.
