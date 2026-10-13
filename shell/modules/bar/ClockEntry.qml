@@ -42,14 +42,13 @@ Item {
 
         TextMetrics {
             id: metrics
-            font.family: Theme.technicalFontFamily
-            font.pixelSize: Theme.railClockDigitSize
-            font.weight: Theme.weightBold
+            font: currentReading.font
             text: "00"
         }
 
-        implicitWidth: metrics.width
-        implicitHeight: metrics.height
+        // The glyph bounds can be narrower than the text's layout advance.
+        implicitWidth: Math.ceil(Math.max(metrics.advanceWidth, metrics.width))
+        implicitHeight: Math.ceil(metrics.height)
         clip: true
 
         onValueChanged: {
@@ -82,9 +81,11 @@ Item {
             opacity: 1 - digits.progress
             font.pixelSize: Theme.railClockDigitSize
             font.weight: Theme.weightBold
+            elide: Text.ElideNone
         }
 
         QsmShellComponents.Prose {
+            id: currentReading
             role: "hero"
             technical: true
             anchors.horizontalCenter: parent.horizontalCenter
@@ -95,6 +96,7 @@ Item {
             opacity: digits.progress
             font.pixelSize: Theme.railClockDigitSize
             font.weight: Theme.weightBold
+            elide: Text.ElideNone
         }
     }
 
