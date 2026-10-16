@@ -380,11 +380,13 @@ QtObject {
     // How many connected devices the one BLE cell splits into before it stops
     // subdividing.
     readonly property int railDeviceMax: 4
-    // Workspace slots (03 RATIFIED 2026-10-16): fixed 24x24 slots (target-min)
-    // with a 4px gap, a 6px dot each; the numbered accent pill is the one
-    // moving part and fills a slot.
-    readonly property int railWorkspaceSlot: 24
+    // Workspace slots (03, owner 2026-10-16 night): compact 16px slots with a
+    // 4px gap and a 6px dot each, because there is nothing to aim at there
+    // beyond a wheel and a click; the 20px numbered accent pill is the one
+    // moving part and overhangs its slot by 2px each side.
+    readonly property int railWorkspaceSlot: 16
     readonly property int railWorkspaceDot: 6
+    readonly property int railWorkspacePill: 20
     // StatRing (performance tab default; dashboard resources card overrides
     // both to fit three stacked rings in one card).
     readonly property int ringDiameterDefault: 150

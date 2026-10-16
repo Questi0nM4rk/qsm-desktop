@@ -177,11 +177,12 @@ Item {
 
         // ONE bottom cluster in one rhythm (owner 2026-10-16): the readouts
         // (CPU and RAM as glyph + number, then the battery reading) and the
-        // quick menu, 6px apart, no group gap between them. A readout has a
-        // number and no click.
+        // quick menu, 8px apart, no group gap between them. The air the
+        // workspace slots gave up lives here, where the pointer works. A
+        // readout has a number and no click.
         Column {
             width: parent.width
-            spacing: Theme.space1
+            spacing: Theme.space2
 
             RailReadout {
                 anchors.horizontalCenter: parent.horizontalCenter

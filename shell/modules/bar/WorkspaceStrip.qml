@@ -5,8 +5,8 @@ import qs.QsmShell.Components as QsmShellComponents
 import qs.theme
 
 // Workspace slots (03 RATIFIED 2026-10-16): every Hyprland workspace, in one
-// fixed 24x24 slot each with a 4px gap, a 6px dot per slot (occupied
-// textMuted, urgent danger, empty overlay), and ONE moving part: the 24px
+// compact 16px slot each with a 4px gap, a 6px dot per slot (occupied
+// textMuted, urgent danger, empty overlay), and ONE moving part: the 20px
 // accent pill with the active number in textOnPrimary, gliding between
 // slots. Wheel switches, click jumps, no popout.
 Item {
@@ -113,10 +113,11 @@ Item {
         tone: "accent"
         filled: true
         text: String(root.activeWorkspaceId)
-        width: Theme.railWorkspaceSlot
-        height: Theme.railWorkspaceSlot
+        width: Theme.railWorkspacePill
+        height: Theme.railWorkspacePill
         anchors.horizontalCenter: parent.horizontalCenter
         y: slots.y + root.activeIndex * root.slotStride
+            + (Theme.railWorkspaceSlot - Theme.railWorkspacePill) / 2
 
         Behavior on y {
             NumberAnimation { duration: Motion.morphGlide; easing.type: Motion.standardEasing }
