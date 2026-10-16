@@ -54,10 +54,10 @@ Reference: `references/osd-sliders-right.png`.
 - Workbench session control selects this exact story and inspects real scene data
   without system-mouse operation. `renderFacts` expose actual wrapper bounds and
   corners, input region, retention/focus and each channel's available track span,
-  value, thumb and label geometry. Whole control height includes label insets;
-  an individual split track segment is not the whole track's measurement.
+  value and thumb geometry. An individual split track segment is not the whole
+  track's measurement.
 - Production compositor-fullscreen runtime measured the 56x650 OSD capsule with
-  all three channels visible; each thumb, label and glyph stayed within its body.
+  all three channels visible; each thumb (then with a label under its track) stayed within its body.
   Show/expiry and fullscreen keyboard/input behavior were exercised. The OSD's
   fresh visible Workbench story was not verified; production evidence is not a
   Workbench result, nor does it exercise audio/brightness mutation routes.

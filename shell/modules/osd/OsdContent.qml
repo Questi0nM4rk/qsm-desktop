@@ -14,9 +14,7 @@ FocusScope {
         || microphoneChannel.pressed || brightnessChannel.pressed
     readonly property bool focusHeld: activeFocus
     readonly property OsdChannel outputTarget: outputChannel
-    readonly property Item outputLabelTarget: outputChannel.labelItem
     readonly property OsdChannel microphoneTarget: microphoneChannel
-    readonly property Item microphoneLabelTarget: microphoneChannel.labelItem
     readonly property OsdChannel brightnessTarget: brightnessChannel
 
     implicitWidth: channels.implicitWidth
@@ -41,13 +39,12 @@ FocusScope {
             value: AudioService.outputValue
             muted: AudioService.outputMuted
             enabled: AudioService.outputAvailable
-            labelAccessibleName: AudioService.outputMuted ? "Unmute output" : "Mute output"
             emphasized: OsdState.kind === "output"
             onMoved: {
                 AudioService.setOutput(outputChannel.value);
                 OsdState.show("output", root.targetScreen);
             }
-            onIconClicked: {
+            onMuteToggled: {
                 AudioService.toggleOutputMuted();
                 OsdState.show("output", root.targetScreen);
             }
@@ -65,14 +62,12 @@ FocusScope {
             value: AudioService.microphoneValue
             muted: AudioService.microphoneMuted
             enabled: AudioService.microphoneAvailable
-            labelAccessibleName: AudioService.microphoneMuted
-                ? "Unmute microphone" : "Mute microphone"
             emphasized: OsdState.kind === "microphone"
             onMoved: {
                 AudioService.setMicrophone(microphoneChannel.value);
                 OsdState.show("microphone", root.targetScreen);
             }
-            onIconClicked: {
+            onMuteToggled: {
                 AudioService.toggleMicrophoneMuted();
                 OsdState.show("microphone", root.targetScreen);
             }

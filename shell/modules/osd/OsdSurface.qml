@@ -33,9 +33,7 @@ Item {
         ? Qt.rect(capsule.x, capsule.y, capsule.width, capsule.height)
         : Qt.rect(0, 0, 0, 0)
     readonly property var outputTarget: osdContent.outputTarget
-    readonly property var outputLabelTarget: osdContent.outputLabelTarget
     readonly property var microphoneTarget: osdContent.microphoneTarget
-    readonly property var microphoneLabelTarget: osdContent.microphoneLabelTarget
     readonly property var brightnessTarget: osdContent.brightnessTarget
     readonly property var fullscreenCapsule: capsule
     readonly property var rolloutPresentation: rollout
@@ -49,18 +47,13 @@ Item {
         && (root.pointerIntent || osdContent.interactionHeld)
 
     // Whole-shape centring must still leave the outside ring and grown thumb
-    // inside the clip aperture. A label's hit box can exceed its footprint.
+    // inside the clip aperture.
     readonly property real _focusGap: QsmShellStyle.Style.spaceTight
     function channelEnvelopeHalf(channel: OsdChannel): real {
         if (!channel || !channel.visible)
             return 0;
         const ring = channel.thickness / 2 + root._focusGap;
-        const label = channel.labelItem as QsmShellComponents.ControlLabel;
-        const hitBox = label
-            ? Math.max(label.width,
-                label.clickable ? QsmShellStyle.Style.iconLg * label.sizeScale : 0) / 2
-            : 0;
-        return Math.max(channel.implicitWidth / 2, ring, hitBox);
+        return Math.max(channel.implicitWidth / 2, ring);
     }
     readonly property real contentEnvelopeHalf: Math.max(
         osdContent.implicitWidth / 2,
@@ -165,8 +158,6 @@ Item {
         const origin = channel.mapToItem(coordinateRoot, 0, 0);
         const thumb = channel.second.handle;
         const thumbOrigin = thumb.mapToItem(coordinateRoot, 0, 0);
-        const label = channel.labelItem;
-        const labelOrigin = label.mapToItem(coordinateRoot, 0, 0);
         return {
             name: name,
             visible: channel.visible,
@@ -181,9 +172,7 @@ Item {
             thickness: channel.thickness,
             trackMainSpan: channel.vertical ? channel.availableHeight : channel.availableWidth,
             thumbLocalRect: Qt.rect(thumb.x, thumb.y, thumb.width, thumb.height),
-            thumbRootRect: Qt.rect(thumbOrigin.x, thumbOrigin.y, thumb.width, thumb.height),
-            labelLocalRect: Qt.rect(label.x, label.y, label.width, label.height),
-            labelRootRect: Qt.rect(labelOrigin.x, labelOrigin.y, label.width, label.height)
+            thumbRootRect: Qt.rect(thumbOrigin.x, thumbOrigin.y, thumb.width, thumb.height)
         };
     }
 
