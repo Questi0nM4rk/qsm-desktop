@@ -3,6 +3,7 @@
   "wallpaper": "assets/wallpapers/light-forest-dark-winter.jpg",
   "roles": {
     "band": "#212033",
+    "edgeGlow": "#383561",
     "surface": "#343448",
     "overlay": "#45455A",
     "text": "#EDEDF6",

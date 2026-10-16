@@ -193,16 +193,28 @@ transition before wiring this call. Link loss must not be labelled Internet loss
 
 ## Notification center
 
-- **RATIFIED (2026-08-16)**: full history lives in the TOP PANEL as a tab (06-top-panel) —
-  every notification, with FUZZY SEARCH across title AND description/body. Opened by a
-  keyboard shortcut (09-input).
+- **RATIFIED (2026-10-17, owner; replaces the top-panel tab of 2026-08-16)**: everything
+  about notifications lives TOP RIGHT. A BELL BULGE sits in the corner where the top band
+  meets the right frame: 40x32, `band` fill, a 16px bell glyph (`text` with unread, else
+  `textMuted`) and the UNREAD count as an `accent` badge. With nothing unread the bulge
+  sinks to half its height, the bell's lower half showing, waiting for a hover. Hovering the
+  bell, in either state, opens the NOTIFICATION MENU: a top-right modal rollout
+  (`notifications`, 412 wide, up to 520 tall) in the clipboard's shape, search field at the
+  top, then the history grouped by app with FUZZY SEARCH across title AND body. An unread row
+  carries a 6px `accent` dot by its app name; a plain click on it marks it READ, so it leaves
+  the bell's count and stays in the searchable history. The menu closes 180ms after the
+  pointer has left both the bell and the menu, on a click outside, on Escape, or by the
+  keyboard shortcut that opened it (09-input). The bell steps back while live popups roll
+  out of the same corner, and in fullscreen or focus mode.
+- Unread is a fact of the archive: a popup that EXPIRED unseen is unread; one the person
+  dismissed, swiped, or whose action ran was seen. `read` is persisted with the record.
 - **RATIFIED (2026-08-16)**: layout = search field at TOP, below it the history GROUPED BY
   APP (app headers), entries in the boxless style; typing filters live across title+body;
-  Enter invokes the default action (else just highlights), Del dismisses. The panel remains
+  Enter invokes the default action (else just highlights), Del dismisses. The menu remains
   the route for explicitly choosing named actions; popup body activation is limited to the
   live protocol action whose identifier is exactly `default`.
-- **DEFAULT (2026-08-16, widened 2026-08-19)**: DND toggle lives in the notification-center
-  tab header; while the TOP PANEL (any tab) or the SESSION surface is open, popups are
+- **DEFAULT (2026-08-16, widened 2026-08-19)**: DND toggle lives in the notification menu's
+  header; while the TOP PANEL (any tab) or the SESSION surface is open, popups are
   suppressed — the panel rolls out of the SAME top band and is wide enough to sit under this
   stack, and two surfaces cannot share one wall; the session surface owns the screen by 08's
   fade-back law. Entries still arrive, expire and land in history; only the popup waits.

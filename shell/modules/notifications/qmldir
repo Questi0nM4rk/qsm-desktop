@@ -1,2 +1,4 @@
 module qs.modules.notifications
 NotificationPopupStack 1.0 NotificationPopupStack.qml
+NotificationBell 1.0 NotificationBell.qml
+NotificationCenterSurface 1.0 NotificationCenterSurface.qml

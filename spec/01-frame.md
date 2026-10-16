@@ -7,10 +7,13 @@ the SDF shader only.
 
 - **RATIFIED (2026-08-16, scope clarified 2026-08-17; glass edge confirmed 2026-10-16 night,
   owner)**: the band is fill-only; its edge is the shape itself, anti-aliased (screen-space
-  derivative AA, uniform weight on every axis and monitor scale), with ONE line on it: the
-  GLASS EDGE, a 2px hairline of `text` at 0.55 strength hugging the merged silhouette, drawn
-  by the shader on top of the flat fill. No rim, gradient or shadow stands in for it, and no
-  other stroke exists on any band/bulge/rollout edge. Reference: every capture in
+  derivative AA, uniform weight on every axis and monitor scale), with ONE treatment on it (owner
+  2026-10-17, replacing the 2px glass hairline): the EDGE GLOW, a granular gradient from the
+  silhouette's edge inward toward `edgeGlow` (the band one step lighter and a touch more
+  purple, generated with the theme), built from per-pixel grain that thickens toward the edge,
+  at most `edgeGlowStrength` 0.3 at the edge and gone `edgeGlowWidth` 20px in, drawn by the
+  shader on top of the flat fill (12-mechanism). Almost invisible by intent. No rim, stroke or
+  shadow stands in for it. Reference: every capture in
   `references/`.
 - **RATIFIED (2026-10-16, owner)**: inner containers (cards, row groups, fields, popouts)
   carry NO hairline, NO 1px border, NO edge rim, NO shadow. Lightness separates them: one

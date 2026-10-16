@@ -16,6 +16,7 @@ QtObject {
         "panel",
         "session",
         "clipboard",
+        "notifications",
         "cheatsheet"
     ]
     // Panel tab names double as IPC toggle aliases: `qsm toggle media` opens
@@ -24,8 +25,7 @@ QtObject {
         "dashboard",
         "media",
         "performance",
-        "workspaces",
-        "notifications"
+        "workspaces"
     ]
     property string modal: "none"
     // Fullscreen and qsm focus mode are hard modal boundaries: suppressed
@@ -136,7 +136,10 @@ QtObject {
     // Opening lands on the LAST USED tab (06 RATIFIED) unless a tab is named;
     // re-toggling the same tab (or the bare panel) closes.
     function togglePanel(tab: string): bool {
-        const target = panelTabs.includes(tab) ? tab : panelTab;
+        // A persisted tab that no longer exists (notifications left the panel
+        // 2026-10-17) lands on Dashboard.
+        const target = panelTabs.includes(tab) ? tab
+            : panelTabs.includes(panelTab) ? panelTab : "dashboard";
         if (modal === "panel" && panelTab === target) {
             closeModal();
             return true;

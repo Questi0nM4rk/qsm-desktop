@@ -21,6 +21,7 @@ QtObject {
     property alias nextId: store.nextId
     readonly property var popups: store.popups
     readonly property var archive: store.archive
+    readonly property int unreadCount: store.unreadCount
     readonly property var urgencyNames: store.urgencyNames
     property var sources: ({})
     property var sourceLinks: ({})
@@ -204,6 +205,8 @@ QtObject {
     }
     function clearArchive(): void { store.clearArchive(); }
     function removeArchived(record: var): bool { return store.removeArchived(record); }
+    function markRead(record: var): bool { return store.markRead(record); }
+    function markAllRead(): bool { return store.markAllRead(); }
     function isValidRecord(record: var): bool { return store.isValidRecord(record); }
 
     property Connections storeConnections: Connections {

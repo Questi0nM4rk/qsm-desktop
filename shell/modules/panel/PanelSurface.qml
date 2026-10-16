@@ -33,8 +33,7 @@ Item {
     readonly property real bodyHeight: Math.max(0, Math.min(Theme.panelHeight,
         Math.floor(root.height - Theme.frameThickness * 2 - Theme.space4
             - Theme.panelHandleHeight / 2 - Theme.panelHandleProud)))
-    readonly property bool staticContent: ShellState.panelTab !== "notifications"
-        && ShellState.panelTab !== "workspaces"
+    readonly property bool staticContent: ShellState.panelTab !== "workspaces"
     readonly property bool detailedSampling: root.loadContent && root.active
         && !root.fullscreen && !root.scene.focusMode
         && (ShellState.panelTab === "dashboard" || ShellState.panelTab === "performance")
@@ -57,8 +56,7 @@ Item {
         { key: "dashboard", label: "Dashboard", icon: "layers" },
         { key: "media", label: "Media", icon: "music" },
         { key: "performance", label: "Performance", icon: "gauge" },
-        { key: "workspaces", label: "Workspaces", icon: "workspace" },
-        { key: "notifications", label: "Notifications", icon: "bell" }
+        { key: "workspaces", label: "Workspaces", icon: "workspace" }
     ]
 
     // Tab stepping is the shared control's own action; Left/Right, Tab/Shift+Tab
@@ -177,7 +175,6 @@ Item {
                                 case "media": return mediaTab;
                                 case "performance": return root.performanceContent;
                                 case "workspaces": return workspacesTab;
-                                case "notifications": return notificationsTab;
                                 default: return dashboardTab;
                                 }
                             }
@@ -232,5 +229,4 @@ Item {
     Component { id: dashboardTab; DashboardTab {} }
     Component { id: mediaTab; MediaTab {} }
     Component { id: workspacesTab; WorkspacesTab { targetScreen: root.targetScreen } }
-    Component { id: notificationsTab; NotificationCenterTab {} }
 }

@@ -92,7 +92,7 @@ and discovery handles remain independent. The global modal policy is unchanged.
 
 ## Keybinds (RATIFIED 2026-08-16, Super-based, rebindable in the Hyprland lua)
 
-- **Super+Space** launcher · **Super+N** top panel → Notification center tab ·
+- **Super+Space** launcher · **Super+N** the notification menu (the top-right bell, 04) ·
   **Super+W** top panel → Workspaces tab · **Super+D** top panel → last-used tab.
 - **AMENDED (2026-08-19)**: the shell DECLARES its actions as Hyprland global shortcuts under
   the `qsm` appid rather than being driven by `exec, qs ipc call ...` binds. The compositor

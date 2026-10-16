@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Wayland
 import qs.QsmShell.Components as QsmShellComponents
+import qs.QsmShell.Style as QsmShellStyle
 import qs.components
 import qs.modules.bar
 import qs.modules.cheatsheet
@@ -46,6 +47,11 @@ PanelWindow {
     // The "clipboard" modal — same scoping; reachable only by its keybind.
     readonly property bool clipboardActive: !root.focusMode && ShellState.modal === "clipboard"
         && ShellState.focusedScreen === root.modelData
+    // The "notifications" modal: the bell's menu, top-right (04).
+    readonly property bool notificationsActive: !root.focusMode && ShellState.modal === "notifications"
+        && ShellState.focusedScreen === root.modelData
+    // Live popups on this screen: the bell steps back while they show.
+    readonly property bool popupActive: popupStack.popupActive
     // The "cheatsheet" modal — same scoping; SUPER + / only.
     readonly property bool cheatSheetActive: !root.focusMode && ShellState.modal === "cheatsheet"
         && ShellState.focusedScreen === root.modelData
@@ -389,6 +395,7 @@ PanelWindow {
     // does nothing (which is exactly how the clipboard rollout first behaved).
     WlrLayershell.keyboardFocus: (root.panelActive || root.launcherActive
         || root.sessionActive || root.clipboardActive || root.cheatSheetActive
+        || root.notificationsActive
         || (ShellState.keyboardGrab.length > 0 && ShellState.focusedScreen === root.modelData))
         ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
     WlrLayershell.namespace: "qsm-edge-scene"
@@ -596,6 +603,52 @@ PanelWindow {
         focused: ShellState.focusedScreen === root.modelData
         modal: ShellState.modal
         swatchAppName: ColorPickService.notifyAppName
+    }
+
+    // The bell in the top-right corner and its menu (04, owner 2026-10-17).
+    // The menu opens on the bell's hover and closes 180ms after the pointer
+    // has left both the bell and the menu; a click outside closes it too
+    // (ModalHost), and Escape through the surface.
+    NotificationBell {
+        id: notificationBell
+        scene: root
+        host: border
+    }
+
+    ModalHost {
+        id: notificationHost
+        scene: root
+        host: border
+        name: "notifications"
+        edges: ["top", "right"]
+        bodyWidth: Theme.notificationWidth + Theme.space4 * 2
+        bodyHeight: Math.min(
+            Theme.notificationMenuHeight,
+            root.height - Theme.space6 * 2)
+        onOpened: notificationCenter.open()
+
+        NotificationCenterSurface {
+            id: notificationCenter
+            anchors.fill: parent
+            anchors.margins: Theme.space4
+        }
+    }
+
+    Timer {
+        id: notificationLeaveTimer
+        interval: QsmShellStyle.Motion.hoverGrace
+        onTriggered: {
+            if (root.notificationsActive && !notificationBell.hovered && !notificationCenter.hovered)
+                ShellState.closeModal();
+        }
+    }
+
+    readonly property bool notificationPointerHeld: notificationBell.hovered || notificationCenter.hovered
+    onNotificationPointerHeldChanged: {
+        if (!notificationPointerHeld && root.notificationsActive)
+            notificationLeaveTimer.restart();
+        else
+            notificationLeaveTimer.stop();
     }
 
     // Top panel: full-scene click-outside catch (declared FIRST so the

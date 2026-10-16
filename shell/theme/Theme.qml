@@ -35,7 +35,7 @@ QtObject {
     // theme JSON is generated whole by scripts/derive-theme.ts, and a role it
     // lacks is reported once below.
     readonly property var preload: ({
-        band: "#271E30", surface: "#3B3245", overlay: "#4D4357",
+        band: "#271E30", edgeGlow: "#46305A", surface: "#3B3245", overlay: "#4D4357",
         text: "#F0ECF5", textMuted: "#BCB0C8",
         primary: "#D9B4EA", textOnPrimary: "#271E30", accent: "#D9B4EA", focus: "#D9B4EA",
         info: "#89CFF1", success: "#A2D3A2", warning: "#D9C284", danger: "#F5AEB7"
@@ -67,6 +67,9 @@ QtObject {
     // card inside it; overlay is a popout over a card. A fourth level is a
     // design error, not a token.
     property color band: role("band")
+    // The silhouette's edge glow tint (01-frame): read by the library's
+    // ShellBorder, never by a component.
+    property color edgeGlow: role("edgeGlow")
     property color surface: role("surface")
     property color overlay: role("overlay")
     property color text: role("text")
@@ -99,6 +102,7 @@ QtObject {
     // Every role fades: a swap that fades some and snaps others reads as a
     // glitch in the ones that snapped.
     Behavior on band { ColorAnimation { duration: root.themeSwapDuration } }
+    Behavior on edgeGlow { ColorAnimation { duration: root.themeSwapDuration } }
     Behavior on surface { ColorAnimation { duration: root.themeSwapDuration } }
     Behavior on overlay { ColorAnimation { duration: root.themeSwapDuration } }
     Behavior on text { ColorAnimation { duration: root.themeSwapDuration } }
@@ -291,6 +295,12 @@ QtObject {
     // 04-notifications rollout width: short notices stay edge-adjacent while
     // expanded bodies wrap below the headline instead of owning the screen.
     readonly property int notificationWidth: 380
+    // The bell corner (04, owner 2026-10-17): a 40x32 bulge, half sunk when
+    // nothing is unread; its menu is a top-right modal the height of the
+    // clipboard.
+    readonly property int notificationBellWidth: 40
+    readonly property int notificationBellHeight: 32
+    readonly property int notificationMenuHeight: 520
     readonly property int controlWidth: 380
     readonly property int spinBoxWidth: 140
     readonly property int swatchTarget: 44
@@ -444,11 +454,11 @@ QtObject {
     // shallowest point is the midpoint at overlap/2, which 8 keeps well past
     // the ~1px derivative AA.
     readonly property real seamOverlap: 8
-    // The glass edge (01-frame, owner 2026-10-16 night: it stays): a 2px lit
-    // line of text at 0.55 hugging the silhouette. The rim stays off.
-    readonly property color bandStroke: text
-    readonly property real bandStrokeStrength: 0.55
-    readonly property int bandStrokeWidth: 2
+    // The edge glow (01-frame, owner 2026-10-17): from the silhouette's edge
+    // inward, grain of edgeGlow thickening toward the edge, gone 20px in,
+    // at most 0.3 of the tint at the very edge. Almost invisible on purpose.
+    readonly property real edgeGlowStrength: 0.3
+    readonly property int edgeGlowWidth: 20
 
     // Theme discovery: one process pass over shell/themes/*.json.
     property Process themesProbe: Process {

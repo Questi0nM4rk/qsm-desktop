@@ -3,6 +3,7 @@
   "wallpaper": "assets/wallpapers/dark-rain-world.png",
   "roles": {
     "band": "#271E30",
+    "edgeGlow": "#46305A",
     "surface": "#3B3245",
     "overlay": "#4D4357",
     "text": "#F0ECF5",

@@ -23,6 +23,9 @@ QtObject {
         .slice(0, popupLimit)
         .map(entry => entry.presentationRecord)
     readonly property var archive: (history ?? []).filter(record => root.isValidRecord(record))
+    // Unread = archived without the person having touched it: an expired
+    // popup. A dismissed one, or one whose action ran, was seen.
+    readonly property int unreadCount: archive.filter(record => record.read === false).length
     readonly property var urgencyNames: ["low", "normal", "critical"]
 
     signal notifyRejected(string field, string message)
@@ -220,7 +223,7 @@ QtObject {
     function retire(entry: var, reason: string): void {
         const notificationId = entry.notificationId;
         if (!entry.isTransient)
-            archiveRecord(entry);
+            archiveRecord(entry, reason);
         entry.expiryTimer.stop();
         entry.destroy();
         if (reason !== "closed" && closeSource)
@@ -242,10 +245,27 @@ QtObject {
         return true;
     }
 
-    function archiveRecord(entry: var): void {
+    function markRead(record: var): bool {
+        if (!isValidRecord(record) || !record.archiveId) return false;
+        const index = history.findIndex(candidate => candidate.archiveId === record.archiveId);
+        if (index < 0 || history[index].read !== false) return false;
+        history = history.map((candidate, at) => at === index
+            ? Object.assign({}, candidate, { read: true }) : candidate);
+        return true;
+    }
+
+    function markAllRead(): bool {
+        if (unreadCount === 0) return false;
+        history = history.map(candidate => candidate.read === false
+            ? Object.assign({}, candidate, { read: true }) : candidate);
+        return true;
+    }
+
+    function archiveRecord(entry: var, reason: string): void {
         const now = Date.now();
         const record = { archiveId: `${now}-${entry.notificationId}`, archivedAt: now, appName: entry.appName,
-            summary: entry.summary, body: entry.body, urgency: entry.urgency };
+            summary: entry.summary, body: entry.body, urgency: entry.urgency,
+            read: reason !== "expired" };
         let records = [record].concat(history ?? []);
         if (records.length > archiveRecordLimit)
             records = records.slice(0, archiveRecordLimit);

@@ -4,17 +4,21 @@ import qs.services
 import qs.state
 import qs.theme
 
-// Notification center (04/06): feeds the library's history list the merged
-// live+archive stream and wires DND, Clear, dismiss and action-invoke to
-// the notification service. Everything about the list itself (search,
-// grouping, the keyboard cursor, the empty state) lives in the library now.
+// The notification menu (04, owner 2026-10-17): the searchable history,
+// opened from the bell in the top-right corner. Everything about the list
+// (search, grouping, the keyboard cursor, the empty state, the unread dot)
+// lives in the library; this wires it to the service. A plain click on an
+// unread row marks it read, so it leaves the bell's count and stays in the
+// searchable history.
 QsmShellComponents.NotificationCenter {
     id: root
 
+    // The pointer is on this menu; the scene keeps the menu open while the
+    // bell or the menu is hovered and closes it 180ms after both are left.
+    readonly property bool hovered: hoverReader.hovered
+
     entries: [...NotificationService.live.map(entry => entry.presentationRecord), ...NotificationService.archive]
-    // The feed scrolls directly on the panel rollout's shader silhouette, not
-    // on a card, so its fade has to reach the band fill. The library cannot
-    // know that and now asks.
+    // The list scrolls directly on the rollout's band, not on a card.
     fadeColor: Theme.band
     dnd: ShellState.dnd
     // A colour-picker announcement's summary IS the picked hex (owner
@@ -23,10 +27,12 @@ QsmShellComponents.NotificationCenter {
     swatchFor: entry => entry.appName === ColorPickService.notifyAppName
         && /^#[0-9a-fA-F]{6}$/.test(entry.summary) ? entry.summary : undefined
 
-    // PanelSurface initially owns focus for tab navigation. The notification
-    // tab is a typing surface, so claim it after this Loader-created tab settles.
-    Component.onCompleted: Qt.callLater(root.focusField)
+    function open(): void {
+        query = "";
+        focusField();
+    }
 
+    onActivated: entry => NotificationService.markRead(entry)
     onDismissRequested: entry => {
         if (entry.notificationId !== undefined)
             NotificationService.dismiss(entry.notificationId);
@@ -46,9 +52,9 @@ QsmShellComponents.NotificationCenter {
     onEscaped: ShellState.closeModal()
     onSelectionClaimed: ShellState.claimKeyboardSelection()
 
-    // Delete is a list command here: the history's rows are the thing
-    // being acted on, and dismissing one is what this tab is for. Tab
-    // steps between a row's own actions rather than leaving the field.
+    // Delete is a list command here: the history's rows are the thing being
+    // acted on. Tab steps between a row's own actions rather than leaving
+    // the field.
     onKeyPressed: event => {
         if (event.key === Qt.Key_Delete) {
             root.removeSelected();
@@ -59,5 +65,9 @@ QsmShellComponents.NotificationCenter {
         }
         if (event.accepted)
             ShellState.claimKeyboardSelection();
+    }
+
+    HoverHandler {
+        id: hoverReader
     }
 }

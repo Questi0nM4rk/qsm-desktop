@@ -945,7 +945,7 @@ Item {
 
     // The surface each action row owns. Anything absent opens its detail.
     readonly property var surfaces: ({
-        "notifications": () => ShellState.togglePanel("notifications"),
+        "notifications": () => ShellState.toggleModal("notifications"),
         "session": () => ShellState.toggleModal("session"),
         "awake": () => AwakeService.toggle()
     })
