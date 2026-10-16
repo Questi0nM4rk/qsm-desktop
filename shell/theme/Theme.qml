@@ -367,29 +367,31 @@ QtObject {
     // other control that drives the same output/brightness path (B3 rail
     // scroll zones) — one step, one source of truth.
     readonly property real osdWheelStep: 0.05
-    // Rail app list (03 DEFAULT): rows share the whole middle area —
-    // name space per row floats between these bounds.
-    readonly property int railAppIconSize: 26
+    // Rail app list (03 RATIFIED 2026-10-16): icon-only rows, a 36px slot
+    // with a 22px glyph and a 10px gap, no caption. The title lives in the
+    // hover popout.
+    readonly property int railAppSlot: 36
+    readonly property int railAppIconSize: 22
+    readonly property int railAppGap: 10
+    // Readouts (CPU, RAM): a 14px glyph beside a 12px tabular number as ONE
+    // item, 6px between readouts. Both are ratified off-grid numbers.
+    readonly property int railReadoutGlyph: 14
+    readonly property int railReadoutGap: 6
+    // Group separators in the rail (owner 2026-10-16: the dividers stay). A
+    // short textMuted line, drawn, because the band is darker than
+    // everything it separates.
+    readonly property color railDivider: textMuted
+    readonly property real railDividerOpacity: 0.8
+    readonly property int railDividerThickness: 2
+    readonly property real railDividerInset: 8
     // How many connected devices the one BLE cell splits into before it stops
     // subdividing.
     readonly property int railDeviceMax: 4
-    // Rail app-row caption run (the sideways name). The caption IS the
-    // feature, so the max stays generous — a lone app gets the long run and
-    // shows more of its live title; the min is the point past which the
-    // list scrolls instead of shrinking further.
-    readonly property int railAppNameMin: 40
-    // The floor for a row's caption run: past it the list scrolls instead of
-    // shrinking further. There is deliberately no ceiling — rows always divide
-    // the whole middle area between them.
-    // Workspace widget (03, re-amended 2026-08-17 v2 — owner design): global
-    // monitor-synced dots at FIXED positions; the numbered accent pill is
-    // the moving part, gliding between dot slots.
-    readonly property int railWorkspaceDotSlot: 9
-    readonly property int railWorkspaceActiveSlot: 18
-    readonly property int railWorkspacePillWidth: 24
-    // Time stays prominent above the smaller single-line numeric date.
-    readonly property int railClockDigitSize: textLg
-    readonly property int railClockDateSize: textSm
+    // Workspace slots (03 RATIFIED 2026-10-16): fixed 24x24 slots (target-min)
+    // with a 4px gap, a 6px dot each; the numbered accent pill is the one
+    // moving part and fills a slot.
+    readonly property int railWorkspaceSlot: 24
+    readonly property int railWorkspaceDot: 6
     // StatRing (performance tab default; dashboard resources card overrides
     // both to fit three stacked rings in one card).
     readonly property int ringDiameterDefault: 150

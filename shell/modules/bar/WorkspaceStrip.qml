@@ -4,6 +4,11 @@ import Quickshell.Hyprland
 import qs.QsmShell.Components as QsmShellComponents
 import qs.theme
 
+// Workspace slots (03 RATIFIED 2026-10-16): every Hyprland workspace, in one
+// fixed 24x24 slot each with a 4px gap, a 6px dot per slot (occupied
+// textMuted, urgent danger, empty overlay), and ONE moving part: the 24px
+// accent pill with the active number in textOnPrimary, gliding between
+// slots. Wheel switches, click jumps, no popout.
 Item {
     id: root
 
@@ -38,29 +43,26 @@ Item {
         activate(target);
     }
 
-    // Owner design v2 (03 re-amended): dots hold FIXED positions; the
-    // numbered accent pill is the thing that travels, gliding dot-to-dot.
     readonly property int activeIndex:
         Math.max(0, allWorkspaces.findIndex(workspace => workspace.id === activeWorkspaceId))
-    readonly property real slotStride: Theme.railWorkspaceDotSlot + Theme.space1
+    readonly property real slotStride: Theme.railWorkspaceSlot + Theme.space1
 
     implicitWidth: Theme.railWidth
-    implicitHeight: dots.implicitHeight + Theme.space2 * 2
+    implicitHeight: slots.implicitHeight
 
     ColumnLayout {
-        id: dots
-        anchors.centerIn: parent
-        // 03-rail RATIFIED: workspace dots use the 4px step, not the 8px one
-        // the rest of the column uses. The stride above must move with it --
-        // the travelling active pill walks slotStride, so a spacing change
-        // alone puts the pill beside the dots instead of on them.
+        id: slots
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        // The 4px step between slots; slotStride above must move with it,
+        // because the travelling pill walks slotStride.
         spacing: Theme.space1
 
         Repeater {
             model: root.allWorkspaces
 
             Item {
-                id: indicator
+                id: slot
 
                 required property var modelData
                 readonly property int workspaceId: modelData.id
@@ -70,58 +72,51 @@ Item {
                 readonly property bool urgent: workspace?.urgent ?? false
 
                 Layout.alignment: Qt.AlignHCenter
-                implicitWidth: Theme.railWidth
-                implicitHeight: Theme.railWorkspaceDotSlot
+                implicitWidth: Theme.railWorkspaceSlot
+                implicitHeight: Theme.railWorkspaceSlot
 
                 Rectangle {
                     anchors.centerIn: parent
-                    width: indicator.occupied ? 8 : 6
+                    width: Theme.railWorkspaceDot
                     height: width
                     radius: Theme.radiusPill
-                    color: indicator.occupied ? Theme.primary : Theme.textMuted
-                    border.width: indicator.urgent ? 2 : 0
-                    border.color: Theme.warning
-                    // The traveling pill covers the active slot; its dot
-                    // steps aside instead of doubling under the number.
-                    opacity: indicator.active ? 0 : 1
+                    color: slot.urgent ? Theme.danger
+                        : slot.occupied ? Theme.textMuted
+                        : Theme.overlay
+                    // The pill covers the active slot; its dot steps aside
+                    // instead of doubling under the number.
+                    opacity: slot.active ? 0 : 1
 
                     Behavior on opacity {
                         NumberAnimation { duration: Motion.micro; easing.type: Motion.standardEasing }
                     }
                 }
 
-                // 03 DEFAULT: workspace dots have NO hover popout —
-                // wheel switches, click jumps.
                 HoverHandler {
                     cursorShape: Qt.PointingHandCursor
                 }
 
                 TapHandler {
-                    onTapped: root.activate(indicator.workspaceId)
+                    onTapped: root.activate(slot.workspaceId)
                 }
             }
         }
     }
 
     // The numbered accent pill — the one moving part. Glides between the
-    // fixed dot positions on the popout-morph tier and carries the active
-    // workspace number.
-    //
-    // Badge, not a hand-built Rectangle+Text: "same pill language as the
-    // workspace number" is the spec's own words for the updates-cell badge
-    // (03-rail), and Rail.qml already uses Badge for that count — one type
-    // for the one pill idiom instead of two builds of it.
+    // fixed slots on the popout-morph tier and carries the active number.
+    // Badge, not a hand-built Rectangle+Text: it is the same pill language
+    // as the updates-cell badge (03-rail).
     QsmShellComponents.Badge {
         id: activePill
 
         tone: "accent"
         filled: true
         text: String(root.activeWorkspaceId)
-        width: Theme.railWorkspacePillWidth
-        height: Theme.railWorkspaceActiveSlot
+        width: Theme.railWorkspaceSlot
+        height: Theme.railWorkspaceSlot
         anchors.horizontalCenter: parent.horizontalCenter
-        y: dots.y + root.activeIndex * root.slotStride
-            + Theme.railWorkspaceDotSlot / 2 - height / 2
+        y: slots.y + root.activeIndex * root.slotStride
 
         Behavior on y {
             NumberAnimation { duration: Motion.morphGlide; easing.type: Motion.standardEasing }
