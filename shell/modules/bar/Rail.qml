@@ -175,11 +175,13 @@ Item {
 
         RailDivider {}
 
-        // Readouts: CPU and RAM as glyph + number, then the battery reading.
-        // A readout has a number and no click.
+        // ONE bottom cluster in one rhythm (owner 2026-10-16): the readouts
+        // (CPU and RAM as glyph + number, then the battery reading) and the
+        // quick menu, 6px apart, no group gap between them. A readout has a
+        // number and no click.
         Column {
             width: parent.width
-            spacing: Theme.railReadoutGap
+            spacing: Theme.space1
 
             RailReadout {
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -209,6 +211,9 @@ Item {
                 icon: laptop ? "" : PowerProfileService.glyph
                 iconColor: low ? Theme.danger : Theme.text
                 compact: true
+                // A readout row, not a 32px cell: the reading sits in the
+                // readouts' rhythm, the hover popout keeps its hit area.
+                implicitHeight: Theme.iconMd
                 interactive: true
                 popouts: root.popouts
                 popoutKind: "battery"
@@ -233,16 +238,12 @@ Item {
                     }
                 }
             }
-        }
 
-        // The quick menu: 32px cells, 16px glyphs. Active or connected draws
-        // the glyph in text, off in textMuted; state changes the glyph's
-        // SHAPE, never colour alone. Hover rolls out, click does the cell's
-        // one cheap toggle, the rollout owns any escape to a real app.
-        Column {
-            width: parent.width
-            spacing: 0
-
+            // The quick menu: 32px cells, 16px glyphs. Active or connected
+            // draws the glyph in text, off in textMuted; state changes the
+            // glyph's SHAPE, never colour alone. Hover rolls out, click does
+            // the cell's one cheap toggle, the rollout owns any escape to a
+            // real app.
             RailEntry {
                 icon: "zap"
                 iconColor: Theme.textMuted

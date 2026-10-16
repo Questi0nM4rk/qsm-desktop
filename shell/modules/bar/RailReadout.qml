@@ -2,8 +2,9 @@ import QtQuick
 import qs.QsmShell.Components as QsmShellComponents
 import qs.theme
 
-// One rail readout (03 RATIFIED 2026-10-16): a 14px glyph and a 12px tabular
-// number as ONE item. The whole item is textMuted below 70 percent, warning
+// One rail readout (03 RATIFIED 2026-10-16): a 14px glyph over a 12px tabular
+// number as ONE item, both on the rail's axis so the glyph lines up with
+// every other glyph in the band (owner 2026-10-16). The whole item is textMuted below 70 percent, warning
 // from 70, danger from 90. An unavailable value shows an em dash. A readout
 // has a number and no click: it is not a button.
 Item {
@@ -35,16 +36,16 @@ Item {
         _average = _average < 0 ? value : _average + 0.3 * (value - _average);
     }
 
-    implicitWidth: row.implicitWidth
-    implicitHeight: Theme.iconMd
+    implicitWidth: Theme.railWidth
+    implicitHeight: stack.implicitHeight
 
-    Row {
-        id: row
-        anchors.centerIn: parent
-        spacing: Theme.space1
+    Column {
+        id: stack
+        anchors.horizontalCenter: parent.horizontalCenter
+        spacing: Theme.spaceTight
 
         QsmShellComponents.SvgIcon {
-            anchors.verticalCenter: parent.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
             name: root.icon
             size: Theme.railReadoutGlyph
             color: root.tone
@@ -55,7 +56,7 @@ Item {
         }
 
         QsmShellComponents.Prose {
-            anchors.verticalCenter: parent.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
             role: "metadata"
             technical: true
             text: root.available ? String(Math.round(root.percent)) : "—"

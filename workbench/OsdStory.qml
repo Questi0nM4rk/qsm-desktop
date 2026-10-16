@@ -25,9 +25,7 @@ Item {
     readonly property real contentExtentHeight: height
     readonly property var targetScreen: screenFacts
     readonly property var outputTarget: osdSurface.outputTarget
-    readonly property var outputLabelTarget: osdSurface.outputLabelTarget
     readonly property var microphoneTarget: osdSurface.microphoneTarget
-    readonly property var microphoneLabelTarget: osdSurface.microphoneLabelTarget
     readonly property var brightnessTarget: osdSurface.brightnessTarget
     readonly property var sceneTarget: root
 
@@ -69,7 +67,7 @@ Item {
     ]
 
     readonly property var integration: ({
-        events: ["moved", "label-clicked", "operated", "applied", "presented", "dismissed"],
+        events: ["moved", "mute-toggled", "operated", "applied", "presented", "dismissed"],
         actions: Object.keys(root.actionHandlers),
         runAction: name => root.runAction(name),
         observables: {
@@ -91,11 +89,11 @@ Item {
             "output-value": () => WorkbenchServices.AudioService.outputValue,
             "output-muted": () => WorkbenchServices.AudioService.outputMuted,
             "output-available": () => WorkbenchServices.AudioService.outputAvailable,
-            "can-toggle-output-mute": () => root.canActivateLabel("output"),
+            "can-toggle-output-mute": () => root.canToggleMute("output"),
             "microphone-value": () => WorkbenchServices.AudioService.microphoneValue,
             "microphone-muted": () => WorkbenchServices.AudioService.microphoneMuted,
             "microphone-available": () => WorkbenchServices.AudioService.microphoneAvailable,
-            "can-toggle-microphone-mute": () => root.canActivateLabel("microphone"),
+            "can-toggle-microphone-mute": () => root.canToggleMute("microphone"),
             "brightness-value": () => WorkbenchServices.BrightnessService.value,
             "brightness-available": () => WorkbenchServices.BrightnessService.available,
             "input-simulated": () => root.inputDriver?.simulated === true,
@@ -148,28 +146,18 @@ Item {
         return null;
     }
 
-    function labelTarget(name: string): var {
-        if (!WorkbenchState.OsdState.visible)
-            return null;
-        if (name === "output" && WorkbenchServices.AudioService.outputAvailable)
-            return root.outputLabelTarget;
-        if (name === "microphone" && WorkbenchServices.AudioService.microphoneAvailable)
-            return root.microphoneLabelTarget;
-        return null;
-    }
-
-    function canActivateLabel(name: string): bool {
+    // Mute is the channel's one route (05-osd 2026-10-16): the thumb's
+    // double-click, Space, and this story action all call toggleMute().
+    function canToggleMute(name: string): bool {
         const channel = root.channelTarget(name);
-        return channel !== null && channel.visible && channel.enabled
-            && channel.labelClickable
-            && typeof channel.activateLabel === "function";
+        return channel !== null && channel.visible && channel.enabled && channel.mutable;
     }
 
     function toggleMute(name: string): bool {
         const channel = root.channelTarget(name);
-        if (!root.canActivateLabel(name))
+        if (!root.canToggleMute(name))
             return false;
-        if (!channel.activateLabel())
+        if (!channel.toggleMute())
             return false;
         root.record("action", "osd-channel", "toggle-" + name + "-mute", {
             channel: name
@@ -412,8 +400,8 @@ Item {
         function onMoved(): void {
             root.reportInteraction("moved", "output-level", "output", root.outputTarget.value);
         }
-        function onLabelClicked(): void {
-            root.reportInteraction("label-clicked", "output-mute", "output", undefined);
+        function onMuteToggled(): void {
+            root.reportInteraction("mute-toggled", "output-mute", "output", undefined);
         }
     }
 
@@ -422,8 +410,8 @@ Item {
         function onMoved(): void {
             root.reportInteraction("moved", "microphone-level", "microphone", root.microphoneTarget.value);
         }
-        function onLabelClicked(): void {
-            root.reportInteraction("label-clicked", "microphone-mute", "microphone", undefined);
+        function onMuteToggled(): void {
+            root.reportInteraction("mute-toggled", "microphone-mute", "microphone", undefined);
         }
     }
 

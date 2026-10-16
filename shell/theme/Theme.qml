@@ -258,7 +258,7 @@ QtObject {
 
     // One outer footprint; tab content owns overflow, never the shell body.
     readonly property int panelWidth: 854
-    readonly property int panelHeight: 520
+    readonly property int panelHeight: 560
     readonly property int panelNavigationWidth: 620
     // Top panel tab bar (06 RATIFIED: 48px).
     readonly property int panelTabBarHeight: 48
@@ -354,14 +354,9 @@ QtObject {
     readonly property int osdWidth: 56
     readonly property int osdTrackWidth: 40
     readonly property int osdTrackHeight: 140
-    // Inset 4px each side of the track, so it reads as sitting IN the channel
-    // rather than on top of it.
-    readonly property int osdThumbSize: 32
-    // Solid drop, no blur: "short, vertically offset, zero blur — lift while
-    // staying flat" (color-depth, depth without shadows). Grows while dragging,
-    // because a dragged object rises.
-    readonly property int osdThumbLift: 2
-    readonly property int osdThumbLiftDragging: 4
+    // Inset 6px each side of the track (05-osd 2026-10-16), carrying the
+    // channel glyph at rest and the value while live; no shadow under it.
+    readonly property int osdThumbSize: 28
     // Wheel nudge step shared by the OSD pill's own WheelHandler and any
     // other control that drives the same output/brightness path (B3 rail
     // scroll zones) — one step, one source of truth.
@@ -371,11 +366,10 @@ QtObject {
     // hover popout.
     readonly property int railAppSlot: 36
     readonly property int railAppIconSize: 22
-    readonly property int railAppGap: 10
-    // Readouts (CPU, RAM): a 14px glyph beside a 12px tabular number as ONE
-    // item, 6px between readouts. Both are ratified off-grid numbers.
+    readonly property int railAppGap: 4
+    // Readouts (CPU, RAM): a 14px glyph over a 12px tabular number as ONE
+    // item. 14 is a ratified off-grid number.
     readonly property int railReadoutGlyph: 14
-    readonly property int railReadoutGap: 6
     // Group separators in the rail (owner 2026-10-16: the dividers stay). A
     // short textMuted line, drawn, because the band is darker than
     // everything it separates.
