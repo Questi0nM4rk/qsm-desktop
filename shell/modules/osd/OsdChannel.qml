@@ -31,7 +31,8 @@ QsmShellComponents.Slider {
     // change, the same budget as the OSD's expiry. No Motion/Theme token has 1s.
     readonly property int valueHoldMs: 1000
     // Pressed, or changed (drag, wheel, keys, service) within valueHoldMs.
-    readonly property bool live: root.pressed || holdTimer.running
+    // Not named `live`: Slider already owns a FINAL `live` property.
+    readonly property bool showingValue: root.pressed || holdTimer.running
 
     // The one mute route: the thumb's double-click, Space on the focused
     // thumb, and the workbench story all end here.
@@ -57,12 +58,12 @@ QsmShellComponents.Slider {
     // Emphasis is the thumb's job: `text` while this channel is live or the
     // OSD's target, one step down in `textMuted` for the others and for a
     // muted channel.
-    thumbColor: !root.muted && (root.live || root.emphasized) ? Theme.text : Theme.textMuted
+    thumbColor: !root.muted && (root.showingValue || root.emphasized) ? Theme.text : Theme.textMuted
 
     // Glyph at rest (the muted variant comes from `icon`), reading while live.
     // No percent sign: the glyph says which channel this is.
-    thumbIcon: root.live ? "" : root.icon
-    thumbText: root.live ? (root.muted ? "—" : `${Math.round(root.value * 100)}`) : ""
+    thumbIcon: root.showingValue ? "" : root.icon
+    thumbText: root.showingValue ? (root.muted ? "—" : `${Math.round(root.value * 100)}`) : ""
     thumbContentColor: Theme.textOnPrimary
 
     Timer {

@@ -104,9 +104,7 @@ Item {
             "osd-handle": () => sceneFacts.handlesArmed && osdHandle.glyphItem.visible
                 ? osdHandle.glyphItem : null,
             "output": () => root.channelTarget("output"),
-            "output-mute": () => root.labelTarget("output"),
             "microphone": () => root.channelTarget("microphone"),
-            "microphone-mute": () => root.labelTarget("microphone"),
             "brightness": () => root.channelTarget("brightness"),
             "osd-capsule": () => root.fullscreen && WorkbenchState.OsdState.visible
                 ? osdSurface.fullscreenCapsule : null
