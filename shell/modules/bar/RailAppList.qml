@@ -8,7 +8,7 @@ import qs.theme
 
 // The rail's MIDDLE section (03 RATIFIED 2026-10-16): the CURRENT
 // workspace's apps, per monitor, ICON ONLY. Each row is a 36x36 slot with a
-// 22px glyph and a 4px gap; no caption. The window title lives in the hover
+// 22px glyph, the rail's own gap; no caption. The window title lives in the hover
 // popout as "app · live-title". The focused row carries accent at
 // opacitySelected behind it. Click focuses; more rows than fit scroll
 // (wheel), never spill out of the band. An empty workspace shows the
@@ -40,7 +40,7 @@ Item {
         height: Math.min(parent.height, contentHeight)
         visible: root.toplevels.length > 0
         clip: true
-        spacing: Theme.railAppGap
+        spacing: Theme.railItemGap
         boundsBehavior: Flickable.StopAtBounds
         model: root.toplevels
 

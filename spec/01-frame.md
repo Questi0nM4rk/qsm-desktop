@@ -5,11 +5,13 @@ the SDF shader only.
 
 ## Edge style
 
-- **RATIFIED (2026-08-16, scope clarified 2026-08-17 owner)**: NO drawn lines on the
-  SILHOUETTE. The band is fill-only; its edge is the shape itself, anti-aliased
-  (screen-space derivative AA, uniform weight on every axis and monitor scale). No outline
-  stroke exists on any band/bulge/rollout edge, and no rim, gradient or shadow stands in
-  for one. Reference: every capture in `references/`.
+- **RATIFIED (2026-08-16, scope clarified 2026-08-17; glass edge confirmed 2026-10-16 night,
+  owner)**: the band is fill-only; its edge is the shape itself, anti-aliased (screen-space
+  derivative AA, uniform weight on every axis and monitor scale), with ONE line on it: the
+  GLASS EDGE, a 2px hairline of `text` at 0.55 strength hugging the merged silhouette, drawn
+  by the shader on top of the flat fill. No rim, gradient or shadow stands in for it, and no
+  other stroke exists on any band/bulge/rollout edge. Reference: every capture in
+  `references/`.
 - **RATIFIED (2026-10-16, owner)**: inner containers (cards, row groups, fields, popouts)
   carry NO hairline, NO 1px border, NO edge rim, NO shadow. Lightness separates them: one
   three-step neutral ladder, `band` → `surface` → `overlay`, each step 1.30:1 on the one

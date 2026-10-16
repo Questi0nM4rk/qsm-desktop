@@ -35,9 +35,9 @@ QtObject {
     // theme JSON is generated whole by scripts/derive-theme.ts, and a role it
     // lacks is reported once below.
     readonly property var preload: ({
-        band: "#221D27", surface: "#36313B", overlay: "#48424D",
-        text: "#F0ECF5", textMuted: "#B5AEBC",
-        primary: "#D9B4EA", textOnPrimary: "#221D27", accent: "#D9B4EA", focus: "#D9B4EA",
+        band: "#271E30", surface: "#3B3245", overlay: "#4D4357",
+        text: "#F0ECF5", textMuted: "#BCB0C8",
+        primary: "#D9B4EA", textOnPrimary: "#271E30", accent: "#D9B4EA", focus: "#D9B4EA",
         info: "#89CFF1", success: "#A2D3A2", warning: "#D9C284", danger: "#F5AEB7"
     })
 
@@ -361,12 +361,13 @@ QtObject {
     // other control that drives the same output/brightness path (B3 rail
     // scroll zones) — one step, one source of truth.
     readonly property real osdWheelStep: 0.05
-    // Rail app list (03 RATIFIED 2026-10-16): icon-only rows, a 36px slot
-    // with a 22px glyph and a 10px gap, no caption. The title lives in the
-    // hover popout.
-    readonly property int railAppSlot: 36
+    // ONE rail rhythm (owner 2026-10-16 night): every item in the band is the
+    // same 32px cell with different content, 8px apart, same hover rollout.
+    readonly property int railItemGap: 8
+    // Rail app list (03 RATIFIED 2026-10-16): icon-only rows, a 32px cell
+    // with a 22px glyph, no caption. The title lives in the hover popout.
+    readonly property int railAppSlot: 32
     readonly property int railAppIconSize: 22
-    readonly property int railAppGap: 4
     // Readouts (CPU, RAM): a 14px glyph over a 12px tabular number as ONE
     // item. 14 is a ratified off-grid number.
     readonly property int railReadoutGlyph: 14
@@ -439,6 +440,11 @@ QtObject {
     // shallowest point is the midpoint at overlap/2, which 8 keeps well past
     // the ~1px derivative AA.
     readonly property real seamOverlap: 8
+    // The glass edge (01-frame, owner 2026-10-16 night: it stays): a 2px lit
+    // line of text at 0.55 hugging the silhouette. The rim stays off.
+    readonly property color bandStroke: text
+    readonly property real bandStrokeStrength: 0.55
+    readonly property int bandStrokeWidth: 2
 
     // Theme discovery: one process pass over shell/themes/*.json.
     property Process themesProbe: Process {

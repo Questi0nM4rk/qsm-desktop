@@ -114,7 +114,9 @@ const meanHue = (ps: Lch[]) => {
 };
 const grey = share < 0.1;
 const tintHue = grey ? 0 : meanHue(chromatic);
-const TINT_C = grey ? 0 : 0.02;
+// Owner tune 2026-10-16 night: a little more of the wallpaper in the neutrals
+// and a little lighter frame than the brand book's 0.02 / 0.24.
+const TINT_C = grey ? 0 : 0.035;
 
 const BIN = 30;
 const bins: Lch[][] = Array.from({ length: 360 / BIN }, () => []);
@@ -126,7 +128,7 @@ const accentHue = grey ? 275 : meanHue(best);
 // ---- the ladder --------------------------------------------------------------------------
 const STEP = 1.3;
 const ladder: Record<string, Lch> = {};
-ladder.band = { L: 0.24, C: TINT_C, h: tintHue }; // lighter than the wallpaper's median: a frame, not a hole
+ladder.band = { L: 0.255, C: TINT_C, h: tintHue }; // lighter than the wallpaper's median: a frame, not a hole
 for (const [stepName, below] of [["surface", "band"], ["overlay", "surface"]] as const) {
   ladder[stepName] = { L: nextStep(shipped(ladder[below]), ladder[below].L, TINT_C, tintHue, STEP), C: TINT_C, h: tintHue };
 }

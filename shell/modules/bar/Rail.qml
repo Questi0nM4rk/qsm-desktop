@@ -32,12 +32,12 @@ Item {
         anchors.topMargin: Theme.space4
         anchors.left: parent.left
         anchors.right: parent.right
-        spacing: Theme.space3
+        spacing: Theme.railItemGap
 
         // The mark and the updates cell are one compact group.
         Column {
             width: parent.width
-            spacing: 0
+            spacing: Theme.railItemGap
 
             // The mark: decorative, in the accent, the one 20px glyph of the
             // band (03 DEFAULT: no click, no popout).
@@ -90,7 +90,7 @@ Item {
         RailGroup {
             Column {
                 width: parent.width
-                spacing: Theme.space1
+                spacing: Theme.railItemGap
 
                 WorkspaceStrip {
                     id: workspaces
@@ -159,8 +159,8 @@ Item {
         anchors.right: parent.right
         anchors.top: topStack.bottom
         anchors.bottom: bottomStack.top
-        anchors.topMargin: Theme.space3
-        anchors.bottomMargin: Theme.space3
+        anchors.topMargin: Theme.railItemGap
+        anchors.bottomMargin: Theme.railItemGap
         screen: root.screen
         popouts: root.popouts
     }
@@ -171,18 +171,17 @@ Item {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.bottomMargin: Theme.space4
-        spacing: Theme.space3
+        spacing: Theme.railItemGap
 
         RailDivider {}
 
         // ONE bottom cluster in one rhythm (owner 2026-10-16): the readouts
         // (CPU and RAM as glyph + number, then the battery reading) and the
-        // quick menu, 8px apart, no group gap between them. The air the
-        // workspace slots gave up lives here, where the pointer works. A
-        // readout has a number and no click.
+        // quick menu, in the rail's one rhythm. A readout has a number and no
+        // click.
         Column {
             width: parent.width
-            spacing: Theme.space2
+            spacing: Theme.railItemGap
 
             RailReadout {
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -212,9 +211,6 @@ Item {
                 icon: laptop ? "" : PowerProfileService.glyph
                 iconColor: low ? Theme.danger : Theme.text
                 compact: true
-                // A readout row, not a 32px cell: the reading sits in the
-                // readouts' rhythm, the hover popout keeps its hit area.
-                implicitHeight: Theme.iconMd
                 interactive: true
                 popouts: root.popouts
                 popoutKind: "battery"

@@ -21,7 +21,7 @@
 
 - **RATIFIED (2026-10-16, owner)**: the frame is one step LIGHTER than the wallpaper's median
   lightness, never darker (a darker frame reads as a hole). Deep Night: wallpaper median OKLCH
-  L 0.20, band L 0.24.
+  L 0.20, band L 0.255 (owner tune 2026-10-16 night, up from the brand book's 0.24).
 - **RATIFIED (2026-10-16, owner)**: lightness separates. Containers step up a three-step neutral
   ladder, each 1.30:1 on the one below: `band` (rollout fill) -> `surface` (a card, row group,
   field inside a rollout) -> `overlay` (a popout, menu, hover container over a card). No
@@ -30,11 +30,12 @@
   Frame and every rollout are one silhouette painted as `band`; nothing draws its own frame,
   stroke, rim or shadow.
 - **RATIFIED (2026-10-16, owner)**: neutrals carry structure, pastels carry meaning. The ladder
-  is near grey with a trace (OKLCH C 0.02) of the wallpaper's hue. Eight pastels share one
+  is near grey with a trace (OKLCH C 0.035, owner tune 2026-10-16 night, up from the brand
+  book's 0.02) of the wallpaper's hue. Eight pastels share one
   lightness and one chroma (OKLCH L 0.82, C 0.085): rose 10 deg, peach 50, yellow 90, green 145,
   teal 185, sky 230, lavender 275, mauve 315. A pastel never fills a container.
 - **Deep Night, derived** (sRGB hex):
-  - palette: ground-0 #221D27 (L 0.24) · ground-1 #36313B (L 0.32) · ground-2 #48424D (L 0.39) ·
+  - palette: see shell/themes/deep-night.json for the generated values (band L 0.255, trace C 0.035) ·
     ink #F0ECF5 (L 0.95) · ink-muted #B5AEBC (L 0.76) · rose #F5AEB7 · peach #F2B493 ·
     yellow #D9C284 · green #A2D3A2 · teal #81D6CB · sky #89CFF1 · lavender #B4C0FC ·
     mauve #D9B4EA
@@ -45,8 +46,8 @@
     current) · focus=mauve (2 px ring outside the control, 2 px offset) · info=sky ·
     success=green · warning=yellow · danger=rose. Status hues stay semantic.
   - roles that do not exist: `secondary`, `background`, `backgroundMid`, `backgroundEnd`,
-    `bandFill` (band is the fill), `outline`, `railDivider`, rim colour/strength/width, glass
-    hairline.
+    `bandFill` (band is the fill), `outline`, rim colour/strength/width. The glass edge of the
+    silhouette (01-frame) and the rail's divider line (03-rail) stay.
 - **Pairs** (WCAG, 8-bit): text on band/surface/overlay 14.2/10.9/8.4 · textMuted 7.6/5.9/4.5 ·
   every pastel on band >= 9.1, on surface >= 7.0, on overlay >= 5.4 · textOnPrimary on any pastel
   >= 9.1. Floors: 4.5 text, 3 glyphs/controls/focus ring, 1.3 between ladder steps, 1.2 between

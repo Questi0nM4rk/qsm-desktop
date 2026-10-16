@@ -36,12 +36,13 @@ Item {
         _average = _average < 0 ? value : _average + 0.3 * (value - _average);
     }
 
+    // The same 32px cell as every other rail item, with a stack inside.
     implicitWidth: Theme.railWidth
-    implicitHeight: stack.implicitHeight
+    implicitHeight: Theme.space6
 
     Column {
         id: stack
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.centerIn: parent
         spacing: Theme.spaceTight
 
         QsmShellComponents.SvgIcon {
@@ -59,7 +60,7 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             role: "metadata"
             technical: true
-            text: root.available ? String(Math.round(root.percent)) : "—"
+            text: root.available ? Math.round(root.percent) + "%" : "—"
             color: root.tone
             elide: Text.ElideNone
 
