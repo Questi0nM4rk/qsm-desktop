@@ -21,10 +21,10 @@ not the library's default.
 
 ## Idle affordance + open
 
-- **RATIFIED (2026-10-16, owner)**: the panel handle is a CLOCK bump: a 28 px tall bulge out
-  of the top band, bottom corners 14 px, `band` fill, reading `21:40` in 13 px Mono medium
-  `text` and `Thu 15.10` in 12 px `textMuted`, gap 10, padding 0 16, tabular digits. It sits
-  on the panel's LEADING (bottom) EDGE: as the
+- **RATIFIED (2026-10-17, owner; replaces the clock bump of 2026-10-16)**: the panel handle
+  is a small DOTS bulge: a 20 px tall bulge out of the top band, bottom corners 10 px, `band`
+  fill, four 4 px `textMuted` dots 6 px apart as the drawer's grip, padding 0 16. The clock
+  stays in the rail (03). It sits on the panel's LEADING (bottom) EDGE: as the
   panel rolls out it travels WITH that edge — always at the surface's outermost rim, like
   a tab on a drawer front — and rides it back on retract; never parked at the band while the
   surface moves beneath it. Hover over the bump opens
@@ -96,8 +96,8 @@ over title and body (see 04-notifications).
   strip. Tab choice, empty/missing data and content length never resize the outer
   body. Static compositions overflow inside a bounded viewport; model-backed
   tabs keep their own scrolling route. The tab bar baseline is **48px**.
-- Clock bump handle: 28 px tall, width = text advance of `21:40` + `Thu 15.10` + gap 10 +
-  padding 0 16 (tabular digits keep it stable as the minute changes), bottom corners 14 px.
+- Dots handle: 20 px tall, width = four dots + three 6 px gaps + padding 0 16, bottom corners
+  10 px.
   Fullscreen/focus suppression withdraws both paint and input. Detailed sampling remains tied to the dashboard/performance tab.
 
 | layer | decision | why | token or pattern | verified by |
@@ -105,7 +105,7 @@ over title and body (see 04-notifications).
 | posture/task | time and date glance and entry to the existing panel | clock leaves the rail; no permanent dashboard | existing panel hover/click | inspect reading then open panel |
 | ia/interaction | time and date, one panel action | one glance, one entry | Prose metadata; accessible button | keyboard activation, minute rollover |
 | hierarchy/token | `band` bulge, `text` time 13 px Mono medium, `textMuted` date 12 px | one silhouette with the band; lightness, not chrome, carries it | role `band`, text scale | live text and containment |
-| responsive/state | rides leading edge; hidden in fullscreen/focus | no second travel animation | ClockBump → host-space rect → ShellBorder registerBulge → existing shader; mask consumes same rect | open/retract and suppression |
+| responsive/state | rides leading edge; hidden in fullscreen/focus | no second travel animation | PanelHandle → host-space rect → ShellBorder registerBulge → existing shader; mask consumes same rect | open/retract and suppression |
 
 The handle registers one undeformed body, with edge snapping disabled because its
 attachment is the moving panel rim rather than a screen edge. It is removed

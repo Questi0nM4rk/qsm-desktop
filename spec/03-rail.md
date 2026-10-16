@@ -38,12 +38,12 @@ intent separately from the backend result, with no password in event payloads.
 - **RATIFIED (2026-10-16, owner)**: lineup top→bottom: logo (decorative), SYSTEM UPDATES cell,
   then ONE group holding the workspace slots, PIN and the tray icons, then the
   current-workspace app list (the middle section, spread across the free area; the active
-  window is the highlighted row), then the bottom cluster: READOUTS first — CPU (glyph +
-  percent), RAM (glyph + percent), BATTERY (the charge reading alone, below) — then the QUICK
-  MENU (quick actions FIRST, then network, bluetooth, sound — the actions cell is the most
-  reached-for and takes the most reachable slot, RATIFIED 2026-08-22, owner), then power
-  (danger-tinted) at the very bottom. CLOCK AND DATE LEAVE THE RAIL: they live in the top bump
-  (06), and the calendar popout moves with them to the bump's hover/click.
+  window is the highlighted row), then the bottom cluster: the CLOCK (time above the numeric date, calendar
+  popout on hover; back in the rail 2026-10-17, owner), BATTERY (the charge reading alone),
+  then the QUICK MENU (quick actions FIRST, then network, bluetooth, sound — the actions cell
+  is the most reached-for and takes the most reachable slot, RATIFIED 2026-08-22, owner), then
+  power (danger-tinted) at the very bottom. CPU and RAM are NOT in the rail (owner 2026-10-17):
+  they live in the Dashboard only.
 - **RATIFIED (2026-10-16, owner, amended the same evening)**: groups are separated by the
   rail's DIVIDER LINE (`RailDivider`: a 2px `textMuted` line at 0.8 opacity, inset 8px from
   both walls) with the column's 12px spacing on each side; the morning's "spacing, never a
@@ -52,10 +52,6 @@ intent separately from the backend result, with no password in event payloads.
   group (owner, 2026-08-24) so an app's tray icon never reads as one more app row, and a
   machine with no tray icons shows nothing there. Rail glyphs use the compact 16px step, with
   the top Arch logo as the deliberate 20px exception.
-- **RATIFIED (2026-10-16, owner)**: CPU and RAM readouts: glyph
-  14px + number 12px, ONE item. The whole item is `textMuted` below 70 percent, `warning` from
-  70, `danger` from 90. CPU is exponentially averaged before display. An unavailable value
-  shows an em dash.
 - **RATIFIED (2026-10-16, owner)**: edge handles (the OSD handle and any edge tab) are 12x40
   tabs protruding 11px into the picture, `band` fill, 10px glyph, hit area 24px minimum.
 - **DEFAULT (2026-08-16)**: logo entry is decorative — no click action, no popout.

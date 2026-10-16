@@ -323,7 +323,7 @@ QtObject {
     readonly property real dotRadius: 2
     readonly property real dotSpacing: 6
     readonly property real dotGlyphSize: 2.5
-    readonly property int panelHandleHeight: 28
+    readonly property int panelHandleHeight: 20
     // Rail popouts (03).
     readonly property int popoutWidth: 280
     // Bluetooth popout (03, caelestia-parity B4): device rows cap at N,
@@ -361,16 +361,17 @@ QtObject {
     // other control that drives the same output/brightness path (B3 rail
     // scroll zones) — one step, one source of truth.
     readonly property real osdWheelStep: 0.05
-    // ONE rail rhythm (owner 2026-10-16 night): every item in the band is the
-    // same 32px cell with different content, 8px apart, same hover rollout.
-    readonly property int railItemGap: 8
+    // ONE rail rhythm (owner 2026-10-17): every item in the band is the same
+    // 32px cell with different content, 4px apart, same hover rollout.
+    readonly property int railItemGap: 4
     // Rail app list (03 RATIFIED 2026-10-16): icon-only rows, a 32px cell
     // with a 22px glyph, no caption. The title lives in the hover popout.
     readonly property int railAppSlot: 32
     readonly property int railAppIconSize: 22
-    // Readouts (CPU, RAM): a 14px glyph over a 12px tabular number as ONE
-    // item. 14 is a ratified off-grid number.
-    readonly property int railReadoutGlyph: 14
+    // The rail clock (03, back in the rail 2026-10-17): time above a smaller
+    // numeric date.
+    readonly property int railClockDigitSize: textLg
+    readonly property int railClockDateSize: textSm
     // Group separators in the rail (owner 2026-10-16: the dividers stay). A
     // short textMuted line, drawn, because the band is darker than
     // everything it separates.

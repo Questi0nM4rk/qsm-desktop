@@ -655,11 +655,11 @@ PanelWindow {
     // the panel rim. Both are mask-active so neither becomes click-through.
     readonly property rect panelHandleZone: fullscreen || focusMode
         ? Qt.rect(0, 0, 0, 0)
-        : Qt.rect(root.panelCenterX - clockBump.width / 2, 0,
-            clockBump.width, Theme.frameThickness + Theme.panelHandleHeight / 2 + Theme.handleProud)
+        : Qt.rect(root.panelCenterX - panelHandle.width / 2, 0,
+            panelHandle.width, Theme.frameThickness + Theme.panelHandleHeight / 2 + Theme.handleProud)
 
-    ClockBump {
-        id: clockBump
+    PanelHandle {
+        id: panelHandle
         host: border
         visible: !root.fullscreen && !root.focusMode
         width: implicitWidth

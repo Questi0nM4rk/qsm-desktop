@@ -10,8 +10,8 @@ import qs.theme
 // The rail (03-rail lineup, RATIFIED 2026-10-16): the mark and the updates
 // cell, then workspace slots with the PIN and the TRAY icons, then the
 // current workspace's apps spread across the middle, and at the bottom the
-// READOUTS (CPU, RAM, the battery number), the QUICK MENU (actions, network,
-// bluetooth, sound) and power. The clock lives in the top bump (06). Groups
+// CLOCK, the battery number, the QUICK MENU (actions, network, bluetooth,
+// sound) and power. CPU and RAM live in the Dashboard only (06). Groups
 // are separated by the rail's divider lines (owner 2026-10-16). The popout
 // interaction lives in the PopoutController.
 Item {
@@ -19,12 +19,6 @@ Item {
 
     required property var screen
     required property PopoutController popouts
-
-    // The readouts need the performance sampler running while this rail is
-    // on screen; the key is per monitor so one rail retiring never cancels
-    // another's demand.
-    Component.onCompleted: PerformanceService.watch("rail-" + root.screen.name, true)
-    Component.onDestruction: PerformanceService.watch("rail-" + root.screen.name, false)
 
     Column {
         id: topStack
@@ -175,25 +169,15 @@ Item {
 
         RailDivider {}
 
-        // ONE bottom cluster in one rhythm (owner 2026-10-16): the readouts
-        // (CPU and RAM as glyph + number, then the battery reading) and the
-        // quick menu, in the rail's one rhythm. A readout has a number and no
-        // click.
+        // ONE bottom cluster in one rhythm (owner 2026-10-17): the clock, the
+        // battery reading and the quick menu. CPU and RAM live in the
+        // Dashboard only.
         Column {
             width: parent.width
             spacing: Theme.railItemGap
 
-            RailReadout {
-                anchors.horizontalCenter: parent.horizontalCenter
-                icon: "cpu"
-                value: PerformanceService.cpuUsage
-                smoothed: true
-            }
-
-            RailReadout {
-                anchors.horizontalCenter: parent.horizontalCenter
-                icon: "memory"
-                value: PerformanceService.memUsed
+            ClockEntry {
+                popouts: root.popouts
             }
 
             RailEntry {
