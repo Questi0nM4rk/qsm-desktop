@@ -12,10 +12,10 @@ Nothing here is a decision. Rounds are a proposed order; the owner picks.
 
 | Domain | Status | Where |
 | --- | --- | --- |
-| Rail (logo, workspaces, apps, tray, clock, status, power) | DONE | `modules/bar/Rail.qml:30-234` |
+| Rail (logo, updates, workspaces, apps, tray, readouts, quick menu, power) | SPEC 03, 2026-10-16 | `modules/bar/Rail.qml:30-234` |
 | Workspaces strip + overview tab | DONE | `WorkspaceStrip.qml:39`, `panel/WorkspacesTab.qml:48-141` |
 | Tray + native SNI menus | DONE | `Rail.qml:98-134`, `TrayMenuContent.qml:22` |
-| Clock + month calendar | DONE | `ClockEntry.qml:14`, `components/MonthCalendar.qml:8` |
+| Clock bump + month calendar (top band, spec 06) | SPEC | `ClockEntry.qml:14` moves to the bump, `components/MonthCalendar.qml:8` |
 | Notification server (bus owned) | DONE | `services/NotificationService.qml:48-60` |
 | Notification centre + history, fuzzy search | DONE | `panel/NotificationCenterTab.qml:20-69` |
 | OSD — volume / mic / brightness, riding handle | DONE | `modules/osd/OsdSurface.qml:53-106` |

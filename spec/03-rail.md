@@ -32,24 +32,30 @@ The popout keeps its inline password, confirm-off, wired status and multi-VPN
 routes; pointer and Return call the same submit function. Each input reports
 intent separately from the backend result, with no password in event payloads.
 
-- Icons only, vertically stacked; entries may expose a popout on hover.
-- **RATIFIED (2026-08-16, amended 2026-08-17 twice — caelestia order, owner; amended
-  2026-08-24 — TRAY moved into the workspace group, owner)**: lineup top→bottom: logo,
-  then ONE group holding workspace dots, PIN and the tray icons, then the
-  current-workspace app list (the middle section, spread across the free area — it
-  REPLACES the old separate active-window entry; the active window is the highlighted
-  row), then clock+date, status island (quick actions FIRST, then network, bluetooth,
-  battery, sound — RATIFIED 2026-08-22, owner: the actions cell is the most reached-for
-  and takes the most reachable slot; supersedes caelestia's awake-last order), power
-  (danger-tinted).
-  The 2026-08-24 amendment moves ONLY the tray, and moves it INTO the workspace/pin
-  group rather than giving it one of its own. Two reasons, both owner-stated. At the head
-  of the bottom cluster the tray sat directly beneath the app list, so an app's tray icon
-  read as one more app row (the owner's Discord icon under his foot windows, separated by
-  nothing but a divider). And a group of its own means a divider plus a gap that persist
-  on a machine running nothing with a tray — inside the group, no tray icons is simply
-  nothing to see. Tray rows take the group's 40px cell rhythm, not the 26px row they had
-  before. The status island did NOT move: it stays below the clock, where it was.
+- The rail is one column of readouts and buttons, vertically stacked; readouts have numbers,
+  buttons do not. Entries may expose a popout on hover. Nothing in the rail carries a 40x32
+  "cell" box; hit areas are invisible.
+- **RATIFIED (2026-10-16, owner)**: lineup top→bottom: logo (decorative), SYSTEM UPDATES cell,
+  then ONE group holding the workspace slots, PIN and the tray icons, then the
+  current-workspace app list (the middle section, spread across the free area; the active
+  window is the highlighted row), then the bottom cluster: READOUTS first — CPU (glyph +
+  percent), RAM (glyph + percent), BATTERY (the charge reading alone, below) — then the QUICK
+  MENU (quick actions FIRST, then network, bluetooth, sound — the actions cell is the most
+  reached-for and takes the most reachable slot, RATIFIED 2026-08-22, owner), then power
+  (danger-tinted) at the very bottom. CLOCK AND DATE LEAVE THE RAIL: they live in the top bump
+  (06), and the calendar popout moves with them to the bump's hover/click.
+- **RATIFIED (2026-10-16, owner)**: groups separate by SPACING, never by a divider line: inside a group each item
+  keeps its own gap (4px between workspace slots, 10px between app rows, 6px between
+  readouts), 16 to 24px between groups. Tray icons sit in the workspace/pin
+  group (owner, 2026-08-24) so an app's tray icon never reads as one more app row, and a
+  machine with no tray icons shows nothing there. Rail glyphs use the compact 16px step, with
+  the top Arch logo as the deliberate 20px exception.
+- **RATIFIED (2026-10-16, owner)**: CPU and RAM readouts: glyph
+  14px + number 12px, ONE item. The whole item is `textMuted` below 70 percent, `warning` from
+  70, `danger` from 90. CPU is exponentially averaged before display. An unavailable value
+  shows an em dash.
+- **RATIFIED (2026-10-16, owner)**: edge handles (the OSD handle and any edge tab) are 12x40
+  tabs protruding 11px into the picture, `band` fill, 10px glyph, hit area 24px minimum.
 - **DEFAULT (2026-08-16)**: logo entry is decorative — no click action, no popout.
 - **RATIFIED (2026-08-25, owner — HyDE parity; amended same day)**: a SYSTEM UPDATES cell lives
   in the logo's group, directly under the arch mark: a Pacman-and-pellet glyph with the
@@ -81,29 +87,22 @@ intent separately from the backend result, with no password in event payloads.
   `references/bluetooth-menu-popout.png`).
 - **DEFAULT (2026-08-16)** tray menu rendering: the DBusMenu tree renders as popout rows —
   separators as faded short lines, submenus expand inline (indented) on click, checkable items
-  use the icon-swap law, disabled items dim to 40%.
+  use the icon-swap law, disabled items dim to 35%.
 - **RATIFIED (2026-08-16)**: NO window-preview popout (owner reversed after reflection: you'd
   only ever preview the workspace you're already on — useless).
 - **RATIFIED (2026-08-16)**: toggle-state entries (awake/coffee, and all future toggles) show
   state by SWAPPING THE ICON (empty cup ↔ full cup), NEVER by a glow/light ring around it.
   The current highlight treatment is abolished.
-- Clock entry = HH above mm, with a smaller single-line `DD.MM` beneath the time.
-  Day and numeric month sit side by side, never as separate vertical readings
-  or a month name. Time uses the 18px technical reading, the date 12px, with
-  metric-locked time digits and no date auto-shrinking.
-  It is text-only, without a clock icon; hovering still opens the calendar popout.
-  Reduced motion settles digit changes immediately without positional travel.
-- **RATIFIED (2026-08-16, re-amended 2026-08-18 v2 — owner iterated on glass: reel out,
-  traveling pill in)**: workspace indicator = FIXED dots + a TRAVELING numbered pill:
-  ALL Hyprland workspaces globally (monitor-synced — every rail renders the identical
-  column, active = the globally focused workspace); dots hold fixed positions (occupied
-  filled, empty faint, urgent ringed); the ACTIVE workspace is marked by an accent pill
-  that GLIDES between dot slots (popout-morph tier, no overshoot) carrying the workspace
-  NUMBER inside it — the pill is the only moving part; its dot fades aside beneath it.
-  NO app icons — app identity lives ONLY in the center app list. Wheel switches; click a
-  dot jumps.
+- **RATIFIED (2026-10-16, owner)**: workspace indicator = FIXED 24x24 slots (target-min) + a
+  TRAVELING numbered pill: ALL Hyprland workspaces globally (monitor-synced — every rail
+  renders the identical column, active = the globally focused workspace); slots hold fixed
+  positions with a 4px gap; each shows a 6px dot — occupied `textMuted`, urgent `danger`,
+  empty `overlay`; the ACTIVE workspace is marked by a 24px `accent` pill with the number in
+  `onPrimary`, which GLIDES between slots (popout-morph tier, no overshoot) — the pill is the
+  only moving part; its dot fades aside beneath it. NO app icons — app identity lives ONLY in
+  the center app list. Wheel switches; click a slot jumps.
 - **DEFAULT (2026-08-16)**: workspace model = Hyprland's dynamic per-monitor workspaces; one
-  dot per EXISTING workspace of that monitor.
+  slot per EXISTING workspace of that monitor.
 - **DEFAULT (2026-08-16)**: battery popout content per
   `references/battery-popout-corner-join.png`: charge % + time estimate (or "No battery
   detected"), current power profile line, and a power-profile switch row.
@@ -141,46 +140,47 @@ intent separately from the backend result, with no password in event payloads.
   the acknowledgement is the shell's, not the tool's).
 - **DEFAULT (2026-08-16)**: awake = idle-inhibitor toggle (inhibits Hypridle via the standard
   inhibit protocol); icons full-cup = on, empty-cup = off. Pin entry icons: pin / pin-off.
-- Clock is 24h HH:MM, with the rail date `DD.MM`; calendar weeks start Monday.
 - **DEFAULT (2026-08-16, contradiction resolved 2026-08-17 owner)**: which entries popout
-  on hover: battery, clock (calendar — matching the RATIFIED hover law above; the earlier
-  click-only bullet was a spec self-contradiction, hover won), media when present
-  (`references/media-popout-over-app.png`). Tray icons open their menus on click; workspace
-  dots have no popout (wheel/click only).
+  on hover: battery, media when present (`references/media-popout-over-app.png`). Tray icons
+  open their menus on click; workspace slots have no popout (wheel/click only). The calendar
+  popout belongs to the top bump (06).
 - **VETOED (2026-08-20, owner)**: the "media when present" popout is REMOVED from the rail. It
   was built (a cell above the tray, transport in its rollout) and then cut the same day: the
   top panel's Media tab already carries full media control and the dashboard carries a
   mini-player, so a third transport made THREE routes to play/pause — exactly what 09's
   one-path law removes rather than keeps. A DEFAULT is owner-vetoable, so this is the law
   working, not an exception to it. `references/media-popout-over-app.png` documents caelestia's
-  behaviour and is no longer a target. The rail's hover popouts are therefore battery, clock
-  (calendar), and the label/description/app/tray tiers.
+  behaviour and is no longer a target. The rail's hover popouts are therefore battery and the
+  label/description/app/tray tiers.
 - **RATIFIED (2026-08-20)**: media keys still route THROUGH the shell (`mediaToggle`,
   `mediaNext`, `mediaPrev`), because the shell owns the active-player decision and playerctl in
   the compositor config held a second, blind opinion about it. They need NO readout surface:
   a level is invisible until something draws it, but play/pause/next is audible the instant it
   lands, so the medium the control acts on IS the visible-response answer.
-- **RATIFIED (2026-08-16)**: the rail's MIDDLE section lists the CURRENT workspace's apps —
-  icon + short app name each, per monitor. When the workspace is empty it shows the default:
-  a monitor icon + "Desktop" (as in `references/rail-closeup.png`).
-- **DEFAULT (2026-08-16, amended 2026-08-18 — owner: "app · tab")** app-list mechanics:
-  26px icon with a SIDEWAYS caption beneath (rotated 90°, ellipsized with … against its
-  space — caelestia's bar object) reading **"app · live-title"** — identity first so the
-  ellipsis can only eat the context tail; leading unread counters ("(2864) …") stripped;
-  brand suffixes after a dash still dropped. Rows are click-to-focus; more rows than fit →
-  the list scrolls (wheel), never overflows the band.
-- **RATIFIED (2026-08-25, owner)**: group boundaries retain the 12px spacing step and their
-  dividers. Items inside a group use compact 32px rows; workspace dots use the 4px step. Rail
-  glyphs use the compact 16px step, with the top Arch logo as the deliberate 20px exception.
-  Every reused divider is a 2px, 80%-opacity boundary so group separation remains legible.
-- **RATIFIED (2026-08-16)**: calendar popout = MONTH GRID only — today marked, wheel/arrows
-  change month, no events backend.
+- **RATIFIED (2026-08-16, amended 2026-10-16)**: the rail's MIDDLE section lists the CURRENT
+  workspace's apps, per monitor, icon-only. When the workspace is empty it shows the default:
+  a monitor icon (as in `references/rail-closeup.png`).
+- **RATIFIED (2026-10-16, owner)** app-list mechanics: each row is a 36x36 slot with a 22px
+  glyph and a 10px gap; NO caption, vertical or otherwise. The window title lives in the hover
+  popout, reading **"app · live-title"** — identity first so an ellipsis can only eat the
+  context tail; leading unread counters ("(2864) …") stripped; brand suffixes after a dash
+  dropped. The current (focused) row carries `accent` at 12 percent opacity behind it over
+  `surface`. Rows are click-to-focus; more rows than fit → the list scrolls (wheel), never
+  overflows the band.
+- **RATIFIED (2026-08-16)**: calendar popout (opened from the top bump, 06) = MONTH GRID only —
+  today marked, wheel/arrows change month, weeks start Monday, no events backend.
 
 ## Quick actions (RATIFIED 2026-08-20, owner)
 
 - The coffee/awake cell is REPLACED by a **quick actions** cell (`zap`). Hover only — there is
   nothing for a click to do that the column does not do better.
-- Its popout is not a card but a **SECOND RAIL**: glyph cells stacked under each other, 40px,
+- **RATIFIED (2026-10-16, owner)**: quick-menu cells (the rail's own and the second rail's) are
+  32x32 (target-frequent) with a 16px glyph. A connected/active state draws the glyph in
+  `text`; an off/inactive state in `textMuted` with the "off" glyph SHAPE. Glyphs change shape
+  for state, never colour alone: network = cable / wifi by signal / wifi-off; bluetooth = the
+  mark, or the connected device's glyph (the ONE device cell that becomes what is connected,
+  subdividing up to four); sound = volume / volume-muted (hover popout settings, click mutes).
+- Its popout is not a card but a **SECOND RAIL**: glyph cells stacked under each other, 32px,
   **no labels**, in the same visual vocabulary as the left band. Anything a cell needs to say
   expands ONE STEP FURTHER RIGHT, which is the left band's own gesture applied recursively.
 - **RATIFIED (2026-08-24, owner)**: a rollout's SIZE is one of two named options, declared by
@@ -202,57 +202,30 @@ intent separately from the backend result, with no password in event payloads.
     notch at the seam"); it was simply never applied to a popout-to-popout seam.
   - square corners + smooth union = a **bulge**. The circular smin ADDS material wherever both
     fields sit inside the reach, so a flush seam grows a fillet outward instead.
-  A third piece was ratified for the line still drawn down the parent's right edge: the
-  parent's **rim must extend THROUGH the seam** (rim bits). `edgemelt.frag` warns about exactly
-  this for a rollout meeting its band, so a rollout meeting another rollout was given the same
-  treatment.
-- **AMENDED (2026-08-25, measured)**: the third piece is INERT, and a fourth piece is what
-  actually closes the seam. `bandRimStrength` is 0 — the rim is switched off and contributes
-  nothing — so extending the rim copy could never have removed anything. What draws the line is
-  the **exact union itself**. Two rects that merely TOUCH leave the merged SDF at ZERO all along
-  their shared edge, and zero is the shader's definition of "edge" in two independent places,
-  both computed from `mergedSdf` alone and neither reachable by any rim change:
-  - `alpha = 1 - smoothstep(-fw, fw, mergedSdf)` dips to ~0.5, so the wallpaper shows through as
-    a translucent hairline. This is the "mini gap" the owner reported.
-  - the glass stroke's `innerDepth = -mergedSdf` reads ~0, so a full-strength lit line is
-    painted straight down the join.
-
-  Measured on HDMI-A-1 with the colour menu open, one pixel row across the join at physical
-  y=540: fill is a uniform `#15081E` from x=60 to x=490, then spikes at x=156..160, peaking
-  `#655B6B` either side of a `#443E46` dip — a bright double-ridge with a dark core, present at
-  every y down the shared span. The shape's REAL outer edge at x≈492 shows no such spike, which
+- **AMENDED (2026-08-25, measured; restated 2026-10-16 for the fill-only shell)**: a further
+  piece closes the seam. What draws a line down a flush seam is the **exact union itself**: two
+  rects that merely TOUCH leave the merged SDF at ZERO all along their shared edge, and
+  `alpha = 1 - smoothstep(-fw, fw, mergedSdf)` dips to ~0.5 there, so the wallpaper shows
+  through as a translucent hairline. Measured on HDMI-A-1 with the colour menu open, one pixel
+  row across the join: the fill is uniform from x=60 to x=490, then dips at x=156..160 at every
+  y down the shared span, while the shape's REAL outer edge at x≈492 shows no such dip, which
   is what proves the seam is inventing an edge rather than receiving normal edge treatment.
-
-  **The fourth piece, and it has two halves.** Both are needed; each alone leaves a visible
-  artefact, and the owner saw each in turn.
-
+  The further piece has two halves, both needed:
   1. **The two silhouettes must OVERLAP, not merely touch.** A silhouette reaches
-     `Theme.seamOverlap` INTO each neighbour it is flush against — the sides its rim bits
-     already name, since that is the same question. Reaching in is invisible: that side is
-     covered by the neighbour's body by definition. The overlap's SHALLOWEST point is its
-     midpoint, at depth `overlap / 2`, so it must clear the stroke width; `bandStrokeWidth * 4`
-     leaves the midpoint at twice the stroke with room for the ~1px derivative AA.
-  2. **Blend 0 must be a real `min()`, not `smin` with a floored k.** This spec asserted that
-     the shader's `k = max(smoothFactor * param.y, 0.01)` floor "turns blend 0 into a hard
-     min()". It does not — the circular smin does not converge to min as k falls. For equal
-     inputs it reduces to `smin(a, a, k) = sqrt(2) * a + k * (1 - sqrt(2))`, so at `a == b` it
-     inflates the INTERIOR distance by 41% however small k is. The zero crossing is barely
-     touched (at `a == b == 0` the deviation is only `-0.414 * k`), so the silhouette's outline
-     and its input mask were always right; but the glass stroke measures
-     `innerDepth = -mergedSdf` against `strokeWidth`, and a flush seam is the worst case
-     because the two fields are EXACTLY equal there. Across the overlap the stroke believed it
-     was 1.4x deeper inside and stopped drawing, so the edge kept its outer row and lost its
-     inner one — which the owner reported as "a dent in the glass edge, from the inside only,
-     not going outwards". Fixing the overlap without this half simply moves the artefact from a
-     line to a dent.
-
-  Verified by re-scanning the same row and the top edge: fill uniform `#15081E` straight
-  through the join, and the glass edge is byte-identical at every x across it
-  (`#3B3042` / `#32263A`), with the outer edge and the rail-to-popout join unchanged.
-  All three apply ONLY where the two shapes actually meet edge to edge. A description-sized card
-  sits mid-flank, keeps its blend, keeps its parent's rounding, and leaves real exposed edge
-  above and below itself that the rim belongs on — a T-junction wants the fillet, and it never
-  wedged.
+     `Theme.seamOverlap` INTO each neighbour it is flush against. Reaching in is invisible,
+     because that side is covered by the neighbour's body. The overlap's shallowest point is
+     its midpoint at depth `overlap / 2`, which must clear the ~1px derivative AA with room:
+     `seamOverlap` is at least 4px.
+  2. **Blend 0 must be a real `min()`, not `smin` with a floored k.** The circular smin does not
+     converge to min as k falls: for equal inputs `smin(a, a, k) = sqrt(2) * a + k * (1 - sqrt(2))`,
+     so at `a == b` it inflates the INTERIOR distance by 41 percent however small k is. The zero
+     crossing is barely touched (`-0.414 * k`), so the outline and the input mask were always
+     right, but any reading of interior depth along a flush seam is wrong without a true min.
+  Verified by re-scanning the same row and the top edge: fill uniform straight through the join,
+  with the outer edge and the rail-to-popout join unchanged. Both halves apply ONLY where two
+  shapes meet edge to edge. A description-sized card sits mid-flank, keeps its blend, keeps its
+  parent's rounding, and leaves real exposed edge above and below itself; a T-junction wants
+  the fillet, and it never wedged.
 - **The rightmost rollout keeps the whole column open.** A parent popout holding an open child
   does not retract, and the pair retires together only once the pointer has left both. Without
   this, travelling into the detail card reads as leaving the column and takes it down.
@@ -265,7 +238,7 @@ intent separately from the backend result, with no password in event payloads.
 - **RATIFIED (owner)**: a rollout's `kind` is the COMPONENT's own identity — there is no
   generic `label` kind and no fallback. Every popout-owning cell declares one, so a report and a
   `selected` test name the component that opened the rollout: `network`, `bluetooth`, `battery`,
-  `sound`, `app`, `tray`, `calendar`, `actions`, `nightlight`, `colorpick`, `updates`, `railpin`,
+  `sound`, `app`, `tray`, `actions`, `nightlight`, `colorpick`, `updates`, `railpin`,
   `session`, `main-keyboard`, `keepawake`, `clearcache`. Sharing a BODY is not sharing an identity: the
   description body serves every descriptive kind (`updates`, `railpin`, `session`, `main-keyboard`, `keepawake`,
   `clearcache`) and none of them is identified by it. A component that appears many times (every

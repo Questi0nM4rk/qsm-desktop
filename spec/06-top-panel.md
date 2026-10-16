@@ -21,18 +21,16 @@ not the library's default.
 
 ## Idle affordance + open
 
-- The panel handle is one compact dark capsule button with full-height inner
-  CPU/RAM half-meters growing from the center outward. One row reads
-  `23% CPU | RAM 46%`: names stay at the inner side, percentages at the outer side.
-  The fixed footprint is 160x28 logical px. Unavailable values show an em dash
-  with empty fill, never a fabricated zero or minimum fill to contain text.
-  A compact, quiet rounded bulge
-  sits on the panel's LEADING (bottom) EDGE: as the
-  panel rolls out they travel WITH that edge — always at the surface's outermost rim, like
-  a tab on a drawer front — and ride it back on retract; never parked at the band while the
-  surface moves beneath them. A hover area spanning the reading opens
-  the panel on hover, with a **150ms hover-intent delay** (DEFAULT) so a screen-top brush
-  doesn't open the panel.
+- **RATIFIED (2026-10-16, owner)**: the panel handle is a CLOCK bump: a 28 px tall bulge out
+  of the top band, bottom corners 14 px, `band` fill, reading `21:40` in 13 px Mono medium
+  `text` and `Thu 15.10` in 12 px `textMuted`, gap 10, padding 0 16, tabular digits. It sits
+  on the panel's LEADING (bottom) EDGE: as the
+  panel rolls out it travels WITH that edge — always at the surface's outermost rim, like
+  a tab on a drawer front — and rides it back on retract; never parked at the band while the
+  surface moves beneath it. Hover over the bump opens
+  the panel on Dashboard, with a **150ms hover-intent delay** (DEFAULT) so a screen-top brush
+  doesn't open the panel; a click opens it at once. Its hover popout is the month calendar (kind `calendar`): today marked, weeks start
+  Monday, wheel or arrows change the month. The clock is 24-hour HH:MM.
 - **RATIFIED (2026-08-16)**: also opens via keyboard (09: Super+D last-used, Super+N
   notification center, Super+W workspaces).
 - **RATIFIED (2026-08-25, owner)**: with the panel open, **Left/Right move the tab
@@ -44,6 +42,8 @@ not the library's default.
   frame viewport between the left band edge and the right frame edge; the center follows
   the live edge during pin, unpin, and peek. Tab bar at the panel's top, order: Dashboard,
   Media, Performance, Workspaces, Notifications — icon + label.
+- **RATIFIED (2026-10-16, owner)**: the current tab is `accent` text on an `accent` 12 percent
+  pill, no underline bar. Panel cards are `surface` with radius 12.
 
 ## Tabs
 
@@ -55,7 +55,8 @@ over title and body (see 04-notifications).
   the card grid of CURRENT caelestia (`~/Clonned/caelestia/repo` `modules/dashboard/Dash.qml`
   is the composition authority): user card (avatar + WM pill + uptime), weather card, media
   mini-card (cover + half-ring progress + transport), big datetime block, month calendar,
-  resources card (three vertical usage rings — CPU/memory/storage). `dashboard-tab.png` is a
+  resources card (three vertical usage rings — CPU/memory/storage), all cards `surface` radius
+  12. `dashboard-tab.png` is a
   capture of an OLDER caelestia: still valid for proportion/warmth checks, but its volume
   meters and identity-rows user card are superseded by the clone's anatomy.
 - **DEFAULT (2026-08-16, amended 2026-08-17)** dashboard sources: weather = wttr.in fetch,
@@ -85,7 +86,8 @@ over title and body (see 04-notifications).
   reach them. Same ruling: workspaces lay out NEXT TO each other (one row, horizontal
   scroll when more workspaces than fit), never stacked below each other.
 
-- **RATIFIED (2026-08-16)**: opening the panel lands on the LAST USED tab.
+- **RATIFIED (2026-08-16)**: opening the panel by keyboard lands on the LAST USED tab; the
+  clock bump (hover or click) opens Dashboard.
 
 ## Numbers (RATIFIED 2026-08-16)
 
@@ -94,19 +96,16 @@ over title and body (see 04-notifications).
   strip. Tab choice, empty/missing data and content length never resize the outer
   body. Static compositions overflow inside a bounded viewport; model-backed
   tabs keep their own scrolling route. The tab bar baseline is **48px**.
-- Resource handle: `Theme.panelHandleWidth` × `Theme.panelHandleHeight`, fixed
-  footprint independent of readings. CPU/RAM use readable technical text and neutral
-  ink; missing sensors show an em dash, never zero. Fullscreen/focus suppression
-  withdraws both paint and input. CPU is averaged before display; detailed sampling
-  remains tied to the dashboard/performance tab.
+- Clock bump handle: 28 px tall, width = text advance of `21:40` + `Thu 15.10` + gap 10 +
+  padding 0 16 (tabular digits keep it stable as the minute changes), bottom corners 14 px.
+  Fullscreen/focus suppression withdraws both paint and input. Detailed sampling remains tied to the dashboard/performance tab.
 
 | layer | decision | why | token or pattern | verified by |
 | --- | --- | --- | --- | --- |
-| posture/task | auxiliary resource glance and entry to the existing panel | owner CPU/RAM direction; no permanent dashboard | existing panel hover/click | inspect reading then open panel |
-| ia/interaction | CPU and RAM labels, percentage each, one panel action | distinguish two readings without learned glyphs | Prose metadata; accessible button | absent sensors and keyboard activation |
-| hierarchy/token | dark capsule, full-height half-meters, fixed inner names and outer values | owner rejects pale oversize face; Mantine/Spectrum grouping with Carbon readability constraint, linked in change design | panelHandleWidth/Height; resource material pairs; text scale | live text, zero/full/unavailable samples and containment |
-| responsive/state | fixed size rides leading edge; hidden in fullscreen/focus | no second travel animation | PanelHandle → host-space rect → ShellBorder registerBulge → existing shader; mask consumes same rect | open/retract and suppression |
-| polish | CPU exponential average, no number animation | instant readings oscillate; one useful value | PerformanceService, two-second lightweight sampling | changing load and missing sample |
+| posture/task | time and date glance and entry to the existing panel | clock leaves the rail; no permanent dashboard | existing panel hover/click | inspect reading then open panel |
+| ia/interaction | time and date, one panel action | one glance, one entry | Prose metadata; accessible button | keyboard activation, minute rollover |
+| hierarchy/token | `band` bulge, `text` time 13 px Mono medium, `textMuted` date 12 px | one silhouette with the band; lightness, not chrome, carries it | role `band`, text scale | live text and containment |
+| responsive/state | rides leading edge; hidden in fullscreen/focus | no second travel animation | PanelHandle → host-space rect → ShellBorder registerBulge → existing shader; mask consumes same rect | open/retract and suppression |
 
 The handle registers one undeformed body, with edge snapping disabled because its
 attachment is the moving panel rim rather than a screen edge. It is removed
@@ -117,6 +116,11 @@ The permanent panel host owns keyed detailed-sampling demand while Dashboard or
 Performance is active. A retiring tab never writes a global polling false that
 cancels another monitor's demand. Lightweight handle subscriptions remain
 independently keyed. Empty Media content is deliberately centered, and short or
+narrow screens expose overflow rather than clipping controls or resizing a tab.
+
+The permanent panel host owns keyed detailed-sampling demand while Dashboard or
+Performance is active. A retiring tab never writes a global polling false that
+cancels another monitor's demand. Empty Media content is deliberately centered, and short or
 narrow screens expose overflow rather than clipping controls or resizing a tab.
 
 ## LIVE-TUNE

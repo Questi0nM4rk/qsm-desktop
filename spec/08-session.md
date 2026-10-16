@@ -22,11 +22,15 @@ Reference: `references/session-panel-right.png`.
   racing a keyboard highlight. Opening always selects **Lock** with nothing armed — a power
   column that reopens on shutdown is one stray Enter from a very bad afternoon — and moving
   the selection off an armed button disarms it, the same as the cursor leaving does.
-- **RATIFIED (2026-08-24, owner)**: the selected button reads in **secondary**, distinct from
-  both the resting surface and the danger an ARMED button takes. Each state changes the same
-  three marks together (fill, glyph, label) so the button is never read twice, and armed
-  outranks selected: what happens next matters more than what is picked.
+- **RATIFIED (2026-08-24, amended 2026-10-16, owner)**: the selected button reads in `primary`
+  (glyph and label in `onPrimary`), distinct from both the resting `surface` tile and the
+  `danger` an ARMED button takes. Each state changes the same three marks together (fill,
+  glyph, label) so the button is never read twice, and armed outranks selected: what happens
+  next matters more than what is picked.
 - **DEFAULT (2026-08-16)**: buttons 96×72px, 8px spacing, column vertically centered on the
   right edge; icons LIVE-TUNE against `references/session-panel-right.png`.
 - **DEFAULT (2026-08-16)**: an armed destructive button disarms after 3s or when the cursor
   leaves it.
+- **RATIFIED (2026-10-16, owner)**: resting tiles fill with `surface` on the rollout's `band`.
+  Shut down, the one destructive action, is set apart from the other four by 16 px and its
+  glyph and label draw in `danger`, separated and named.

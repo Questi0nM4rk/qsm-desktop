@@ -26,9 +26,11 @@ results above, icon + name + description rows), `references/launcher-command-wal
 - **RATIFIED (2026-08-21, owner)**: the body FOLLOWS the visible result count (min 1 row,
   max 7) instead of holding max height over one row; the height morph is a SIMPLE
   transform — no spring, no goo. The >theme carousel keeps the full-height body.
-- **RATIFIED (2026-08-21, owner)**: unselected rows recede HARD (row-level dim) so the row
+- **RATIFIED (2026-08-21, owner)**: unselected rows recede to opacity 0.45 (row-level dim) so the row
   Enter fires on is unmistakable; `>kill` rows carry the danger color on the glyph — a kill
   list must not look like a launch list.
+- **RATIFIED (2026-10-16, owner)**: the selected row is `accent` at 12 percent opacity over
+  `surface` with the name in `accent`; no side marker. Rows stay 57px.
 - **RATIFIED (2026-08-25, owner)**: the `>theme` carousel shares the ONE selection cursor
   (09): hovering a card SELECTS it — it becomes the centered card — and Enter applies the
   selected card, never a merely-centered other. Hover adds no growth of its own; selection

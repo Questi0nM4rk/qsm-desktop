@@ -106,7 +106,7 @@ implementation exists, not whether it matches either reference in depth.
 | Status bar | waybar, 56 modules, 21 layouts | vertical left bar, 8 entry types | rail — `modules/bar/Rail.qml` |
 | Workspaces widget | `hyprland/workspaces` module | pill column, groups, special strip | `WorkspaceStrip.qml` + `WorkspacesTab.qml` |
 | Tray | `wlr/taskbar` + SNI | tray column + native SNI menu | `TrayMenuContent.qml` |
-| Clock / calendar | waybar clock | vertical clock + dash calendar | `ClockEntry.qml`, `DashboardTab.qml` |
+| Clock / calendar | waybar clock | vertical clock + dash calendar | top-band clock bump (spec 06), `DashboardTab.qml` |
 | Hover popouts | waybar `group/*` drawers + 10 GTK menus | 9 registered popouts | 5 — battery, bluetooth, network, sound, tray (`BarPopouts.qml`) |
 | Notifications | dunst (or swaync) | own server + popups + sidebar | own server — `NotificationService.qml`, `modules/notifications/` |
 | Notification centre | swaync control center | right sidebar, grouped | `NotificationCenterTab.qml` |

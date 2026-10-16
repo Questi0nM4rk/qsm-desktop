@@ -166,3 +166,23 @@ results, panel controls, notification cards, session buttons, sliders, tabs, han
   or competing routes are removed, not kept for convenience — a second route is a second
   thing to learn, to keep consistent, and to fix. Keyboard and pointer driving the SAME
   control is one path, not two.
+
+## State vocabulary (RATIFIED 2026-10-16, owner)
+
+Every interactive element speaks these states and no others; they sit under the laws above.
+
+- **Hover** grows by transform (scale), never tints. A transform does not move layout bounds,
+  so neighbours never jitter. Press pushes (scale down) in 80 ms; release returns in 130 ms.
+- **Selected / current** is a state, not hover: `accent` at 12 percent opacity behind the row
+  or tab (over `surface`), plus `accent` on its text or glyph. The current workspace is a
+  24 px `accent` pill with its number in `onPrimary`. The current app row takes the 12 percent
+  fill.
+- **Focus** (keyboard): a 2 px `focus` ring outside the control, 2 px offset, visible on every
+  focusable element, always, because the keyboard owns selection.
+- **Disabled**: the whole control at opacity 0.35. Non-current rows of a pick list recede to
+  0.45.
+- **Status glyphs change shape** for state, not only colour (wifi, cable, wifi-off; bluetooth
+  mark, the connected device's glyph; volume, volume-muted). Colour alone never carries
+  meaning: a number or a glyph is the word, colour repeats it.
+- **Thresholded readouts** (cpu, ram): the whole item (14 px glyph plus 12 px number, one
+  thing) is `textMuted` below 70 percent, `warning` from 70, `danger` from 90.

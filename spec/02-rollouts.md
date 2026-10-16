@@ -46,7 +46,7 @@ material. It is not a competing instruction or a completed-change assertion.
 
 Intent → shared progress → stationary full-size content and growing aperture →
 host-coordinate silhouette → ShellBorder normalization/welds → one shader union,
-fill and glass edge → separate input registry → hidden removal.
+fill only → separate input registry → hidden removal.
 
 The contour grows along `edges[0]`; additional contacts square corners without
 adding a diagonal reveal. Source-side corners join flush; free radii clamp to
@@ -55,7 +55,7 @@ exact full-span seams and short-child T-junctions. Input never inherits paint-on
 edge snapping or continuation.
 
 At zero depth, outness is zero and deformation is identity before unregistering.
-The slot preserves the incoming fill/rim field, existing edge gate and lighting;
+The slot preserves the incoming fill field and existing edge gate;
 the source border and persistent handles must not recover in a second motion.
 There is no origin-wall sink, parking allowance or delayed visibility timer.
 

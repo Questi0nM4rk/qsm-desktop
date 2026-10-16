@@ -55,7 +55,27 @@ without interrupting the focused application.
 - Use the shared spacing, type, icon, radius, and motion tokens. Do not invent
   one-off values to solve a local layout problem.
 - Icons, selection marks, and spacing carry hierarchy before colour or surface
-  chrome. Avoid decorative cards, hover-only discovery, and background washes.
+  chrome. Avoid hover-only discovery and background washes.
+- The frame is a mat around the wallpaper, and the wallpaper reads as a rounded
+  picture in it. The frame is one step lighter than the wallpaper, never darker:
+  a darker frame reads as a hole. Frame and rollouts are one silhouette in the
+  role `band`; nothing floats and nothing draws its own frame, stroke, rim or
+  shadow. (RATIFIED 2026-10-16, owner)
+- Lightness separates. Containers step up one neutral ladder: `band`, `surface`
+  (a card, row group or field inside a rollout), `overlay` (a popout or menu over
+  a card). No hairline, card border, rim or shadow does that job. A line in the
+  shell is content, never an edge. A fourth level is a design error.
+  (RATIFIED 2026-10-16, owner)
+- A `surface` is a container of distinct data, never decoration. A surface with
+  one item in it is a defect. (RATIFIED 2026-10-16, owner)
+- Neutrals carry structure, pastels carry meaning. A pastel never fills a
+  container. Colour alone never carries meaning; a glyph shape or a number is the
+  word and colour repeats it. (RATIFIED 2026-10-16, owner)
+- The wallpaper gives the tint of the neutrals and the accent; rules give
+  everything else. Change the wallpaper, rerun the rules, touch no component.
+  (RATIFIED 2026-10-16, owner)
+- Components read roles (`Theme.accent`), never a palette name.
+  (RATIFIED 2026-10-16, owner)
 - Prefer responsive selection feedback to ornamental animation.
 
 ## Engineering Practice

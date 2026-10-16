@@ -4,12 +4,12 @@ Reference: `references/osd-sliders-right.png`.
 
 ## Presentation and shared implementation
 
-- Production and story share desktop `OsdHandle`: the ShellBorder handle circle
+- Production and story share desktop `OsdHandle`: the ShellBorder handle tab
   and rotating `chevron-left` glyph read OsdSurface's actual centre/radius/opening
   facts. The surface alone owns its trigger/hold corridor. The handle adds no
   separate hover reader, timer or input handler. Fullscreen/focus hides the arrow
-  and sets the circle radius to zero; normal mode keeps the accepted 7px radius,
-  3px proud offset and 12px glyph. The story's `osd-handle` target is the real glyph
+  and collapses the tab to zero height; normal mode keeps the 12x40 tab,
+  11px proud offset and 10px glyph. The story's `osd-handle` target is the real glyph
   and its render facts include the shader vector, mapped glyph corners and corridor.
 
 - Normal applications use the attached shell `Rollout`; a fullscreen application
@@ -19,11 +19,13 @@ Reference: `references/osd-sliders-right.png`.
 - `OsdSurface` creates one persistent `OsdContent` FocusScope and reparents it
   between the wrapper slots. Output/microphone/brightness use current shell
   `Slider` controls with the same service bindings, ordering, availability,
-  per-channel palette, 40x140px tracks and 32px thumbs. Reading and mute remain
+  40x140px tracks and 32px thumbs. Reading and mute remain
   thumb/label content; brightness's label is not an action.
-- Fullscreen capsule draws its own body and shadow, with no second shader capsule
+- Fullscreen capsule draws its own body (`band` fill, no shadow, no stroke), with no second shader capsule
   registration. `capsuleInputRect` contributes only its shown, enabled body to the
-  scene's input mask; fade-out and shadow never intercept the application.
+  scene's input mask; fade-out never intercepts the application.
+- **OPEN (owner)**: the fullscreen capsule has nothing behind it but the client; whether it
+  may be the one exception to the no-shadow law on a bright client is undecided.
 - `OsdPresentation` is the one service-independent visibility/kind/target/1500ms
   timer owner, wrapped by production `OsdState`. Capsule timeout is zero; the
   desktop owns expiry. The targeted screen reports effective retention through
@@ -107,18 +109,11 @@ Reference: `references/osd-sliders-right.png`.
   the track. The reading is inside the thumb, so the number is wherever the eye already is —
   on the thing that moved. A readout set above the track in caption text was legible only if
   you already knew where to look.
-- **RATIFIED (2026-08-19)**: each channel carries its OWN hue, drawn from the palette
-  (output = accent, microphone = secondary, brightness = warning — warm, because the channel is
-  light). Three identical grey tracks gave no way to tell at a glance which one had moved.
-  Legitimate multi-hue: these are distinct categories rather than peers of one kind, and each
-  keeps its own glyph, so colour is never the only signal.
-- **RATIFIED (2026-08-19)**: the hue is IDENTITY, the thumb is EMPHASIS. The track's colour
-  does not change with which channel is live; the thumb is always the lightest thing on the
-  surface (raised) over a track darker than the band (inset), and the active channel's thumb
-  goes to full `text` while the others sit a step down. De-emphasis is never opacity.
-- **DEFAULT (2026-08-27)**: the active vertical level uses its channel hue as a subtle vertical
-  gradient: brightest at the thumb's leading edge and darker at the base. It preserves the
-  channel identity while giving the filled track depth without adding another affordance.
+- **RATIFIED (2026-10-16, owner)**: every channel draws the same way: the track is `surface`,
+  the active level (the filled part) is `primary`, the thumb is `text` and carries the value
+  in `onPrimary`. Channel identity is the glyph at the track's end, never a per-channel hue.
+  Fills are flat: no gradient, no thumb shadow. While a channel is live its thumb is `text`
+  and the other channels' thumbs sit one step down in `textMuted`.
 - **DEFAULT (2026-08-16)**: pills are VERTICAL, surface vertically centered on the right
   edge, height content-driven. Interactions: click/drag on a pill sets the value, wheel over
   it nudges, clicking the channel icon toggles mute — mute shows via the icon-swap law
@@ -136,8 +131,8 @@ Reference: `references/osd-sliders-right.png`.
 ## Numbers (RATIFIED 2026-08-16)
 
 - Surface width **56px**; track **40×140px**; thumb **32px** circle, inset 4px each
-  side of the track and travelling `trackHeight - thumbSize`; solid lift under the thumb 2px
-  (4px while dragging), zero blur. Small channel glyphs ride at the tracks' ends. Default
+  side of the track and travelling `trackHeight - thumbSize`; no shadow under the thumb.
+  Small channel glyphs ride at the tracks' ends. Default
   order top→bottom: output volume, microphone, brightness. The 56px body is the whole
   APERTURE: the rollout clips at its own edge, so nothing the column draws past that
   edge is visible.
@@ -154,8 +149,7 @@ Reference: `references/osd-sliders-right.png`.
   offset within `±max(0, bodyWidth / 2 - envelope)`, the closest position to the requested one that
   keeps all three whole. Fullscreen has no band to correct for, sits at offset 0, and the
   same envelope fits its 56px body unchanged.
-- Handle: **3px** proud of the band (LIVE-TUNE; owner-tuned down twice from 6 — "a nub, not
-  a bulge", Theme.handleProud), vertically centered; invisible hover zone is one generous
+- Handle: a 12x40 tab **11px** proud of the band (Theme.handleProud), vertically centered; invisible hover zone is one generous
   continuous rectangle from the arrow glyph's left edge (with small padding) through the
   revealed rollout, through the right frame, to the physical screen edge — no dead gap.
 - Appears on the FOCUSED monitor at event time (09-input law).

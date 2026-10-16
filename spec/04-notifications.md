@@ -22,14 +22,17 @@ require review.
   reveal tier (500ms). Over a fullscreen client there is no band to flush into, so the popup
   is the real shell `DataCapsule` inset 8px from the same corner instead (see Presentation
   boundary below).
-- Popup entries use quiet raised, rounded row surfaces, separated by a token gap
-  rather than a second border/separator. The source icon, urgency tick,
-  source/time and useful message remain legible within the padded body. This
+- Popup entries are `surface` cards of radius 12 on the rollout's `band`, separated by a
+  token gap rather than a border or separator. The source icon, source/time and useful
+  message remain legible within the padded body. This
   is opt-in library presentation, not notification protocol or lifetime policy.
   Other consumers may retain the transparent card default.
   Padding and gaps contribute to the actual retained/evicting geometry; removing
   a row must not introduce an extra extent jump or leave an input hole behind.
 - **RATIFIED (2026-08-16)**: each entry carries an appropriate SVG icon (app/type).
+- **RATIFIED (2026-10-16, owner)**: urgency has no tick bar; the app glyph carries it by
+  colour: critical `danger`, normal `info`, low `textMuted`. Action buttons are quiet, drawn
+  on `overlay`; the card's one primary action alone uses `primary` with `onPrimary` text.
 - **RATIFIED (2026-08-16, clarified 2026-08-27)**: hover expands content and pauses expiry,
   but useful message content is visible at rest: app identity, summary and a bounded readable
   preview of the provided body. Longer content is readable by bounded expansion or scrolling.
@@ -46,7 +49,7 @@ require review.
 - **DEFAULT (2026-08-16)** overflow choreography numbers: exiting entries slide up 250ms
   (main curve, no overshoot) and are CLIPPED by the silhouette — absorbed into the band, no
   alpha fade; entering entries slide in from below with the same values.
-- **DEFAULT** resting content = tick + app identity/icon + summary + body preview (up to two
+- **DEFAULT** resting content = app identity/icon + summary + body preview (up to two
   readable lines) + relative timestamp. Longer body remains readable through bounded expansion or scrolling;
   never grow the stack without bound. The new composition supersedes the former one-line 36px
   collapsed-row acceptance; dimensions come from the theme/component design decision. Body
@@ -69,7 +72,7 @@ notification as a target, and they are registered with `paint: false`: the
 capsule paints the one fullscreen body, so a row's hole is an input area only
 and never a second painted body. A hole is withdrawn the moment its row stops
 being eligible, while the capsule keeps painting the retained or evicting
-column; no padding, shadow or retiring row is captured.
+column; no padding or retiring row is captured.
 The owner accepted the appearance of the previously reviewed capsule composition;
 that acceptance does not cover the revised resting body preview/actions or service
 integration. A production compositor-fullscreen run exercised the
@@ -97,7 +100,7 @@ remains the only lifetime and dismissal owner. Input follows real readiness —
 the Rollout's near-settled active aperture normally, `acceptsInput` on the
 capsule in fullscreen. Fullscreen input comes from those eligible per-row
 holes, which the scene mask consumes alongside its rollout rects; the capsule's
-own body is never a mask region, so its shadow and fade retain nothing.
+own body is never a mask region, so its fade retains nothing.
 
 The isolated Workbench story hosts the production wrapper and shared store.
 Its native Wayland flows also pass: fullscreen retarget/reset (28), native
@@ -217,16 +220,10 @@ transition before wiring this call. Link loss must not be labelled Internet loss
 
 ## Numbers (RATIFIED 2026-08-16)
 
-- Rollout width **380px** (owner-widened 2026-08-17 from 360; LIVE-TUNE); the former
-  **36px one-line collapsed entry** is superseded by the resting body-preview composition above.
-- Type-tick **3×18px**; separator **card width − 40px (20px inset each end) at 25% opacity**.
+- Rollout width **380px** (LIVE-TUNE).
 - Expiry: normal **5s**, low **3s**, critical **sticky**; hover pauses expiry.
 - Swipe-dismiss: horizontal, threshold **40%** of entry width, both directions, spring-back
   under threshold; works on critical too.
 - DND: suppresses non-critical popups (they still reach history); critical always shows.
 - Fullscreen: all popups remain visible and clickable over the fullscreen client (09-input
   fullscreen allowlist). DND still suppresses non-critical popups.
-
-## LIVE-TUNE
-
-- Urgency tick colors — set with the theme token table (11-theme).
