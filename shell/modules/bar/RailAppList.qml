@@ -192,7 +192,7 @@ Item {
     // windows squash to the row minimum, and nothing marked that boundary.
     QsmShellComponents.ScrollCue {
         view: appList
-        fadeColor: Theme.bandFill
+        fadeColor: Theme.band
         visible: appList.visible
     }
 }

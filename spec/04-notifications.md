@@ -32,7 +32,7 @@ require review.
 - **RATIFIED (2026-08-16)**: each entry carries an appropriate SVG icon (app/type).
 - **RATIFIED (2026-10-16, owner)**: urgency has no tick bar; the app glyph carries it by
   colour: critical `danger`, normal `info`, low `textMuted`. Action buttons are quiet, drawn
-  on `overlay`; the card's one primary action alone uses `primary` with `onPrimary` text.
+  on `overlay`; the card's one primary action alone uses `primary` with `textOnPrimary` text.
 - **RATIFIED (2026-08-16, clarified 2026-08-27)**: hover expands content and pauses expiry,
   but useful message content is visible at rest: app identity, summary and a bounded readable
   preview of the provided body. Longer content is readable by bounded expansion or scrolling.

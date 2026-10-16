@@ -61,7 +61,7 @@ Item {
     Rectangle {
         anchors.fill: parent
         radius: height / 2
-        color: QsmShellStyle.Style.tone(Theme.resourceFace,
+        color: QsmShellStyle.Style.tone(Theme.band,
             interaction.hovered, interaction.pressed, false, root.enabled, Theme.accent)
     }
 
@@ -71,7 +71,7 @@ Item {
         required property real value
         property bool mirrored: false
         objectName: "panel-resource-" + label.toLowerCase()
-        color: root.enabled ? Theme.resourceTrack : QsmShellStyle.Style.disabled(Theme.resourceTrack)
+        color: root.enabled ? Theme.surface : QsmShellStyle.Style.disabled(Theme.surface)
         topLeftRadius: mirrored ? height / 2 : 0
         bottomLeftRadius: topLeftRadius
         topRightRadius: mirrored ? 0 : height / 2
@@ -86,21 +86,9 @@ Item {
             bottomLeftRadius: topLeftRadius
             topRightRadius: resource.topRightRadius
             bottomRightRadius: topRightRadius
-            gradient: Gradient {
-                orientation: Gradient.Horizontal
-                GradientStop {
-                    position: 0
-                    color: root.enabled
-                        ? (resource.mirrored ? Theme.resourceFillHigh : Theme.resourceFillLow)
-                        : QsmShellStyle.Style.disabled(resource.mirrored ? Theme.resourceFillHigh : Theme.resourceFillLow)
-                }
-                GradientStop {
-                    position: 1
-                    color: root.enabled
-                        ? (resource.mirrored ? Theme.resourceFillLow : Theme.resourceFillHigh)
-                        : QsmShellStyle.Style.disabled(resource.mirrored ? Theme.resourceFillLow : Theme.resourceFillHigh)
-                }
-            }
+            // The level is one ladder step above its track: a flat fill, no
+            // gradient, so the reading over it stays on a neutral.
+            color: root.enabled ? Theme.overlay : QsmShellStyle.Style.disabled(Theme.overlay)
         }
 
         TextMetrics {
@@ -119,7 +107,7 @@ Item {
                 role: "metadata"
                 technical: true
                 text: resource.label
-                color: root.enabled ? Theme.resourceLabel : QsmShellStyle.Style.disabled(Theme.resourceLabel)
+                color: root.enabled ? Theme.textMuted : QsmShellStyle.Style.disabled(Theme.textMuted)
                 elide: Text.ElideNone
             }
             Item { Layout.fillWidth: true }
@@ -131,9 +119,9 @@ Item {
                 Layout.maximumWidth: Layout.preferredWidth
                 horizontalAlignment: resource.mirrored ? Text.AlignLeft : Text.AlignRight
                 text: root.reading(resource.value)
-                // Both backgrounds use the same readable on-color, so values
-                // remain legible when the fill crosses beneath them.
-                color: root.enabled ? Theme.resourceText : QsmShellStyle.Style.disabled(Theme.resourceText)
+                // text reads on surface and overlay alike (10.9:1 and 8.4:1), so
+                // the value stays legible wherever the fill ends beneath it.
+                color: root.enabled ? Theme.text : QsmShellStyle.Style.disabled(Theme.text)
                 elide: Text.ElideNone
             }
         }

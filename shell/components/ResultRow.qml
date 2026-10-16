@@ -56,7 +56,7 @@ QsmShellComponents.ListRow {
             height: parent.height
             width: height * 7 / 4
             radius: QsmShellStyle.Style.radiusSm
-            color: QsmShellStyle.Style.surfaceRaised
+            color: QsmShellStyle.Style.surface
             clip: true
 
             Image {

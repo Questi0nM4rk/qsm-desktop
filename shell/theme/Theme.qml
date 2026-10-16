@@ -3,7 +3,6 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import qs.QsmShell.Style as QsmShellStyle
 import qs.state
 
 // Theme engine (11-theme / 7b): a theme = palette + wallpaper pair, one
@@ -17,7 +16,8 @@ QtObject {
     readonly property bool reducedMotion: ShellState.reducedMotion
     readonly property bool reducedEffects: ShellState.reducedEffects
 
-    // [{ id, name, wallpaper, tokens }] parsed from shell/themes/*.json.
+    // [{ id, name, wallpaper, roles }] parsed from shell/themes/*.json, each
+    // written by scripts/derive-theme.ts from its wallpaper.
     property var themes: []
     readonly property string current: ShellState.theme
     readonly property var currentTheme: themes.find(theme => theme.id === current) ?? null
@@ -30,88 +30,87 @@ QtObject {
             ShellState.theme = themeId;
     }
 
-    // The 11-theme baseline (deep dark) — the fallback for missing tokens.
-    readonly property var baseline: ({
-        background: "#1B1027", backgroundMid: "#23182F", backgroundEnd: "#2C203B",
-        surface: "#2E203C", text: "#F6F1FB", textMuted: "#BCAECA", accent: "#C7A8EB",
-        secondary: "#DEC0EF", success: "#91D6C2", warning: "#E8C58A",
-        danger: "#FF8B94", info: "#B7AECF",
-        bandFill: "#160D20", shadow: "#000000"
+    // Deep Night's roles, the value every colour holds until themesProbe has
+    // read shell/themes/*.json. Not a fallback for a theme missing a role: a
+    // theme JSON is generated whole by scripts/derive-theme.ts, and a role it
+    // lacks is reported once below.
+    readonly property var preload: ({
+        band: "#221D27", surface: "#36313B", overlay: "#48424D",
+        text: "#F0ECF5", textMuted: "#B5AEBC",
+        primary: "#D9B4EA", textOnPrimary: "#221D27", accent: "#D9B4EA", focus: "#D9B4EA",
+        info: "#89CFF1", success: "#A2D3A2", warning: "#D9C284", danger: "#F5AEB7"
     })
 
-    function token(name: string): color {
-        return currentTheme?.tokens?.[name] ?? baseline[name];
+    readonly property var _missingReported: ({})
+    function role(name: string): color {
+        if (!currentTheme)
+            return preload[name];
+        const value = currentTheme.roles[name];
+        if (value === undefined) {
+            const key = current + "." + name;
+            if (!_missingReported[key]) {
+                _missingReported[key] = true;
+                console.error("Theme: theme", current, "has no role", name, "- regenerate it with scripts/derive-theme.ts");
+            }
+            return preload[name];
+        }
+        return value;
     }
 
-    // Colors are plain bindings over the current theme; each carries a
-    // 200ms cross-fade (11 DEFAULT swap choreography).
-    property color background: token("background")
-    property color backgroundMid: token("backgroundMid")
-    property color backgroundEnd: token("backgroundEnd")
-    property color surface: token("surface")
-    readonly property color surfaceRaised: QsmShellStyle.Style.lift(surface, 0.2)
-    readonly property color surfaceHover: QsmShellStyle.Style.lift(surface, 0.4)
-    property color text: token("text")
-    property color textMuted: token("textMuted")
-    property color accent: token("accent")
-    property color secondary: token("secondary")
-    property color success: token("success")
-    property color warning: token("warning")
-    property color info: token("info")
-    property color danger: token("danger")
-    readonly property color outline: QsmShellStyle.Style.lift(surface, 0.8)
-    property color shadow: token("shadow")
-    // The band's own fill, and the ONE colour drawn from the wallpaper rather
-    // than the palette ramp (owner 2026-08-18).
+    // THE roles (11-theme). Components read these and nothing else: never a
+    // palette name, never a derived rung. Each carries the 200ms theme-swap
+    // cross-fade.
     //
-    // It is deliberately LIGHTER than every other surface: the band is the only
-    // thing sitting ON the wallpaper, and a surface reads as raised by being
-    // lighter than its ground — darker reads as a well cut into the desktop,
-    // which is why the old ground-coloured band measured 1.01:1 against the
-    // wallpaper and needed a lit rim just to exist.
-    //
-    // THE RULE (owner-chosen 2026-08-19, after eight rejected candidates):
-    // match the wallpaper's darkness, carry the identity in HUE.
-    //
-    // A band is a FRAME AROUND the content, not a panel floating on it, so it
-    // must recede: every candidate lighter than the wallpaper's ground read as
-    // stealing focus, however tasteful the hue. Target ΔL within ~2 of the
-    // wallpaper's dominant colour (deep-night: #110D11 at L6).
-    //
-    // What makes it visible instead is saturation: at L~10 a chrome colour
-    // needs S≈50% or it collapses into muddy grey (color-depth: raise
-    // saturation as lightness leaves 50%). #170D26 is ΔL 1.5 from the
-    // wallpaper's ground yet ΔE 16 from it — same darkness, unmistakably a
-    // different material. textMuted still reads at 8.6:1 on it.
-    //
-    // Deriving one for a new theme: take the wallpaper's dominant hue, keep its
-    // lightness, push saturation to ~50%, and check textMuted clears 4.5:1.
-    property color bandFill: token("bandFill")
+    // The neutral ladder, 1.30:1 per step, is the only separation the shell
+    // has: no hairline, no border, no rim, no shadow. band is the one
+    // silhouette the shader paints (frame and every rollout); surface is a
+    // card inside it; overlay is a popout over a card. A fourth level is a
+    // design error, not a token.
+    property color band: role("band")
+    property color surface: role("surface")
+    property color overlay: role("overlay")
+    property color text: role("text")
+    property color textMuted: role("textMuted")
+    // primary is the one action per surface; accent is what is current; focus
+    // is the keyboard ring. They share a pastel today, and the split is what
+    // lets a theme give them different ones.
+    property color primary: role("primary")
+    // The design system calls this on-primary. In QML a property named
+    // on<Capital> is a signal-handler name, and a Behavior on one inside a
+    // singleton segfaults Quickshell 0.3.2 / Qt 6.12 at load (measured
+    // 2026-10-16: the shell crash-looped until the rename).
+    property color textOnPrimary: role("textOnPrimary")
+    property color accent: role("accent")
+    property color focus: role("focus")
+    property color info: role("info")
+    property color success: role("success")
+    property color warning: role("warning")
+    property color danger: role("danger")
+    // Not a role: the colour under the one shadow still open in 05-osd (the
+    // fullscreen capsule over a bright client). The library's floating shadow
+    // reads it; nothing in the frame does.
+    readonly property color shadow: "#000000"
 
     // Theme-swap choreography (11 DEFAULT: 200ms). Lives HERE, not in Motion:
     // Motion already reads Theme.reducedMotion, and a token both singletons
     // need would make that a cycle.
     readonly property int themeSwapDuration: 200
 
-    Behavior on background { ColorAnimation { duration: root.themeSwapDuration } }
-    Behavior on backgroundMid { ColorAnimation { duration: root.themeSwapDuration } }
-    Behavior on backgroundEnd { ColorAnimation { duration: root.themeSwapDuration } }
+    // Every role fades: a swap that fades some and snaps others reads as a
+    // glitch in the ones that snapped.
+    Behavior on band { ColorAnimation { duration: root.themeSwapDuration } }
     Behavior on surface { ColorAnimation { duration: root.themeSwapDuration } }
+    Behavior on overlay { ColorAnimation { duration: root.themeSwapDuration } }
     Behavior on text { ColorAnimation { duration: root.themeSwapDuration } }
     Behavior on textMuted { ColorAnimation { duration: root.themeSwapDuration } }
+    Behavior on primary { ColorAnimation { duration: root.themeSwapDuration } }
+    Behavior on textOnPrimary { ColorAnimation { duration: root.themeSwapDuration } }
     Behavior on accent { ColorAnimation { duration: root.themeSwapDuration } }
-    Behavior on secondary { ColorAnimation { duration: root.themeSwapDuration } }
-    // The status four were never in this list. `info` was added this session
-    // and would have joined them; a review caught it and the other three came
-    // with it. 11-theme requires the 200ms crossfade on EVERY colour, and a
-    // theme swap that fades eleven colours and snaps four reads as a glitch in
-    // the four rather than as a choice.
+    Behavior on focus { ColorAnimation { duration: root.themeSwapDuration } }
+    Behavior on info { ColorAnimation { duration: root.themeSwapDuration } }
     Behavior on success { ColorAnimation { duration: root.themeSwapDuration } }
     Behavior on warning { ColorAnimation { duration: root.themeSwapDuration } }
     Behavior on danger { ColorAnimation { duration: root.themeSwapDuration } }
-    Behavior on info { ColorAnimation { duration: root.themeSwapDuration } }
-    Behavior on shadow { ColorAnimation { duration: root.themeSwapDuration } }
-    Behavior on bandFill { ColorAnimation { duration: root.themeSwapDuration } }
 
     readonly property string wallpaper: currentTheme?.wallpaper ?? "assets/wallpapers/dark-rain-world.png"
 
@@ -137,13 +136,14 @@ QtObject {
     readonly property int ringStroke: 8
     readonly property int tileWidth: 96         // session action tile
     readonly property int tileHeight: 72
-    // Preserve the library defaults while exposing them to the theme contract.
-    readonly property real floatingShadowOpacity: currentTheme?.tokens?.floatingShadowOpacity ?? 0.28
-    readonly property real floatingShadowBlur: currentTheme?.tokens?.floatingShadowBlur ?? 0.6
-    readonly property real floatingShadowOffset: currentTheme?.tokens?.floatingShadowOffset ?? 8
-    readonly property int floatingShadowExtent: currentTheme?.tokens?.floatingShadowExtent ?? 24
-    readonly property int notificationPreviewHeight: currentTheme?.tokens?.notificationPreviewHeight ?? 80
-    readonly property int notificationBodyViewportHeight: currentTheme?.tokens?.notificationBodyViewportHeight ?? 96
+    // The library's floating shadow, read only by the fullscreen capsule
+    // (05-osd OPEN): the frame itself never draws a shadow.
+    readonly property real floatingShadowOpacity: 0.28
+    readonly property real floatingShadowBlur: 0.6
+    readonly property real floatingShadowOffset: 8
+    readonly property int floatingShadowExtent: 24
+    readonly property int notificationPreviewHeight: 80
+    readonly property int notificationBodyViewportHeight: 96
     readonly property var sizes: ({
         Switch: { sm: 12, md: 16, lg: 24 },
         Checkbox: { sm: 12, md: 16, lg: 24 },
@@ -325,12 +325,6 @@ QtObject {
     readonly property real dotGlyphSize: 2.5
     readonly property int panelHandleWidth: 160
     readonly property int panelHandleHeight: 28
-    readonly property color resourceFace: bandFill
-    readonly property color resourceTrack: background
-    readonly property color resourceFillLow: surface
-    readonly property color resourceFillHigh: Qt.tint(surface, Qt.rgba(accent.r, accent.g, accent.b, 0.16))
-    readonly property color resourceText: text
-    readonly property color resourceLabel: textMuted
     // Rail popouts (03).
     readonly property int popoutWidth: 280
     // Bluetooth popout (03, caelestia-parity B4): device rows cap at N,
@@ -376,15 +370,6 @@ QtObject {
     // Rail app list (03 DEFAULT): rows share the whole middle area —
     // name space per row floats between these bounds.
     readonly property int railAppIconSize: 26
-    // Group separation is a LINE now, not a pill (owner 2026-08-18) — and it
-    // is deliberately brighter than `outline`, which measured 1.50:1 against
-    // the wallpaper and could not separate anything.
-    // Drawn, not incised: the band is darker than everything it separates, so
-    // a light hairline reads and a dark one disappears.
-    readonly property color railDivider: textMuted
-    readonly property real railDividerOpacity: 0.8
-    readonly property int railDividerThickness: 2
-    readonly property real railDividerInset: 8
     // How many connected devices the one BLE cell splits into before it stops
     // subdividing.
     readonly property int railDeviceMax: 4
@@ -446,41 +431,17 @@ QtObject {
     readonly property int sliderTrackThickness: 4
     readonly property int sliderThumbSize: 12
     readonly property int sliderThumbLift: 2
-    // 01-frame edge-readability rim: SDF-derived fill ramp toward the
-    // silhouette edge. LIVE-TUNE all three.
-    readonly property color bandRim: outline
-    // 0 = no rim. The band separates by FILL now, not by a lit edge; the
-    // shader still supports one, so this is the single switch back.
-    readonly property real bandRimStrength: 0
-    // Narrow enough that the 16px band keeps a dark core like the bulges —
-    // at 12 the rim filled the whole band and it read as a different
-    // material than the dark bulge interiors (owner-caught).
-    readonly property real bandRimWidth: 6
-    // Glass edge on the silhouette: a light hairline drawn on top of the flat
-    // fill, hugging the merged shape. The band is very dark, so a low-alpha
-    // light line reads as a lit glass edge rather than a border.
-    readonly property color bandStroke: text
-    // Full strength: the line is meant to read as lit glass, not as a tint of
-    // the band under it (owner 2026-08-19).
-    readonly property real bandStrokeStrength: 0.55
-    readonly property real bandStrokeWidth: 2
     // How far a silhouette reaches INTO the neighbour it is flush against.
     //
-    // Measured 2026-08-25, and it is why the ratified three-piece seam law was
-    // still drawing a line: two rects that merely TOUCH leave the merged SDF at
+    // Measured 2026-08-25: two rects that merely TOUCH leave the merged SDF at
     // zero along the shared edge, and zero is exactly what "here is the edge"
-    // means to both the AA (`alpha` dips to ~0.5 -> a translucent hairline) and
-    // the glass stroke (`innerDepth` ~ 0 -> a full-strength lit line). Row scan
-    // across the join on HDMI-A-1: uniform fill #15081E from x=60 to x=490,
-    // then a spike at x=156..160 peaking #655B6B either side of a #443E46 dip.
-    // The real outer edge at x~492 shows no such spike, so it is the seam
-    // inventing an edge, not normal edge treatment.
-    //
-    // Overlapping pushes the field negative across the whole join. The
-    // shallowest point of an overlap is its MIDPOINT, at depth overlap/2, so
-    // this must clear the stroke: 4x the stroke width leaves the midpoint at
-    // 2x, with room for the ~1px derivative AA on top.
-    readonly property real seamOverlap: bandStrokeWidth * 4
+    // means to the AA (`alpha` dips to ~0.5 -> a translucent hairline). Row
+    // scan across the join on HDMI-A-1 showed a spike at x=156..160 where the
+    // real outer edge at x~492 showed none: the seam inventing an edge.
+    // Overlapping pushes the field negative across the whole join; the
+    // shallowest point is the midpoint at overlap/2, which 8 keeps well past
+    // the ~1px derivative AA.
+    readonly property real seamOverlap: 8
 
     // Theme discovery: one process pass over shell/themes/*.json.
     property Process themesProbe: Process {
@@ -502,7 +463,7 @@ for f in themes/*.json; do printf '===%s\\n' "$f"; cat "$f"; done`,
                             id: file.replace(/^themes\//, "").replace(/\.json$/, ""),
                             name: parsed.name ?? file,
                             wallpaper: parsed.wallpaper ?? "",
-                            tokens: parsed.tokens ?? {}
+                            roles: parsed.roles ?? {}
                         });
                     } catch (error) {
                         console.warn("Theme: skipping unparsable", file);

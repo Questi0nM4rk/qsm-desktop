@@ -92,7 +92,7 @@ PanelWindow {
 
     Rectangle {
         anchors.fill: parent
-        color: Theme.background
+        color: Theme.band
         opacity: root.active && !root.fullscreen ? 0.35 : 0
 
         Behavior on opacity {

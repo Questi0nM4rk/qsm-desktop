@@ -38,7 +38,6 @@ FocusScope {
                 + outputChannel.topPadding + outputChannel.bottomPadding
             Layout.preferredWidth: Theme.osdWidth - Theme.space2 * 2
             icon: AudioService.outputMuted ? "volume-muted" : "volume"
-            hue: Theme.accent
             value: AudioService.outputValue
             muted: AudioService.outputMuted
             enabled: AudioService.outputAvailable
@@ -63,7 +62,6 @@ FocusScope {
             Layout.preferredWidth: Theme.osdWidth - Theme.space2 * 2
             visible: AudioService.microphoneAvailable || OsdState.kind === "microphone"
             icon: AudioService.microphoneMuted ? "microphone-muted" : "microphone"
-            hue: Theme.secondary
             value: AudioService.microphoneValue
             muted: AudioService.microphoneMuted
             enabled: AudioService.microphoneAvailable
@@ -89,7 +87,6 @@ FocusScope {
             Layout.preferredWidth: Theme.osdWidth - Theme.space2 * 2
             visible: BrightnessService.available
             icon: "brightness"
-            hue: Theme.warning
             mutable: false
             value: BrightnessService.value
             emphasized: OsdState.kind === "brightness"

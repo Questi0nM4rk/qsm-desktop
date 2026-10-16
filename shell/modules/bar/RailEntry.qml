@@ -71,7 +71,7 @@ Item {
         // Selected: reach the band's inner wall — connected to the column.
         anchors.rightMargin: root.selected ? -(Theme.reservedLeft - Theme.railWidth) / 2 : 0
         radius: Theme.radiusMd
-        color: root.selected ? Theme.background
+        color: root.selected ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, Theme.opacitySelected)
             : root.danger ? Qt.rgba(Theme.danger.r, Theme.danger.g, Theme.danger.b, 0.14)
             : root.active ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.16)
             : "transparent"

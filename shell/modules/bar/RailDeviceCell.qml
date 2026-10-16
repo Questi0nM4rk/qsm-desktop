@@ -97,10 +97,10 @@ RailEntry {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
             visible: root.shown > 1
-            width: Theme.railDividerThickness
+            width: 2
             height: grid.armLength
-            color: Qt.rgba(Theme.railDivider.r, Theme.railDivider.g, Theme.railDivider.b,
-                Theme.railDividerOpacity)
+            color: Theme.textMuted
+            opacity: 0.8
         }
 
         Rectangle {
@@ -108,9 +108,9 @@ RailEntry {
             anchors.verticalCenter: parent.verticalCenter
             visible: root.shown > 2
             width: grid.armLength
-            height: Theme.railDividerThickness
-            color: Qt.rgba(Theme.railDivider.r, Theme.railDivider.g, Theme.railDivider.b,
-                Theme.railDividerOpacity)
+            height: 2
+            color: Theme.textMuted
+            opacity: 0.8
         }
     }
 }

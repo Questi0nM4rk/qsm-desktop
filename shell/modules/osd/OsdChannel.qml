@@ -19,17 +19,13 @@ import qs.theme
 // inside the thumb, so the value is wherever the eye already is: on the thing
 // that moved.
 //
-// Each channel carries its OWN hue. That is legitimate and not accent sprawl:
-// these are three distinct categories, not three peers of one kind, and every
-// one already has a redundant cue in its glyph — colour is never the only
-// signal. Emphasis between them is carried by LIGHTNESS of the same hue rather
-// than by opacity, which reads as disabled.
+// Every channel draws the same way (05-osd): track `surface`, fill `primary`,
+// thumb `text` while live and `textMuted` otherwise, content `textOnPrimary`.
+// Identity is the glyph in the thumb, never a hue.
 QsmShellComponents.Slider {
     id: root
 
     required property string icon
-    // The channel's identity colour, from the palette — never invented here.
-    required property color hue
     property bool muted: false
     // Brightness has no mute: its glyph is a LABEL, not a button, and dressing
     // a label as a control that does nothing is worse than leaving it plain.
@@ -45,30 +41,18 @@ QsmShellComponents.Slider {
     raised: true
     wheelUnits: Math.round(Theme.osdWheelStep / stepSize)
 
-    // Inset: darker than the band it is cut into. "Lighter than the background
-    // = raised; darker = inset".
-    trackColor: Qt.darker(Theme.bandFill, 1.6)
+    trackColor: Theme.surface
+    fill: Theme.primary
 
-    // The hue is IDENTITY, not emphasis, so it does not change with which
-    // channel is live: darkening it to de-emphasise pushed the amber
-    // brightness track to olive, and a chrome colour at low lightness
-    // collapses to muddy grey unless its saturation is raised to compensate.
-    // Emphasis is the thumb's job.
-    fill: root.muted ? Qt.darker(root.hue, 2.2) : Qt.darker(root.hue, 1.15)
-
-    // ALWAYS the lightest thing on the surface when live — that is what makes
-    // it read as raised out of the track rather than as a hole cut into it. A
-    // thumb 12% lighter than its own fill merged into it; a thumb darker than
-    // the fill inverted the depth entirely.
-    thumbColor: root.muted ? Theme.textMuted
-        : root.emphasized ? Theme.text
-        : Qt.darker(Theme.text, 1.4)
+    // Emphasis is the thumb's job: `text` while this channel is live, one step
+    // down in `textMuted` for the others and for a muted channel.
+    thumbColor: !root.muted && root.emphasized ? Theme.text : Theme.textMuted
 
     // The reading rides the thumb.
     // No percent sign: the glyph below says which channel this is, and the
     // sign costs a third of a 32px circle to say what the shape already says.
     thumbText: root.muted ? "—" : `${Math.round(root.value * 100)}`
-    thumbContentColor: Theme.bandFill
+    thumbContentColor: Theme.textOnPrimary
 
     // The glyph under the track: a button where muting means something, a
     // plain label where it does not.

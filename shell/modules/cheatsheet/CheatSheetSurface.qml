@@ -135,11 +135,8 @@ Item {
         anchors.fill: parent
         anchors.margins: Theme.space4
         // Almost to the silhouette's bottom edge: the roll-away fade owns
-        // that boundary, but it must stop ABOVE the shader's lit glass edge
-        // (bandStrokeWidth 2 plus fwidth AA reads wider than its number —
-        // 4px still touched it, owner-caught twice). The reveal strip is
-        // shader ground in the same bandFill the fade lands on, so the fade
-        // still reads as running into the ground.
+        // that boundary and lands on the band, so the fade reads as running
+        // into the ground.
         anchors.bottomMargin: Theme.space2
         spacing: Theme.space3
 
@@ -305,7 +302,7 @@ Item {
             // there.
             QsmShellComponents.ScrollCue {
                 view: rows
-                fadeColor: Theme.bandFill
+                fadeColor: Theme.band
             }
         }
     }

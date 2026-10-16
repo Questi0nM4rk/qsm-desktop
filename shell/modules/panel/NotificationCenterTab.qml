@@ -15,7 +15,7 @@ QsmShellComponents.NotificationCenter {
     // The feed scrolls directly on the panel rollout's shader silhouette, not
     // on a card, so its fade has to reach the band fill. The library cannot
     // know that and now asks.
-    fadeColor: Theme.bandFill
+    fadeColor: Theme.band
     dnd: ShellState.dnd
     // A colour-picker announcement's summary IS the picked hex (owner
     // 2026-08-25); the app name that decides this is the one hardcoded

@@ -22,13 +22,11 @@ QsmShellComponents.Card {
 
     implicitWidth: Theme.launcherThemeCardWidth
     implicitHeight: Theme.launcherThemeCardHeight
-    surfaceColor: Theme.surfaceRaised
+    surfaceColor: Theme.surface
     // Opaque: this card carries a full-bleed photo, not the translucent
     // wash Card defaults to for a panel sitting over the band.
     surfaceOpacity: 1
     clip: true
-    border.width: centered ? 2 : 0
-    border.color: Theme.accent
     scale: centered ? 1 : 0.85
     opacity: centered ? 1 : 0.55
 

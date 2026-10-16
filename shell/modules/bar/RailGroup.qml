@@ -10,7 +10,7 @@ import qs.theme
 // the same arrangement, just smaller. Scaling from the top-centre keeps the
 // group anchored where the column expects it.
 //
-// No background: groups are separated by RailDivider lines.
+// No background: groups are separated by spacing.
 Item {
     id: root
 

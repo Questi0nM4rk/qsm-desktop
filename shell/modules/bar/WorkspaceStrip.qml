@@ -78,7 +78,7 @@ Item {
                     width: indicator.occupied ? 8 : 6
                     height: width
                     radius: Theme.radiusPill
-                    color: indicator.occupied ? Theme.secondary : Theme.outline
+                    color: indicator.occupied ? Theme.primary : Theme.textMuted
                     border.width: indicator.urgent ? 2 : 0
                     border.color: Theme.warning
                     // The traveling pill covers the active slot; its dot

@@ -23,7 +23,7 @@ Reference: `references/session-panel-right.png`.
   column that reopens on shutdown is one stray Enter from a very bad afternoon — and moving
   the selection off an armed button disarms it, the same as the cursor leaving does.
 - **RATIFIED (2026-08-24, amended 2026-10-16, owner)**: the selected button reads in `primary`
-  (glyph and label in `onPrimary`), distinct from both the resting `surface` tile and the
+  (glyph and label in `textOnPrimary`), distinct from both the resting `surface` tile and the
   `danger` an ARMED button takes. Each state changes the same three marks together (fill,
   glyph, label) so the button is never read twice, and armed outranks selected: what happens
   next matters more than what is picked.

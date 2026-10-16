@@ -156,10 +156,10 @@ Item {
 
                         icon: modelData.icon
                         label: modelData.label
-                        // Selected is SECONDARY here, not the accent: the
+                        // Selected is PRIMARY here, not the accent: the
                         // accent is spent on armed, and on this surface what
                         // happens next matters more than what is picked.
-                        accent: Theme.secondary
+                        accent: Theme.primary
                         buttonWidth: Theme.sessionButtonWidth
                         buttonHeight: Theme.sessionButtonHeight
                         selected: root.selectedIndex === index

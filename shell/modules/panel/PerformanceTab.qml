@@ -300,7 +300,7 @@ ColumnLayout {
                         minimum: 0
                         maximum: netGraph.peak
                         thickness: 1.5
-                        color: Theme.secondary
+                        color: Theme.info
                     }
                 }
 
@@ -344,7 +344,7 @@ ColumnLayout {
                     Layout.fillWidth: true
                     spacing: Theme.space2
 
-                    QsmShellComponents.SvgIcon { name: "upload"; size: Theme.iconSm; color: Theme.secondary }
+                    QsmShellComponents.SvgIcon { name: "upload"; size: Theme.iconSm; color: Theme.info }
 
                     QsmShellComponents.Prose {
                         role: "metadata"

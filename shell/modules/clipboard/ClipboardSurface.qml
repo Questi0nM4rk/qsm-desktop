@@ -258,7 +258,7 @@ exit 0`, "_", ...images.map(image => image.file)];
 
             QsmShellComponents.ScrollCue {
                 view: rows
-                fadeColor: Theme.bandFill
+                fadeColor: Theme.band
             }
         }
 

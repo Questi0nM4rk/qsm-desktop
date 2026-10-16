@@ -50,7 +50,7 @@ Item {
             QsmShellComponents.Avatar {
                 anchors.centerIn: parent
                 size: Theme.mediaArtSize - 24
-                background: Theme.surfaceRaised
+                background: Theme.surface
                 source: root.player?.trackArtUrl ?? ""
                 icon: "music"
                 // The size this fallback had before the migration; Avatar's

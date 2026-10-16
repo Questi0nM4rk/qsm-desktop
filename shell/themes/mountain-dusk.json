@@ -1,19 +1,19 @@
 {
-    "name": "Mountain Dusk",
-    "wallpaper": "assets/wallpapers/light-forest-dark-winter.jpg",
-    "tokens": {
-        "background": "#202332",
-        "backgroundMid": "#282C3E",
-        "backgroundEnd": "#33384B",
-        "surface": "#2D3141",
-        "text": "#EDEAF7",
-        "textMuted": "#B3AEC8",
-        "accent": "#BDAFE5",
-        "info": "#B8B2D0",
-        "secondary": "#C1B6D8",
-        "success": "#9FCBC3",
-        "warning": "#D8B9A5",
-        "danger": "#D99098",
-        "bandFill": "#171322"
-    }
+  "name": "Mountain Dusk",
+  "wallpaper": "assets/wallpapers/light-forest-dark-winter.jpg",
+  "roles": {
+    "band": "#1E1E29",
+    "surface": "#32323D",
+    "overlay": "#444450",
+    "text": "#EDEDF6",
+    "textMuted": "#B1B1BF",
+    "primary": "#B4C0FC",
+    "textOnPrimary": "#1E1E29",
+    "accent": "#B4C0FC",
+    "focus": "#B4C0FC",
+    "info": "#89CFF1",
+    "success": "#A2D3A2",
+    "warning": "#D9C284",
+    "danger": "#F5AEB7"
+  }
 }

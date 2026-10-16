@@ -98,7 +98,7 @@ intent separately from the backend result, with no password in event payloads.
   renders the identical column, active = the globally focused workspace); slots hold fixed
   positions with a 4px gap; each shows a 6px dot — occupied `textMuted`, urgent `danger`,
   empty `overlay`; the ACTIVE workspace is marked by a 24px `accent` pill with the number in
-  `onPrimary`, which GLIDES between slots (popout-morph tier, no overshoot) — the pill is the
+  `textOnPrimary`, which GLIDES between slots (popout-morph tier, no overshoot) — the pill is the
   only moving part; its dot fades aside beneath it. NO app icons — app identity lives ONLY in
   the center app list. Wheel switches; click a slot jumps.
 - **DEFAULT (2026-08-16)**: workspace model = Hyprland's dynamic per-monitor workspaces; one

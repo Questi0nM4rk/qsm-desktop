@@ -52,7 +52,7 @@ GridLayout {
                 QsmShellComponents.Avatar {
                     anchors.fill: parent
                     size: Theme.dashboardAvatarSize
-                    background: Theme.surfaceRaised
+                    background: Theme.overlay
                     source: "file://" + Quickshell.env("HOME") + "/.face"
                     icon: "monitor"
                     glyphSize: Theme.iconLg
@@ -69,7 +69,7 @@ GridLayout {
                     // Separation by VALUE, not a stroke — 11-theme ratifies
                     // flat fills with no outlines anywhere (audit S5-F1).
                     radius: width / 2
-                    color: Theme.surfaceRaised
+                    color: Theme.overlay
 
                     QsmShellComponents.SvgIcon {
                         anchors.centerIn: parent
@@ -225,7 +225,7 @@ GridLayout {
                 QsmShellComponents.Avatar {
                     anchors.centerIn: parent
                     size: Theme.dashboardMediaArtSize
-                    background: Theme.surfaceRaised
+                    background: Theme.overlay
                     source: mediaCard.player?.trackArtUrl ?? ""
                     icon: "music"
                     glyphSize: Theme.iconMd

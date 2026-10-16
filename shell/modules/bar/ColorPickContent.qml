@@ -113,15 +113,6 @@ Item {
         }
     }
 
-    // The left menu's separator, full width. Same tokens, so the two lines are
-    // one line drawn in two places rather than two lines that look similar.
-    component MenuDivider: QsmShellComponents.Divider {
-        implicitHeight: Theme.space2
-        lineColor: Theme.railDivider
-        thickness: Theme.railDividerThickness
-        strength: Theme.railDividerOpacity
-    }
-
     // One [swatch][hex][copy] line. The SAME row at two sizes: the current
     // colour is the large one, history entries are the small one, and making
     // them one component is what keeps them reading as the same kind of thing.
@@ -255,7 +246,7 @@ Item {
             text: ColorPickService.busy ? "Picking…" : "Click the square to pick"
         }
 
-        MenuDivider { Layout.fillWidth: true }
+        Item { Layout.preferredHeight: Theme.space3 }
 
         // --- history ---------------------------------------------------------
         QsmShellComponents.Prose {
@@ -321,11 +312,11 @@ Item {
             // permanent 0.4.
             QsmShellComponents.ScrollCue {
                 view: historyList
-                fadeColor: Theme.bandFill
+                fadeColor: Theme.band
             }
         }
 
-        MenuDivider { Layout.fillWidth: true }
+        Item { Layout.preferredHeight: Theme.space3 }
 
         // --- accent generation ------------------------------------------------
         // "Auto accent colour generation for the picked colour" (owner). The

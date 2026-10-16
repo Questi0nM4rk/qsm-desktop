@@ -1357,7 +1357,7 @@ ps -eo pid,pcpu,comm --no-headers --sort=-pcpu | head -25 | awk '{printf "P|%s|%
             // overflows in ordinary use and said nothing about it.
             QsmShellComponents.ScrollCue {
                 view: resultsList
-                fadeColor: Theme.bandFill
+                fadeColor: Theme.band
             }
         }
 

@@ -9,7 +9,7 @@ PanelWindow {
     required property var modelData
 
     screen: modelData
-    color: Theme.background
+    color: Theme.band
     exclusiveZone: 0
     mask: Region {}
     WlrLayershell.layer: WlrLayer.Background

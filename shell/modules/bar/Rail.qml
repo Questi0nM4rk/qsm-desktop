@@ -27,8 +27,8 @@ Item {
         anchors.right: parent.right
         spacing: Theme.space3
 
-        // The logo and update cell are one compact group; dividers preserve
-        // the larger rhythm between this group and its neighbours.
+        // The logo and update cell are one compact group; the column spacing
+        // separates it from its neighbours.
         Column {
             width: parent.width
             spacing: 0
@@ -74,11 +74,9 @@ Item {
             }
         }
 
-        RailDivider {}
-
         // Workspaces and the pin are ONE group (owner 2026-08-18): the pin
-        // acts on the band the workspaces live in, so it belongs above the
-        // divider with them, not alone between two lines.
+        // acts on the band the workspaces live in, so it belongs in
+        // one group with them, not alone.
         RailGroup {
             Column {
                 width: parent.width
@@ -112,8 +110,8 @@ Item {
                 // Tray icons live INSIDE this group, under the pin (owner
                 // 2026-08-24), not in one of their own. Below the app list
                 // they read as MORE APP ROWS — the owner's Discord icon sat
-                // directly under his foot windows with only a divider claiming
-                // otherwise. And a group of their own means a divider and a
+                // directly under his foot windows with only a gap claiming
+                // otherwise. And a group of their own means a
                 // gap that persist on a machine running nothing with a tray:
                 // inside the group, no tray icons is simply nothing to see.
                 //
@@ -154,8 +152,6 @@ Item {
             }
         }
 
-        RailDivider {}
-
     }
 
     // The middle section: current workspace's apps, top-aligned under the
@@ -167,18 +163,10 @@ Item {
         anchors.top: topStack.bottom
         anchors.bottom: bottomStack.top
         anchors.topMargin: Theme.space3
-        // Reserve a full divider boundary before the independent clock group:
-        // 12px after the app list, the 8px divider, then 12px before the clock.
-        anchors.bottomMargin: Theme.space6
+        // The gap between the app list and the independent clock group.
+        anchors.bottomMargin: Theme.space3
         screen: root.screen
         popouts: root.popouts
-    }
-
-    RailDivider {
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: bottomStack.top
-        anchors.bottomMargin: Theme.space3
     }
 
     Column {
@@ -192,8 +180,6 @@ Item {
         ClockEntry {
             popouts: root.popouts
         }
-
-        RailDivider {}
 
         // Status cluster (caelestia's StatusIcons, owner keepers included):
         // quick actions, network, bluetooth (one cell, whatever is connected),
@@ -306,10 +292,8 @@ Item {
             }
         }
 
-        RailDivider {}
-
         // Opens the session surface (08) — its OWN group, so it gets its own
-        // line above it. Click, no hover popout; keeps its danger-tinted
+        // gap above it. Click, no hover popout; keeps its danger-tinted
         // background while every other group lost theirs.
         RailEntry {
             icon: "power"

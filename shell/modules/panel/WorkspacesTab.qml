@@ -76,9 +76,10 @@ Item {
                     width: root.tileWidth
                     height: root.tileHeight
                     radius: Theme.radiusSm
-                    color: current ? Theme.surfaceHover : Theme.surfaceRaised
-                    border.width: current ? 1 : 0
-                    border.color: Theme.accent
+                    // Current is a state, not a border: accent at opacitySelected over the tile.
+                    color: current
+                        ? Qt.tint(Theme.surface, Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, Theme.opacitySelected))
+                        : Theme.surface
 
                     QsmShellComponents.Prose {
                         role: "reading"
@@ -108,12 +109,9 @@ Item {
                             width: Math.min(root.tileWidth, modelData.size[0] * scaleX)
                             height: Math.min(root.tileHeight, modelData.size[1] * scaleY)
                             radius: Theme.radiusXs
-                            color: Theme.surface
-                            // Tile-internal window outlines are RATIFIED kept
-                            // (owner 2026-08-21): the tiles are a diagram, not
-                            // a surface — the flat-fill law does not reach them.
-                            border.width: 1
-                            border.color: Theme.outline
+                            color: Theme.overlay
+                            // A diagram: window rects separate from the tile by one ladder step.
+                            border.width: 0
                             opacity: windowDrag.active ? 0.85 : 1
 
                             AppIcon {
@@ -162,7 +160,7 @@ Item {
     QsmShellComponents.ScrollCue {
         view: strip
         orientation: Qt.Horizontal
-        fadeColor: Theme.bandFill
+        fadeColor: Theme.band
         fadeDepth: Theme.space5
     }
 }
