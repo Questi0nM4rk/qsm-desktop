@@ -22,8 +22,8 @@ not the library's default.
 ## Idle affordance + open
 
 - **RATIFIED (2026-10-17, owner; replaces the clock bump of 2026-10-16)**: the panel handle
-  is a tiny DOTS bulge: a 12 px tall bulge out of the top band, bottom corners 6 px, `band`
-  fill, four 3 px `textMuted` dots 5 px apart as the drawer's grip, padding 0 8. The clock
+  is a tiny DOTS bulge: an 8 px tall bulge out of the top band, bottom corners 4 px, `band`
+  fill, four 2 px `textMuted` dots 3 px apart as the drawer's grip, padding 0 4. The clock
   stays in the rail (03). It sits on the panel's LEADING (bottom) EDGE: as the
   panel rolls out it travels WITH that edge — always at the surface's outermost rim, like
   a tab on a drawer front — and rides it back on retract; never parked at the band while the
@@ -96,8 +96,8 @@ over title and body (see 04-notifications).
   strip. Tab choice, empty/missing data and content length never resize the outer
   body. Static compositions overflow inside a bounded viewport; model-backed
   tabs keep their own scrolling route. The tab bar baseline is **48px**.
-- Dots handle: 12 px tall, width = four 3 px dots + three 5 px gaps + padding 0 8 (43 px),
-  bottom corners 6 px.
+- Dots handle: 8 px tall, width = four 2 px dots + three 3 px gaps + padding 0 4 (25 px),
+  bottom corners 4 px.
   Fullscreen/focus suppression withdraws both paint and input. Detailed sampling remains tied to the dashboard/performance tab.
 
 | layer | decision | why | token or pattern | verified by |
