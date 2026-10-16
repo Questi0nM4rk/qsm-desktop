@@ -323,7 +323,6 @@ QtObject {
     readonly property real dotRadius: 2
     readonly property real dotSpacing: 6
     readonly property real dotGlyphSize: 2.5
-    readonly property int panelHandleWidth: 160
     readonly property int panelHandleHeight: 28
     // Rail popouts (03).
     readonly property int popoutWidth: 280

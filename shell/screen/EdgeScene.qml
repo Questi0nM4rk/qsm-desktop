@@ -655,19 +655,18 @@ PanelWindow {
     // the panel rim. Both are mask-active so neither becomes click-through.
     readonly property rect panelHandleZone: fullscreen || focusMode
         ? Qt.rect(0, 0, 0, 0)
-        : Qt.rect(root.panelCenterX - Theme.panelHandleWidth / 2, 0,
-            Theme.panelHandleWidth, Theme.frameThickness + Theme.panelHandleHeight / 2 + Theme.handleProud)
+        : Qt.rect(root.panelCenterX - clockBump.width / 2, 0,
+            clockBump.width, Theme.frameThickness + Theme.panelHandleHeight / 2 + Theme.handleProud)
 
-    PanelHandle {
-        id: resourceHandle
+    ClockBump {
+        id: clockBump
         host: border
         visible: !root.fullscreen && !root.focusMode
         width: implicitWidth
         height: implicitHeight
         x: root.panelCenterX - width / 2
         y: panelSurface.leadingEdgeY - height / 2 + Theme.handleProud
-        readerId: root.modelData.name
-        onActivated: ShellState.togglePanel()
+        onActivated: ShellState.togglePanel("dashboard")
         readonly property rect hitRect: visible ? Qt.rect(x, y, width, height) : Qt.rect(0, 0, 0, 0)
         onHitRectChanged: {
             if (visible) border.registerRolloutRegion("panel-handle", hitRect);
@@ -699,7 +698,7 @@ PanelWindow {
                 // and silently swapped the sheet for the panel (audit UX-2).
                 // `handlesArmed` is that rule, now shared with the OSD handle.
                 if (panelHandleHover.hovered && root.handlesArmed)
-                    ShellState.togglePanel("");
+                    ShellState.togglePanel("dashboard");
             }
         }
     }
