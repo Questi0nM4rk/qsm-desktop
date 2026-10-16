@@ -320,10 +320,10 @@ QtObject {
     // Handles (05/06, LIVE-TUNE): the OSD circle nub and the top dot pair.
     readonly property real handleRadius: 7
     readonly property real handleProud: 3
-    readonly property real dotRadius: 2
-    readonly property real dotSpacing: 6
+    readonly property real dotRadius: 1.5
+    readonly property real dotSpacing: 5
     readonly property real dotGlyphSize: 2.5
-    readonly property int panelHandleHeight: 20
+    readonly property int panelHandleHeight: 12
     // Rail popouts (03).
     readonly property int popoutWidth: 280
     // Bluetooth popout (03, caelestia-parity B4): device rows cap at N,

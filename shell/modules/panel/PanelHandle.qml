@@ -3,7 +3,8 @@ import qs.QsmShell.Components as QsmShellComponents
 import qs.theme
 
 // The idle affordance of the top panel (06, owner 2026-10-17): a small band
-// bulge on the panel's leading edge carrying four dots, the drawer's grip.
+// bulge on the panel's leading edge carrying four 3px dots, the drawer's
+// grip, as small as a grip can be (owner 2026-10-17).
 // Hover (150ms intent, owned by EdgeScene) or click opens the panel on
 // Dashboard. The fill is painted by the shader through registerBulge; this
 // only carries the dots and the hit area.
@@ -15,7 +16,7 @@ Item {
     signal activated
     readonly property var actions: [({ name: "open-panel", invoke: () => root.activate() })]
 
-    implicitWidth: grip.implicitWidth + Theme.space4 * 2
+    implicitWidth: grip.implicitWidth + Theme.space2 * 2
     implicitHeight: Theme.panelHandleHeight
     Accessible.role: Accessible.Button
     Accessible.name: "Open panel"
