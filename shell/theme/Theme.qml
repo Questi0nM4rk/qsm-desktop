@@ -320,6 +320,9 @@ QtObject {
     // Handles (05/06, LIVE-TUNE): the OSD circle nub and the top dot pair.
     readonly property real handleRadius: 7
     readonly property real handleProud: 3
+    // The dots handle sits mostly INSIDE the band (owner 2026-10-17): a
+    // negative proud pulls it up, so only the lower 3px of the bulge shows.
+    readonly property real panelHandleProud: -1
     readonly property real dotRadius: 1
     readonly property real dotSpacing: 3
     readonly property real dotGlyphSize: 2.5

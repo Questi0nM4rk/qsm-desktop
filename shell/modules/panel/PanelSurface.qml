@@ -32,7 +32,7 @@ Item {
             root.width - Theme.frameThickness - root.scene.panelCenterX) - Theme.space4 * 2)))
     readonly property real bodyHeight: Math.max(0, Math.min(Theme.panelHeight,
         Math.floor(root.height - Theme.frameThickness * 2 - Theme.space4
-            - Theme.panelHandleHeight / 2 - Theme.handleProud)))
+            - Theme.panelHandleHeight / 2 - Theme.panelHandleProud)))
     readonly property bool staticContent: ShellState.panelTab !== "notifications"
         && ShellState.panelTab !== "workspaces"
     readonly property bool detailedSampling: root.loadContent && root.active

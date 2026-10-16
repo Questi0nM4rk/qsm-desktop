@@ -656,7 +656,7 @@ PanelWindow {
     readonly property rect panelHandleZone: fullscreen || focusMode
         ? Qt.rect(0, 0, 0, 0)
         : Qt.rect(root.panelCenterX - panelHandle.width / 2, 0,
-            panelHandle.width, Theme.frameThickness + Theme.panelHandleHeight / 2 + Theme.handleProud)
+            panelHandle.width, Theme.frameThickness + Theme.panelHandleHeight / 2 + Theme.panelHandleProud)
 
     PanelHandle {
         id: panelHandle
@@ -665,7 +665,7 @@ PanelWindow {
         width: implicitWidth
         height: implicitHeight
         x: root.panelCenterX - width / 2
-        y: panelSurface.leadingEdgeY - height / 2 + Theme.handleProud
+        y: panelSurface.leadingEdgeY - height / 2 + Theme.panelHandleProud
         onActivated: ShellState.togglePanel("dashboard")
         readonly property rect hitRect: visible ? Qt.rect(x, y, width, height) : Qt.rect(0, 0, 0, 0)
         onHitRectChanged: {
