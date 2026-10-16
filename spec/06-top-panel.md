@@ -105,7 +105,7 @@ over title and body (see 04-notifications).
 | posture/task | time and date glance and entry to the existing panel | clock leaves the rail; no permanent dashboard | existing panel hover/click | inspect reading then open panel |
 | ia/interaction | time and date, one panel action | one glance, one entry | Prose metadata; accessible button | keyboard activation, minute rollover |
 | hierarchy/token | `band` bulge, `text` time 13 px Mono medium, `textMuted` date 12 px | one silhouette with the band; lightness, not chrome, carries it | role `band`, text scale | live text and containment |
-| responsive/state | rides leading edge; hidden in fullscreen/focus | no second travel animation | PanelHandle → host-space rect → ShellBorder registerBulge → existing shader; mask consumes same rect | open/retract and suppression |
+| responsive/state | rides leading edge; hidden in fullscreen/focus | no second travel animation | ClockBump → host-space rect → ShellBorder registerBulge → existing shader; mask consumes same rect | open/retract and suppression |
 
 The handle registers one undeformed body, with edge snapping disabled because its
 attachment is the moving panel rim rather than a screen edge. It is removed

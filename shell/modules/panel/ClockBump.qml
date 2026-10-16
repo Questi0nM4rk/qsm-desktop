@@ -68,9 +68,11 @@ Item {
     // carries the content.
     Row {
         anchors.centerIn: parent
+        height: parent.height
         spacing: 10
         Text {
             id: timeLabel
+            anchors.verticalCenter: parent.verticalCenter
             text: root.timeText
             color: Theme.text
             font.family: Theme.technicalFontFamily
@@ -79,6 +81,7 @@ Item {
         }
         Text {
             id: dateLabel
+            anchors.verticalCenter: parent.verticalCenter
             text: root.dateText
             color: Theme.textMuted
             font.family: Theme.technicalFontFamily

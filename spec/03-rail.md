@@ -44,9 +44,11 @@ intent separately from the backend result, with no password in event payloads.
   reached-for and takes the most reachable slot, RATIFIED 2026-08-22, owner), then power
   (danger-tinted) at the very bottom. CLOCK AND DATE LEAVE THE RAIL: they live in the top bump
   (06), and the calendar popout moves with them to the bump's hover/click.
-- **RATIFIED (2026-10-16, owner)**: groups separate by SPACING, never by a divider line: inside a group each item
-  keeps its own gap (4px between workspace slots, 10px between app rows, 6px between
-  readouts), 16 to 24px between groups. Tray icons sit in the workspace/pin
+- **RATIFIED (2026-10-16, owner, amended the same evening)**: groups are separated by the
+  rail's DIVIDER LINE (`RailDivider`: a 2px `textMuted` line at 0.8 opacity, inset 8px from
+  both walls) with the column's 12px spacing on each side; the morning's "spacing, never a
+  divider" ruling is reversed. Inside a group each item keeps its own gap (4px between
+  workspace slots, 10px between app rows, 6px between readouts). Tray icons sit in the workspace/pin
   group (owner, 2026-08-24) so an app's tray icon never reads as one more app row, and a
   machine with no tray icons shows nothing there. Rail glyphs use the compact 16px step, with
   the top Arch logo as the deliberate 20px exception.
