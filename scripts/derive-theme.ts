@@ -155,7 +155,7 @@ for (const [n, h] of Object.entries(PASTELS)) palette[n] = hex(fromLch({ L: HUE_
 // ---- roles --------------------------------------------------------------------------------
 // The edge glow (01-frame, owner 2026-10-17): the band a step lighter and a
 // touch more purple, dithered from the silhouette's edge inward.
-palette.edgeGlow = hex(fromLch({ L: ladder.band.L + 0.13, C: TINT_C + 0.07, h: tintHue }));
+palette.edgeGlow = hex(fromLch({ L: ladder.band.L + 0.16, C: TINT_C + 0.09, h: tintHue }));
 
 const roles: Record<string, string> = {
   band: palette.band,

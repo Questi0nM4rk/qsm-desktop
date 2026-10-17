@@ -155,7 +155,8 @@ Reference: `references/osd-sliders-right.png`.
   offset within `±max(0, bodyWidth / 2 - envelope)`, the closest position to the requested one that
   keeps all three whole. Fullscreen has no band to correct for, sits at offset 0, and the
   same envelope fits its 56px body unchanged.
-- Handle: a 12x40 tab **11px** proud of the band (Theme.handleProud), vertically centered; invisible hover zone is one generous
+- Handle: the circle nub sunk INTO the right band (owner 2026-10-17): its centre 2px inside
+  the band's inner edge (Theme.osdHandleProud), so 5px of it shows, vertically centered; invisible hover zone is one generous
   continuous rectangle from the arrow glyph's left edge (with small padding) through the
   revealed rollout, through the right frame, to the physical screen edge — no dead gap.
 - Appears on the FOCUSED monitor at event time (09-input law).

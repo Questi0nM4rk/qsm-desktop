@@ -17,7 +17,7 @@ Item {
     readonly property real rolloutTop: rollout.y
     readonly property real rolloutBottom: rollout.y + rollout.height
     readonly property real handleRadius: Theme.handleRadius
-    readonly property point handleCenter: Qt.point(root.leadingEdgeX + Theme.handleProud
+    readonly property point handleCenter: Qt.point(root.leadingEdgeX + Theme.osdHandleProud
         - root.handleRadius, root.height / 2)
     readonly property real _zoneLeft: root.handleCenter.x - Theme.iconXs / 2 - Theme.space2
     readonly property real _zoneSpan: root.width - _zoneLeft

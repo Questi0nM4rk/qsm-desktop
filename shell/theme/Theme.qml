@@ -35,7 +35,7 @@ QtObject {
     // theme JSON is generated whole by scripts/derive-theme.ts, and a role it
     // lacks is reported once below.
     readonly property var preload: ({
-        band: "#271E30", edgeGlow: "#53326E", surface: "#42394C", overlay: "#534A5E",
+        band: "#271E30", edgeGlow: "#5E357F", surface: "#42394C", overlay: "#534A5E",
         text: "#F0ECF5", textMuted: "#C5BAD1",
         primary: "#D9B4EA", textOnPrimary: "#271E30", accent: "#D9B4EA", focus: "#D9B4EA",
         info: "#89CFF1", success: "#A2D3A2", warning: "#D9C284", danger: "#F5AEB7"
@@ -333,6 +333,9 @@ QtObject {
     // The dots handle sits mostly INSIDE the band (owner 2026-10-17): a
     // negative proud pulls it up, so only the lower 3px of the bulge shows.
     readonly property real panelHandleProud: -1
+    // The OSD nub sinks into the right band the same way (owner 2026-10-17):
+    // its centre sits 2px inside the band, so 5px of the circle shows.
+    readonly property real osdHandleProud: handleRadius + 2
     readonly property real dotRadius: 1
     readonly property real dotSpacing: 3
     readonly property real dotGlyphSize: 2.5
@@ -458,7 +461,7 @@ QtObject {
     // inward, grain of edgeGlow thickening toward the edge, gone 20px in,
     // at most 0.3 of the tint at the very edge. Almost invisible on purpose.
     readonly property real edgeGlowStrength: 0.3
-    readonly property int edgeGlowWidth: 20
+    readonly property int edgeGlowWidth: 28
 
     // Theme discovery: one process pass over shell/themes/*.json.
     property Process themesProbe: Process {

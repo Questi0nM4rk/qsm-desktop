@@ -11,7 +11,7 @@ the SDF shader only.
   2026-10-17, replacing the 2px glass hairline): the EDGE GLOW, a granular gradient from the
   silhouette's edge inward toward `edgeGlow` (the band one step lighter and a touch more
   purple, generated with the theme), built from per-pixel grain that thickens toward the edge,
-  at most `edgeGlowStrength` 0.3 at the edge and gone `edgeGlowWidth` 20px in, drawn by the
+  at most `edgeGlowStrength` 0.3 at the edge and gone `edgeGlowWidth` 28px in, drawn by the
   shader on top of the flat fill (12-mechanism). Almost invisible by intent. No rim, stroke or
   shadow stands in for it. Reference: every capture in
   `references/`.
