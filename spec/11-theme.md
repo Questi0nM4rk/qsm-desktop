@@ -23,7 +23,9 @@
   lightness, never darker (a darker frame reads as a hole). Deep Night: wallpaper median OKLCH
   L 0.20, band L 0.255 (owner tune 2026-10-16 night, up from the brand book's 0.24).
 - **RATIFIED (2026-10-16, owner)**: lightness separates. Containers step up a three-step neutral
-  ladder, each 1.30:1 on the one below: `band` (rollout fill) -> `surface` (a card, row group,
+  ladder: `band` (rollout fill) -> `surface` (a card, row group, 1.45:1 on the band since the
+  owner's 2026-10-17 tune, so a card reads as a thing, not a traced rectangle) -> `overlay`
+  (1.30:1 on the card). Formerly 1.30:1 per step: `band` -> `surface` (a card, row group,
   field inside a rollout) -> `overlay` (a popout, menu, hover container over a card). No
   hairline, no 1px card border, no rim, no shadow does that job; a line in the shell is content
   (slider track, meter), never an edge. A fourth container level is a design error, not a step.

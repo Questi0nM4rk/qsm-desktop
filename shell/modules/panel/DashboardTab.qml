@@ -10,6 +10,11 @@ import qs.theme
 // each its own Card card inside the panel's single silhouette.
 GridLayout {
     id: root
+    // A load reads green until 70 percent, yellow to 90, rose above: the
+    // same thresholds the rail's readouts used (03-rail), as pastels.
+    function loadTone(value: real): color {
+        return value >= 0.9 ? Theme.danger : value >= 0.7 ? Theme.warning : Theme.success;
+    }
 
     columns: 3
     rowSpacing: Theme.space3
@@ -22,6 +27,7 @@ GridLayout {
 
     // 1. User card: avatar + distro badge, WM pill, uptime.
     QsmShellComponents.Card {
+        glow: true
         id: userCard
         Layout.row: 0
         Layout.column: 0
@@ -75,6 +81,7 @@ GridLayout {
                         anchors.centerIn: parent
                         name: "arch"
                         size: Theme.iconSm
+                        color: Theme.accent
                     }
                 }
             }
@@ -134,6 +141,7 @@ GridLayout {
     // Hides its content while offline (06 DEFAULT); card frame stays put so
     // the grid doesn't reflow.
     QsmShellComponents.Card {
+        glow: true
         Layout.row: 0
         Layout.column: 1
         Layout.preferredWidth: Theme.dashboardWeatherCardWidth
@@ -153,7 +161,8 @@ GridLayout {
                 QsmShellComponents.SvgIcon {
                     name: "sunset"
                     size: Theme.iconXxl
-                    color: Theme.text
+                    // The weather card's pastel: sky (info), a notice, not a status.
+                    color: Theme.info
                 }
 
                 QsmShellComponents.Prose {
@@ -172,6 +181,7 @@ GridLayout {
 
     // 6. Media mini-card: square art + half-ring position arc, transport.
     QsmShellComponents.Card {
+        glow: true
         id: mediaCard
         Layout.row: 0
         Layout.column: 2
@@ -297,6 +307,7 @@ GridLayout {
 
     // 3. DateTime card: stacked big hours/minutes, 24h, live.
     QsmShellComponents.Card {
+        glow: true
         id: dateTimeCard
         Layout.row: 1
         Layout.column: 0
@@ -337,6 +348,7 @@ GridLayout {
     // 4. Calendar card: fills whatever width row 1 leaves between the
     // datetime and resources cards.
     QsmShellComponents.Card {
+        glow: true
         Layout.row: 1
         Layout.column: 1
         Layout.fillWidth: true
@@ -352,6 +364,7 @@ GridLayout {
 
     // 5. Resources card: three vertical usage-% rings (CPU, memory, storage).
     QsmShellComponents.Card {
+        glow: true
         Layout.row: 1
         Layout.column: 2
         Layout.fillWidth: true
@@ -372,6 +385,7 @@ GridLayout {
                 value: Math.max(0, PerformanceService.cpuUsage)
                 reading: `${Math.round(PerformanceService.cpuUsage * 100)}%`
                 label: "CPU"
+                fill: root.loadTone(PerformanceService.cpuUsage)
             }
 
             QsmShellComponents.StatRing {
@@ -383,6 +397,7 @@ GridLayout {
                 value: Math.max(0, PerformanceService.memUsed)
                 reading: `${Math.round(PerformanceService.memUsed * 100)}%`
                 label: "Memory"
+                fill: root.loadTone(PerformanceService.memUsed)
             }
 
             QsmShellComponents.StatRing {
@@ -394,6 +409,7 @@ GridLayout {
                 value: Math.max(0, PerformanceService.storageUsed)
                 reading: `${Math.round(PerformanceService.storageUsed * 100)}%`
                 label: "Storage"
+                fill: root.loadTone(PerformanceService.storageUsed)
             }
         }
     }
