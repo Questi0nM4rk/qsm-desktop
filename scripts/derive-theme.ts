@@ -126,11 +126,13 @@ const best = bins.reduce((a, b) => (weight(b) > weight(a) ? b : a));
 const accentHue = grey ? 275 : meanHue(best);
 
 // ---- the ladder --------------------------------------------------------------------------
-const STEP = 1.3;
+// Owner tune 2026-10-17: a card stands 1.45:1 off the band so it reads as a
+// thing, not a traced rectangle; the overlay keeps 1.30:1 on the card.
+const STEPS: Record<string, number> = { surface: 1.45, overlay: 1.3 };
 const ladder: Record<string, Lch> = {};
 ladder.band = { L: 0.255, C: TINT_C, h: tintHue }; // lighter than the wallpaper's median: a frame, not a hole
 for (const [stepName, below] of [["surface", "band"], ["overlay", "surface"]] as const) {
-  ladder[stepName] = { L: nextStep(shipped(ladder[below]), ladder[below].L, TINT_C, tintHue, STEP), C: TINT_C, h: tintHue };
+  ladder[stepName] = { L: nextStep(shipped(ladder[below]), ladder[below].L, TINT_C, tintHue, STEPS[stepName]), C: TINT_C, h: tintHue };
 }
 ladder.text = { L: 0.95, C: grey ? 0 : 0.012, h: tintHue };
 ladder.textMuted = { L: nextStep(shipped(ladder.overlay), ladder.overlay.L, TINT_C, tintHue, 4.5), C: TINT_C, h: tintHue };
@@ -153,7 +155,7 @@ for (const [n, h] of Object.entries(PASTELS)) palette[n] = hex(fromLch({ L: HUE_
 // ---- roles --------------------------------------------------------------------------------
 // The edge glow (01-frame, owner 2026-10-17): the band a step lighter and a
 // touch more purple, dithered from the silhouette's edge inward.
-palette.edgeGlow = hex(fromLch({ L: ladder.band.L + 0.1, C: TINT_C + 0.04, h: tintHue }));
+palette.edgeGlow = hex(fromLch({ L: ladder.band.L + 0.13, C: TINT_C + 0.07, h: tintHue }));
 
 const roles: Record<string, string> = {
   band: palette.band,
@@ -175,7 +177,7 @@ const roles: Record<string, string> = {
 // ---- pairs: every floor, measured on the shipped 8-bit values -----------------------------
 const rgb = (n: string) => parseHex(roles[n]);
 const floors: [string, string, number][] = [
-  ["surface", "band", STEP], ["overlay", "surface", STEP],
+  ["surface", "band", STEPS.surface], ["overlay", "surface", STEPS.overlay],
   ["textOnPrimary", "primary", 4.5], ["textOnPrimary", "accent", 4.5], ["textOnPrimary", "info", 4.5],
   ["textOnPrimary", "success", 4.5], ["textOnPrimary", "warning", 4.5], ["textOnPrimary", "danger", 4.5],
 ];

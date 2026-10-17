@@ -35,8 +35,8 @@ QtObject {
     // theme JSON is generated whole by scripts/derive-theme.ts, and a role it
     // lacks is reported once below.
     readonly property var preload: ({
-        band: "#271E30", edgeGlow: "#46305A", surface: "#3B3245", overlay: "#4D4357",
-        text: "#F0ECF5", textMuted: "#BCB0C8",
+        band: "#271E30", edgeGlow: "#53326E", surface: "#42394C", overlay: "#534A5E",
+        text: "#F0ECF5", textMuted: "#C5BAD1",
         primary: "#D9B4EA", textOnPrimary: "#271E30", accent: "#D9B4EA", focus: "#D9B4EA",
         info: "#89CFF1", success: "#A2D3A2", warning: "#D9C284", danger: "#F5AEB7"
     })

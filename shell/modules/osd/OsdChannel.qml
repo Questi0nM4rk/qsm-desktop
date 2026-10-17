@@ -74,13 +74,10 @@ QsmShellComponents.Slider {
     onMutedChanged: holdTimer.restart()
     onPressedChanged: holdTimer.restart()
 
-    // Double-click on the THUMB only. `grabThumb` makes the first press a
-    // plain grab, so it moves nothing; a bare-track double-click is two jumps.
-    TapHandler {
-        parent: root.second.handle
-        enabled: root.mutable && root.enabled
-        onTapped: if (tapCount === 2) root.toggleMute()
-    }
+    // Double-click on the THUMB only (the Slider reports it from its one
+    // pointer path). `grabThumb` makes the first press a plain grab, so it
+    // moves nothing; a bare-track double-click is two jumps.
+    onThumbDoubleClicked: if (root.mutable && root.enabled) root.toggleMute()
 
     Keys.onSpacePressed: event => {
         if (root.toggleMute())
