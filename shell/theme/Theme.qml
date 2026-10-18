@@ -295,9 +295,9 @@ QtObject {
     // 04-notifications rollout width: short notices stay edge-adjacent while
     // expanded bodies wrap below the headline instead of owning the screen.
     readonly property int notificationWidth: 380
-    // The bell corner (04, owner 2026-10-17): a 40x32 bulge, half sunk when
-    // nothing is unread; its menu is a top-right modal the height of the
-    // clipboard.
+    // The bell corner (04, owner 2026-10-17): a 40x32 bulge that retracts
+    // when everything is read, the glyph resting on the band's corner; its
+    // menu is a top-right modal the height of the clipboard.
     readonly property int notificationBellWidth: 40
     readonly property int notificationBellHeight: 32
     readonly property int notificationMenuHeight: 520
