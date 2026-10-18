@@ -80,16 +80,22 @@ Item {
         root.select(Math.max(0, Math.min(root.actions.length - 1, root.selectedIndex + delta)));
     }
 
+    // Untyped: a Repeater hands back a bare Item, and the delegate's `arm` is
+    // not on that type.
+    function tileAt(index: int): var {
+        return tiles.itemAt(index);
+    }
+
     // THE activation path, reached by a click on a button and by Enter/Space on
     // the selected one. Two ways in, one function: that is one path, not two.
     // The tile's ArmedAction decides: arm a destructive one, fire the rest.
     function activate(index: int): void {
-        const tile = tiles.itemAt(index);
+        const tile = root.tileAt(index);
         if (!tile)
             return;
 
         root.select(index);
-        tile["arm"].trigger(); // the delegate's own ArmedAction
+        tile.arm.trigger();
     }
 
     QsmShellComponents.Rollout {
