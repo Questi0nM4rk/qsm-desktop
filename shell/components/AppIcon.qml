@@ -1,4 +1,6 @@
+pragma ComponentBehavior: Bound
 import QtQuick
+import QtQuick.Effects
 import Quickshell
 import Quickshell.Widgets
 import qs.QsmShell.Components as QsmShellComponents
@@ -25,6 +27,12 @@ Item {
 
     property string icon: ""
     property int implicitSize: QsmShellStyle.Style.iconLg
+    // Transparent keeps the application's own colours (launcher, workspace
+    // tiles). A colour makes the bitmap one tone of the glyph set: the rail
+    // paints apps as outline glyphs, and a sampled #3C3E40 disc beside them
+    // reads as a hole.
+    property color tint: "transparent"
+    readonly property bool tinted: tint.a > 0
 
     readonly property var entry: icon.length > 0
         ? DesktopEntries.heuristicLookup(icon)
@@ -45,6 +53,14 @@ Item {
         visible: root.resolved.length > 0
         source: root.resolved
         asynchronous: true
+        layer.enabled: root.tinted
+        layer.effect: MultiEffect {
+            // Luminance times colour, like SvgIcon; the lift keeps a dark
+            // disc from tinting to near black.
+            colorization: 1
+            colorizationColor: root.tint
+            brightness: 0.5
+        }
     }
 
     QsmShellComponents.SvgIcon {

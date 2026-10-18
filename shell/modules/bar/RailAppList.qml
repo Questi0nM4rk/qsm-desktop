@@ -7,7 +7,7 @@ import qs.services
 import qs.theme
 
 // The rail's MIDDLE section (03 RATIFIED 2026-10-16): the CURRENT
-// workspace's apps, per monitor, ICON ONLY. Each row is a 36x36 slot with a
+// workspace's apps, per monitor, ICON ONLY. Each row is a 32px slot with a
 // 22px glyph, the rail's own gap; no caption. The window title lives in the hover
 // popout as "app · live-title". The focused row carries accent at
 // opacitySelected behind it. Click focuses; more rows than fit scroll
@@ -23,19 +23,25 @@ Item {
 
     implicitWidth: Theme.railWidth
 
+    // The empty state holds the first row's slot, so rows arriving replace it
+    // in place.
     QsmShellComponents.SvgIcon {
-        anchors.centerIn: parent
+        anchors.top: parent.top
+        anchors.topMargin: (Theme.railAppSlot - Theme.railAppIconSize) / 2
+        anchors.horizontalCenter: parent.horizontalCenter
         visible: root.toplevels.length === 0
         name: "monitor"
         size: Theme.railAppIconSize
         color: Theme.textMuted
     }
 
-    // The rows sit in the middle of the free area between the workspace group
-    // and the bottom cluster (owner 2026-10-16), not pinned under the divider.
+    // The rows start at a fixed origin under the workspace group, so the
+    // first row never moves while rows come and go (owner 2026-10-19:
+    // "NENAVIDIM RANDOM UI JUMPING"). Centring on contentHeight shifted every
+    // row by half a slot per window opened or closed.
     ListView {
         id: appList
-        anchors.centerIn: parent
+        anchors.top: parent.top
         width: parent.width
         height: Math.min(parent.height, contentHeight)
         visible: root.toplevels.length > 0
@@ -73,14 +79,13 @@ Item {
 
             // The focused row is a state, not a hover: accent at
             // opacitySelected behind the glyph.
-            Rectangle {
+            QsmShellComponents.Surface {
                 anchors.centerIn: parent
                 width: Theme.railAppSlot
                 height: Theme.railAppSlot
-                radius: Theme.radiusSm
-                color: appRow.current
-                    ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, Theme.opacitySelected)
-                    : "transparent"
+                radius: Theme.radiusMd
+                base: "transparent"
+                selected: appRow.current
             }
 
             // Hover authority sits on the delegate — an ANCESTOR of the icon,
@@ -100,9 +105,11 @@ Item {
                 anchors.centerIn: parent
                 implicitSize: Theme.railAppIconSize
                 icon: appRow.appClass
-                // Inactive apps sit back; the active one is at full strength.
-                // De-emphasis by contrast, never by shrinking the target.
-                opacity: appRow.current ? 1 : 0.62
+                // One tone of the glyph set: text when active, muted and
+                // receded when not. De-emphasis by contrast, never by
+                // shrinking the target.
+                tint: appRow.current ? Theme.text : Theme.textMuted
+                opacity: appRow.current ? 1 : Theme.railInactiveAppOpacity
             }
 
             QsmShellComponents.StateLayer {
