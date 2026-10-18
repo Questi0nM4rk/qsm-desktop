@@ -231,9 +231,9 @@ transition before wiring this call. Link loss must not be labelled Internet loss
   the route for explicitly choosing named actions; popup body activation is limited to the
   live protocol action whose identifier is exactly `default`.
 - **DEFAULT (2026-08-16, widened 2026-08-19)**: DND toggle lives in the notification menu's
-  header; while the TOP PANEL (any tab) or the SESSION surface is open, popups are
-  suppressed — the panel rolls out of the SAME top band and is wide enough to sit under this
-  stack, and two surfaces cannot share one wall; the session surface owns the screen by 08's
+  header; while the TOP PANEL (any tab), the SESSION surface or the notification
+  menu itself is open, popups are suppressed — the panel rolls out of the SAME top band and is wide enough to sit under this
+  stack, and two surfaces cannot share one wall (the menu and the popups both roll out of the top-right corner); the session surface owns the screen by 08's
   fade-back law. Entries still arrive, expire and land in history; only the popup waits.
 - **DEFAULT (2026-08-16)**: fuzzy = subsequence scoring (fzf-style) over title+body; app
   groups ordered by most-recent notification. History bound = 200 entries (09's "bounded").

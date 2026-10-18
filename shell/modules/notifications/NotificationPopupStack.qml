@@ -32,6 +32,7 @@ Item {
     readonly property bool popupActive: root.focused
         && root.modal !== "panel"
         && root.modal !== "session"
+        && root.modal !== "notifications"
         && root.stack.length > 0
 
     // ── selected presentation semantics ─────────────────────────────────
@@ -189,6 +190,10 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
         stack: root.stack
+        // Surface cards of the medium radius, a token gap apart (spec 04).
+        bodied: true
+        bodyRadius: Theme.radiusMd
+        rowSpacing: Theme.space2
         isAlive: id => root.notificationService.live.some(entry => entry.notificationId === id)
         // Retention follows the selected host, including the capsule's fade —
         // DataCapsule still reports `present` after `shown` has gone.
