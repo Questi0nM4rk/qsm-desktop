@@ -279,7 +279,7 @@ exit 0`, "_", ...images.map(image => image.file)];
             id: footer
             role: "metadata"
             Layout.fillWidth: true
-            implicitHeight: hintMetrics.height
+            Layout.preferredHeight: hintMetrics.height
             text: rows.count > 0 ? hintMetrics.text : ""
             horizontalAlignment: Text.AlignRight
 
