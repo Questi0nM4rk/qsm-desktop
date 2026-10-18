@@ -371,6 +371,7 @@ PanelWindow {
         Region { readonly property rect r: osdSurface.corridorZone; x: r.x; y: r.y; width: r.width; height: r.height }
         Region { readonly property rect r: osdSurface.capsuleInputRect; x: r.x; y: r.y; width: r.width; height: r.height }
         Region { readonly property rect r: root.panelHandleZone; x: r.x; y: r.y; width: r.width; height: r.height }
+        Region { readonly property rect r: notificationBell.maskZone; x: r.x; y: r.y; width: r.width; height: r.height }
 
         // 8 fixed slots (see maxRolloutMaskSlots above); unused slots are a
         // zero-size rect and contribute nothing to the Combine (union).
@@ -703,12 +704,16 @@ PanelWindow {
             border.unregisterRolloutRegion("session-catch");
     }
 
-    // The screen-top discovery zone remains parked while the reading rides
-    // the panel rim. Both are mask-active so neither becomes click-through.
+    // The panel handle's hover zone (06, owner 2026-10-18: "musime to roztahnout,
+    // abych nemusel mit pixel perfect aim"): the dots bulge as it is painted
+    // at rest, grown by Style.hoverReach, clipped to the window. It stays
+    // parked at the rest position while the reading rides the panel rim, and
+    // sits in the input mask so the pointer is seen there at all.
     readonly property rect panelHandleZone: fullscreen || focusMode
         ? Qt.rect(0, 0, 0, 0)
-        : Qt.rect(root.panelCenterX - panelHandle.width / 2, 0,
-            panelHandle.width, Theme.frameThickness + Theme.panelHandleHeight / 2 + Theme.panelHandleProud)
+        : QsmShellStyle.Style.hoverZone(Qt.rect(panelHandle.x,
+            Theme.frameThickness - panelHandle.height / 2 + Theme.panelHandleProud,
+            panelHandle.width, panelHandle.height), Qt.rect(0, 0, root.width, root.height))
 
     PanelHandle {
         id: panelHandle
@@ -718,7 +723,8 @@ PanelWindow {
         height: implicitHeight
         x: root.panelCenterX - width / 2
         y: panelSurface.leadingEdgeY - height / 2 + Theme.panelHandleProud
-        onActivated: ShellState.togglePanel("dashboard")
+        // Hover already opened it; a click only opens, never toggles it shut.
+        onActivated: if (ShellState.modal !== "panel") ShellState.togglePanel("dashboard")
         readonly property rect hitRect: visible ? Qt.rect(x, y, width, height) : Qt.rect(0, 0, 0, 0)
         onHitRectChanged: {
             if (visible) border.registerRolloutRegion("panel-handle", hitRect);
@@ -726,33 +732,18 @@ PanelWindow {
         }
     }
 
-    Item {
-        readonly property rect r: root.panelHandleZone
-        x: r.x; y: r.y; width: r.width; height: r.height
-
-        HoverHandler {
-            id: panelHandleHover
-            onHoveredChanged: {
-                if (hovered && !root.fullscreen && !root.focusMode)
-                    panelIntentTimer.restart();
-                else
-                    panelIntentTimer.stop();
-            }
-        }
-
-        Timer {
-            id: panelIntentTimer
-            interval: 150
-            onTriggered: {
-                // Only from a CLEAN desktop. Hover intent is not a deliberate
-                // act, and it used to fire over any open modal — mousing
-                // toward the cheat sheet's own search field crossed this zone
-                // and silently swapped the sheet for the panel (audit UX-2).
-                // `handlesArmed` is that rule, now shared with the OSD handle.
-                if (panelHandleHover.hovered && root.handlesArmed)
-                    ShellState.togglePanel("dashboard");
-            }
-        }
+    // Entering the zone opens the panel at once (no hover-intent delay, owner
+    // 2026-10-18). Read from the scene pointer, which sees every descendant,
+    // rather than a HoverHandler a surface above the zone would shadow. Only
+    // from a CLEAN desktop: hover is not a deliberate act, and it used to
+    // fire over any open modal, so mousing toward the cheat sheet's own
+    // search field swapped the sheet for the panel (audit UX-2).
+    // `handlesArmed` is that rule, shared with the OSD handle.
+    readonly property bool panelHandleHovered: panelHandleZone.width > 0
+        && scenePointer.contains(panelHandleZone)
+    onPanelHandleHoveredChanged: {
+        if (panelHandleHovered && root.handlesArmed)
+            ShellState.togglePanel("dashboard");
     }
 
     // The keyboard modals ride ModalHost (click-catch + Rollout + open()

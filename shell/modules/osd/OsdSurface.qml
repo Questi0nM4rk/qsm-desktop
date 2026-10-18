@@ -19,13 +19,19 @@ Item {
     readonly property real handleRadius: Theme.handleRadius
     readonly property point handleCenter: Qt.point(root.leadingEdgeX + Theme.osdHandleProud
         - root.handleRadius, root.height / 2)
-    readonly property real _zoneLeft: root.handleCenter.x - Theme.iconXs / 2 - Theme.space2
+    // The nub's hover zone: the painted circle grown by Style.hoverReach (owner
+    // 2026-10-18), reaching to the window's right edge. The open corridor is
+    // the rollout grown the same way, so a drag that wanders off a slider
+    // does not retract the rollout under the pointer.
+    readonly property rect _nubZone: QsmShellStyle.Style.hoverZone(
+        Qt.rect(root.handleCenter.x - root.handleRadius, root.handleCenter.y - root.handleRadius,
+            root.handleRadius * 2, root.handleRadius * 2), Qt.rect(0, 0, root.width, root.height))
+    readonly property real _zoneLeft: root._nubZone.x
     readonly property real _zoneSpan: root.width - _zoneLeft
-    readonly property rect _closedCorridor: Qt.rect(_zoneLeft,
-        root.handleCenter.y - root.handleRadius - 30, _zoneSpan, (root.handleRadius + 30) * 2)
+    readonly property rect _closedCorridor: Qt.rect(_zoneLeft, _nubZone.y, _zoneSpan, _nubZone.height)
     readonly property rect _openCorridor: Qt.rect(_zoneLeft,
-        root.rolloutTop - Theme.space2, _zoneSpan,
-        root.rolloutBottom - root.rolloutTop + Theme.space2 * 2)
+        root.rolloutTop - QsmShellStyle.Style.hoverReach, _zoneSpan,
+        root.rolloutBottom - root.rolloutTop + QsmShellStyle.Style.hoverReach * 2)
     readonly property rect corridorZone: (root.scene.fullscreen || root.scene.focusMode)
         ? Qt.rect(0, 0, 0, 0)
         : (root.openFraction > 0 ? _openCorridor : _closedCorridor)

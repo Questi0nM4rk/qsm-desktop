@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import qs.QsmShell.Components as QsmShellComponents
+import qs.QsmShell.Style as QsmShellStyle
 import qs.services
 import qs.state
 import qs.theme
@@ -200,23 +201,28 @@ Item {
             }
         }
 
-        // Leaving the panel for 400ms closes it (06 DEFAULT).
         HoverHandler {
             id: panelHover
-            onHoveredChanged: {
-                if (hovered)
-                    leaveTimer.stop();
-                else if (root.active)
-                    leaveTimer.restart();
-            }
         }
+    }
+
+    // The panel stays open while the pointer is inside the union of its
+    // trigger zone and its own body, and closes Motion.hoverGrace (180ms)
+    // after it has left both (06, owner 2026-10-18). Passing from the dots
+    // zone down into the panel never leaves the union.
+    readonly property bool pointerHeld: panelHover.hovered || root.scene.panelHandleHovered
+    onPointerHeldChanged: {
+        if (pointerHeld)
+            leaveTimer.stop();
+        else if (root.active)
+            leaveTimer.restart();
     }
 
     Timer {
         id: leaveTimer
-        interval: 400
+        interval: QsmShellStyle.Motion.hoverGrace
         onTriggered: {
-            if (root.active && !panelHover.hovered)
+            if (root.active && !root.pointerHeld)
                 ShellState.closeModal();
         }
     }

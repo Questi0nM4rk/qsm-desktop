@@ -57,6 +57,16 @@ and discovery handles remain independent. The global modal policy is unchanged.
   60px while peeked), open rollouts (their live revealed rect), and the invisible handle
   hover-areas (OSD handle, top-panel dots) — handle zones and the peek strip enter the input
   mask alongside the rollout registry (12-mechanism).
+- **RATIFIED (2026-10-18, owner)**: one law for every hover-opened surface. "vsechno on hover
+  elements maji exact on hover area jako jejich item hitbox ... ty ctyri tecky nahore, tam musim
+  byt upe super presny ... musime to roztahnout, abych nemusel mit pixel perfect aim." A hover
+  surface opens on ENTRY with NO delay, stays open while the pointer is inside the union of its
+  trigger, its panel and the path between, and closes 180ms (`Motion.hoverGrace`) after it
+  leaves. The trigger is never the painted shape: it is the shape grown by `Style.hoverReach`
+  (20) on every side, clipped to the screen, and it sits in the input mask so the pointer is
+  seen there at all (top-panel dots, OSD nub, notification bell corner). A rail cell is already
+  a full tile and is its own trigger. The scene pointer reads the zones, never a HoverHandler a
+  surface above would shadow.
 - **DEFAULT (2026-08-16)**: opening a global modal REPLACES the currently open one and closes
   any open rail popout; rail popouts on other monitors are unaffected.
 - **RATIFIED (2026-08-24, owner)**: an open surface owns its TRIGGERS as well as its region.

@@ -5,9 +5,9 @@ import qs.theme
 // The idle affordance of the top panel (06, owner 2026-10-17): a small band
 // bulge on the panel's leading edge carrying four 2px dots, the drawer's
 // grip, as small as a grip can be (owner 2026-10-17).
-// Hover (150ms intent, owned by EdgeScene) or click opens the panel on
-// Dashboard. The fill is painted by the shader through registerBulge; this
-// only carries the dots and the hit area.
+// Hover (the generous zone EdgeScene owns, no delay) or click opens the
+// panel on Dashboard. The fill is painted by the shader through
+// registerBulge; this only carries the dots and the click area.
 Item {
     id: root
 
