@@ -93,24 +93,20 @@ RailEntry {
         // spanning the whole cell dwarfed the 12px glyphs on either side of it.
         readonly property real armLength: Math.round(root.glyphSize * 1.2)
 
-        Rectangle {
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
+        // The rail's own rule, so weight and strength stay the divider's.
+        RailDivider {
+            anchors.centerIn: parent
             visible: root.shown > 1
-            width: 2
-            height: grid.armLength
-            color: Theme.textMuted
-            opacity: 0.8
+            inset: 0
+            width: grid.armLength
+            rotation: 90
         }
 
-        Rectangle {
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
+        RailDivider {
+            anchors.centerIn: parent
             visible: root.shown > 2
+            inset: 0
             width: grid.armLength
-            height: 2
-            color: Theme.textMuted
-            opacity: 0.8
         }
     }
 }

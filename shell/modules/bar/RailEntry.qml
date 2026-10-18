@@ -66,15 +66,17 @@ Item {
     implicitHeight: caption.length > 0 ? 48
         : compact ? Theme.space6 : Theme.railWidth
 
-    Rectangle {
+    // Selected, active and danger are one state read three ways: the accent
+    // (danger: the danger role) at opacitySelected over a transparent base,
+    // which is Surface's own answer to "selected".
+    QsmShellComponents.Surface {
         anchors.fill: parent
         // Selected: reach the band's inner wall — connected to the column.
         anchors.rightMargin: root.selected ? -(Theme.reservedLeft - Theme.railWidth) / 2 : 0
         radius: Theme.radiusMd
-        color: root.selected ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, Theme.opacitySelected)
-            : root.danger ? Qt.rgba(Theme.danger.r, Theme.danger.g, Theme.danger.b, 0.14)
-            : root.active ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.16)
-            : "transparent"
+        base: "transparent"
+        accent: root.danger && !root.selected ? Theme.danger : Theme.accent
+        selected: root.selected || root.danger || root.active
 
         Behavior on anchors.rightMargin {
             NumberAnimation { duration: Motion.micro; easing.type: Motion.standardEasing }

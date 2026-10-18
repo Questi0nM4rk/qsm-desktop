@@ -205,85 +205,20 @@ ColumnLayout {
         Layout.fillWidth: true
     }
 
-    // Segmented pill (caelestia anatomy): one full-radius track, three
-    // profile segments, a sliding accent indicator that glides between them
-    // (Motion.morphGlide, no overshoot — same glide idea as the workspace
-    // active pill) instead of teleporting.
-    Item {
+    // The library's segmented control, one glyph per profile; the sliding
+    // indicator, keyboard wrap and focus ring are its own.
+    QsmShellComponents.Segmented {
         id: profileSwitch
 
         readonly property var profiles: ["power-saver", "balanced", "performance"]
-        readonly property int activeIndex: profiles.indexOf(root.profile)
 
         visible: root.profile.length > 0
         Layout.fillWidth: true
-        implicitHeight: Theme.controlHeightSm
-
-        Rectangle {
-            id: track
-            anchors.fill: parent
-            radius: Theme.radiusPill
-            color: Theme.surface
-        }
-
-        Rectangle {
-            id: indicator
-
-            readonly property var activeItem: profileSwitch.activeIndex >= 0
-                && segments.count > profileSwitch.activeIndex
-                ? segments.itemAt(profileSwitch.activeIndex) : null
-
-            visible: activeItem !== null
-            radius: Theme.radiusPill
-            color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.16)
-            y: 0
-            height: track.height
-            x: activeItem?.x ?? 0
-            width: activeItem?.width ?? 0
-
-            Behavior on x {
-                NumberAnimation { duration: Motion.morphGlide; easing.type: Motion.standardEasing }
-            }
-
-            Behavior on width {
-                NumberAnimation { duration: Motion.morphGlide; easing.type: Motion.standardEasing }
-            }
-        }
-
-        Row {
-            id: segmentsRow
-            anchors.fill: parent
-
-            Repeater {
-                id: segments
-                model: profileSwitch.profiles
-
-                Item {
-                    id: segment
-
-                    required property string modelData
-                    required property int index
-                    readonly property bool active: profileSwitch.activeIndex === index
-
-                    width: segmentsRow.width / profileSwitch.profiles.length
-                    height: segmentsRow.height
-
-                    QsmShellComponents.SvgIcon {
-                        anchors.centerIn: parent
-                        size: Theme.iconSm
-                        name: PowerProfileService.iconFor(segment.modelData)
-                        color: segment.active ? Theme.accent : Theme.textMuted
-                    }
-
-                    QsmShellComponents.StateLayer {
-                        anchors.fill: parent
-                        hoverScale: 1.06
-                        pressScale: 0.94
-                        onClicked: root.setProfile(segment.modelData)
-                    }
-                }
-            }
-        }
+        barHeight: Theme.controlHeightSm
+        options: profiles.map(name => ({ icon: PowerProfileService.iconFor(name), name: name.replace("-", " ") }))
+        currentIndex: profiles.indexOf(root.profile)
+        Accessible.name: "Power profile"
+        onSelected: index => root.setProfile(profiles[index])
     }
 
     // The active profile names itself under the control it belongs to, rather

@@ -28,6 +28,7 @@ GridLayout {
     // 1. User card: avatar + distro badge, WM pill, uptime.
     QsmShellComponents.Card {
         glow: true
+        radius: Theme.panelCardRadius
         id: userCard
         Layout.row: 0
         Layout.column: 0
@@ -142,6 +143,7 @@ GridLayout {
     // the grid doesn't reflow.
     QsmShellComponents.Card {
         glow: true
+        radius: Theme.panelCardRadius
         Layout.row: 0
         Layout.column: 1
         Layout.preferredWidth: Theme.dashboardWeatherCardWidth
@@ -182,6 +184,7 @@ GridLayout {
     // 6. Media mini-card: square art + half-ring position arc, transport.
     QsmShellComponents.Card {
         glow: true
+        radius: Theme.panelCardRadius
         id: mediaCard
         Layout.row: 0
         Layout.column: 2
@@ -308,6 +311,7 @@ GridLayout {
     // 3. DateTime card: stacked big hours/minutes, 24h, live.
     QsmShellComponents.Card {
         glow: true
+        radius: Theme.panelCardRadius
         id: dateTimeCard
         Layout.row: 1
         Layout.column: 0
@@ -349,6 +353,7 @@ GridLayout {
     // datetime and resources cards.
     QsmShellComponents.Card {
         glow: true
+        radius: Theme.panelCardRadius
         Layout.row: 1
         Layout.column: 1
         Layout.fillWidth: true
@@ -365,6 +370,7 @@ GridLayout {
     // 5. Resources card: three vertical usage-% rings (CPU, memory, storage).
     QsmShellComponents.Card {
         glow: true
+        radius: Theme.panelCardRadius
         Layout.row: 1
         Layout.column: 2
         Layout.fillWidth: true

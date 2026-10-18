@@ -160,6 +160,11 @@ Item {
                         // accent is spent on armed, and on this surface what
                         // happens next matters more than what is picked.
                         accent: Theme.primary
+                        // 08: shutdown, the one destructive action, is set
+                        // apart by 16px (the column's own gap is space2) and
+                        // draws in danger.
+                        danger: modelData.role === "shutdown"
+                        Layout.topMargin: modelData.role === "shutdown" ? Theme.space4 - Theme.space2 : 0
                         buttonWidth: Theme.sessionButtonWidth
                         buttonHeight: Theme.sessionButtonHeight
                         selected: root.selectedIndex === index
