@@ -15,9 +15,11 @@ import qs.theme
 // draws besides its track (05-osd). It rests as the channel's 16px glyph and
 // shows the reading while the channel is live; double-clicking it mutes.
 //
-// Every channel draws the same way: track `surface`, fill `primary`, thumb
-// `text` while live and `textMuted` otherwise, content `textOnPrimary`. No
-// shadow under the thumb, nothing at the track's end, never a hue.
+// Every channel draws the same way: track `surface`, fill `primary`, content
+// `textOnPrimary`. The thumb rests in `textMuted` on every channel, the same
+// for all three; only the channel being changed (showingValue) lights up in
+// `text`. A muted channel stays `textMuted` even while changed. No shadow under
+// the thumb, nothing at the track's end, never a hue.
 QsmShellComponents.Slider {
     id: root
 
@@ -25,7 +27,6 @@ QsmShellComponents.Slider {
     property bool muted: false
     // Brightness has no mute: its thumb's double-click does nothing.
     property bool mutable: true
-    property bool emphasized: false
 
     // 05-osd, Sliders: the value stays on the thumb for 1s after the last
     // change, the same budget as the OSD's expiry. No Motion/Theme token has 1s.
@@ -55,10 +56,9 @@ QsmShellComponents.Slider {
     trackColor: Theme.surface
     fill: Theme.primary
 
-    // Emphasis is the thumb's job: `text` while this channel is live or the
-    // OSD's target, one step down in `textMuted` for the others and for a
-    // muted channel.
-    thumbColor: !root.muted && (root.showingValue || root.emphasized) ? Theme.text : Theme.textMuted
+    // Lit only while this channel is being changed; every other thumb, and a
+    // muted channel, stays in `textMuted`.
+    thumbColor: root.showingValue && !root.muted ? Theme.text : Theme.textMuted
 
     // Glyph at rest (the muted variant comes from `icon`), reading while live.
     // No percent sign: the glyph says which channel this is.

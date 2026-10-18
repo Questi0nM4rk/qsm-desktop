@@ -8,8 +8,10 @@ Reference: `references/osd-sliders-right.png`.
   and rotating `chevron-left` glyph read OsdSurface's actual centre/radius/opening
   facts. The surface alone owns its trigger/hold corridor. The handle adds no
   separate hover reader, timer or input handler. Fullscreen/focus hides the arrow
-  and collapses the tab to zero height; normal mode keeps the 12x40 tab,
-  11px proud offset and 10px glyph. The story's `osd-handle` target is the real glyph
+  and collapses the handle to zero height; normal mode keeps the circle nub
+  (`Theme.handleRadius` 7, a 14px circle) sunk into the band with its centre 2px inside
+  (`Theme.osdHandleProud` = radius + 2), so 5px shows, and the `chevron-left` glyph at
+  `Theme.iconXs` (12px). The story's `osd-handle` target is the real glyph
   and its render facts include the shader vector, mapped glyph corners and corridor.
 
 - Normal applications use the attached shell `Rollout`; a fullscreen application
@@ -108,11 +110,16 @@ Reference: `references/osd-sliders-right.png`.
   on the thing that moved. A readout set above the track in caption text was legible only if
   you already knew where to look.
 - **RATIFIED (2026-10-16, owner)**: every channel draws the same way: the track is `surface`,
-  the active level (the filled part) is `primary`, the thumb is `text` and carries its content
-  in `textOnPrimary`. Channel identity is the glyph INSIDE the thumb, never a per-channel hue and
+  the active level (the filled part) is `primary`, the thumb carries its content in
+  `textOnPrimary`. Channel identity is the glyph INSIDE the thumb, never a per-channel hue and
   never a caption at the track's end: the thumb is the one thing a channel shows besides its
-  track. Fills are flat: no gradient, no thumb shadow. While a channel is live its thumb is
-  `text` and the other channels' thumbs sit one step down in `textMuted`.
+  track. Fills are flat: no gradient, no thumb shadow.
+- **RULED (2026-10-18, owner)**: "proc ma osd rollout jine sliders? Jenom sound sviti, zbytek ne."
+  (why does the OSD rollout have different sliders? Only the sound lights up, the rest does not.)
+  At rest every channel's thumb looks the same, in `textMuted`. Only the channel being changed
+  (live, per the rule below) lights up in `text`. A muted channel's thumb stays `textMuted`
+  even while changed. This replaces the earlier rule that the emphasised channel (the one the
+  OSD was opened for) stayed `text` at rest.
 - **RATIFIED (2026-10-16, owner)**: the thumb shows the glyph at rest and the value while the
   channel is live. Live means a press or drag on the thumb, a wheel step over the track, or
   a service change (volume keys, mixer, brightness keys). The value stays for **1s** after the
