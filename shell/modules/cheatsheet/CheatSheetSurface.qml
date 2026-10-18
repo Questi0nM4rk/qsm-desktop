@@ -192,9 +192,11 @@ Item {
                     required property string section
 
                     width: rows.width
-                    height: Theme.cheatSheetRowHeight + Theme.space2
+                    // Top space is a token, not whatever a row height leaves.
+                    height: Theme.space3 + groupHeader.implicitHeight + Theme.space1
 
                     RowLayout {
+                        id: groupHeader
                         anchors.left: parent.left
                         anchors.right: parent.right
                         anchors.bottom: parent.bottom
@@ -246,24 +248,9 @@ Item {
                             Layout.fillHeight: true
                             Accessible.role: Accessible.StaticText
                             Accessible.name: row.modelData.combo
-                            Flickable {
-                                id: chordScroll
-                                anchors.fill: parent
-                                contentWidth: chord.implicitWidth
-                                contentHeight: height
-                                flickableDirection: Flickable.HorizontalFlick
-                                boundsBehavior: Flickable.StopAtBounds
-                                clip: true
-                                QsmShellComponents.Kbd {
-                                    id: chord
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    combo: row.modelData.combo
-                                }
-                            }
-                            QsmShellComponents.ScrollCue {
-                                view: chordScroll
-                                orientation: Qt.Horizontal
-                                fade: false
+                            QsmShellComponents.Kbd {
+                                anchors.verticalCenter: parent.verticalCenter
+                                combo: row.modelData.combo
                             }
                         }
 
