@@ -76,6 +76,7 @@ Item {
                 implicitHeight: Theme.railWorkspaceSlot
 
                 Rectangle {
+                    id: dot
                     anchors.centerIn: parent
                     width: Theme.railWorkspaceDot
                     height: width
@@ -92,12 +93,13 @@ Item {
                     }
                 }
 
-                HoverHandler {
-                    cursorShape: Qt.PointingHandCursor
-                }
-
-                TapHandler {
-                    onTapped: root.activate(slot.workspaceId)
+                // Hover grows the dot (09); the slot stays the hit area.
+                QsmShellComponents.StateLayer {
+                    anchors.fill: parent
+                    target: dot
+                    hoverScale: 1.5
+                    pressScale: 0.9
+                    onClicked: root.activate(slot.workspaceId)
                 }
             }
         }
