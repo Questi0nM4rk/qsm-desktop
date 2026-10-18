@@ -23,9 +23,12 @@ the SDF shader only.
   carry NO hairline, NO 1px border, NO edge rim. Lightness separates them: one
   three-step neutral ladder, `band` → `surface` → `overlay`, each step on the one
   below: `surface` 1.45:1 on `band`, `overlay` 1.30:1 on `surface` (11-theme). A line in the shell is content (slider track, meter), never an edge.
-  **RATIFIED (2026-10-18, owner: "ja bych povolil slight stiny")**: a card in a LIST of cards
-  (the notification menu) casts a slight shadow under its body; the step still separates it,
-  the shadow only marks where it ends. No other container casts one.
+  **RATIFIED (2026-10-18, owner: "ja bych povolil slight stiny"; 2026-10-19, owner: "Pridej
+  trochu shadows, separations. At to nevypada vibecoded")**: every library `Card` (dashboard and
+  performance cards, the notification menu's entries) casts the slight card shadow under its
+  body and carries the edge separation; the step still separates it, the shadow only marks where
+  it ends. A body that sits flat inside another (a callout, a button) opts out. No popout or
+  rollout casts one.
 
 ## Join law
 

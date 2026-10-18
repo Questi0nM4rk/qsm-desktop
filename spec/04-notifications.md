@@ -212,8 +212,9 @@ transition before wiring this call. Link loss must not be labelled Internet loss
   the NOTIFICATION MENU AT ONCE: a top-right modal rollout
   (`notifications`, 412 wide, up to 520 tall) in the clipboard's shape, search field at the
   top, then two views, **Unread** (with its count) and **All**, picked on a track with one gliding
-  thumb concentric with the track's corners (owner 2026-10-19: the per-segment highlight did not
-  fill the track's rounded ends), then the history grouped by
+  thumb that fills its segment to the track's edge and wears the track's own corner (owner
+  2026-10-19: the per-segment highlight did not fill the track's rounded ends; the thumb is the
+  accent at 12 % over the track with the card shadow, the label group centred in each segment), then the history grouped by
   app with FUZZY SEARCH across title AND body. The menu opens on Unread while anything is
   unread, else on All (owner 2026-10-18: unread "more separated than just dots, its own menu
   tab"). An unread row also carries a 6px `accent` dot by its app name; a plain click on it

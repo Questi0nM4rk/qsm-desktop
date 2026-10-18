@@ -158,8 +158,9 @@ Reference: `references/osd-sliders-right.png`.
   focus ring sits OUTSIDE the track by one half-step (`Style.spaceTight`), and a hovered or
   pressed thumb grows further per side. The ring's outer 2px therefore drew under the frame, where
   the rollout's own `clip` cut them. `OsdSurface` measures the real envelope from the
-  channels' own geometry — the slider's implicit width, which already reserves the grown
-  thumb, plus the ring's track-plus-gap — and clamps the requested
+  channels' own geometry — the slider's implicit width, which does NOT reserve the grown
+  thumb (growth overflows into the gap and is capped at the bar's own cross extent), plus the
+  grown thumb's overhang and the ring's gap-plus-stroke — and clamps the requested
   offset within `±max(0, bodyWidth / 2 - envelope)`, the closest position to the requested one that
   keeps all three whole. Fullscreen has no band to correct for, sits at offset 0, and the
   same envelope fits its 56px body unchanged.
