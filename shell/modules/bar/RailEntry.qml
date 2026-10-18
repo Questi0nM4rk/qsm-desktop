@@ -74,6 +74,9 @@ Item {
         // Selected: reach the band's inner wall — connected to the column.
         anchors.rightMargin: root.selected ? -(Theme.reservedLeft - Theme.railWidth) / 2 : 0
         radius: Theme.radiusMd
+        // Plugged into the wall it reaches: square on that side, so the pill
+        // joins the column instead of ending in two rounded notches.
+        snapEdge: root.selected ? "right" : ""
         base: "transparent"
         accent: root.danger && !root.selected ? Theme.danger : Theme.accent
         selected: root.selected || root.danger || root.active
@@ -86,7 +89,7 @@ Item {
     QsmShellComponents.SvgIcon {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
-        anchors.verticalCenterOffset: root.caption.length > 0 ? -7 : 0
+        anchors.verticalCenterOffset: root.caption.length > 0 ? Theme.railCaptionOffset : 0
         // An empty name means the cell paints its own content in the slot
         // below; loading "".svg would just log a miss.
         visible: root.icon.length > 0
@@ -113,7 +116,7 @@ Item {
         technical: true
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 3
+        anchors.bottomMargin: Theme.railCaptionBottomMargin
         visible: root.caption.length > 0
         text: root.caption
     }

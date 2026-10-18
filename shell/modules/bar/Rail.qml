@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Effects
 import QtQuick.Layouts
 import Quickshell.Services.SystemTray
 import Quickshell.Services.UPower
@@ -66,12 +67,15 @@ Item {
                 // hover card does the telling.
                 QsmShellComponents.Badge {
                     visible: UpdateService.available
+                    // On the corner, capped, so the pill stays a chip and
+                    // leaves the glyph readable beside it.
                     anchors.right: parent.right
-                    anchors.bottom: parent.bottom
-                    anchors.margins: 1
+                    anchors.top: parent.top
+                    anchors.rightMargin: Theme.spaceTight
+                    anchors.topMargin: -Theme.spaceTight
                     tone: "accent"
                     filled: true
-                    text: String(UpdateService.count)
+                    text: UpdateService.count > 99 ? "99+" : String(UpdateService.count)
                 }
             }
         }
@@ -122,12 +126,21 @@ Item {
                         width: parent.width
                         height: Theme.space6
 
+                        // One tone with the outline glyphs around it, like the
+                        // rail's app rows.
                         Image {
+                            id: trayImage
                             anchors.centerIn: parent
                             width: Theme.iconSm
                             height: Theme.iconSm
                             source: trayEntry.modelData.icon
                             asynchronous: true
+                            layer.enabled: true
+                            layer.effect: MultiEffect {
+                                colorization: 1
+                                colorizationColor: Theme.textMuted
+                                brightness: 0.5
+                            }
                         }
 
                         QsmShellComponents.StateLayer {

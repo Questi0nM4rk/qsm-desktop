@@ -37,7 +37,8 @@ intent separately from the backend result, with no password in event payloads.
   "cell" box; hit areas are invisible.
 - **RATIFIED (2026-10-16, owner)**: lineup top→bottom: logo (decorative), SYSTEM UPDATES cell,
   then ONE group holding the workspace slots, PIN and the tray icons, then the
-  current-workspace app list (the middle section, spread across the free area; the active
+  current-workspace app list (the middle section, rows from a fixed origin under the workspace group so the first
+  row never moves, owner 2026-10-19: "NENAVIDIM RANDOM UI JUMPING"; the active
   window is the highlighted row), then the bottom cluster: the CLOCK (time above the numeric date, calendar
   popout on hover; back in the rail 2026-10-17, owner), BATTERY (the charge reading alone),
   then the QUICK MENU (quick actions FIRST, then network, bluetooth, sound — the actions cell

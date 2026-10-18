@@ -29,7 +29,9 @@ Item {
     readonly property bool shown: !root.scene.fullscreen && !root.scene.focusMode
         && !root.scene.popupActive
 
-    // Where the glyph lives: on the band's corner, or centred in the bulge.
+    // Where the glyph lives: on the band's rounded corner fill, one frame
+    // thickness in from each edge (the owner accepted this placement), or
+    // centred in the bulge. Half a thickness would clip the 16px glyph.
     readonly property point cornerCenter: Qt.point(root.width - Theme.frameThickness,
         Theme.frameThickness)
     readonly property rect cornerRect: Qt.rect(cornerCenter.x - Theme.iconSm / 2,
