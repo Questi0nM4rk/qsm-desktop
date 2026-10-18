@@ -524,7 +524,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: Theme.background
+        color: Theme.band
     }
 
     QsmShellComponents.ScenePointer {

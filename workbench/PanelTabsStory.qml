@@ -146,7 +146,7 @@ Item {
     }
 
     Timer { id: restoreObservation; interval: 0; onTriggered: root.observing = true }
-    Rectangle { anchors.fill: parent; color: Theme.background }
+    Rectangle { anchors.fill: parent; color: Theme.band }
     QsmShellComponents.ScenePointer {
         id: pointer
         onPointChanged: ShellState.keyboardOwnsSelection = false

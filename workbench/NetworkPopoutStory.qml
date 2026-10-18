@@ -70,13 +70,13 @@ Item {
     onResetGenerationChanged: resetStory()
     Component.onCompleted: resetStory()
     Component.onDestruction: { NetworkService.reset(); ShellState.reset(); }
-    Rectangle { anchors.fill: parent; color: Theme.background }
+    Rectangle { anchors.fill: parent; color: Theme.band }
     Rectangle {
         anchors.centerIn: content
         width: content.width + Theme.space4 * 2
         height: content.height + Theme.space4 * 2
         radius: Theme.rolloutRadius
-        color: Theme.bandFill
+        color: Theme.band
     }
     Bar.NetworkPopoutContent {
         id: content

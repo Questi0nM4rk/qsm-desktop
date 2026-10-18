@@ -331,7 +331,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: Theme.background
+        color: Theme.band
     }
 
     Rectangle {
@@ -340,7 +340,7 @@ Item {
         width: Math.max(0, root.width - Theme.frameThickness * 2)
         height: Math.max(0, root.height - Theme.frameThickness * 2)
         radius: Theme.frameRadius
-        color: Theme.backgroundMid
+        color: Theme.surface
 
         Text {
             anchors.centerIn: parent

@@ -71,7 +71,7 @@ Item {
     onResetGenerationChanged: resetStory()
     Component.onCompleted: resetStory()
     Component.onDestruction: NotificationService.store.reset()
-    Rectangle { anchors.fill: parent; color: Theme.background }
+    Rectangle { anchors.fill: parent; color: Theme.band }
     Panel.NotificationCenterTab {
         id: center
         width: Theme.notificationWidth + Theme.space6 * 2
