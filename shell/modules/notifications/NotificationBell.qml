@@ -128,6 +128,12 @@ Item {
             size: Theme.iconSm
             color: root.unread > 0 ? Theme.text : Theme.textMuted
         }
+
+        // Tucked into the corner with nothing unread, the bell is a hint,
+        // not a control asking to be read: it recedes as the bulge retracts
+        // and comes back to full strength as the bulge returns (owner
+        // 2026-10-19: "vic opaque, jakoze little invisible").
+        opacity: Theme.opacityRecede + (1 - Theme.opacityRecede) * bulge.revealProgress
     }
 
     // The corner's click target is the whole zone, like its hover.

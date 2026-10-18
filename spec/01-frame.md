@@ -13,7 +13,7 @@ the SDF shader only.
   color on the edge, and than gradient for some time down so it blends with the main color."
   A slight line of `edgeColor` (the band one step lighter and a touch more purple, generated
   with the theme) exactly at the silhouette's edge, `edgeStrength` 0.5 of the colour there,
-  then a smooth gradient inward into the band colour, gone `edgeFade` 10px in. No grain, no
+  then a smooth gradient inward into the band colour, gone `edgeFade` 16px in (owner 2026-10-19: "trochu delsi ... delsi leanient gradient"). No grain, no
   noise. Owner: today it is "too bright and NOT even: thicker at corners and bulges; on opened
   rollouts the corners look cut off". It is even: ONE curve of the merged silhouette's own
   distance, so every side, corner, bulge, rollout join and open rollout corner shows the same

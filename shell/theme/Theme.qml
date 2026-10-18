@@ -468,9 +468,10 @@ QtObject {
     readonly property real seamOverlap: 8
     // The edge separation (01-frame, owner 2026-10-18): a slight line of
     // edgeColor exactly at the silhouette's edge, 0.5 of the colour there,
-    // easing into the band colour over 10px. Candidates for the owner to tune.
+    // easing into the band colour over edgeFade px; the owner asked for a longer,
+    // more lenient fade (2026-10-19).
     readonly property real edgeStrength: 0.5
-    readonly property int edgeFade: 10
+    readonly property int edgeFade: 16
 
     // Theme discovery: one process pass over shell/themes/*.json.
     property Process themesProbe: Process {

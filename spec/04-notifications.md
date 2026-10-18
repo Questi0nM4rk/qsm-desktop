@@ -201,7 +201,9 @@ transition before wiring this call. Link loss must not be labelled Internet loss
   into the right corner diagonally not just vertically") the bulge RETRACTS and the bell glyph
   travels DIAGONALLY, up and to the right, into the top-right corner of the frame and sits on
   the band there (centre one frame thickness from each edge: the corner's inner radius is 28,
-  so the band's corner fill has room for the 16px glyph on the diagonal). The glyph rides the
+  so the band's corner fill has room for the 16px glyph on the diagonal). Tucked there it recedes to
+  `opacityRecede` and regains full strength as the bulge returns (owner 2026-10-19: "vic
+  opaque, jakoze little invisible"). The glyph rides the
   bulge's own reveal (`Rollout.revealProgress`), so both move as one on the `revealSmall` tier
   and shorten under reduced motion with it. Unread above 0, the menu open, or the pointer on the
   corner brings the bulge back with the glyph riding into it. The hover zone is generous at
@@ -209,7 +211,9 @@ transition before wiring this call. Link loss must not be labelled Internet loss
   it covers glyph and bulge together), never the 16px glyph. Entering it, in either state, opens
   the NOTIFICATION MENU AT ONCE: a top-right modal rollout
   (`notifications`, 412 wide, up to 520 tall) in the clipboard's shape, search field at the
-  top, then two views, **Unread** (with its count) and **All**, then the history grouped by
+  top, then two views, **Unread** (with its count) and **All**, picked on a track with one gliding
+  thumb concentric with the track's corners (owner 2026-10-19: the per-segment highlight did not
+  fill the track's rounded ends), then the history grouped by
   app with FUZZY SEARCH across title AND body. The menu opens on Unread while anything is
   unread, else on All (owner 2026-10-18: unread "more separated than just dots, its own menu
   tab"). An unread row also carries a 6px `accent` dot by its app name; a plain click on it
@@ -219,7 +223,9 @@ transition before wiring this call. Link loss must not be labelled Internet loss
   them (a column of ticks read as one joined line). Hover never expands a menu entry, because
   the wheel over the list must scroll the list: the entry's LEADING column (its glyph, which
   turns into a chevron under the pointer) opens and closes it by click, the rest of the entry
-  is its action. An open entry shows its whole body; the list scrolls, the entry does not. The menu closes 180ms after the
+  is its action. An open entry shows its whole body; the list scrolls, the entry does not. The menu keeps its
+  height and its header in place when the list empties (owner 2026-10-19: "NENAVIDIM RANDOM UI
+  JUMPING"). The menu closes 180ms after the
   pointer has left both the bell zone and the menu, on a click outside, on Escape, or by the
   keyboard shortcut that opened it (09-input). The bell steps back while live popups roll
   out of the same corner, and in fullscreen or focus mode.
