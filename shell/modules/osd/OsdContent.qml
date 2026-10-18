@@ -39,7 +39,6 @@ FocusScope {
             value: AudioService.outputValue
             muted: AudioService.outputMuted
             enabled: AudioService.outputAvailable
-            emphasized: OsdState.kind === "output"
             onMoved: {
                 AudioService.setOutput(outputChannel.value);
                 OsdState.show("output", root.targetScreen);
@@ -62,7 +61,6 @@ FocusScope {
             value: AudioService.microphoneValue
             muted: AudioService.microphoneMuted
             enabled: AudioService.microphoneAvailable
-            emphasized: OsdState.kind === "microphone"
             onMoved: {
                 AudioService.setMicrophone(microphoneChannel.value);
                 OsdState.show("microphone", root.targetScreen);
@@ -84,7 +82,6 @@ FocusScope {
             icon: "brightness"
             mutable: false
             value: BrightnessService.value
-            emphasized: OsdState.kind === "brightness"
             onMoved: {
                 BrightnessService.setValue(brightnessChannel.value);
                 OsdState.show("brightness", root.targetScreen);
