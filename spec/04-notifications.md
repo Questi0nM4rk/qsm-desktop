@@ -200,8 +200,8 @@ transition before wiring this call. Link loss must not be labelled Internet loss
   2026-10-18: "notifications, when they are all read, should be on top of the border, and moved
   into the right corner diagonally not just vertically") the bulge RETRACTS and the bell glyph
   travels DIAGONALLY, up and to the right, into the top-right corner of the frame and sits on
-  the band there (centre one frame thickness from each edge: the corner's inner radius is 28,
-  so the band's corner fill has room for the 16px glyph on the diagonal). Tucked there it recedes to
+  the band there (centred in the band's corner square, half a frame thickness from each edge; the inner
+  corner point is the band's edge, not its middle). Tucked there it recedes to
   `opacityRecede` and regains full strength as the bulge returns (owner 2026-10-19: "vic
   opaque, jakoze little invisible"). The glyph rides the
   bulge's own reveal (`Rollout.revealProgress`), so both move as one on the `revealSmall` tier
