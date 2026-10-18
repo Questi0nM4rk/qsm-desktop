@@ -93,16 +93,6 @@ Item {
             parent: bulge.contentItem
             anchors.fill: parent
 
-            QsmShellComponents.Badge {
-                anchors.right: parent.right
-                anchors.top: parent.top
-                anchors.margins: Theme.spaceTight
-                visible: root.unread > 0
-                tone: "accent"
-                filled: true
-                text: String(root.unread)
-            }
-
             QsmShellComponents.StateLayer {
                 anchors.fill: parent
                 target: null
@@ -123,6 +113,19 @@ Item {
             - width / 2
         y: root.cornerCenter.y + (root.bulgeCenter.y - root.cornerCenter.y) * bulge.revealProgress
             - height / 2
+
+        // The count rides the glyph's top-right corner, so it travels with the
+        // bell and never sits clipped against the screen edge or over the glyph.
+        QsmShellComponents.Badge {
+            anchors.right: parent.right
+            anchors.rightMargin: -Theme.spaceTight
+            anchors.verticalCenter: parent.top
+            z: 1
+            visible: root.unread > 0
+            tone: "accent"
+            filled: true
+            text: String(root.unread)
+        }
 
         QsmShellComponents.SvgIcon {
             anchors.centerIn: parent
