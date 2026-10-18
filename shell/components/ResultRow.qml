@@ -64,6 +64,9 @@ QsmShellComponents.ListRow {
                 source: root._thumb
                 fillMode: Image.PreserveAspectCrop
                 asynchronous: true
+                // Fades in over the glyph on this image's own load.
+                opacity: status === Image.Ready ? 1 : 0
+                Behavior on opacity { NumberAnimation { duration: Motion.fast; easing.type: Motion.standardEasing } }
             }
         }
 

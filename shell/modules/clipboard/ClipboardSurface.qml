@@ -32,6 +32,13 @@ Item {
 
     property string query
 
+    // The one owner of the body height: ten rows, the search field and the
+    // hint footer, with the gaps the column below puts between them. The host
+    // reads it and computes nothing.
+    readonly property real preferredBodyHeight: Theme.clipboardMaxRows * Theme.clipboardRowHeight
+        + (Theme.clipboardMaxRows - 1) * Theme.space1
+        + search.implicitHeight + footer.implicitHeight + Theme.space3 * 2 + Theme.space4 * 2
+
     // Deterministic thumbnail path: cache dir plus the cliphist id, so nothing
     // has to be parsed back out of the decoder. The only unknown is whether
     // the file has landed yet, which is exactly what the generation counter
@@ -266,12 +273,21 @@ exit 0`, "_", ...images.map(image => image.file)];
         // sheet only knows compositor binds, so this surface's own contract was
         // written down nowhere). A footer rather than per-row hints: it is the
         // list that has the contract, not each entry.
+        // Always in the layout so the list and its empty state never move; an
+        // empty text hides the hint, a fixed height keeps the room.
         QsmShellComponents.Prose {
+            id: footer
             role: "metadata"
             Layout.fillWidth: true
-            visible: rows.count > 0
-            text: "Enter pastes · Del removes"
+            implicitHeight: hintMetrics.height
+            text: rows.count > 0 ? hintMetrics.text : ""
             horizontalAlignment: Text.AlignRight
+
+            TextMetrics {
+                id: hintMetrics
+                font: footer.font
+                text: "Enter pastes · Del removes"
+            }
         }
     }
 }

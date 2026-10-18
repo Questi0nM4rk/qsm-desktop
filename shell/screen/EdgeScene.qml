@@ -750,10 +750,9 @@ PanelWindow {
     // re-fire + catch-region registration — see the component). Declared
     // LAST so the full-scene catch wins z-order over the rail.
     //
-    // Launcher: bottom-center; the body follows the visible result count
-    // (owner 2026-08-21) with a plain transform morph; the >theme carousel
-    // keeps the full height — cards, not rows. 07 RATIFIED numbers: width
-    // 600, max 7 rows of 57px + the search field.
+    // Launcher: bottom-center; the body keeps one height whatever the result
+    // count (owner 2026-10-19). 07 RATIFIED numbers: width 600, 7 rows of
+    // 57px + the search field.
     ModalHost {
         scene: root
         host: border
@@ -783,9 +782,7 @@ PanelWindow {
         edges: ["top", "left"]
         bodyWidth: Theme.clipboardWidth
         bodyHeight: Math.min(
-            Theme.clipboardMaxRows * Theme.clipboardRowHeight
-                + (Theme.clipboardMaxRows - 1) * Theme.space1
-                + Theme.controlHeight + Theme.space3 + Theme.space4 * 2,
+            clipboardSurface.preferredBodyHeight,
             root.height - Theme.space6 * 2)
         onOpened: clipboardSurface.open()
 

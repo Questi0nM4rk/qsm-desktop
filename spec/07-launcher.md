@@ -23,9 +23,9 @@ results above, icon + name + description rows), `references/launcher-command-wal
   new JSON + wallpaper, zero code (07's N-theme law).
 - **RATIFIED (2026-08-16, amended 2026-08-17 — caelestia numbers, owner parity ruling)**:
   width **600px**, max **7 rows**, row height **57px**.
-- **RATIFIED (2026-08-21, owner)**: the body FOLLOWS the visible result count (min 1 row,
-  max 7) instead of holding max height over one row; the height morph is a SIMPLE
-  transform — no spring, no goo. The >theme carousel keeps the full-height body.
+- **RATIFIED (2026-10-19, owner, replaces the 2026-08-21 morph)**: the body keeps ONE height
+  (7 rows + the search field) whatever the result count; results scroll inside it. Owner:
+  "NENAVIDIM RANDOM UI JUMPING". The `>theme` carousel shares the same height.
 - **RATIFIED (2026-08-21, owner)**: unselected rows recede to opacity 0.45 (row-level dim) so the row
   Enter fires on is unmistakable; `>kill` rows carry the danger color on the glyph — a kill
   list must not look like a launch list.
