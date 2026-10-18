@@ -140,8 +140,8 @@ intent separately from the backend result, with no password in event payloads.
   inhibit protocol); icons full-cup = on, empty-cup = off. Pin entry icons: pin / pin-off.
 - **DEFAULT (2026-08-16, contradiction resolved 2026-08-17 owner)**: which entries popout
   on hover: battery, media when present (`references/media-popout-over-app.png`). Tray icons
-  open their menus on click; workspace slots have no popout (wheel/click only). The calendar
-  popout belongs to the top bump (06).
+  open their menus on click; workspace slots have no popout (wheel/click only). The rail CLOCK
+  opens the calendar quick view (below).
 - **VETOED (2026-08-20, owner)**: the "media when present" popout is REMOVED from the rail. It
   was built (a cell above the tray, transport in its rollout) and then cut the same day: the
   top panel's Media tab already carries full media control and the dashboard carries a
@@ -165,8 +165,10 @@ intent separately from the backend result, with no password in event payloads.
   dropped. The current (focused) row carries `accent` at 12 percent opacity behind it over
   `surface`. Rows are click-to-focus; more rows than fit → the list scrolls (wheel), never
   overflows the band.
-- **RATIFIED (2026-08-16)**: calendar popout (opened from the top bump, 06) = MONTH GRID only —
-  today marked, wheel/arrows change month, weeks start Monday, no events backend.
+- **RATIFIED (2026-10-18, owner: "v sidebaru u clock mam quick view")**: the rail clock's
+  calendar popout is a READ-ONLY quick view: the MONTH GRID, today marked, wheel/arrows change
+  month, weeks start Monday. Events come later from the same backend as the top panel's
+  read/write calendar (06, task `qsd-zss`).
 
 ## Quick actions (RATIFIED 2026-08-20, owner)
 

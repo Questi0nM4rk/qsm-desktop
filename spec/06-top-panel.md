@@ -29,8 +29,10 @@ not the library's default.
   a tab on a drawer front — and rides it back on retract; never parked at the band while the
   surface moves beneath it. Hover over the bump opens
   the panel on Dashboard, with a **150ms hover-intent delay** (DEFAULT) so a screen-top brush
-  doesn't open the panel; a click opens it at once. Its hover popout is the month calendar (kind `calendar`): today marked, weeks start
-  Monday, wheel or arrows change the month. The clock is 24-hour HH:MM.
+  doesn't open the panel; a click opens it at once. The handle has no popout of its own.
+- **RATIFIED (2026-10-18, owner)**: the top panel holds the calendar that READS AND WRITES,
+  synced with an external calendar app (khal with vdirsyncer, task `qsd-zss`); the rail
+  clock keeps the read-only quick view (03). Not built yet.
 - **RATIFIED (2026-08-16)**: also opens via keyboard (09: Super+D last-used, Super+N
   notification center, Super+W workspaces).
 - **RATIFIED (2026-08-25, owner)**: with the panel open, **Left/Right move the tab
