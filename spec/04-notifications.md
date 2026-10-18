@@ -50,7 +50,10 @@ require review.
   (main curve, no overshoot) and are CLIPPED by the silhouette — absorbed into the band, no
   alpha fade; entering entries slide in from below with the same values.
 - **DEFAULT** resting content = app identity/icon + summary + body preview (up to two
-  readable lines) + relative timestamp. Longer body remains readable through bounded expansion or scrolling;
+  readable lines, as tall as its real lines, capped by the preview token) + relative timestamp.
+  Hover opens the same summary in place (one title, no swap) and cross-fades the preview into
+  the full body; owner 2026-10-19: "NENAVIDIM RANDOM UI JUMPING". Every entry, live or
+  archived, shows the relative time; the wall clock is its accessible description. Longer body remains readable through bounded expansion or scrolling;
   never grow the stack without bound. The new composition supersedes the former one-line 36px
   collapsed-row acceptance; dimensions come from the theme/component design decision. Body
   renders sanitized rich text (b/i/u/br only); inline body images are not rendered.
@@ -220,8 +223,9 @@ transition before wiring this call. Link loss must not be labelled Internet loss
   tab"). An unread row also carries a 6px `accent` dot by its app name; a plain click on it
   marks it READ, so it leaves the bell's count and the Unread view and stays in All.
 - **RATIFIED (2026-10-18, owner)**: every menu entry is its own body, a `surface` card of the
-  large radius with a slight shadow, `space2` apart; no divider and no urgency tick between
-  them (a column of ticks read as one joined line). Hover never expands a menu entry, because
+  large radius with a slight shadow, `space2` apart (the shadow falls into that gap and is not
+  clipped; owner 2026-10-19: "Pridej trochu shadows, separations. At to nevypada vibecoded");
+  no divider and no urgency tick between them (a column of ticks read as one joined line). Hover never expands a menu entry, because
   the wheel over the list must scroll the list: the entry's LEADING column (its glyph, which
   turns into a chevron under the pointer) opens and closes it by click, the rest of the entry
   is its action. An open entry shows its whole body; the list scrolls, the entry does not. The menu keeps its
@@ -238,7 +242,7 @@ transition before wiring this call. Link loss must not be labelled Internet loss
   the route for explicitly choosing named actions; popup body activation is limited to the
   live protocol action whose identifier is exactly `default`.
 - **DEFAULT (2026-08-16, widened 2026-08-19)**: DND toggle lives in the notification menu's
-  header; while the TOP PANEL (any tab), the SESSION surface or the notification
+  header, beside Clear, both icon-only (moon, trash) so the search placeholder keeps its width; while the TOP PANEL (any tab), the SESSION surface or the notification
   menu itself is open, popups are suppressed — the panel rolls out of the SAME top band and is wide enough to sit under this
   stack, and two surfaces cannot share one wall (the menu and the popups both roll out of the top-right corner); the session surface owns the screen by 08's
   fade-back law. Entries still arrive, expire and land in history; only the popup waits.
