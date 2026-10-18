@@ -28,8 +28,15 @@ not the library's default.
   panel rolls out it travels WITH that edge — always at the surface's outermost rim, like
   a tab on a drawer front — and rides it back on retract; never parked at the band while the
   surface moves beneath it. Hover over the bump opens
-  the panel on Dashboard, with a **150ms hover-intent delay** (DEFAULT) so a screen-top brush
-  doesn't open the panel; a click opens it at once. The handle has no popout of its own.
+  the panel on Dashboard AT ONCE, no hover-intent delay (owner 2026-10-18: "rollouts open on
+  entry, no delay"; the 150ms intent of 2026-10-17 is gone); a click opens it at once too. The
+  hover zone is never the 8 px paint: it is the bump as painted at rest grown by
+  `Style.hoverReach` (20) on every side and clipped to the screen (owner 2026-10-18: "ty ctyri
+  tecky nahore, tam musim byt upe super presny ... musime to roztahnout, abych nemusel mit
+  pixel perfect aim"), so the 25 x 8 px bump is a 65 px wide target reaching from the screen
+  edge down to 35 px. The zone stays parked at the rest position while the handle rides the
+  panel rim and sits in the input mask, so the pointer is seen there. The handle has no popout
+  of its own.
 - **RATIFIED (2026-10-18, owner)**: the top panel holds the calendar that READS AND WRITES,
   synced with an external calendar app (khal with vdirsyncer, task `qsd-zss`); the rail
   clock keeps the read-only quick view (03). Not built yet.
@@ -40,7 +47,8 @@ not the library's default.
   ends, never wrapping. A focused text field (notification search) keeps its own cursor
   keys first; the tab step takes only keys no content claimed.
 - **DEFAULT (2026-08-16)**: closes on: Escape, click outside, shortcut re-press, or cursor
-  leaving the panel for 400ms. The panel and handle are horizontally centered in the live
+  leaving the union of the handle zone and the panel for 180ms (`Motion.hoverGrace`, owner
+  2026-10-18; was 400ms). The panel and handle are horizontally centered in the live
   frame viewport between the left band edge and the right frame edge; the center follows
   the live edge during pin, unpin, and peek. Tab bar at the panel's top, order: Dashboard,
   Media, Performance, Workspaces — icon + label. Notifications left the panel for the

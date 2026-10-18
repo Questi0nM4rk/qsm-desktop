@@ -196,9 +196,18 @@ transition before wiring this call. Link loss must not be labelled Internet loss
 - **RATIFIED (2026-10-17, owner; replaces the top-panel tab of 2026-08-16)**: everything
   about notifications lives TOP RIGHT. A BELL BULGE sits in the corner where the top band
   meets the right frame: 40x32, `band` fill, a 16px bell glyph (`text` with unread, else
-  `textMuted`) and the UNREAD count as an `accent` badge. With nothing unread the bulge
-  sinks to half its height, the bell's lower half showing, waiting for a hover. Hovering the
-  bell, in either state, opens the NOTIFICATION MENU: a top-right modal rollout
+  `textMuted`) and the UNREAD count as an `accent` badge. With everything read (owner
+  2026-10-18: "notifications, when they are all read, should be on top of the border, and moved
+  into the right corner diagonally not just vertically") the bulge RETRACTS and the bell glyph
+  travels DIAGONALLY, up and to the right, into the top-right corner of the frame and sits on
+  the band there (centre one frame thickness from each edge: the corner's inner radius is 28,
+  so the band's corner fill has room for the 16px glyph on the diagonal). The glyph rides the
+  bulge's own reveal (`Rollout.revealProgress`), so both move as one on the `revealSmall` tier
+  and shorten under reduced motion with it. Unread above 0, the menu open, or the pointer on the
+  corner brings the bulge back with the glyph riding into it. The hover zone is generous at
+  the corner (the glyph grown by `Style.hoverReach`, 20, clipped to the screen; with the bulge up
+  it covers glyph and bulge together), never the 16px glyph. Entering it, in either state, opens
+  the NOTIFICATION MENU AT ONCE: a top-right modal rollout
   (`notifications`, 412 wide, up to 520 tall) in the clipboard's shape, search field at the
   top, then two views, **Unread** (with its count) and **All**, then the history grouped by
   app with FUZZY SEARCH across title AND body. The menu opens on Unread while anything is
@@ -211,7 +220,7 @@ transition before wiring this call. Link loss must not be labelled Internet loss
   the wheel over the list must scroll the list: the entry's LEADING column (its glyph, which
   turns into a chevron under the pointer) opens and closes it by click, the rest of the entry
   is its action. An open entry shows its whole body; the list scrolls, the entry does not. The menu closes 180ms after the
-  pointer has left both the bell and the menu, on a click outside, on Escape, or by the
+  pointer has left both the bell zone and the menu, on a click outside, on Escape, or by the
   keyboard shortcut that opened it (09-input). The bell steps back while live popups roll
   out of the same corner, and in fullscreen or focus mode.
 - Unread is a fact of the archive: a popup that EXPIRED unseen is unread; one the person
