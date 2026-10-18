@@ -35,7 +35,7 @@ QtObject {
     // theme JSON is generated whole by scripts/derive-theme.ts, and a role it
     // lacks is reported once below.
     readonly property var preload: ({
-        band: "#271E30", edgeGlow: "#5E357F", surface: "#42394C", overlay: "#534A5E",
+        band: "#271E30", edgeColor: "#5E357F", surface: "#42394C", overlay: "#534A5E",
         text: "#F0ECF5", textMuted: "#C5BAD1",
         primary: "#D9B4EA", textOnPrimary: "#271E30", accent: "#D9B4EA", focus: "#D9B4EA",
         info: "#89CFF1", success: "#A2D3A2", warning: "#D9C284", danger: "#F5AEB7"
@@ -67,9 +67,9 @@ QtObject {
     // card inside it; overlay is a popout over a card. A fourth level is a
     // design error, not a token.
     property color band: role("band")
-    // The silhouette's edge glow tint (01-frame): read by the library's
+    // The silhouette's edge colour (01-frame): read by the library's
     // ShellBorder, never by a component.
-    property color edgeGlow: role("edgeGlow")
+    property color edgeColor: role("edgeColor")
     property color surface: role("surface")
     property color overlay: role("overlay")
     property color text: role("text")
@@ -102,7 +102,7 @@ QtObject {
     // Every role fades: a swap that fades some and snaps others reads as a
     // glitch in the ones that snapped.
     Behavior on band { ColorAnimation { duration: root.themeSwapDuration } }
-    Behavior on edgeGlow { ColorAnimation { duration: root.themeSwapDuration } }
+    Behavior on edgeColor { ColorAnimation { duration: root.themeSwapDuration } }
     Behavior on surface { ColorAnimation { duration: root.themeSwapDuration } }
     Behavior on overlay { ColorAnimation { duration: root.themeSwapDuration } }
     Behavior on text { ColorAnimation { duration: root.themeSwapDuration } }
@@ -457,11 +457,11 @@ QtObject {
     // shallowest point is the midpoint at overlap/2, which 8 keeps well past
     // the ~1px derivative AA.
     readonly property real seamOverlap: 8
-    // The edge glow (01-frame, owner 2026-10-17): from the silhouette's edge
-    // inward, grain of edgeGlow thickening toward the edge, gone 20px in,
-    // at most 0.3 of the tint at the very edge. Almost invisible on purpose.
-    readonly property real edgeGlowStrength: 0.3
-    readonly property int edgeGlowWidth: 28
+    // The edge separation (01-frame, owner 2026-10-18): a slight line of
+    // edgeColor exactly at the silhouette's edge, 0.5 of the colour there,
+    // easing into the band colour over 10px. Candidates for the owner to tune.
+    readonly property real edgeStrength: 0.5
+    readonly property int edgeFade: 10
 
     // Theme discovery: one process pass over shell/themes/*.json.
     property Process themesProbe: Process {

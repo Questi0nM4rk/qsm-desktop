@@ -431,8 +431,7 @@ PanelWindow {
     // shader (spec/12-mechanism.md) — is the library's ShellBorder
     // (qsm-shell, docs/design-2026-09-06-shell-border.md); everything bound
     // here is either dynamic Wayland-shaped state the library may never hold
-    // (leftEdge, fullscreen) or a consumer-owned handle affordance (handle0,
-    // dotsHandle). Every other uniform default (band paint, meltSmoothing,
+    // (leftEdge, fullscreen) or a consumer-owned handle affordance (handle0). Every other uniform default (band paint, meltSmoothing,
     // edgeSnapReach, seamOverlap, viewportRadius, edge) resolves through
     // Style.backend, which shell.qml already binds to this Theme — so it
     // already matches without being repeated here.

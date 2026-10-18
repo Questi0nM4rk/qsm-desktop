@@ -49,8 +49,8 @@
     current) · focus=mauve (2 px ring outside the control, 2 px offset) · info=sky ·
     success=green · warning=yellow · danger=rose. Status hues stay semantic.
   - roles that do not exist: `secondary`, `background`, `backgroundMid`, `backgroundEnd`,
-    `bandFill` (band is the fill), `outline`, rim colour/strength/width. The edge glow of the
-    silhouette (01-frame, role `edgeGlow`) and the rail's divider line (03-rail) stay.
+    `bandFill` (band is the fill), `outline`, rim colour/strength/width. The edge separation of the
+    silhouette (01-frame, role `edgeColor`) and the rail's divider line (03-rail) stay.
 - **Pairs** (WCAG, 8-bit): text on band/surface/overlay 14.2/10.9/8.4 · textMuted 7.6/5.9/4.5 ·
   every pastel on band >= 9.1, on surface >= 7.0, on overlay >= 5.4 · textOnPrimary on any pastel
   >= 9.1. Floors: 4.5 text, 3 glyphs/controls/focus ring, 1.3 between ladder steps, 1.2 between

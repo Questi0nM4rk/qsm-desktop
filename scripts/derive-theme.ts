@@ -153,13 +153,13 @@ for (const [n, lch] of Object.entries(ladder)) palette[n] = hex(fromLch(lch));
 for (const [n, h] of Object.entries(PASTELS)) palette[n] = hex(fromLch({ L: HUE_L, C: chroma, h }));
 
 // ---- roles --------------------------------------------------------------------------------
-// The edge glow (01-frame, owner 2026-10-17): the band a step lighter and a
-// touch more purple, dithered from the silhouette's edge inward.
-palette.edgeGlow = hex(fromLch({ L: ladder.band.L + 0.16, C: TINT_C + 0.09, h: tintHue }));
+// The edge colour (01-frame, owner 2026-10-18): the band a step lighter and a
+// touch more purple, a slight line at the silhouette's edge fading inward.
+palette.edgeColor = hex(fromLch({ L: ladder.band.L + 0.16, C: TINT_C + 0.09, h: tintHue }));
 
 const roles: Record<string, string> = {
   band: palette.band,
-  edgeGlow: palette.edgeGlow,
+  edgeColor: palette.edgeColor,
   surface: palette.surface,
   overlay: palette.overlay,
   text: palette.text,

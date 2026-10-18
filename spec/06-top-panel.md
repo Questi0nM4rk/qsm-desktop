@@ -48,7 +48,7 @@ not the library's default.
 - **RATIFIED (2026-10-16, owner)**: the current tab is `accent` text on an `accent` 12 percent
   pill, no underline bar. Panel cards are `surface` with radius 12.
 - **TRIAL (2026-10-17, owner: "try all three")**: dashboard cards carry the library Card's
-  granular edge glow (the silhouette's own treatment, inside the card's edge), each card's
+  edge separation (the silhouette's own treatment, inside the card's edge), each card's
   glyph takes its pastel (the mark `accent`, weather `info`, the resource rings
   `success`/`warning`/`danger` by load), and `surface` stands 1.45:1 off the band (11-theme).
   The owner judges which of the three stay.
