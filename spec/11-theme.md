@@ -25,8 +25,7 @@
 - **RATIFIED (2026-10-16, owner)**: lightness separates. Containers step up a three-step neutral
   ladder: `band` (rollout fill) -> `surface` (a card, row group, 1.45:1 on the band since the
   owner's 2026-10-17 tune, so a card reads as a thing, not a traced rectangle) -> `overlay`
-  (1.30:1 on the card). Formerly 1.30:1 per step: `band` -> `surface` (a card, row group,
-  field inside a rollout) -> `overlay` (a popout, menu, hover container over a card). No
+  (1.30:1 on the card). No
   hairline, no 1px card border, no rim, no shadow does that job (a card in a list of cards adds a
   slight shadow under the step, 01-frame); a line in the shell is content
   (slider track, meter), never an edge. A fourth container level is a design error, not a step.
@@ -39,7 +38,7 @@
   teal 185, sky 230, lavender 275, mauve 315. A pastel never fills a container.
 - **Deep Night, derived** (sRGB hex):
   - palette: see shell/themes/deep-night.json for the generated values (band L 0.255, trace C 0.035) ·
-    ink #F0ECF5 (L 0.95) · ink-muted #B5AEBC (L 0.76) · rose #F5AEB7 · peach #F2B493 ·
+    ink #F0ECF5 (L 0.95) · ink-muted #C5BAD1 · edgeGlow #5E357F · rose #F5AEB7 · peach #F2B493 ·
     yellow #D9C284 · green #A2D3A2 · teal #81D6CB · sky #89CFF1 · lavender #B4C0FC ·
     mauve #D9B4EA
   - roles: band=ground-0 · surface=ground-1 · overlay=ground-2 · text=ink · textMuted=ink-muted ·
@@ -51,7 +50,7 @@
   - roles that do not exist: `secondary`, `background`, `backgroundMid`, `backgroundEnd`,
     `bandFill` (band is the fill), `outline`, rim colour/strength/width. The edge glow of the
     silhouette (01-frame, role `edgeGlow`) and the rail's divider line (03-rail) stay.
-- **Pairs** (WCAG, 8-bit): text on band/surface/overlay 14.2/10.9/8.4 · textMuted 7.6/5.9/4.5 ·
+- **Pairs** (WCAG, 8-bit): text on band/surface/overlay 13.7/9.4/7.2 · textMuted 8.6/5.9/4.5 ·
   every pastel on band >= 9.1, on surface >= 7.0, on overlay >= 5.4 · textOnPrimary on any pastel
   >= 9.1. Floors: 4.5 text, 3 glyphs/controls/focus ring, 1.3 between ladder steps, 1.2 between
   adjacent states of one control.
