@@ -83,8 +83,8 @@ QtObject {
 
         return Quickshell.screens.length > 0 ? Quickshell.screens[0] : null;
     }
-    readonly property bool modalBlocked: focusedScreen !== null
-        && (FullscreenService.fullscreenFor(focusedScreen)
+    readonly property bool modalBlocked: !!focusedScreen
+        && (FullscreenService.fullscreenFor(focusedScreen) === true
             || (focusModeScreen === focusedScreen.name
                 && FullscreenService.workspaceFor(focusedScreen)?.id === focusModeWorkspaceId))
 

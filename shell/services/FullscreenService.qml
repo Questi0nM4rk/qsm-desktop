@@ -8,8 +8,9 @@ import qs.services
 QtObject {
     id: root
 
+    // Always a count: a screen that is not yet known counts as not fullscreen.
     readonly property int fullscreenCount: Quickshell.screens
-        .filter(screen => fullscreenFor(screen)).length
+        .filter(screen => fullscreenFor(screen) === true).length
 
     function workspaceFor(screen: var): var {
         if (!screen)
