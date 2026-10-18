@@ -21,8 +21,8 @@ the SDF shader only.
   every capture in `references/`.
 - **RATIFIED (2026-10-16, owner)**: inner containers (cards, row groups, fields, popouts)
   carry NO hairline, NO 1px border, NO edge rim. Lightness separates them: one
-  three-step neutral ladder, `band` → `surface` → `overlay`, each step 1.30:1 on the one
-  below (11-theme). A line in the shell is content (slider track, meter), never an edge.
+  three-step neutral ladder, `band` → `surface` → `overlay`, each step on the one
+  below: `surface` 1.45:1 on `band`, `overlay` 1.30:1 on `surface` (11-theme). A line in the shell is content (slider track, meter), never an edge.
   **RATIFIED (2026-10-18, owner: "ja bych povolil slight stiny")**: a card in a LIST of cards
   (the notification menu) casts a slight shadow under its body; the step still separates it,
   the shadow only marks where it ends. No other container casts one.
@@ -58,6 +58,6 @@ the SDF shader only.
   ladder exists. Token values and derivation: 11-theme.
 - **RATIFIED (2026-10-16, owner)**: the frame is one step LIGHTER than the wallpaper's
   median lightness, never darker — a darker frame reads as a hole. Deep Night: wallpaper
-  median OKLCH L 0.20, band L 0.24.
+  median OKLCH L 0.20, band L 0.255.
 - Panel fill = band fill (one silhouette, one fill, the role `band`). Contrast comes from
   inner containers stepping up the ladder, never from a different bulge base color.

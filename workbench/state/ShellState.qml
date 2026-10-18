@@ -12,7 +12,7 @@ QtObject {
     property string launcherSeed: ""
     property var focusedScreen: null
     property string panelTab: "dashboard"
-    readonly property var panelTabs: ["dashboard", "media", "performance", "workspaces", "notifications"]
+    readonly property var panelTabs: ["dashboard", "media", "performance", "workspaces"]
     property var collapsedRails: ({})
 
     onModalChanged: keyboardOwnsSelection = false

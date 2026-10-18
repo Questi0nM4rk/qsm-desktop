@@ -1,5 +1,5 @@
 import QtQuick
-import qs.modules.panel as Panel
+import qs.modules.notifications as Notifications
 import qs.services
 import qs.state
 import qs.theme
@@ -72,7 +72,7 @@ Item {
     Component.onCompleted: resetStory()
     Component.onDestruction: NotificationService.store.reset()
     Rectangle { anchors.fill: parent; color: Theme.band }
-    Panel.NotificationCenterTab {
+    Notifications.NotificationCenterSurface {
         id: center
         width: Theme.notificationWidth + Theme.space6 * 2
         anchors.centerIn: parent

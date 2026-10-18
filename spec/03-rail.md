@@ -44,11 +44,11 @@ intent separately from the backend result, with no password in event payloads.
   is the most reached-for and takes the most reachable slot, RATIFIED 2026-08-22, owner), then
   power (danger-tinted) at the very bottom. CPU and RAM are NOT in the rail (owner 2026-10-17):
   they live in the Dashboard only.
-- **RATIFIED (2026-10-16, owner, amended the same evening)**: groups are separated by the
-  rail's DIVIDER LINE (`RailDivider`: a 2px `textMuted` line at 0.8 opacity, inset 8px from
-  both walls) with the column's 12px spacing on each side; the morning's "spacing, never a
-  divider" ruling is reversed. Inside a group each item keeps its own gap (4px between
-  workspace slots, 10px between app rows, 6px between readouts). Tray icons sit in the workspace/pin
+- **RATIFIED (2026-10-16, owner, amended the same evening; one 4px rhythm 2026-10-17)**: groups are
+  separated by the rail's DIVIDER LINE (`RailDivider`: a 2px `textMuted` line at 0.8 opacity, inset
+  8px from both walls, centred in an 8px item). The morning's "spacing, never a divider" ruling is
+  reversed. The rail runs ONE 4px rhythm (`Theme.railItemGap`): every item and the divider's item
+  sit 4px from their neighbours, so a group boundary is one line of ink, not a 12px gap. Tray icons sit in the workspace/pin
   group (owner, 2026-08-24) so an app's tray icon never reads as one more app row, and a
   machine with no tray icons shows nothing there. Rail glyphs use the compact 16px step, with
   the top Arch logo as the deliberate 20px exception.
@@ -91,11 +91,11 @@ intent separately from the backend result, with no password in event payloads.
 - **RATIFIED (2026-08-16)**: toggle-state entries (awake/coffee, and all future toggles) show
   state by SWAPPING THE ICON (empty cup ↔ full cup), NEVER by a glow/light ring around it.
   The current highlight treatment is abolished.
-- **RATIFIED (2026-10-16, owner)**: workspace indicator = FIXED 24x24 slots (target-min) + a
+- **RATIFIED (2026-10-16, owner)**: workspace indicator = FIXED 16x16 slots (compact: a wheel and a click are the only aim there) + a
   TRAVELING numbered pill: ALL Hyprland workspaces globally (monitor-synced — every rail
   renders the identical column, active = the globally focused workspace); slots hold fixed
   positions with a 4px gap; each shows a 6px dot — occupied `textMuted`, urgent `danger`,
-  empty `overlay`; the ACTIVE workspace is marked by a 24px `accent` pill with the number in
+  empty `overlay`; the ACTIVE workspace is marked by a 20px `accent` pill, 2px over its slot on each side, with the number in
   `textOnPrimary`, which GLIDES between slots (popout-morph tier, no overshoot) — the pill is the
   only moving part; its dot fades aside beneath it. NO app icons — app identity lives ONLY in
   the center app list. Wheel switches; click a slot jumps.
@@ -158,8 +158,8 @@ intent separately from the backend result, with no password in event payloads.
 - **RATIFIED (2026-08-16, amended 2026-10-16)**: the rail's MIDDLE section lists the CURRENT
   workspace's apps, per monitor, icon-only. When the workspace is empty it shows the default:
   a monitor icon (as in `references/rail-closeup.png`).
-- **RATIFIED (2026-10-16, owner)** app-list mechanics: each row is a 36x36 slot with a 22px
-  glyph and a 10px gap; NO caption, vertical or otherwise. The window title lives in the hover
+- **RATIFIED (2026-10-16, owner)** app-list mechanics: each row is a 32x32 slot with a 22px
+  glyph and a 4px gap; NO caption, vertical or otherwise. The window title lives in the hover
   popout, reading **"app · live-title"** — identity first so an ellipsis can only eat the
   context tail; leading unread counters ("(2864) …") stripped; brand suffixes after a dash
   dropped. The current (focused) row carries `accent` at 12 percent opacity behind it over
@@ -215,7 +215,7 @@ intent separately from the backend result, with no password in event payloads.
      `Theme.seamOverlap` INTO each neighbour it is flush against. Reaching in is invisible,
      because that side is covered by the neighbour's body. The overlap's shallowest point is
      its midpoint at depth `overlap / 2`, which must clear the ~1px derivative AA with room:
-     `seamOverlap` is at least 4px.
+     `seamOverlap` is at least 4px (the tuned value is 8px, `Theme.seamOverlap`).
   2. **Blend 0 must be a real `min()`, not `smin` with a floored k.** The circular smin does not
      converge to min as k falls: for equal inputs `smin(a, a, k) = sqrt(2) * a + k * (1 - sqrt(2))`,
      so at `a == b` it inflates the INTERIOR distance by 41 percent however small k is. The zero

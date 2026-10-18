@@ -185,7 +185,7 @@ Every interactive element speaks these states and no others; they sit under the 
   so neighbours never jitter. Press pushes (scale down) in 80 ms; release returns in 130 ms.
 - **Selected / current** is a state, not hover: `accent` at 12 percent opacity behind the row
   or tab (over `surface`), plus `accent` on its text or glyph. The current workspace is a
-  24 px `accent` pill with its number in `textOnPrimary`. The current app row takes the 12 percent
+  20 px `accent` pill with its number in `textOnPrimary`. The current app row takes the 12 percent
   fill.
 - **Focus** (keyboard): a 2 px `focus` ring outside the control, 2 px offset, visible on every
   focusable element, always, because the keyboard owns selection.

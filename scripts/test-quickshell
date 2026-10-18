@@ -156,7 +156,7 @@ qs ipc --path "$config" call qsm commandCentreEnterControlTest panel | grep -q '
 qs ipc --path "$config" call qsm commandCentreSetQueryTest ">action notif" | grep -q '^true$'
 wait_status '.launcherResultLabels == ["Notifications"]' 'panel detail search did not filter its results'
 qs ipc --path "$config" call qsm commandCentreActivateDetailTest notifications | grep -q '^true$'
-qs ipc --path "$config" call qsm status | jq -e '.modal == "panel" and .panelTab == "notifications"' >/dev/null
+qs ipc --path "$config" call qsm status | jq -e '.modal == "notifications"' >/dev/null
 qs ipc --path "$config" call qsm close >/dev/null
 # Parent restoration is exact, including the selected command-centre control;
 # back also clears a pending destructive confirmation.
@@ -249,8 +249,10 @@ qs ipc --path "$config" call qsm status | jq -e '.modal == "launcher" and .launc
 done
 # Panel tabs are IPC toggle aliases (06): a tab name opens the panel on
 # that tab and takes over from the launcher; another tab just switches.
+# Notifications is its own modal, not a tab, so the bell menu takes over from
+# the panel and a tab name takes it back.
 qs ipc --path "$config" call qsm toggle notifications | grep -q '^true$'
-qs ipc --path "$config" call qsm status | grep -q '"modal":"panel"'
+qs ipc --path "$config" call qsm status | grep -q '"modal":"notifications"'
 qs ipc --path "$config" call qsm toggle dashboard | grep -q '^true$'
 qs ipc --path "$config" call qsm status | grep -q '"modal":"panel"'
 # Panel tabs answer the keyboard (06 RATIFIED 2026-08-25): the seam drives
@@ -494,10 +496,10 @@ done
   exit 1
 }
 
-# Panel toggle: opening the notification-center tab joins the catch region
-# + panel bulge; closing leaves. Popups stay hidden while the tab is open.
+# Notification menu toggle: opening the notifications modal joins the scene as
+# a rollout; closing leaves. Popups stay hidden while the menu is open.
 qs ipc --path "$config" call qsm toggle notifications | grep -q '^true$'
-wait_status '.sceneRolloutRects == 1 and .sceneBulges == 1' 'panel did not join the registries'
+wait_status '.modal == "notifications" and .sceneRolloutRects == 1' 'notifications menu did not join the registries'
 qs ipc --path "$config" call qsm close >/dev/null
 sidebar_retracted=false
 for _ in {1..40}; do

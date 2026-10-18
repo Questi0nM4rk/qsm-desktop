@@ -23,8 +23,6 @@ Item {
     // Environment the panel reads instead of a real fullscreen or focus-mode
     // screen. This is scenario setup, never an input route.
     property bool focusSuppressed: false
-    property real cpuUsage: 0.23
-    property real memoryUsed: 0.46
     readonly property real contentExtentWidth: width
     readonly property real contentExtentHeight: height
     readonly property var controls: [{
@@ -53,8 +51,6 @@ Item {
             "reduced-motion": () => ShellState.reducedMotion,
             "focus-suppressed": () => root.focusSuppressed,
             "handle-visible": () => handle.visible,
-            "cpu-reading": () => handle.reading(root.cpuUsage),
-            "memory-reading": () => handle.reading(root.memoryUsed),
             "panel-width": () => panel.bodyWidth,
             "panel-height": () => panel.bodyHeight,
             "detailed-sampling": () => PerformanceService.polling
@@ -82,10 +78,8 @@ Item {
         "Motion": option => { ShellState.reducedMotion = option === 1; return true; },
         "Suppress": option => { root.focusSuppressed = option === 1; return true; },
         "Resources": option => {
-            root.cpuUsage = [0.23, 0.87, -1, 0, 1, 0.01, 0][option];
-            root.memoryUsed = [0.46, 0.92, -1, 0, 1, 0.05, 1][option];
-            PerformanceService.cpuUsage = root.cpuUsage;
-            PerformanceService.memUsed = root.memoryUsed;
+            PerformanceService.cpuUsage = [0.23, 0.87, -1, 0, 1, 0.01, 0][option];
+            PerformanceService.memUsed = [0.46, 0.92, -1, 0, 1, 0.05, 1][option];
             PerformanceService.cpuTemp = option === 2 ? -1 : 52;
             PerformanceService.gpuUsage = option === 2 ? -1 : 0.18;
             PerformanceService.gpuTemp = option === 2 ? -1 : 45;
@@ -110,8 +104,6 @@ Item {
         FullscreenService.reset();
         ShellState.focusedScreen = screenFacts;
         root.focusSuppressed = false;
-        root.cpuUsage = 0.23;
-        root.memoryUsed = 0.46;
         if (root.menuVariant === "performance") ShellState.panelTab = "performance";
         restoreObservation.restart();
     }
@@ -161,13 +153,10 @@ Item {
     Panel.PanelHandle {
         id: handle
         host: border
-        sampleResources: false
-        cpuUsage: root.cpuUsage
-        memoryUsed: root.memoryUsed
         width: implicitWidth
         height: implicitHeight
         x: sceneFacts.panelCenterX - width / 2
-        y: panel.leadingEdgeY - height / 2 + Theme.handleProud
+        y: panel.leadingEdgeY - height / 2 + Theme.panelHandleProud
         visible: !root.focusSuppressed && root.previewEnvironment?.fullscreen !== true
         onActivated: {
             ShellState.modal = ShellState.modal === "panel" ? "" : "panel";

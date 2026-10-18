@@ -61,8 +61,9 @@ QtObject {
     // palette name, never a derived rung. Each carries the 200ms theme-swap
     // cross-fade.
     //
-    // The neutral ladder, 1.30:1 per step, is the only separation the shell
-    // has: no hairline, no border, no rim, no shadow. band is the one
+    // The neutral ladder (band to surface 1.45:1, surface to overlay 1.30:1) is
+    // the only separation the shell has: no hairline, no border, no rim, no
+    // shadow. band is the one
     // silhouette the shader paints (frame and every rollout); surface is a
     // card inside it; overlay is a popout over a card. A fourth level is a
     // design error, not a token.
@@ -89,9 +90,9 @@ QtObject {
     property color success: role("success")
     property color warning: role("warning")
     property color danger: role("danger")
-    // Not a role: the colour under the one shadow still open in 05-osd (the
-    // fullscreen capsule over a bright client). The library's floating shadow
-    // reads it; nothing in the frame does.
+    // Not a role: the colour under the library's floating shadow, read by
+    // DataCapsule alone (the fullscreen capsule over a bright client). No frame
+    // body draws a shadow.
     readonly property color shadow: "#000000"
 
     // Theme-swap choreography (11 DEFAULT: 200ms). Lives HERE, not in Motion:
@@ -378,9 +379,9 @@ QtObject {
     // Inset 6px each side of the track (05-osd 2026-10-16), carrying the
     // channel glyph at rest and the value while live; no shadow under it.
     readonly property int osdThumbSize: 28
-    // Wheel nudge step shared by the OSD pill's own WheelHandler and any
-    // other control that drives the same output/brightness path (B3 rail
-    // scroll zones) — one step, one source of truth.
+    // Wheel nudge step per notch, one source of truth for every output and
+    // brightness control a wheel moves: the OSD channels, the sound popout and
+    // the rail's scroll zones all derive their wheelUnits from it.
     readonly property real osdWheelStep: 0.05
     // ONE rail rhythm (owner 2026-10-17): every item in the band is the same
     // 32px cell with different content, 4px apart, same hover rollout.

@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Io
 import qs.QsmShell.Components as QsmShellComponents
 import qs.services
 import qs.theme
@@ -23,6 +24,17 @@ GridLayout {
     Component.onCompleted: {
         WeatherService.refresh();
         SystemInfoService.refresh();
+    }
+
+    // The avatar picture exists only where the user put one: the Image is
+    // given ~/.face only once that file has loaded, so a machine without it
+    // shows Avatar's icon with no load warning.
+    property bool faceFound: false
+    property FileView faceFile: FileView {
+        path: Quickshell.env("HOME") + "/.face"
+        printErrors: false
+        onLoaded: root.faceFound = true
+        onLoadFailed: root.faceFound = false
     }
 
     // 1. User card: avatar + distro badge, WM pill, uptime.
@@ -60,7 +72,7 @@ GridLayout {
                     anchors.fill: parent
                     size: Theme.dashboardAvatarSize
                     background: Theme.overlay
-                    source: "file://" + Quickshell.env("HOME") + "/.face"
+                    source: root.faceFound ? "file://" + Quickshell.env("HOME") + "/.face" : ""
                     icon: "monitor"
                     glyphSize: Theme.iconLg
                 }

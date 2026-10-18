@@ -1208,3 +1208,15 @@ was merged, because an agent's scratch directory is not a delivery. `AGENTS.md`
 in both repos now says it: the next item is implemented on `main` and committed
 there, a worktree is for parallel or throwaway work, and whatever comes out of
 one is reviewed and merged before the owner ever sees it.
+
+## `Theme.dark` and `shell.qml` hard-code the theme id `mountain-dusk` (N-theme law)
+
+`Theme.dark` is `current !== "mountain-dusk"`, and the `themeToggle` IPC applies
+`"mountain-dusk"` or `"deep-night"` by that flag. Not made data-driven in the
+2026-10-18 pass: `dark` also drives `surfaceOpacity` and the `dark` status key, and
+`themeToggle` answers `false` in `scripts/test-quickshell`, so a theme-cycling toggle
+changes an IPC contract the owner has not ruled on. Also left: the dead tokens
+`dotGlyphSize`, `frameRadius`, `handleProud`, `radius3xl`, `radius4xl`, `ringStrokeDefault`,
+and the unreferenced wallpapers `deep-night.png` and `mountain-dusk.png`. Next step: the
+owner decides whether `themeToggle` cycles `Theme.themes`, then `dark` derives from a
+theme JSON field.

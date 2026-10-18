@@ -103,25 +103,18 @@ center is no longer a tab (owner 2026-10-17): it is the bell's menu in the top-r
   scroll when more workspaces than fit), never stacked below each other.
 
 - **RATIFIED (2026-08-16)**: opening the panel by keyboard lands on the LAST USED tab; the
-  clock bump (hover or click) opens Dashboard.
+  dots handle (hover or click) opens Dashboard.
 
 ## Numbers (RATIFIED 2026-08-16)
 
-- Panel preferred outer footprint **854x520 logical px**, clamped to the scene's
-  available viewport. All five tabs share that footprint and a stable navigation
+- Panel preferred outer footprint **854x560 logical px**, clamped to the scene's
+  available viewport. All four tabs share that footprint and a stable navigation
   strip. Tab choice, empty/missing data and content length never resize the outer
-  body. Static compositions overflow inside a bounded viewport; model-backed
-  tabs keep their own scrolling route. The tab bar baseline is **48px**.
+  body. Dashboard and Performance fit the body without scrolling (owner, 2026-10-18:
+  "rozsir ho tak, aby dashboard a performance nemuseli scrollovat"); only a screen too short for the clamp scrolls. Model-backed tabs keep their own scrolling route. The tab bar baseline is **48px**.
 - Dots handle: 8 px tall, width = four 2 px dots + three 3 px gaps + padding 0 4 (25 px),
   bottom corners 4 px.
   Fullscreen/focus suppression withdraws both paint and input. Detailed sampling remains tied to the dashboard/performance tab.
-
-| layer | decision | why | token or pattern | verified by |
-| --- | --- | --- | --- | --- |
-| posture/task | time and date glance and entry to the existing panel | clock leaves the rail; no permanent dashboard | existing panel hover/click | inspect reading then open panel |
-| ia/interaction | time and date, one panel action | one glance, one entry | Prose metadata; accessible button | keyboard activation, minute rollover |
-| hierarchy/token | `band` bulge, `text` time 13 px Mono medium, `textMuted` date 12 px | one silhouette with the band; lightness, not chrome, carries it | role `band`, text scale | live text and containment |
-| responsive/state | rides leading edge; hidden in fullscreen/focus | no second travel animation | PanelHandle → host-space rect → ShellBorder registerBulge → existing shader; mask consumes same rect | open/retract and suppression |
 
 The handle registers one undeformed body, with edge snapping disabled because its
 attachment is the moving panel rim rather than a screen edge. It is removed
@@ -132,11 +125,6 @@ The permanent panel host owns keyed detailed-sampling demand while Dashboard or
 Performance is active. A retiring tab never writes a global polling false that
 cancels another monitor's demand. Lightweight handle subscriptions remain
 independently keyed. Empty Media content is deliberately centered, and short or
-narrow screens expose overflow rather than clipping controls or resizing a tab.
-
-The permanent panel host owns keyed detailed-sampling demand while Dashboard or
-Performance is active. A retiring tab never writes a global polling false that
-cancels another monitor's demand. Empty Media content is deliberately centered, and short or
 narrow screens expose overflow rather than clipping controls or resizing a tab.
 
 ## LIVE-TUNE

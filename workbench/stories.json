@@ -13,14 +13,7 @@
       "title": "Notification center",
       "description": "Production history tab with an in-memory production store: searchable live/archive records, individual archive removal and legacy records. No D-Bus or persistence writes.",
       "tags": ["desktop", "notifications", "keyboard"],
-      "source": "shell/modules/panel/NotificationCenterTab.qml"
-    },
-    "panel-resources": {
-      "component": "panel-tabs", "variant": "resources", "viewport": [980, 680],
-      "title": "Panel resource handle",
-      "description": "Compact dark CPU/RAM handle with full-height center-out half-meters and fixed inline readings. Isolated zero, low, full, mixed and unavailable states on the production panel rim.",
-      "tags": ["desktop", "performance", "panel"],
-      "source": "shell/modules/panel/PanelHandle.qml"
+      "source": "shell/modules/notifications/NotificationCenterSurface.qml"
     },
     "panel-performance": {
       "component": "panel-tabs", "variant": "performance", "viewport": [980, 680],
