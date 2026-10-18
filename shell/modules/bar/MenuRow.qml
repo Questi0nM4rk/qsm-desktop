@@ -17,62 +17,40 @@ ColumnLayout {
     Layout.fillWidth: true
     spacing: Theme.spaceTight
 
-    // Separator: a SHORT faded line.
+    // Separator: a SHORT faded line (03).
     QsmShellComponents.Divider {
         visible: root.entry.isSeparator
         Layout.alignment: Qt.AlignHCenter
-        Layout.preferredWidth: 96
-        strength: 0.25
+        Layout.preferredWidth: Theme.menuSeparatorWidth
+        strength: Theme.menuSeparatorStrength
     }
 
-    Item {
+    // The row, its dimming when disabled, its focus and its press are the
+    // library's. A row with a submenu toggles it instead of firing.
+    QsmShellComponents.ListRow {
         visible: !root.entry.isSeparator
         Layout.fillWidth: true
-        Layout.preferredHeight: Theme.controlHeightSm
-        opacity: root.entry.enabled === false ? 0.4 : 1
-
-        RowLayout {
-            anchors.fill: parent
-            anchors.leftMargin: root.depth * Theme.space3
-            spacing: Theme.space2
-
-            // Checkable state via icon swap, never a glow.
-            QsmShellComponents.SvgIcon {
-                visible: (root.entry.buttonType ?? 0) !== 0
-                name: root.entry.checkState === 2 ? "pin" : "pin-off"
-                size: Theme.iconXs
-                color: Theme.textMuted
-            }
-
-            QsmShellComponents.Prose {
-                // The row's own name — label, the default role for a
-                // control's name.
-                role: "label"
-                Layout.fillWidth: true
-                text: root.entry.text || "…"
-            }
-
-            QsmShellComponents.SvgIcon {
-                visible: root.hasSubmenu
-                name: "chevron-left"
-                size: Theme.iconXs // on the icon ladder (was an off-scale 10)
-                color: Theme.textMuted
-                rotation: root.expanded ? 90 : 180
-            }
+        Layout.leftMargin: root.depth * Theme.space3
+        size: "sm"
+        recede: false
+        primary: root.entry.text || "…"
+        disabled: root.entry.enabled === false
+        // Checkable state via icon swap, never a glow.
+        icon: (root.entry.buttonType ?? 0) === 0 ? ""
+            : root.entry.checkState === 2 ? "pin" : "pin-off"
+        onActivated: {
+            if (root.hasSubmenu)
+                root.expanded = !root.expanded;
+            else
+                root.entry.triggered();
         }
 
-        QsmShellComponents.StateLayer {
-            anchors.fill: parent
-            // A menu row grows gently — it sits in a column of identical rows,
-            // where a large step reads as the list jumping.
-            hoverScale: 1.02
-            pressScale: 0.98
-            onClicked: {
-                if (root.hasSubmenu)
-                    root.expanded = !root.expanded;
-                else if (root.entry.enabled !== false)
-                    root.entry.triggered();
-            }
+        QsmShellComponents.SvgIcon {
+            visible: root.hasSubmenu
+            name: "chevron-left"
+            size: Theme.iconXs
+            color: Theme.textMuted
+            rotation: root.expanded ? 90 : 180
         }
     }
 
