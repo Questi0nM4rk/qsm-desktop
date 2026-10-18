@@ -83,10 +83,12 @@ QtObject {
 
         return Quickshell.screens.length > 0 ? Quickshell.screens[0] : null;
     }
-    readonly property bool modalBlocked: !!focusedScreen
+    // Total: every path yields a real bool, never undefined, so the binding
+    // cannot log "Unable to assign [undefined] to bool" while a service loads.
+    readonly property bool modalBlocked: (!!focusedScreen
         && (FullscreenService.fullscreenFor(focusedScreen) === true
             || (focusModeScreen === focusedScreen.name
-                && FullscreenService.workspaceFor(focusedScreen)?.id === focusModeWorkspaceId))
+                && FullscreenService.workspaceFor(focusedScreen)?.id === focusModeWorkspaceId))) === true
 
     onModalBlockedChanged: {
         if (modalBlocked)

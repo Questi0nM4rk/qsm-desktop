@@ -15,11 +15,13 @@ import qs.theme
 // draws besides its track (05-osd). It rests as the channel's 16px glyph and
 // shows the reading while the channel is live; double-clicking it mutes.
 //
-// Every channel draws the same way: track `surface`, fill `primary`, content
-// `textOnPrimary`. The thumb rests in `textMuted` on every channel, the same
-// for all three; only the channel being changed (showingValue) lights up in
-// `text`. A muted channel stays `textMuted` even while changed. No shadow under
-// the thumb, nothing at the track's end, never a hue.
+// Every channel draws the same way: track `surface`, fill `primary`. The thumb
+// is `band` on every channel, at rest and live: against the `primary` fill
+// that is 9:1, where the old `textMuted` thumb was 1.03:1 and vanished into it.
+// Its content rests in `textMuted`, the same for all three; only the channel
+// being changed (showingValue) lights up in `text`. A muted channel stays
+// `textMuted` even while changed. No shadow under the thumb, nothing at the
+// track's end, never a hue.
 QsmShellComponents.Slider {
     id: root
 
@@ -56,15 +58,15 @@ QsmShellComponents.Slider {
     trackColor: Theme.surface
     fill: Theme.primary
 
-    // Lit only while this channel is being changed; every other thumb, and a
-    // muted channel, stays in `textMuted`.
-    thumbColor: root.showingValue && !root.muted ? Theme.text : Theme.textMuted
+    thumbColor: Theme.band
 
     // Glyph at rest (the muted variant comes from `icon`), reading while live.
     // No percent sign: the glyph says which channel this is.
     thumbIcon: root.showingValue ? "" : root.icon
     thumbText: root.showingValue ? (root.muted ? "—" : `${Math.round(root.value * 100)}`) : ""
-    thumbContentColor: Theme.textOnPrimary
+    // Lit only while this channel is being changed; every other thumb's
+    // content, and a muted channel's, stays `textMuted`.
+    thumbContentColor: root.showingValue && !root.muted ? Theme.text : Theme.textMuted
 
     Timer {
         id: holdTimer

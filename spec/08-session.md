@@ -31,6 +31,8 @@ Reference: `references/session-panel-right.png`.
   right edge; icons LIVE-TUNE against `references/session-panel-right.png`.
 - **DEFAULT (2026-08-16)**: an armed destructive button disarms after 3s or when the cursor
   leaves it.
+  The armed tile names its next press: its label reads "Confirm" while armed. Fill alone
+  separated armed from selected by hue only. The arm is the library's `ArmedAction`, one per tile.
 - **RATIFIED (2026-10-16, owner)**: resting tiles fill with `surface` on the rollout's `band`.
   Shut down, the one destructive action, is set apart from the other four by 16 px and its
   glyph and label draw in `danger`, separated and named.

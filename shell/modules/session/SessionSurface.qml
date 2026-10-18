@@ -25,10 +25,10 @@ import qs.theme
 // on screen rather than a hover highlight racing a keyboard highlight (09
 // one-path).
 //
-// This surface owns BOTH the selection and the arm, and the buttons are pure
-// views of them. The alternative — arm state inside each button — means the
-// keyboard has to reach into the delegate to fire it, and "which one is armed"
-// then lives in five places that have to be talked out of it one by one.
+// This surface owns the selection; the arm is the library's ArmedAction, one
+// per tile, so the timeout and the disarm rules are the library's and not a
+// second copy. The keyboard fires the selected tile through the same
+// ArmedAction its click does (`trigger`).
 Item {
     id: root
 
@@ -57,8 +57,6 @@ Item {
     // Opens on Lock: the harmless one. A power column that opens with shutdown
     // selected is one stray Enter away from a very bad afternoon.
     property int selectedIndex: 0
-    // -1 = nothing armed.
-    property int armedIndex: -1
 
     anchors.fill: parent
 
@@ -73,10 +71,8 @@ Item {
         if (index === root.selectedIndex)
             return;
 
-        // Moving off an armed button disarms it, the same as the pointer
-        // leaving does: what the selection left must not stay one Enter from
-        // firing.
-        root.armedIndex = -1;
+        // The tile the selection leaves disarms itself (its onSelectedChanged):
+        // what the selection left must not stay one Enter from firing.
         root.selectedIndex = index;
     }
 
@@ -84,29 +80,22 @@ Item {
         root.select(Math.max(0, Math.min(root.actions.length - 1, root.selectedIndex + delta)));
     }
 
+    // Untyped: a Repeater hands back a bare Item, and the delegate's `arm` is
+    // not on that type.
+    function tileAt(index: int): var {
+        return tiles.itemAt(index);
+    }
+
     // THE activation path, reached by a click on a button and by Enter/Space on
     // the selected one. Two ways in, one function: that is one path, not two.
+    // The tile's ArmedAction decides: arm a destructive one, fire the rest.
     function activate(index: int): void {
-        const action = root.actions[index];
-        if (!action)
+        const tile = root.tileAt(index);
+        if (!tile)
             return;
 
         root.select(index);
-        if (!action.destructive || root.armedIndex === index) {
-            root.armedIndex = -1;
-            disarmTimer.stop();
-            root.run(action.role);
-        } else {
-            root.armedIndex = index;
-            disarmTimer.restart();
-        }
-    }
-
-    // 08 DEFAULT: an armed button disarms after 3s or when the cursor leaves.
-    Timer {
-        id: disarmTimer
-        interval: 3000
-        onTriggered: root.armedIndex = -1
+        tile.arm.trigger();
     }
 
     QsmShellComponents.Rollout {
@@ -148,14 +137,26 @@ Item {
                 spacing: Theme.space2
 
                 Repeater {
+                    id: tiles
                     model: root.actions
 
                     QsmShellComponents.ActionTile {
+                        id: tile
                         required property var modelData
                         required property int index
 
+                        // 08 DEFAULT: an armed button disarms after 3s (the
+                        // library's timeout) or when the cursor leaves.
+                        readonly property QsmShellComponents.ArmedAction arm: QsmShellComponents.ArmedAction {
+                            destructive: tile.modelData.destructive
+                            onFired: root.run(tile.modelData.role)
+                        }
+
                         icon: modelData.icon
                         label: modelData.label
+                        // The armed tile names its next press: the fill alone
+                        // differs from selected only in hue.
+                        confirmLabel: "Confirm"
                         // Selected is PRIMARY here, not the accent: the
                         // accent is spent on armed, and on this surface what
                         // happens next matters more than what is picked.
@@ -168,12 +169,10 @@ Item {
                         buttonWidth: Theme.sessionButtonWidth
                         buttonHeight: Theme.sessionButtonHeight
                         selected: root.selectedIndex === index
-                        armed: root.armedIndex === index
+                        armed: arm.armed
+                        onSelectedChanged: if (!selected) arm.disarm()
                         onEntered: root.select(index)
-                        onExited: {
-                            if (root.armedIndex === index)
-                                root.armedIndex = -1;
-                        }
+                        onExited: arm.disarm()
                         onActivated: root.activate(index)
                     }
                 }
@@ -183,11 +182,10 @@ Item {
 
     onActiveChanged: {
         if (active) {
-            // Every open starts from Lock with nothing armed. A surface that
-            // remembers where you left off remembers it next to a shutdown
-            // button.
+            // Every open starts from Lock; the tile the selection leaves
+            // disarms itself, so nothing stays armed. A surface that remembers
+            // where you left off remembers it next to a shutdown button.
             selectedIndex = 0;
-            armedIndex = -1;
             sessionFocus.forceActiveFocus();
         }
     }

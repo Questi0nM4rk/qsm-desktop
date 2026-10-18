@@ -115,12 +115,14 @@ Reference: `references/osd-sliders-right.png`.
   `textOnPrimary`. Channel identity is the glyph INSIDE the thumb, never a per-channel hue and
   never a caption at the track's end: the thumb is the one thing a channel shows besides its
   track. Fills are flat: no gradient, no thumb shadow.
-- **RULED (2026-10-18, owner)**: "proc ma osd rollout jine sliders? Jenom sound sviti, zbytek ne."
-  (why does the OSD rollout have different sliders? Only the sound lights up, the rest does not.)
-  At rest every channel's thumb looks the same, in `textMuted`. Only the channel being changed
-  (live, per the rule below) lights up in `text`. A muted channel's thumb stays `textMuted`
-  even while changed. This replaces the earlier rule that the emphasised channel (the one the
-  OSD was opened for) stayed `text` at rest.
+- **RULED (2026-10-18, owner; thumb visibility decided 2026-10-19)**: "proc ma osd rollout jine
+  sliders? Jenom sound sviti, zbytek ne." (why does the OSD rollout have different sliders? Only
+  the sound lights up, the rest does not.) At rest every channel's thumb looks the same, and it
+  stays visible: the thumb is `band`, 9:1 against the `primary` fill it sits on (the earlier
+  `textMuted` thumb was 1.03:1 and disappeared into it). Its glyph rests in `textMuted`. Only
+  the channel being changed (live, per the rule below) lights up, its content in `text`. A
+  muted channel's content stays `textMuted` even while changed. This replaces the earlier rule
+  that the emphasised channel (the one the OSD was opened for) stayed `text` at rest.
 - **RATIFIED (2026-10-16, owner)**: the thumb shows the glyph at rest and the value while the
   channel is live. Live means a press or drag on the thumb, a wheel step over the track, or
   a service change (volume keys, mixer, brightness keys). The value stays for **1s** after the
