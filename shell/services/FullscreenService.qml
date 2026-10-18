@@ -9,8 +9,10 @@ QtObject {
     id: root
 
     // Always a count: a screen that is not yet known counts as not fullscreen.
-    readonly property int fullscreenCount: Quickshell.screens
-        .filter(screen => fullscreenFor(screen) === true).length
+    // Total: Quickshell.screens is a list property that can be empty or not
+    // yet populated on a hot reload, and `.length` of nothing is undefined.
+    readonly property int fullscreenCount: Number(Array.from(Quickshell.screens ?? [])
+        .filter(screen => fullscreenFor(screen) === true).length) || 0
 
     function workspaceFor(screen: var): var {
         if (!screen)
@@ -34,10 +36,13 @@ QtObject {
         // The client list is populated for every monitor; toplevel IPC objects
         // can stay empty on unfocused outputs. Bit 1 is compositor fullscreen,
         // bit 0 is maximized. Client-only fullscreen is not shell suppression.
-        return HyprClientsService.clients.some(client =>
-            client.workspace?.id === workspace.id
+        const clients = HyprClientsService.clients;
+        if (!Array.isArray(clients))
+            return false;
+        return clients.some(client =>
+            client?.workspace?.id === workspace.id
             && (Number(client.fullscreen ?? 0) & 2) !== 0
-            && client.mapped !== false && client.hidden !== true);
+            && client.mapped !== false && client.hidden !== true) === true;
     }
 
     function toggle(): void {
