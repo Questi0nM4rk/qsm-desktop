@@ -95,6 +95,12 @@ QtObject {
     // body draws a shadow.
     readonly property color shadow: "#000000"
 
+    // The one load colour for every ring and meter: green until 70 percent,
+    // yellow to 90, rose above (the thresholds the rail's readouts use, 03-rail).
+    function loadTone(value: real): color {
+        return value >= 0.9 ? danger : value >= 0.7 ? warning : success;
+    }
+
     // Theme-swap choreography (11 DEFAULT: 200ms). Lives HERE, not in Motion:
     // Motion already reads Theme.reducedMotion, and a token both singletons
     // need would make that a cycle.
@@ -149,6 +155,8 @@ QtObject {
     readonly property real floatingShadowBlur: 0.6
     readonly property real floatingShadowOffset: 8
     readonly property int floatingShadowExtent: 24
+    // The ceiling of a bodied notification's preview: the card takes its real
+    // lines up to this height and never more.
     readonly property int notificationPreviewHeight: 80
     readonly property int notificationBodyViewportHeight: 96
     readonly property var sizes: ({
@@ -372,7 +380,7 @@ QtObject {
     // shifts half a band-depth toward the edge. The 40px track then wanted 20
     // to the edge side of a 48px body that has 16, and the last 4px drew under
     // the frame and were clipped. 56 is the width at which the spec's own
-    // numbers close: channel 40, track 40, thumb 32 inset 4 each side.
+    // numbers close: a 40px track carrying a 28px thumb inset 6px from each end.
     readonly property int osdWidth: 56
     readonly property int osdTrackWidth: 40
     readonly property int osdTrackHeight: 140
@@ -390,6 +398,12 @@ QtObject {
     // with a 22px glyph, no caption. The title lives in the hover popout.
     readonly property int railAppSlot: 32
     readonly property int railAppIconSize: 22
+    // A rail icon lifts 7px when a caption sits under it, and the caption rests
+    // 3px above the cell's bottom edge.
+    readonly property int railCaptionOffset: -7
+    readonly property int railCaptionBottomMargin: 3
+    // Inactive rail apps sit back by contrast; the active one is at full strength.
+    readonly property real railInactiveAppOpacity: 0.62
     // The rail clock (03, back in the rail 2026-10-17): time above a smaller
     // numeric date.
     readonly property int railClockDigitSize: textLg
@@ -446,7 +460,10 @@ QtObject {
     // Media tab artwork circle. Sized to the panel's COLUMN width: at 220 it
     // owned more than a third of the tab and the title had nowhere to go.
     readonly property int mediaArtSize: 160
-    readonly property int mediaContentWidth: 620
+    // The panel's column width (the panel less the column's two space4
+    // margins). The static tab fills it and never grows past it, so a long
+    // title or a player picker cannot widen the panel.
+    readonly property int mediaContentWidth: panelWidth - space4 * 2
     // Shared Slider geometry: the media
     // tab's seek slider (06 RATIFIED transport + seek), the sound popout's
     // volume, the night-light warmth, and the battery popout's read-only
