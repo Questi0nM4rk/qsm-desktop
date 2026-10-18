@@ -185,18 +185,14 @@ Item {
     readonly property int selectedIndex: mode === "theme" ? themeIndex
         : !root.selectedIdentity ? -1
             : root.results.findIndex(item => root.resultIdentity(item) === root.selectedIdentity)
-    readonly property real inlineExpansionHeight: resultsList.currentItem?.expansionHeight ?? 0
 
-    // The host sizes the drawer from these (owner 2026-08-21: the body follows
-    // the result count instead of holding max height over one row). The
-    // carousel keeps the full body — cards, not rows.
-    readonly property bool carousel: mode === "theme"
-    readonly property int visibleRows: Math.max(1, Math.min(results.length, Theme.launcherMaxRows))
-    readonly property real preferredBodyHeight: {
-        const rows = root.carousel ? Theme.launcherMaxRows : root.visibleRows;
-        return rows * Theme.launcherRowHeight + (rows - 1) * Theme.space1
-            + 52 + Theme.space3 + Theme.space4 * 2 + root.inlineExpansionHeight;
-    }
+    // The body keeps ONE height whatever the result count; results scroll
+    // inside it (owner 2026-10-19: "NENAVIDIM RANDOM UI JUMPING"). The list
+    // gap is the standard one: a kill list's wider gap scrolls, it never
+    // resizes the body.
+    readonly property real preferredBodyHeight: Theme.launcherMaxRows * Theme.launcherRowHeight
+        + (Theme.launcherMaxRows - 1) * Theme.space1
+        + QsmShellStyle.Style.size("TextField", "lg") + Theme.space3 + Theme.space4 * 2
 
     onModeChanged: {
         if (mode === "kill")
@@ -1149,8 +1145,8 @@ ps -eo pid,pcpu,comm --no-headers --sort=-pcpu | head -25 | awk '{printf "P|%s|%
                 // UX-8 (07 RATIFIED 2026-08-25): >kill rows separate wider. The
                 // standard 4px gap put a mis-hover 4px from an irreversible kill;
                 // space3 gives the pointer room without a confirm, which 07
-                // deliberately rejects. The body already follows the visible
-                // result count, so the taller rhythm just grows it.
+                // deliberately rejects. The body height is fixed, so the taller
+                // rhythm scrolls rather than resizing it.
                 spacing: root.mode === "kill" ? Theme.space3 : Theme.space1
                 currentIndex: 0
                 verticalLayoutDirection: ListView.BottomToTop
