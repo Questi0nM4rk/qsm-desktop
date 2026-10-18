@@ -7,9 +7,10 @@ import qs.theme
 // The notification menu (04, owner 2026-10-17): the searchable history,
 // opened from the bell in the top-right corner. Everything about the list
 // (search, grouping, the keyboard cursor, the empty state, the unread dot)
-// lives in the library; this wires it to the service. A plain click on an
-// unread row marks it read, so it leaves the bell's count and stays in the
-// searchable history.
+// lives in the library; this wires it to the service. The menu opens on the
+// Unread view when something is unread, else on All. A plain click on an
+// unread row marks it read, so it leaves the bell's count and the Unread
+// view and stays in All.
 QsmShellComponents.NotificationCenter {
     id: root
 
@@ -29,6 +30,7 @@ QsmShellComponents.NotificationCenter {
 
     function open(): void {
         query = "";
+        view = unreadCount > 0 ? "unread" : "all";
         focusField();
     }
 

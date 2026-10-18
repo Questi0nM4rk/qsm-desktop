@@ -200,16 +200,24 @@ transition before wiring this call. Link loss must not be labelled Internet loss
   sinks to half its height, the bell's lower half showing, waiting for a hover. Hovering the
   bell, in either state, opens the NOTIFICATION MENU: a top-right modal rollout
   (`notifications`, 412 wide, up to 520 tall) in the clipboard's shape, search field at the
-  top, then the history grouped by app with FUZZY SEARCH across title AND body. An unread row
-  carries a 6px `accent` dot by its app name; a plain click on it marks it READ, so it leaves
-  the bell's count and stays in the searchable history. The menu closes 180ms after the
+  top, then two views, **Unread** (with its count) and **All**, then the history grouped by
+  app with FUZZY SEARCH across title AND body. The menu opens on Unread while anything is
+  unread, else on All (owner 2026-10-18: unread "more separated than just dots, its own menu
+  tab"). An unread row also carries a 6px `accent` dot by its app name; a plain click on it
+  marks it READ, so it leaves the bell's count and the Unread view and stays in All.
+- **RATIFIED (2026-10-18, owner)**: every menu entry is its own body, a `surface` card of the
+  large radius with a slight shadow, `space2` apart; no divider and no urgency tick between
+  them (a column of ticks read as one joined line). Hover never expands a menu entry, because
+  the wheel over the list must scroll the list: the entry's LEADING column (its glyph, which
+  turns into a chevron under the pointer) opens and closes it by click, the rest of the entry
+  is its action. An open entry shows its whole body; the list scrolls, the entry does not. The menu closes 180ms after the
   pointer has left both the bell and the menu, on a click outside, on Escape, or by the
   keyboard shortcut that opened it (09-input). The bell steps back while live popups roll
   out of the same corner, and in fullscreen or focus mode.
 - Unread is a fact of the archive: a popup that EXPIRED unseen is unread; one the person
   dismissed, swiped, or whose action ran was seen. `read` is persisted with the record.
 - **RATIFIED (2026-08-16)**: layout = search field at TOP, below it the history GROUPED BY
-  APP (app headers), entries in the boxless style; typing filters live across title+body;
+  APP (app headers), entries as bodied cards (above); typing filters live across title+body;
   Enter invokes the default action (else just highlights), Del dismisses. The menu remains
   the route for explicitly choosing named actions; popup body activation is limited to the
   live protocol action whose identifier is exactly `default`.

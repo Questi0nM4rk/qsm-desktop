@@ -27,7 +27,8 @@
   owner's 2026-10-17 tune, so a card reads as a thing, not a traced rectangle) -> `overlay`
   (1.30:1 on the card). Formerly 1.30:1 per step: `band` -> `surface` (a card, row group,
   field inside a rollout) -> `overlay` (a popout, menu, hover container over a card). No
-  hairline, no 1px card border, no rim, no shadow does that job; a line in the shell is content
+  hairline, no 1px card border, no rim, no shadow does that job (a card in a list of cards adds a
+  slight shadow under the step, 01-frame); a line in the shell is content
   (slider track, meter), never an edge. A fourth container level is a design error, not a step.
   Frame and every rollout are one silhouette painted as `band`; nothing draws its own frame,
   stroke, rim or shadow.
@@ -62,6 +63,6 @@
 - **RATIFIED (2026-08-19)**: EVERY radius in the shell is one of the ladder's names. The 8px
   text step is gone: it sat below anything a person reads.
 - Hover is never a tint (09-input-and-states); rounded notification rows are a `surface` on the `band`,
-  without borders or shadows. Urgency shows on the app glyph (critical `danger`, normal `info`,
+  without borders, with the slight list-card shadow (01-frame). Urgency shows on the app glyph (critical `danger`, normal `info`,
   low `textMuted`), not on a tick bar.
 - Swap choreography: **200ms cross-fade** (DEFAULT).

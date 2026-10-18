@@ -16,9 +16,12 @@ the SDF shader only.
   shadow stands in for it. Reference: every capture in
   `references/`.
 - **RATIFIED (2026-10-16, owner)**: inner containers (cards, row groups, fields, popouts)
-  carry NO hairline, NO 1px border, NO edge rim, NO shadow. Lightness separates them: one
+  carry NO hairline, NO 1px border, NO edge rim. Lightness separates them: one
   three-step neutral ladder, `band` → `surface` → `overlay`, each step 1.30:1 on the one
   below (11-theme). A line in the shell is content (slider track, meter), never an edge.
+  **RATIFIED (2026-10-18, owner: "ja bych povolil slight stiny")**: a card in a LIST of cards
+  (the notification menu) casts a slight shadow under its body; the step still separates it,
+  the shadow only marks where it ends. No other container casts one.
 
 ## Join law
 
