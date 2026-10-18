@@ -105,7 +105,7 @@ Item {
                 anchors.fill: parent
                 target: null
                 interactive: root.shown
-                onClicked: ShellState.toggleModal("notifications")
+                onClicked: if (ShellState.modal !== "notifications") ShellState.toggleModal("notifications")
             }
         }
     }
@@ -138,6 +138,6 @@ Item {
         height: root.cornerZone.height
         target: glyph
         interactive: root.shown
-        onClicked: ShellState.toggleModal("notifications")
+        onClicked: if (ShellState.modal !== "notifications") ShellState.toggleModal("notifications")
     }
 }

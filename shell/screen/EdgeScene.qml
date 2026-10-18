@@ -724,7 +724,8 @@ PanelWindow {
         height: implicitHeight
         x: root.panelCenterX - width / 2
         y: panelSurface.leadingEdgeY - height / 2 + Theme.panelHandleProud
-        onActivated: ShellState.togglePanel("dashboard")
+        // Hover already opened it; a click only opens, never toggles it shut.
+        onActivated: if (ShellState.modal !== "panel") ShellState.togglePanel("dashboard")
         readonly property rect hitRect: visible ? Qt.rect(x, y, width, height) : Qt.rect(0, 0, 0, 0)
         onHitRectChanged: {
             if (visible) border.registerRolloutRegion("panel-handle", hitRect);
