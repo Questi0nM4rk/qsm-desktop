@@ -34,6 +34,14 @@ QtObject {
         return byAddress[key] ?? null;
     }
 
+    // HyprlandToplevel has no activate(); focus goes through the dispatcher.
+    function focus(address: string): void {
+        const key = String(address).replace(/^0x/, "");
+        Hyprland.dispatch(Hyprland.usingLua
+            ? `hl.dsp.focus({ window = "address:0x${key}" })`
+            : `focuswindow address:0x${key}`);
+    }
+
     // caelestia's pattern (services/Hypr.qml): Quickshell populates
     // toplevel/workspace lastIpcObject ONLY on explicit refresh calls —
     // without them, unfocused monitors keep empty metadata forever.

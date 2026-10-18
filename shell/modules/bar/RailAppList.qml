@@ -112,7 +112,7 @@ Item {
                 target: rowIcon
                 hoverScale: 1.08
                 pressScale: 0.92
-                onClicked: appRow.modelData.activate()
+                onClicked: HyprClientsService.focus(appRow.modelData.address)
             }
         }
     }

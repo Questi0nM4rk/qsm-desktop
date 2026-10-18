@@ -60,10 +60,9 @@ QtObject {
             property Instantiator actionLabels: Instantiator {
                 model: link.notification.actions
                 delegate: Connections {
-                    // Instantiator supplies this context field at runtime.
-                    // qmllint disable unqualified
-                    target: modelData
-                    // qmllint enable unqualified
+                    id: actionLink
+                    required property var modelData
+                    target: actionLink.modelData
                     function onTextChanged(): void { root.sync(link.notificationId); }
                 }
             }
