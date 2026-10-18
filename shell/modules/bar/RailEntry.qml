@@ -76,8 +76,7 @@ Item {
         radius: Theme.radiusMd
         // Plugged into the wall it reaches: square on that side, so the pill
         // joins the column instead of ending in two rounded notches.
-        topRightRadius: root.selected ? 0 : radius
-        bottomRightRadius: root.selected ? 0 : radius
+        snapEdge: root.selected ? "right" : ""
         base: "transparent"
         accent: root.danger && !root.selected ? Theme.danger : Theme.accent
         selected: root.selected || root.danger || root.active
