@@ -115,7 +115,7 @@ ColumnLayout {
 
         // CPU hero card.
         QsmShellComponents.Card {
-            radius: Theme.rolloutRadius
+            radius: Theme.panelCardRadius
             Layout.preferredWidth: cpuContent.implicitWidth + Theme.space4 * 2
             Layout.preferredHeight: cpuContent.implicitHeight + Theme.space4 * 2
 
@@ -148,7 +148,7 @@ ColumnLayout {
         // GPU hero card — hides entirely with no GPU sensor at all.
         QsmShellComponents.Card {
             visible: PerformanceService.gpuUsage >= 0 || PerformanceService.gpuTemp >= 0
-            radius: Theme.rolloutRadius
+            radius: Theme.panelCardRadius
             Layout.preferredWidth: gpuContent.implicitWidth + Theme.space4 * 2
             Layout.preferredHeight: gpuContent.implicitHeight + Theme.space4 * 2
 
@@ -173,7 +173,7 @@ ColumnLayout {
         // Memory 3/4-ring.
         QsmShellComponents.Card {
             visible: PerformanceService.memUsed >= 0
-            radius: Theme.rolloutRadius
+            radius: Theme.panelCardRadius
             Layout.preferredWidth: memContent.implicitWidth + Theme.space4 * 2
             Layout.preferredHeight: memContent.implicitHeight + Theme.space4 * 2
 
@@ -209,7 +209,7 @@ ColumnLayout {
         // Storage 3/4-ring.
         QsmShellComponents.Card {
             visible: PerformanceService.storageUsed >= 0
-            radius: Theme.rolloutRadius
+            radius: Theme.panelCardRadius
             Layout.preferredWidth: storageContent.implicitWidth + Theme.space4 * 2
             Layout.preferredHeight: storageContent.implicitHeight + Theme.space4 * 2
 
@@ -244,7 +244,7 @@ ColumnLayout {
         // of content left about 68px of card reserved and never used, which is
         // the tell of a box drawn before its contents were known.
         QsmShellComponents.Card {
-            radius: Theme.rolloutRadius
+            radius: Theme.panelCardRadius
             Layout.preferredWidth: Theme.performanceNetworkCardWidth
             Layout.minimumHeight: networkContent.implicitHeight + Theme.space4 * 2
             Layout.fillHeight: true
@@ -383,7 +383,7 @@ ColumnLayout {
         QsmShellComponents.Card {
             id: batteryCard
             visible: root.batteryDevice?.isLaptopBattery ?? false
-            radius: Theme.rolloutRadius
+            radius: Theme.panelCardRadius
             clip: true
             Layout.preferredWidth: Theme.performanceBatteryTankWidth
             Layout.preferredHeight: Theme.performanceBatteryTankHeight
@@ -411,9 +411,9 @@ ColumnLayout {
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
                 height: parent.height * batteryCard.fraction
-                bottomLeftRadius: Theme.rolloutRadius
-                bottomRightRadius: Theme.rolloutRadius
-                topLeftRadius: height > parent.height - Theme.rolloutRadius ? Theme.rolloutRadius : 0
+                bottomLeftRadius: Theme.panelCardRadius
+                bottomRightRadius: Theme.panelCardRadius
+                topLeftRadius: height > parent.height - Theme.panelCardRadius ? Theme.panelCardRadius : 0
                 topRightRadius: topLeftRadius
                 // A TINTED fill, not a solid accent one. At full charge a
                 // solid accent tank was the single largest accent area in the

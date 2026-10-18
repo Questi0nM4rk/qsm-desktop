@@ -66,7 +66,7 @@ Item {
             Repeater {
                 model: root.workspaces
 
-                Rectangle {
+                QsmShellComponents.Surface {
                     id: tile
                     required property var modelData
                     readonly property bool current: root.monitor?.activeWorkspace?.id === modelData.id
@@ -76,10 +76,9 @@ Item {
                     width: root.tileWidth
                     height: root.tileHeight
                     radius: Theme.radiusSm
-                    // Current is a state, not a border: accent at opacitySelected over the tile.
-                    color: current
-                        ? Qt.tint(Theme.surface, Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, Theme.opacitySelected))
-                        : Theme.surface
+                    base: Theme.surface
+                    // Current is a state, not a border: the ladder's selected tint.
+                    selected: current
 
                     QsmShellComponents.Prose {
                         role: "reading"
@@ -91,8 +90,11 @@ Item {
                         text: tile.modelData.id
                     }
 
-                    TapHandler {
-                        onTapped: tile.modelData.activate()
+                    // Hover grows the tile, never tints it; keyboard focus rings it.
+                    QsmShellComponents.StateLayer {
+                        anchors.fill: parent
+                        focusRadius: tile.radius
+                        onClicked: tile.modelData.activate()
                     }
 
                     Repeater {
@@ -112,7 +114,7 @@ Item {
                             color: Theme.overlay
                             // A diagram: window rects separate from the tile by one ladder step.
                             border.width: 0
-                            opacity: windowDrag.active ? 0.85 : 1
+                            opacity: windowDrag.active ? Theme.opacityDrag : 1
 
                             AppIcon {
                                 anchors.centerIn: parent

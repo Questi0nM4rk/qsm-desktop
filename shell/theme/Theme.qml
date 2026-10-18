@@ -123,6 +123,8 @@ QtObject {
     // unavailable (e.g. shuffle/repeat/seek unsupported by the active player).
     readonly property real opacityDisabled: 0.35
     readonly property real opacitySelected: 0.12
+    // A dragged item stays readable over what it passes across.
+    readonly property real opacityDrag: 0.85
 
     // --- Library contract (Style.backend) -------------------------------
     // Style resolves every token as `backend?.x ?? Tokens.x`, so a name the
@@ -292,6 +294,9 @@ QtObject {
     readonly property int frameRadius: radius2xl
     readonly property int reservedLeft: 60
     readonly property int rolloutRadius: radius2xl
+    // 06-top-panel: panel cards are `surface` with radius 12; every card on
+    // every tab reads this one token.
+    readonly property int panelCardRadius: radiusMd
     // 04-notifications rollout width: short notices stay edge-adjacent while
     // expanded bodies wrap below the headline instead of owning the screen.
     readonly property int notificationWidth: 380
@@ -395,6 +400,9 @@ QtObject {
     readonly property real railDividerOpacity: 0.8
     readonly property int railDividerThickness: 2
     readonly property real railDividerInset: 8
+    // 03 tray menu: separators are short faded lines.
+    readonly property int menuSeparatorWidth: 96
+    readonly property real menuSeparatorStrength: 0.25
     // How many connected devices the one BLE cell splits into before it stops
     // subdividing.
     readonly property int railDeviceMax: 4
