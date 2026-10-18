@@ -19,7 +19,10 @@ Item {
     readonly property real progress: (MediaService.lengthSupported && MediaService.length > 0)
         ? Math.max(0, Math.min(1, MediaService.position / MediaService.length)) : 0
 
-    implicitWidth: Math.max(Theme.mediaContentWidth, mediaRow.implicitWidth + Theme.space4 * 2)
+    // A constant: the tab fills the panel's column and never asks for more,
+    // so a long title or a second player cannot widen it (the row's own
+    // implicit width follows its text, which is why it is not read here).
+    implicitWidth: Theme.mediaContentWidth
     implicitHeight: Math.max(mediaRow.implicitHeight, Theme.mediaArtSize + Theme.space4 * 2)
 
     // Same empty-state pattern as the launcher and clipboard surfaces.
@@ -41,7 +44,7 @@ Item {
             id: artwork
             Layout.preferredWidth: Theme.mediaArtSize
             Layout.preferredHeight: Theme.mediaArtSize
-            Layout.alignment: Qt.AlignVCenter
+            Layout.alignment: Qt.AlignTop
 
             // The artwork AND how far through it we are: one thing, one type.
             // This surface and the dashboard used to assemble it separately
@@ -76,9 +79,15 @@ Item {
         }
 
         // CENTER: title/artist/album, seek row, transport row of five.
+        // The block hangs from the artwork's top edge and every line keeps its
+        // slot (an empty line still has its height), so a track with no album
+        // does not re-centre the block and the rows below do not move.
         ColumnLayout {
             Layout.fillWidth: true
-            Layout.alignment: Qt.AlignVCenter
+            // Zero preferred width: the text's own width never sets the
+            // column's, the row's remainder does, so ElideRight fires.
+            Layout.preferredWidth: 0
+            Layout.alignment: Qt.AlignTop
             spacing: Theme.space2
 
             QsmShellComponents.Prose {
@@ -93,7 +102,6 @@ Item {
                 role: "supporting"
                 Layout.fillWidth: true
                 elide: Text.ElideRight
-                visible: text.length > 0
                 text: root.player?.trackArtist ?? ""
                 textFormat: Text.PlainText
             }
@@ -102,7 +110,6 @@ Item {
                 role: "metadata"
                 Layout.fillWidth: true
                 elide: Text.ElideRight
-                visible: text.length > 0
                 text: root.player?.trackAlbum ?? ""
                 textFormat: Text.PlainText
             }
@@ -118,12 +125,12 @@ Item {
                 TextMetrics {
                     id: timeTemplate
                     font.family: Theme.technicalFontFamily
-                    font.pixelSize: Theme.textXs
+                    font.pixelSize: Theme.textSm
                     text: "00:00"
                 }
 
                 QsmShellComponents.Prose {
-                    role: "metadata"
+                    role: "supporting"
                     technical: true
                     Layout.preferredWidth: timeTemplate.width
                     horizontalAlignment: Text.AlignRight
@@ -135,13 +142,15 @@ Item {
                 QsmShellComponents.Slider {
                     id: seekSlider
                     Layout.fillWidth: true
+                    thickness: Theme.sliderTrackThickness
+                    thumbSize: Theme.sliderThumbSize
                     enabled: MediaService.canSeek && MediaService.lengthSupported && MediaService.length > 0
                     value: root.progress
                     onMoved: MediaService.seek(seekSlider.value)
                 }
 
                 QsmShellComponents.Prose {
-                    role: "metadata"
+                    role: "supporting"
                     technical: true
                     Layout.preferredWidth: timeTemplate.width
                     horizontalAlignment: Text.AlignLeft
@@ -201,7 +210,7 @@ Item {
         // player needs no picker, so this stays hidden until there's a
         // choice to make.
         ColumnLayout {
-            Layout.alignment: Qt.AlignVCenter
+            Layout.alignment: Qt.AlignTop
             visible: MediaService.players.length > 1
             spacing: Theme.space2
 

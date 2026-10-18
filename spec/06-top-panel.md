@@ -81,11 +81,19 @@ center is no longer a tab (owner 2026-10-17): it is the bell's menu in the top-r
   resources = usage fractions from PerformanceService (CPU/memory/storage).
 - **RATIFIED (2026-08-16)** Media: exactly `media-tab.png` — circular artwork + progress ring,
   title/album/artist, transport + seek, per-player source picker (all MPRIS players).
+  **RULED (2026-10-19, owner: "NENAVIDIM RANDOM UI JUMPING")** the tab is a constant width (the
+  panel column, `Theme.mediaContentWidth`) and the text block hangs from the artwork's top with
+  one fixed slot per line, so a track change moves neither the transport, the seek row nor the
+  text; a long title, artist or album elides.
 - **DEFAULT (2026-08-16)** media fallbacks: no artwork → type glyph in the circle; no player →
   centered "nothing playing" empty state; default player = playing > paused > first seen.
 - **RATIFIED (2026-08-16)** Performance: exactly the performance captures — three rings (GPU
   temp+usage, CPU temp+usage, memory+storage); each ring hides individually if its sensor is
   missing.
+- **RULED (2026-10-19, owner: "Pridej trochu shadows, separations. At to nevypada vibecoded")**
+  Performance cards take the edge separation like the dashboard's; the battery shows its level
+  as a thin meter (success, or danger below 15 percent and not charging) beside text on the
+  plain card, not as a tinted tank. Every load ring and meter reads `Theme.loadTone`.
 - **DEFAULT (2026-08-16)** performance sources: CPU temp from hwmon (k10temp/coretemp
   autodetect), GPU from nvml or amdgpu hwmon (autodetect), usage from /proc/stat and the GPU
   stack; the third ring's ARC shows memory-used fraction while storage shows as the side text

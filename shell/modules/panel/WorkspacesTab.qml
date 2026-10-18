@@ -25,11 +25,35 @@ Item {
     readonly property var clients: HyprClientsService.clients
 
     readonly property real tileWidth: 180
-    readonly property real tileHeight: monitor
-        ? tileWidth * monitor.height / Math.max(1, monitor.width) : 100
     readonly property real tileGap: Theme.space3
 
+    // Window rects live in their own area, inset from the tile's rounded
+    // corners, below a band that belongs to the workspace number: a number
+    // painted on the tile was painted under any window that reached the
+    // corner (the schematic keeps the monitor's aspect, so one often does).
+    readonly property real areaInset: Theme.space2
+    readonly property real areaWidth: tileWidth - areaInset * 2
+    readonly property real areaHeight: monitor
+        ? areaWidth * monitor.height / Math.max(1, monitor.width) : areaWidth * 0.5625
+    readonly property real labelBand: areaInset + labelMetrics.height
+    readonly property real tileHeight: labelBand + areaHeight + areaInset
+
+    // A hovered tile grows by this much (StateLayer, handed the same number
+    // below); the strip clips, so it reserves the growth around the row
+    // rather than cutting the tile's edge off.
+    readonly property real hoverScale: 1.08
+    readonly property real growthX: Math.ceil(tileWidth * (hoverScale - 1) / 2)
+    readonly property real growthY: Math.ceil(tileHeight * (hoverScale - 1) / 2)
+
     implicitHeight: strip.height + Theme.space2
+
+    TextMetrics {
+        id: labelMetrics
+        font.family: Theme.technicalFontFamily
+        font.pixelSize: Theme.textSm
+        font.weight: Font.Bold
+        text: "0"
+    }
 
     function moveWindow(address: string, workspaceId: int): void {
         mover.command = ["hyprctl", "dispatch", "movetoworkspacesilent",
@@ -52,15 +76,17 @@ Item {
         id: strip
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
-        width: Math.min(parent.width, row.implicitWidth)
-        height: root.tileHeight
-        contentWidth: row.implicitWidth
+        width: Math.min(parent.width, row.implicitWidth + root.growthX * 2)
+        height: root.tileHeight + root.growthY * 2
+        contentWidth: row.implicitWidth + root.growthX * 2
         clip: true
         boundsBehavior: Flickable.StopAtBounds
         flickableDirection: Flickable.HorizontalFlick
 
         Row {
             id: row
+            x: root.growthX
+            y: root.growthY
             spacing: root.tileGap
 
             Repeater {
@@ -75,7 +101,7 @@ Item {
 
                     width: root.tileWidth
                     height: root.tileHeight
-                    radius: Theme.radiusSm
+                    radius: Theme.panelCardRadius
                     base: Theme.surface
                     // Current is a state, not a border: the ladder's selected tint.
                     selected: current
@@ -84,8 +110,8 @@ Item {
                         role: "reading"
                         anchors.top: parent.top
                         anchors.left: parent.left
-                        anchors.margins: Theme.space1
-                        font.pixelSize: Theme.textXs
+                        anchors.topMargin: root.areaInset
+                        anchors.leftMargin: root.areaInset
                         color: tile.current ? Theme.accent : Theme.textMuted
                         text: tile.modelData.id
                     }
@@ -94,8 +120,16 @@ Item {
                     QsmShellComponents.StateLayer {
                         anchors.fill: parent
                         focusRadius: tile.radius
+                        hoverScale: root.hoverScale
                         onClicked: tile.modelData.activate()
                     }
+
+                    Item {
+                        id: windowArea
+                        x: root.areaInset
+                        y: root.labelBand
+                        width: root.areaWidth
+                        height: root.areaHeight
 
                     Repeater {
                         model: tile.tileClients
@@ -103,23 +137,26 @@ Item {
                         Rectangle {
                             id: windowRect
                             required property var modelData
-                            readonly property real scaleX: root.tileWidth / Math.max(1, root.monitor?.width ?? 1)
-                            readonly property real scaleY: root.tileHeight / Math.max(1, root.monitor?.height ?? 1)
+                            readonly property real scaleX: root.areaWidth / Math.max(1, root.monitor?.width ?? 1)
+                            readonly property real scaleY: root.areaHeight / Math.max(1, root.monitor?.height ?? 1)
 
                             x: Math.max(0, (modelData.at[0] - (root.monitor?.x ?? 0)) * scaleX)
                             y: Math.max(0, (modelData.at[1] - (root.monitor?.y ?? 0)) * scaleY)
-                            width: Math.min(root.tileWidth, modelData.size[0] * scaleX)
-                            height: Math.min(root.tileHeight, modelData.size[1] * scaleY)
-                            radius: Theme.radiusXs
+                            width: Math.min(root.areaWidth - x, modelData.size[0] * scaleX)
+                            height: Math.min(root.areaHeight - y, modelData.size[1] * scaleY)
+                            // Concentric with the tile: its radius less the inset the area keeps.
+                            radius: Math.max(0, tile.radius - root.areaInset)
                             color: Theme.overlay
-                            // A diagram: window rects separate from the tile by one ladder step.
-                            border.width: 0
+                            // Ratified (06, 2026-08-21): the tiles are a diagram, so the
+                            // rects keep their 1px outline, in the shell's edge tint.
+                            border.width: 1
+                            border.color: Theme.edgeColor
                             opacity: windowDrag.active ? Theme.opacityDrag : 1
 
                             AppIcon {
                                 anchors.centerIn: parent
                                 icon: windowRect.modelData.class ?? ""
-                                implicitSize: Math.min(16, parent.height - 2)
+                                implicitSize: Math.min(Theme.iconSm, parent.height - Theme.spaceTight)
                             }
 
                             transform: Translate {
@@ -149,6 +186,7 @@ Item {
                                 }
                             }
                         }
+                    }
                     }
                 }
             }

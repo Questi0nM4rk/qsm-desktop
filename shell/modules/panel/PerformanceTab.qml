@@ -58,7 +58,7 @@ ColumnLayout {
             Layout.preferredWidth: Theme.ringDiameterDefault
             thickness: Theme.performanceThermalBarHeight
             value: tempRow.tempC / Theme.performanceThermalScaleC
-            fill: tempRow.alert ? Theme.danger : Theme.accent
+            fill: Theme.loadTone(value)
         }
     }
 
@@ -115,9 +115,11 @@ ColumnLayout {
 
         // CPU hero card.
         QsmShellComponents.Card {
+            glow: true
             radius: Theme.panelCardRadius
             Layout.preferredWidth: cpuContent.implicitWidth + Theme.space4 * 2
             Layout.preferredHeight: cpuContent.implicitHeight + Theme.space4 * 2
+            Layout.fillHeight: true
 
             ColumnLayout {
                 id: cpuContent
@@ -139,6 +141,7 @@ ColumnLayout {
                     reading: PerformanceService.cpuUsage < 0
                         ? "—" : `${Math.round(PerformanceService.cpuUsage * 100)}%`
                     label: "CPU"
+                    fill: Theme.loadTone(PerformanceService.cpuUsage)
                 }
 
                 TempRow { Layout.alignment: Qt.AlignHCenter; tempC: PerformanceService.cpuTemp }
@@ -147,10 +150,12 @@ ColumnLayout {
 
         // GPU hero card — hides entirely with no GPU sensor at all.
         QsmShellComponents.Card {
+            glow: true
             visible: PerformanceService.gpuUsage >= 0 || PerformanceService.gpuTemp >= 0
             radius: Theme.panelCardRadius
             Layout.preferredWidth: gpuContent.implicitWidth + Theme.space4 * 2
             Layout.preferredHeight: gpuContent.implicitHeight + Theme.space4 * 2
+            Layout.fillHeight: true
 
             ColumnLayout {
                 id: gpuContent
@@ -164,6 +169,7 @@ ColumnLayout {
                     reading: PerformanceService.gpuUsage < 0
                         ? "—" : `${Math.round(PerformanceService.gpuUsage * 100)}%`
                     label: "GPU"
+                    fill: Theme.loadTone(PerformanceService.gpuUsage)
                 }
 
                 TempRow { Layout.alignment: Qt.AlignHCenter; tempC: PerformanceService.gpuTemp }
@@ -172,10 +178,12 @@ ColumnLayout {
 
         // Memory 3/4-ring.
         QsmShellComponents.Card {
+            glow: true
             visible: PerformanceService.memUsed >= 0
             radius: Theme.panelCardRadius
             Layout.preferredWidth: memContent.implicitWidth + Theme.space4 * 2
             Layout.preferredHeight: memContent.implicitHeight + Theme.space4 * 2
+            Layout.fillHeight: true
 
             ColumnLayout {
                 id: memContent
@@ -190,6 +198,7 @@ ColumnLayout {
                     icon: "memory"
                     reading: `${Math.round(PerformanceService.memUsed * 100)}%`
                     label: "Memory"
+                    fill: Theme.loadTone(PerformanceService.memUsed)
                 }
 
                 QsmShellComponents.Prose {
@@ -208,10 +217,12 @@ ColumnLayout {
 
         // Storage 3/4-ring.
         QsmShellComponents.Card {
+            glow: true
             visible: PerformanceService.storageUsed >= 0
             radius: Theme.panelCardRadius
             Layout.preferredWidth: storageContent.implicitWidth + Theme.space4 * 2
             Layout.preferredHeight: storageContent.implicitHeight + Theme.space4 * 2
+            Layout.fillHeight: true
 
             ColumnLayout {
                 id: storageContent
@@ -226,6 +237,7 @@ ColumnLayout {
                     icon: "hard-drive"
                     reading: `${Math.round(PerformanceService.storageUsed * 100)}%`
                     label: "Storage"
+                    fill: Theme.loadTone(PerformanceService.storageUsed)
                 }
 
                 QsmShellComponents.Prose {
@@ -244,6 +256,7 @@ ColumnLayout {
         // of content left about 68px of card reserved and never used, which is
         // the tell of a box drawn before its contents were known.
         QsmShellComponents.Card {
+            glow: true
             radius: Theme.panelCardRadius
             Layout.preferredWidth: Theme.performanceNetworkCardWidth
             Layout.minimumHeight: networkContent.implicitHeight + Theme.space4 * 2
@@ -281,6 +294,19 @@ ColumnLayout {
                     readonly property var rx: PerformanceService.netRxHistory
                     readonly property var tx: PerformanceService.netTxHistory
                     readonly property real peak: Math.max(1, ...rx, ...tx)
+                    readonly property real lineThickness: 1.5
+
+                    // The zero line, always drawn: with no traffic both
+                    // series sit on it, so idle reads as quiet rather than as
+                    // a graph that failed to load.
+                    Rectangle {
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        height: netGraph.lineThickness
+                        radius: height / 2
+                        color: Theme.overlay
+                    }
 
                     QsmShellComponents.Sparkline {
                         anchors.fill: parent
@@ -290,7 +316,7 @@ ColumnLayout {
                         // Two lines share this box, so the weight is stated:
                         // derived from the height they would be ~4.7px each
                         // and merge into one band.
-                        thickness: 1.5
+                        thickness: netGraph.lineThickness
                         color: Theme.accent
                     }
 
@@ -299,7 +325,7 @@ ColumnLayout {
                         values: netGraph.tx
                         minimum: 0
                         maximum: netGraph.peak
-                        thickness: 1.5
+                        thickness: netGraph.lineThickness
                         color: Theme.info
                     }
                 }
@@ -381,10 +407,10 @@ ColumnLayout {
         // Battery tank (caelestia "liquid" card) — present only when a
         // battery exists.
         QsmShellComponents.Card {
+            glow: true
             id: batteryCard
             visible: root.batteryDevice?.isLaptopBattery ?? false
             radius: Theme.panelCardRadius
-            clip: true
             Layout.preferredWidth: Theme.performanceBatteryTankWidth
             Layout.preferredHeight: Theme.performanceBatteryTankHeight
 
@@ -400,42 +426,31 @@ ColumnLayout {
                 return `${hours}h ${minutes}m ${charging ? "to full" : "left"}`;
             }
 
-            // Bottom-anchored liquid fill. Its own bottom corners carry the
-            // card's radius: the card's `clip` is rectangular (Qt clips to the
-            // bounding box, not the rounded shape), so a square-cornered fill
-            // pushed its corners out through the card's rounding — visible at
-            // any charge above about 90%. The top corners round only once the
-            // fill reaches the card's own top curve.
-            Rectangle {
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-                height: parent.height * batteryCard.fraction
-                bottomLeftRadius: Theme.panelCardRadius
-                bottomRightRadius: Theme.panelCardRadius
-                topLeftRadius: height > parent.height - Theme.panelCardRadius ? Theme.panelCardRadius : 0
-                topRightRadius: topLeftRadius
-                // A TINTED fill, not a solid accent one. At full charge a
-                // solid accent tank was the single largest accent area in the
-                // shell, spent on the most passive readout it has — and the
-                // accent budget is what makes the interactive things stand
-                // out (ui-craft: one accent budget). Tinted, the readout also
-                // stays light-on-dark at every level, which is why the second
-                // inverted-and-clipped copy of it is gone.
-                color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.45)
-
-                Behavior on height {
-                    NumberAnimation { duration: Motion.normal; easing.type: Motion.standardEasing }
-                }
-            }
-
-            BatteryReadout {
+            // The level is a thin meter on the overlay track, filled by what it
+            // means (healthy, low, critical), never by the accent: the old tank
+            // painted a tinted accent block behind the text and dragged its
+            // caption under 3:1. The text stays on the plain card.
+            ColumnLayout {
                 anchors.centerIn: parent
-                fg: Theme.text
-                fgMuted: Theme.textMuted
-                charging: batteryCard.charging
-                fraction: batteryCard.fraction
-                timeText: batteryCard.timeText
+                spacing: Theme.space3
+
+                BatteryReadout {
+                    Layout.alignment: Qt.AlignHCenter
+                    fg: Theme.text
+                    fgMuted: Theme.textMuted
+                    charging: batteryCard.charging
+                    fraction: batteryCard.fraction
+                    timeText: batteryCard.timeText
+                }
+
+                QsmShellComponents.Meter {
+                    Layout.alignment: Qt.AlignHCenter
+                    Layout.preferredWidth: Theme.ringDiameterDefault
+                    thickness: Theme.performanceThermalBarHeight
+                    value: batteryCard.fraction
+                    // The popout's own rule: danger only when low and not charging.
+                    fill: batteryCard.fraction < 0.15 && !batteryCard.charging ? Theme.danger : Theme.success
+                }
             }
         }
     }

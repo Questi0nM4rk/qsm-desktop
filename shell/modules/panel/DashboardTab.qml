@@ -11,12 +11,6 @@ import qs.theme
 // each its own Card card inside the panel's single silhouette.
 GridLayout {
     id: root
-    // A load reads green until 70 percent, yellow to 90, rose above: the
-    // same thresholds the rail's readouts used (03-rail), as pastels.
-    function loadTone(value: real): color {
-        return value >= 0.9 ? Theme.danger : value >= 0.7 ? Theme.warning : Theme.success;
-    }
-
     columns: 3
     rowSpacing: Theme.space3
     columnSpacing: Theme.space3
@@ -37,6 +31,9 @@ GridLayout {
         onLoadFailed: root.faceFound = false
     }
 
+    // Every card fills its column; the preferred widths are the floor the
+    // grid starts from, and both gutters are one step, so the right edges of
+    // row 0 and row 1 meet.
     // 1. User card: avatar + distro badge, WM pill, uptime.
     QsmShellComponents.Card {
         glow: true
@@ -44,6 +41,7 @@ GridLayout {
         id: userCard
         Layout.row: 0
         Layout.column: 0
+        Layout.fillWidth: true
         Layout.preferredWidth: Theme.dashboardUserCardWidth
         Layout.preferredHeight: userContent.implicitHeight + Theme.space4 * 2
         Layout.fillHeight: true
@@ -86,9 +84,10 @@ GridLayout {
                     width: Theme.dashboardBadgeSize
                     height: Theme.dashboardBadgeSize
                     // Separation by VALUE, not a stroke — 11-theme ratifies
-                    // flat fills with no outlines anywhere (audit S5-F1).
+                    // flat fills with no outlines anywhere (audit S5-F1): the
+                    // avatar disc is overlay, so the badge takes band.
                     radius: width / 2
-                    color: Theme.overlay
+                    color: Theme.band
 
                     QsmShellComponents.SvgIcon {
                         anchors.centerIn: parent
@@ -158,6 +157,7 @@ GridLayout {
         radius: Theme.panelCardRadius
         Layout.row: 0
         Layout.column: 1
+        Layout.fillWidth: true
         Layout.preferredWidth: Theme.dashboardWeatherCardWidth
         Layout.preferredHeight: weatherContent.implicitHeight + Theme.space4 * 2
         Layout.fillHeight: true
@@ -200,6 +200,7 @@ GridLayout {
         id: mediaCard
         Layout.row: 0
         Layout.column: 2
+        Layout.fillWidth: true
         Layout.preferredWidth: Theme.dashboardMediaCardWidth
         Layout.preferredHeight: (player === null ? emptyContent.implicitHeight : playingContent.implicitHeight)
             + Theme.space3 * 2
@@ -396,38 +397,38 @@ GridLayout {
 
             QsmShellComponents.StatRing {
                 Layout.alignment: Qt.AlignHCenter
-                visible: PerformanceService.cpuUsage >= 0
                 diameter: Theme.dashboardRingDiameter
                 strokeWidth: Theme.dashboardRingStroke
                 readingSize: Theme.textSm
                 value: Math.max(0, PerformanceService.cpuUsage)
-                reading: `${Math.round(PerformanceService.cpuUsage * 100)}%`
+                reading: PerformanceService.cpuUsage < 0
+                    ? "—" : `${Math.round(PerformanceService.cpuUsage * 100)}%`
                 label: "CPU"
-                fill: root.loadTone(PerformanceService.cpuUsage)
+                fill: Theme.loadTone(PerformanceService.cpuUsage)
             }
 
             QsmShellComponents.StatRing {
                 Layout.alignment: Qt.AlignHCenter
-                visible: PerformanceService.memUsed >= 0
                 diameter: Theme.dashboardRingDiameter
                 strokeWidth: Theme.dashboardRingStroke
                 readingSize: Theme.textSm
                 value: Math.max(0, PerformanceService.memUsed)
-                reading: `${Math.round(PerformanceService.memUsed * 100)}%`
+                reading: PerformanceService.memUsed < 0
+                    ? "—" : `${Math.round(PerformanceService.memUsed * 100)}%`
                 label: "Memory"
-                fill: root.loadTone(PerformanceService.memUsed)
+                fill: Theme.loadTone(PerformanceService.memUsed)
             }
 
             QsmShellComponents.StatRing {
                 Layout.alignment: Qt.AlignHCenter
-                visible: PerformanceService.storageUsed >= 0
                 diameter: Theme.dashboardRingDiameter
                 strokeWidth: Theme.dashboardRingStroke
                 readingSize: Theme.textSm
                 value: Math.max(0, PerformanceService.storageUsed)
-                reading: `${Math.round(PerformanceService.storageUsed * 100)}%`
+                reading: PerformanceService.storageUsed < 0
+                    ? "—" : `${Math.round(PerformanceService.storageUsed * 100)}%`
                 label: "Storage"
-                fill: root.loadTone(PerformanceService.storageUsed)
+                fill: Theme.loadTone(PerformanceService.storageUsed)
             }
         }
     }
