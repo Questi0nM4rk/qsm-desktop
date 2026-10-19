@@ -5,7 +5,9 @@ import qs.QsmShell.Components as QsmShellComponents
 import qs.theme
 
 // One DBusMenu row (03 DEFAULT tray-menu rendering). Submenus expand
-// inline, indented, on click.
+// inline, indented, on click. The rows are the library's, so a library `Menu`
+// above this finds them (also those of an open submenu) and steps through
+// them by keyboard; `structureChanged` tells it when the set grew or shrank.
 ColumnLayout {
     id: root
 
@@ -13,6 +15,10 @@ ColumnLayout {
     property int depth: 0
     property bool expanded: false
     readonly property bool hasSubmenu: entry.hasChildren ?? false
+
+    // The row set below this one changed: a submenu opened, closed or loaded.
+    signal structureChanged
+    onExpandedChanged: root.structureChanged()
 
     Layout.fillWidth: true
     spacing: Theme.spaceTight
@@ -29,6 +35,9 @@ ColumnLayout {
     // library's. A row with a submenu toggles it instead of firing.
     QsmShellComponents.ListRow {
         visible: !root.entry.isSeparator
+        // A separator keeps its row so the menu's document order is the
+        // entry's, but it is not a target.
+        interactive: !root.entry.isSeparator
         Layout.fillWidth: true
         Layout.leftMargin: root.depth * Theme.space3
         size: "sm"
@@ -47,10 +56,9 @@ ColumnLayout {
 
         QsmShellComponents.SvgIcon {
             visible: root.hasSubmenu
-            name: "chevron-left"
+            name: root.expanded ? "chevron-down" : "chevron-right"
             size: Theme.iconXs
             color: Theme.textMuted
-            rotation: root.expanded ? 90 : 180
         }
     }
 
@@ -69,6 +77,12 @@ ColumnLayout {
             Layout.fillWidth: true
             Component.onCompleted: setSource("MenuRow.qml",
                 { entry: modelData, depth: root.depth + 1 })
+            onLoaded: root.structureChanged()
+
+            Connections {
+                target: parent.item
+                function onStructureChanged(): void { root.structureChanged(); }
+            }
         }
     }
 }

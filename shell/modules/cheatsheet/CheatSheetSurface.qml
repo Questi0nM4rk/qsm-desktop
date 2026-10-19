@@ -183,40 +183,18 @@ Item {
                 model: root.results
 
                 // Group separators (owner 2026-08-21: "nice and visible"): the
-                // group's name and a faded rule carrying it across the row —
-                // the notification stack's separator language, given a voice.
-                // The group name is also part of every row's search haystack, so
-                // typing "windows" keeps the whole Windows section.
+                // group's name in the accent between two faded rules, the
+                // library's header row. The group name is also part of every
+                // row's search haystack, so typing "windows" keeps the whole
+                // Windows section.
                 section.property: "group"
-                section.delegate: Item {
+                section.delegate: QsmShellComponents.ListRow {
                     required property string section
 
                     width: rows.width
-                    // Top space is a token, not whatever a row height leaves.
-                    height: Theme.space3 + groupHeader.implicitHeight + Theme.space1
-
-                    RowLayout {
-                        id: groupHeader
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.bottom: parent.bottom
-                        anchors.bottomMargin: Theme.space1
-                        spacing: Theme.space3
-
-                        QsmShellComponents.Prose {
-                            role: "section"
-                            // Kept loud rather than the role's default muted
-                            // grey (owner 2026-08-21: "nice and visible").
-                            color: Theme.accent
-                            text: section
-                        }
-
-                        QsmShellComponents.Divider {
-                            Layout.fillWidth: true
-                            Layout.alignment: Qt.AlignVCenter
-                            strength: 0.4
-                        }
-                    }
+                    header: true
+                    accentHeader: true
+                    primary: section
                 }
 
                 delegate: Item {
