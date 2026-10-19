@@ -3,6 +3,7 @@ import QtQuick
 import Quickshell.Hyprland
 import qs.components
 import qs.QsmShell.Components as QsmShellComponents
+import qs.QsmShell.Style as QsmShellStyle
 import qs.services
 import qs.theme
 
@@ -53,6 +54,7 @@ Item {
         delegate: Item {
             id: appRow
             required property var modelData
+            required property int index
             // lastIpcObject stays empty on unfocused monitors — the shared
             // clients service is the reliable class/title source.
             readonly property var info: HyprClientsService.infoFor(modelData.address)
@@ -74,8 +76,45 @@ Item {
             }
             readonly property bool current: modelData.activated
 
+            readonly property bool open: root.popouts !== null
+                && root.popouts.kind === "app" && root.popouts.anchor === appRow
+
+            function focusWindow(): void {
+                HyprClientsService.focus(appRow.modelData.address);
+            }
+
+            // The controller snapshots title and detail when the popout
+            // opens, and a window's title keeps changing under a pointer that
+            // rests on its row (a page loading, a track changing): push the
+            // new text while this row's popout is the open one.
+            onAppContextChanged: {
+                if (open)
+                    root.popouts.detail = appContext;
+            }
+            onAppIdentityChanged: {
+                if (open)
+                    root.popouts.title = appIdentity;
+            }
+
             width: appList.width
             height: Theme.railAppSlot
+
+            activeFocusOnTab: true
+            Accessible.role: Accessible.Button
+            Accessible.name: appIdentity
+            Accessible.description: appContext
+            Accessible.onPressAction: appRow.focusWindow()
+            Keys.onReturnPressed: appRow.focusWindow()
+            Keys.onEnterPressed: appRow.focusWindow()
+            Keys.onSpacePressed: appRow.focusWindow()
+            // Tabbing to a row names it the way hovering does, and brings it
+            // into the clipped list.
+            onActiveFocusChanged: {
+                if (!activeFocus)
+                    return;
+                appList.positionViewAtIndex(index, ListView.Contain);
+                root.popouts?.show("app", appRow, appRow.appIdentity, appRow.appContext, null);
+            }
 
             // The focused row is a state, not a hover: accent at
             // opacitySelected behind the glyph.
@@ -86,6 +125,8 @@ Item {
                 radius: Theme.radiusMd
                 base: "transparent"
                 selected: appRow.current
+                hovered: rowLayer.hovered
+                pressed: rowLayer.pressed
             }
 
             // Hover authority sits on the delegate — an ANCESTOR of the icon,
@@ -113,13 +154,17 @@ Item {
             }
 
             QsmShellComponents.StateLayer {
+                id: rowLayer
                 anchors.fill: parent
                 // The ICON grows, not the row: the row sits in a clipping
-                // ListView, so growing it would shave the response.
+                // ListView, so growing it would shave the response. The
+                // row's slot above recolours on hover and press.
                 target: rowIcon
-                hoverScale: 1.08
-                pressScale: 0.92
-                onClicked: HyprClientsService.focus(appRow.modelData.address)
+                hoverScale: QsmShellStyle.Motion.hoverScale
+                pressScale: QsmShellStyle.Motion.pressScale
+                focused: appRow.activeFocus
+                focusRadius: Theme.radiusMd
+                onClicked: appRow.focusWindow()
             }
         }
     }
