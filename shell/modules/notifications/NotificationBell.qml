@@ -122,12 +122,13 @@ Item {
         y: root.cornerCenter.y + (root.bulgeCenter.y - root.cornerCenter.y) * bulge.revealProgress
             - height / 2
 
-        // The count sits IN the glyph's top-right corner, flush with it, so it
-        // travels with the bell and, tucked into the screen corner, is never
-        // pushed past the screen edge. Same rule as the rail's badge.
+        // The count is centred on the glyph's top-right corner and pulled in
+        // by a hairline so it stays on screen: a 28px chip flush INSIDE a 16px
+        // glyph covered the whole bell.
         QsmShellComponents.Badge {
-            anchors.right: parent.right
-            anchors.top: parent.top
+            anchors.horizontalCenter: parent.right
+            anchors.horizontalCenterOffset: -Theme.spaceTight
+            anchors.verticalCenter: parent.top
             z: 1
             visible: root.unread > 0
             tone: "accent"

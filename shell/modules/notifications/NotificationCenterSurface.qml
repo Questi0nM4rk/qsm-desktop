@@ -30,6 +30,7 @@ QsmShellComponents.NotificationCenter {
 
     function open(): void {
         query = "";
+        beginVisit();
         view = unreadCount > 0 ? "unread" : "all";
         focusField();
     }

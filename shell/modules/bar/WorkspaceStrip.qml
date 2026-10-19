@@ -13,19 +13,17 @@ import qs.theme
 Item {
     id: root
 
-    // The rail's own screen: each rail lists and follows ITS monitor's
-    // workspaces, never another monitor's.
-    required property var screen
-    readonly property var monitor: Hyprland.monitorFor(screen)
+    // Every rail renders the identical column of ALL workspaces, active =
+    // the globally focused one (03, owner ratified 2026-10-16).
 
-    // This monitor's active workspace — the same notify chain ShellState and
+    // The globally focused workspace via the focused monitor — the same notify chain ShellState and
     // the pre-reel widget already rely on. (When testing
     // switches from a script on this Lua-dispatch Hyprland, use
     // `hl.dsp.focus({ workspace = "N" })`; plain `hyprctl dispatch workspace N`
     // errors and no-ops, which reads exactly like a stale binding — bit us.)
-    readonly property int activeWorkspaceId: monitor?.activeWorkspace?.id ?? 1
+    readonly property int activeWorkspaceId: Hyprland.focusedMonitor?.activeWorkspace?.id ?? 1
     readonly property var allWorkspaces: Hyprland.workspaces.values
-        .filter(workspace => workspace.id > 0 && workspace.monitor?.name === root.monitor?.name)
+        .filter(workspace => workspace.id > 0)
         .sort((left, right) => left.id - right.id);
 
     function workspaceFor(id: int): var {

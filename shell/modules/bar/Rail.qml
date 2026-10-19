@@ -103,7 +103,6 @@ Item {
 
                 WorkspaceStrip {
                     id: workspaces
-                    screen: root.screen
                     width: parent.width
                     height: implicitHeight // plain Items do not self-adopt implicit size
                 }
@@ -223,6 +222,10 @@ Item {
             ClockEntry {
                 popouts: root.popouts
             }
+
+            // The clock reads time, the rest are controls: a divider between
+            // them (owner 2026-10-19).
+            RailDivider {}
 
             RailEntry {
                 id: batteryCell

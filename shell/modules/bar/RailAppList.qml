@@ -24,25 +24,20 @@ Item {
 
     implicitWidth: Theme.railWidth
 
-    // The empty state holds the first row's slot, so rows arriving replace it
-    // in place.
     QsmShellComponents.SvgIcon {
-        anchors.top: parent.top
-        anchors.topMargin: (Theme.railAppSlot - Theme.railAppIconSize) / 2
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.centerIn: parent
         visible: root.toplevels.length === 0
         name: "monitor"
         size: Theme.railAppIconSize
         color: Theme.textMuted
     }
 
-    // The rows start at a fixed origin under the workspace group, so the
-    // first row never moves while rows come and go (owner 2026-10-19:
-    // "NENAVIDIM RANDOM UI JUMPING"). Centring on contentHeight shifted every
-    // row by half a slot per window opened or closed.
+    // The rows sit in the middle of the free area between the workspace group
+    // and the bottom cluster (owner 2026-10-16, reaffirmed 2026-10-19 when a
+    // top-pinned list read as off-centre).
     ListView {
         id: appList
-        anchors.top: parent.top
+        anchors.centerIn: parent
         width: parent.width
         height: Math.min(parent.height, contentHeight)
         visible: root.toplevels.length > 0
@@ -146,10 +141,9 @@ Item {
                 anchors.centerIn: parent
                 implicitSize: Theme.railAppIconSize
                 icon: appRow.appClass
-                // One tone of the glyph set: text when active, muted and
-                // receded when not. De-emphasis by contrast, never by
-                // shrinking the target.
-                tint: appRow.current ? Theme.text : Theme.textMuted
+                // The app's own colours, receded when not focused (owner
+                // 2026-10-19: a one-tone tint looked washed out). De-emphasis
+                // by contrast, never by shrinking the target.
                 opacity: appRow.current ? 1 : Theme.railInactiveAppOpacity
             }
 
