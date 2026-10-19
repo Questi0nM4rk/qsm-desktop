@@ -233,6 +233,12 @@ Item {
                 readonly property real charge: battery?.percentage ?? 0
                 readonly property bool low: laptop && !charging && charge <= Theme.railLowBatteryFraction
 
+                // The battery popout's profile switch reads this singleton,
+                // and a laptop's cell never does: touching it here loads the
+                // profile at startup, so the switch row is there when the card
+                // opens instead of arriving a moment after it.
+                Component.onCompleted: PowerProfileService.refresh()
+
                 // The NUMBER, not a glyph (owner 2026-09-05). A machine with
                 // no battery still shows its power profile, because there is
                 // no percentage to show there.

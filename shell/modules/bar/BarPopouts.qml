@@ -325,6 +325,10 @@ QsmShellComponents.Rollout {
 
         QsmShellComponents.Prose {
             role: "title"
+            // The card's inner width, so a long title elides instead of
+            // running past the card's edge.
+            width: parent.width
+            elide: Text.ElideRight
             text: body.title
             textFormat: Text.PlainText
         }
