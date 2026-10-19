@@ -410,12 +410,11 @@ QtObject {
     // with a 22px glyph, no caption. The title lives in the hover popout.
     readonly property int railAppSlot: 32
     readonly property int railAppIconSize: 22
-    // A rail icon lifts 7px when a caption sits under it, and the caption rests
-    // 3px above the cell's bottom edge.
-    readonly property int railCaptionOffset: -7
-    readonly property int railCaptionBottomMargin: 3
     // Inactive rail apps sit back by contrast; the active one is at full strength.
     readonly property real railInactiveAppOpacity: 0.62
+    // A tray icon is recoloured to textMuted and lifted by this much, so a
+    // coloured third-party glyph sits in the same tone as the rail's outline glyphs.
+    readonly property real trayGlyphBrightness: 0.5
     // The rail clock (03, back in the rail 2026-10-17): time above a smaller
     // numeric date.
     readonly property int railClockDigitSize: textLg
