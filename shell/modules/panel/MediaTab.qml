@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell.Services.Mpris
 import qs.QsmShell.Components as QsmShellComponents
+import qs.QsmShell.Style as QsmShellStyle
 import qs.services
 import qs.theme
 
@@ -9,8 +10,10 @@ import qs.theme
 // with a progress ring, title/album/artist, transport + seek, per-player
 // source picker. Fallbacks (DEFAULT): no artwork -> type glyph in the
 // circle; no player -> centered "nothing playing". Three zones (owner
-// caelestia-parity ruling, keep-it-simple): artwork | title/seek/transport |
-// per-player source picker. Cava/lyrics/bongocat are explicitly not ported.
+// caelestia-parity ruling, keep-it-simple): artwork | title, seek, transport
+// and the per-player source row. Cava/lyrics/bongocat are explicitly not
+// ported. The tab is as tall as the panel's body, always, so nothing in it
+// moves when a track, a player or the artwork appears.
 
 Item {
     id: root
@@ -23,7 +26,15 @@ Item {
     // so a long title or a second player cannot widen it (the row's own
     // implicit width follows its text, which is why it is not read here).
     implicitWidth: Theme.mediaContentWidth
-    implicitHeight: Math.max(mediaRow.implicitHeight, Theme.mediaArtSize + Theme.space4 * 2)
+    // The panel body less its own margins, the tab bar and the gap under it
+    // (PanelSurface's column); the viewport scrolls when a screen is shorter.
+    implicitHeight: Theme.panelHeight - Theme.space4 * 2 - Theme.panelTabBarHeight - Theme.space3
+
+    // The artwork grows to the body, up to a third of the column so the text
+    // keeps the rest.
+    readonly property real artBox: Math.min(implicitHeight - Theme.space4 * 2, Theme.mediaContentWidth / 3)
+    // How far an arrow key moves the playhead.
+    readonly property real seekStepSeconds: 5
 
     // Same empty-state pattern as the launcher and clipboard surfaces.
     QsmShellComponents.EmptyState {
@@ -39,12 +50,25 @@ Item {
         visible: root.player !== null
         spacing: Theme.space5
 
-        // LEFT: artwork circle + progress ring; clicking the ring seeks.
+        // LEFT: artwork circle + progress ring; clicking the ring seeks, and so
+        // do the arrow keys while it holds keyboard focus.
         Item {
             id: artwork
-            Layout.preferredWidth: Theme.mediaArtSize
-            Layout.preferredHeight: Theme.mediaArtSize
-            Layout.alignment: Qt.AlignTop
+            readonly property bool canSeek: MediaService.canSeek && MediaService.lengthSupported && MediaService.length > 0
+            Layout.preferredWidth: root.artBox
+            Layout.preferredHeight: root.artBox
+            Layout.alignment: Qt.AlignVCenter
+            activeFocusOnTab: canSeek
+            Accessible.role: Accessible.Slider
+            Accessible.name: "Seek"
+
+            function seekBy(seconds: real): void {
+                if (canSeek)
+                    MediaService.seek(Math.max(0, Math.min(1,
+                        (MediaService.position + seconds) / MediaService.length)));
+            }
+            Keys.onLeftPressed: event => { event.accepted = canSeek; seekBy(-root.seekStepSeconds); }
+            Keys.onRightPressed: event => { event.accepted = canSeek; seekBy(root.seekStepSeconds); }
 
             // The artwork AND how far through it we are: one thing, one type.
             // This surface and the dashboard used to assemble it separately
@@ -52,7 +76,7 @@ Item {
             // belonged to either of them.
             QsmShellComponents.Avatar {
                 anchors.centerIn: parent
-                size: Theme.mediaArtSize - 24
+                size: artwork.width - 2 * (Theme.dashboardRingStroke + QsmShellStyle.Style.spaceTight)
                 background: Theme.surface
                 source: root.player?.trackArtUrl ?? ""
                 icon: "music"
@@ -60,16 +84,25 @@ Item {
                 // two-fifths default is the rule for initials, not for a glyph.
                 glyphSize: Theme.iconXl
                 progress: root.progress
-                ringWidth: 5
+                // The ring is the seek affordance: accent while it can be
+                // sought, dimmed into the band when the player cannot.
+                progressColor: artwork.canSeek ? Theme.accent : QsmShellStyle.Style.disabled(Theme.accent)
+                ringWidth: Theme.dashboardRingStroke
+            }
+
+            QsmShellComponents.StateLayer {
+                anchors.fill: parent
+                interactive: artwork.canSeek
+                focused: artwork.activeFocus
+                focusRadius: width / 2
             }
 
             // Seek by clicking the ring's angle (12 o'clock = 0).
-            MouseArea {
-                anchors.fill: parent
-                enabled: MediaService.canSeek && MediaService.lengthSupported
-                onClicked: event => {
-                    const dx = event.x - width / 2;
-                    const dy = event.y - height / 2;
+            TapHandler {
+                enabled: artwork.canSeek
+                onTapped: (eventPoint, button) => {
+                    const dx = eventPoint.position.x - artwork.width / 2;
+                    const dy = eventPoint.position.y - artwork.height / 2;
                     let angle = Math.atan2(dy, dx) + Math.PI / 2;
                     if (angle < 0)
                         angle += Math.PI * 2;
@@ -78,16 +111,16 @@ Item {
             }
         }
 
-        // CENTER: title/artist/album, seek row, transport row of five.
-        // The block hangs from the artwork's top edge and every line keeps its
-        // slot (an empty line still has its height), so a track with no album
-        // does not re-centre the block and the rows below do not move.
+        // CENTER: title/artist/album, seek row, transport row of five, source
+        // row. Centred on the artwork; every line keeps its slot (an empty
+        // line still has its height) and the source row is always there, so
+        // a track with no album or a second player never moves the rows.
         ColumnLayout {
             Layout.fillWidth: true
             // Zero preferred width: the text's own width never sets the
             // column's, the row's remainder does, so ElideRight fires.
             Layout.preferredWidth: 0
-            Layout.alignment: Qt.AlignTop
+            Layout.alignment: Qt.AlignVCenter
             spacing: Theme.space2
 
             QsmShellComponents.Prose {
@@ -115,8 +148,9 @@ Item {
             }
 
             // Seek row: position label — slider — duration label. Labels are
-            // width-locked to a zeroed "00:00" template so digit-width churn
-            // (e.g. 0:59 -> 1:00) never nudges the slider ends.
+            // width-locked to the widest reachable reading ("000:00",
+            // minutes past 99) so digit-width churn (0:59 -> 1:00) and a long
+            // track never nudge the slider ends or truncate.
             RowLayout {
                 Layout.fillWidth: true
                 Layout.topMargin: Theme.space2
@@ -126,7 +160,7 @@ Item {
                     id: timeTemplate
                     font.family: Theme.technicalFontFamily
                     font.pixelSize: Theme.textSm
-                    text: "00:00"
+                    text: "000:00"
                 }
 
                 QsmShellComponents.Prose {
@@ -204,25 +238,25 @@ Item {
                     onClicked: MediaService.cycleLoop()
                 }
             }
-        }
 
-        // RIGHT: per-player source picker (all MPRIS players); a lone
-        // player needs no picker, so this stays hidden until there's a
-        // choice to make.
-        ColumnLayout {
-            Layout.alignment: Qt.AlignTop
-            visible: MediaService.players.length > 1
-            spacing: Theme.space2
+            // Source row: every MPRIS player. A lone player shows as the one
+            // active capsule, so the row is always there and the transport
+            // above never moves when a second player appears.
+            Flow {
+                Layout.fillWidth: true
+                Layout.topMargin: Theme.space2
+                spacing: Theme.space2
 
-            Repeater {
-                model: MediaService.players
+                Repeater {
+                    model: MediaService.players
 
-                QsmShellComponents.Capsule {
-                    required property var modelData
-                    icon: "music"
-                    label: modelData.identity || "player"
-                    active: MediaService.active === modelData
-                    onClicked: MediaService.selected = modelData
+                    QsmShellComponents.Capsule {
+                        required property var modelData
+                        icon: "music"
+                        label: modelData.identity || "player"
+                        active: MediaService.active === modelData
+                        onClicked: MediaService.selected = modelData
+                    }
                 }
             }
         }
