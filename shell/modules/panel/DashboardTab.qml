@@ -36,7 +36,6 @@ GridLayout {
     // row 0 and row 1 meet.
     // 1. User card: avatar + distro badge, WM pill, uptime.
     QsmShellComponents.Card {
-        glow: true
         radius: Theme.panelCardRadius
         id: userCard
         Layout.row: 0
@@ -153,7 +152,6 @@ GridLayout {
     // Hides its content while offline (06 DEFAULT); card frame stays put so
     // the grid doesn't reflow.
     QsmShellComponents.Card {
-        glow: true
         radius: Theme.panelCardRadius
         Layout.row: 0
         Layout.column: 1
@@ -195,15 +193,15 @@ GridLayout {
 
     // 6. Media mini-card: square art + half-ring position arc, transport.
     QsmShellComponents.Card {
-        glow: true
         radius: Theme.panelCardRadius
         id: mediaCard
         Layout.row: 0
         Layout.column: 2
         Layout.fillWidth: true
         Layout.preferredWidth: Theme.dashboardMediaCardWidth
-        Layout.preferredHeight: (player === null ? emptyContent.implicitHeight : playingContent.implicitHeight)
-            + Theme.space3 * 2
+        // One height for playing and idle, so the row does not jump when
+        // playback starts or stops; the idle state centres inside it.
+        Layout.preferredHeight: playingContent.implicitHeight + Theme.space3 * 2
         Layout.fillHeight: true
 
         readonly property var player: MediaService.active
@@ -256,6 +254,7 @@ GridLayout {
                     icon: "music"
                     glyphSize: Theme.iconMd
                     progress: mediaCard.progress
+                    progressColor: Theme.accent
                     ringWidth: Theme.dashboardRingStroke
                 }
             }
@@ -323,7 +322,6 @@ GridLayout {
 
     // 3. DateTime card: stacked big hours/minutes, 24h, live.
     QsmShellComponents.Card {
-        glow: true
         radius: Theme.panelCardRadius
         id: dateTimeCard
         Layout.row: 1
@@ -365,7 +363,6 @@ GridLayout {
     // 4. Calendar card: fills whatever width row 1 leaves between the
     // datetime and resources cards.
     QsmShellComponents.Card {
-        glow: true
         radius: Theme.panelCardRadius
         Layout.row: 1
         Layout.column: 1
@@ -382,7 +379,6 @@ GridLayout {
 
     // 5. Resources card: three vertical usage-% rings (CPU, memory, storage).
     QsmShellComponents.Card {
-        glow: true
         radius: Theme.panelCardRadius
         Layout.row: 1
         Layout.column: 2

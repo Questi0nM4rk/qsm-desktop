@@ -9,14 +9,19 @@ import qs.theme
 // caelestia-parity ruling: this replaces the "three rings" anatomy with
 // caelestia's card grid, simplified per owner keep-it-simple — no
 // decorative morphing blob). CPU/GPU hero cards (usage ring + temp read-
-// out), memory/storage 3/4-rings, a network card with a live sparkline,
-// and a battery tank (UPower) when a battery exists. Every card/row hides
-// individually when its sensor is missing.
+// out), memory/storage rings, a network card with a live sparkline, and a
+// battery tank (UPower) when a battery exists. CPU, memory and storage are
+// always there and read "—" until their first sample, the same as the
+// dashboard; the GPU card and the battery tank come and go with their sensor.
 ColumnLayout {
     id: root
 
     property var batteryDevice: UPower.displayDevice
     spacing: Theme.space3
+
+    // Every ring card is one width: its readout elides inside the ring's
+    // diameter, so a ticking number never resizes the card or its neighbours.
+    readonly property real ringCardWidth: Theme.ringDiameterDefault + Theme.space4 * 2
 
     // Icon + °C readout + thin thermal bar, shared by the CPU/GPU hero
     // cards. Flips to the danger color (icon swaps to alert-triangle) past
@@ -115,15 +120,15 @@ ColumnLayout {
 
         // CPU hero card.
         QsmShellComponents.Card {
-            glow: true
             radius: Theme.panelCardRadius
-            Layout.preferredWidth: cpuContent.implicitWidth + Theme.space4 * 2
+            Layout.preferredWidth: root.ringCardWidth
             Layout.preferredHeight: cpuContent.implicitHeight + Theme.space4 * 2
             Layout.fillHeight: true
 
             ColumnLayout {
                 id: cpuContent
                 anchors.centerIn: parent
+                width: Theme.ringDiameterDefault
                 spacing: Theme.space2
 
                 // Every ring on this tab reads the same way: glyph, the
@@ -150,16 +155,16 @@ ColumnLayout {
 
         // GPU hero card — hides entirely with no GPU sensor at all.
         QsmShellComponents.Card {
-            glow: true
             visible: PerformanceService.gpuUsage >= 0 || PerformanceService.gpuTemp >= 0
             radius: Theme.panelCardRadius
-            Layout.preferredWidth: gpuContent.implicitWidth + Theme.space4 * 2
+            Layout.preferredWidth: root.ringCardWidth
             Layout.preferredHeight: gpuContent.implicitHeight + Theme.space4 * 2
             Layout.fillHeight: true
 
             ColumnLayout {
                 id: gpuContent
                 anchors.centerIn: parent
+                width: Theme.ringDiameterDefault
                 spacing: Theme.space2
 
                 QsmShellComponents.StatRing {
@@ -176,27 +181,25 @@ ColumnLayout {
             }
         }
 
-        // Memory 3/4-ring.
+        // Memory ring.
         QsmShellComponents.Card {
-            glow: true
-            visible: PerformanceService.memUsed >= 0
             radius: Theme.panelCardRadius
-            Layout.preferredWidth: memContent.implicitWidth + Theme.space4 * 2
+            Layout.preferredWidth: root.ringCardWidth
             Layout.preferredHeight: memContent.implicitHeight + Theme.space4 * 2
             Layout.fillHeight: true
 
             ColumnLayout {
                 id: memContent
                 anchors.centerIn: parent
+                width: Theme.ringDiameterDefault
                 spacing: Theme.space2
 
                 QsmShellComponents.StatRing {
                     Layout.alignment: Qt.AlignHCenter
-                    startAngle: Theme.ringQuarterStartAngle
-                    sweepAngle: Theme.ringQuarterSweepAngle
                     value: Math.max(0, PerformanceService.memUsed)
                     icon: "memory"
-                    reading: `${Math.round(PerformanceService.memUsed * 100)}%`
+                    reading: PerformanceService.memUsed < 0
+                        ? "—" : `${Math.round(PerformanceService.memUsed * 100)}%`
                     label: "Memory"
                     fill: Theme.loadTone(PerformanceService.memUsed)
                 }
@@ -204,8 +207,10 @@ ColumnLayout {
                 QsmShellComponents.Prose {
                     role: "metadata"
                     technical: true
-                    Layout.alignment: Qt.AlignHCenter
-                    text: PerformanceService.memText
+                    Layout.fillWidth: true
+                    horizontalAlignment: Text.AlignHCenter
+                    elide: Text.ElideRight
+                    text: PerformanceService.memText || "—"
                 }
             }
         }
@@ -215,27 +220,25 @@ ColumnLayout {
         Layout.alignment: Qt.AlignHCenter
         spacing: Theme.space3
 
-        // Storage 3/4-ring.
+        // Storage ring.
         QsmShellComponents.Card {
-            glow: true
-            visible: PerformanceService.storageUsed >= 0
             radius: Theme.panelCardRadius
-            Layout.preferredWidth: storageContent.implicitWidth + Theme.space4 * 2
+            Layout.preferredWidth: root.ringCardWidth
             Layout.preferredHeight: storageContent.implicitHeight + Theme.space4 * 2
             Layout.fillHeight: true
 
             ColumnLayout {
                 id: storageContent
                 anchors.centerIn: parent
+                width: Theme.ringDiameterDefault
                 spacing: Theme.space2
 
                 QsmShellComponents.StatRing {
                     Layout.alignment: Qt.AlignHCenter
-                    startAngle: Theme.ringQuarterStartAngle
-                    sweepAngle: Theme.ringQuarterSweepAngle
                     value: Math.max(0, PerformanceService.storageUsed)
                     icon: "hard-drive"
-                    reading: `${Math.round(PerformanceService.storageUsed * 100)}%`
+                    reading: PerformanceService.storageUsed < 0
+                        ? "—" : `${Math.round(PerformanceService.storageUsed * 100)}%`
                     label: "Storage"
                     fill: Theme.loadTone(PerformanceService.storageUsed)
                 }
@@ -243,8 +246,10 @@ ColumnLayout {
                 QsmShellComponents.Prose {
                     role: "metadata"
                     technical: true
-                    Layout.alignment: Qt.AlignHCenter
-                    text: PerformanceService.storageText
+                    Layout.fillWidth: true
+                    horizontalAlignment: Text.AlignHCenter
+                    elide: Text.ElideRight
+                    text: PerformanceService.storageText || "—"
                 }
             }
         }
@@ -256,7 +261,6 @@ ColumnLayout {
         // of content left about 68px of card reserved and never used, which is
         // the tell of a box drawn before its contents were known.
         QsmShellComponents.Card {
-            glow: true
             radius: Theme.panelCardRadius
             Layout.preferredWidth: Theme.performanceNetworkCardWidth
             Layout.minimumHeight: networkContent.implicitHeight + Theme.space4 * 2
@@ -294,7 +298,7 @@ ColumnLayout {
                     readonly property var rx: PerformanceService.netRxHistory
                     readonly property var tx: PerformanceService.netTxHistory
                     readonly property real peak: Math.max(1, ...rx, ...tx)
-                    readonly property real lineThickness: 1.5
+                    readonly property real lineThickness: Theme.sparklineThickness
 
                     // The zero line, always drawn: with no traffic both
                     // series sit on it, so idle reads as quiet rather than as
@@ -407,7 +411,6 @@ ColumnLayout {
         // Battery tank (caelestia "liquid" card) — present only when a
         // battery exists.
         QsmShellComponents.Card {
-            glow: true
             id: batteryCard
             visible: root.batteryDevice?.isLaptopBattery ?? false
             radius: Theme.panelCardRadius
@@ -449,7 +452,7 @@ ColumnLayout {
                     thickness: Theme.performanceThermalBarHeight
                     value: batteryCard.fraction
                     // The popout's own rule: danger only when low and not charging.
-                    fill: batteryCard.fraction < 0.15 && !batteryCard.charging ? Theme.danger : Theme.success
+                    fill: batteryCard.fraction < Theme.lowBatteryFraction && !batteryCard.charging ? Theme.danger : Theme.success
                 }
             }
         }

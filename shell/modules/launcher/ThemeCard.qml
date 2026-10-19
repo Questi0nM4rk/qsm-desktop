@@ -1,5 +1,6 @@
 import QtQuick
 import qs.QsmShell.Components as QsmShellComponents
+import qs.QsmShell.Style as QsmShellStyle
 import qs.theme
 
 // One >theme carousel card (07 RATIFIED, caelestia WallpaperList idea):
@@ -10,7 +11,12 @@ import qs.theme
 // surface. The hovered card becomes the centered one — one cursor shared by
 // pointer and keyboard — so Enter always applies the card that is visibly
 // marked. Hover adds no growth of its own: selection IS the response, and a
-// 1.04 hover scale outrunning the selected card's 1.0 was the defect.
+// 1.04 hover scale outrunning the selected card's 1.0 was the defect. The
+// hover and press response is a colour veil over the photo, never a resize.
+//
+// One owner for scale and opacity: the card's own centred/receded binding.
+// The StateLayer is told `target: null`, otherwise it would write `scale` over
+// the same property.
 QsmShellComponents.Card {
     id: root
 
@@ -27,8 +33,13 @@ QsmShellComponents.Card {
     // wash Card defaults to for a panel sitting over the band.
     surfaceOpacity: 1
     clip: true
-    scale: centered ? 1 : 0.85
-    opacity: centered ? 1 : 0.55
+    // A photo card stays flat: no glow edge, no shadow over the picture.
+    glow: false
+    shadow: false
+    // Off-centre cards recede by the nearest scale token and the pick-list
+    // opacity token.
+    scale: centered ? 1 : QsmShellStyle.Motion.rowPressScale
+    opacity: centered ? 1 : QsmShellStyle.Style.opacityRecede
 
     Behavior on scale { NumberAnimation { duration: Motion.fast; easing.type: Motion.standardEasing } }
     Behavior on opacity { NumberAnimation { duration: Motion.fast; easing.type: Motion.standardEasing } }
@@ -49,6 +60,18 @@ QsmShellComponents.Card {
             GradientStop { position: 0; color: "transparent" }
             GradientStop { position: 1; color: Qt.rgba(0, 0, 0, 0.65) }
         }
+    }
+
+    // Hover and press are a veil of the text colour over the photo; the
+    // photo has no body colour for Style.tone to lift.
+    Rectangle {
+        anchors.fill: parent
+        radius: root.radius
+        color: Theme.text
+        opacity: interaction.pressed ? QsmShellStyle.Style.opacitySelected * 2
+            : interaction.hovered ? QsmShellStyle.Style.opacitySelected : 0
+
+        Behavior on opacity { NumberAnimation { duration: Motion.micro; easing.type: Motion.standardEasing } }
     }
 
     Column {
@@ -74,9 +97,10 @@ QsmShellComponents.Card {
     }
 
     QsmShellComponents.StateLayer {
+        id: interaction
         anchors.fill: parent
-        hoverScale: 1.0
-        pressScale: 0.98
+        target: null
+        focusRadius: root.radius
         onClicked: root.activated()
         onHoveredEntered: root.hoveredEntered()
     }

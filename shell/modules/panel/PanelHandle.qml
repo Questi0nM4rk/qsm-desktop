@@ -61,7 +61,12 @@ Item {
                 width: Theme.dotGlyphSize
                 height: width
                 radius: width / 2
-                color: Theme.text
+                // Hover is the grip about to act: the dots take the accent.
+                color: interaction.hovered || interaction.pressed ? Theme.accent : Theme.text
+
+                Behavior on color {
+                    ColorAnimation { duration: Motion.micro; easing.type: Motion.standardEasing }
+                }
             }
         }
     }
@@ -69,7 +74,8 @@ Item {
     QsmShellComponents.StateLayer {
         id: interaction
         anchors.fill: parent
-        target: null
+        // The dots grow under the pointer; the bulge is the shader's.
+        target: grip
         interactive: root.visible && root.enabled
         focused: root.activeFocus
         focusRadius: root.height / 2
