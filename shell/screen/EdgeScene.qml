@@ -354,7 +354,7 @@ PanelWindow {
     // the zones sit UNDER the modals: the session column and the OSD share the
     // right edge, so mousing toward a logout button crossed the OSD strip and
     // rolled the brightness bulge out from beneath the buttons the owner was
-    // aiming at (owner 2026-08-24). The panel handle already carried this
+    // aiming at. The panel handle already carried this
     // guard inline (audit UX-2); hoisted here it is ONE rule for every handle
     // instead of one rule per handle, remembered or not.
     readonly property bool handlesArmed: ShellState.modal === "none" && !root.fullscreen && !root.focusMode
@@ -519,7 +519,7 @@ PanelWindow {
             // above that backdrop; without this it stayed at full strength
             // over a dimmed desktop, which read as the rail being the thing
             // in focus.
-            opacity: root.sessionActive ? 0.35 : 1
+            opacity: root.sessionActive ? Theme.opacitySessionDim : 1
 
             Behavior on opacity {
                 NumberAnimation { duration: Motion.normal; easing.type: Motion.standardEasing }
@@ -605,7 +605,7 @@ PanelWindow {
         swatchAppName: ColorPickService.notifyAppName
     }
 
-    // The bell in the top-right corner and its menu (04, owner 2026-10-17).
+    // The bell in the top-right corner and its menu.
     // The menu opens on the bell's hover and closes 180ms after the pointer
     // has left both the bell and the menu; a click outside closes it too
     // (ModalHost), and Escape through the surface.

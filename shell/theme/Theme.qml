@@ -61,9 +61,10 @@ QtObject {
     // palette name, never a derived rung. Each carries the 200ms theme-swap
     // cross-fade.
     //
-    // The neutral ladder (band to surface 1.45:1, surface to overlay 1.30:1) is
-    // the only separation the shell has: no hairline, no border, no rim, no
-    // shadow. band is the one
+    // The neutral ladder is three steps, each 1.30:1 on the one below (the
+    // library's rule, AGENTS.md "Surface ladder and borders"): lightness is the
+    // only separation between containers, so there is no hairline or rim, and a
+    // shadow only says where a card ends. band is the one
     // silhouette the shader paints (frame and every rollout); surface is a
     // card inside it; overlay is a popout over a card. A fourth level is a
     // design error, not a token.
@@ -90,11 +91,6 @@ QtObject {
     property color success: role("success")
     property color warning: role("warning")
     property color danger: role("danger")
-    // Not a role: the colour under the library's floating shadow, read by
-    // DataCapsule alone (the fullscreen capsule over a bright client). No frame
-    // body draws a shadow.
-    readonly property color shadow: "#000000"
-
     // The one load colour for every ring and meter: green until 70 percent,
     // yellow to 90, rose above (the thresholds the rail's readouts use, 03-rail).
     function loadTone(value: real): color {
@@ -105,6 +101,10 @@ QtObject {
     // Motion already reads Theme.reducedMotion, and a token both singletons
     // need would make that a cycle.
     readonly property int themeSwapDuration: 200
+
+    // How long the OSD slider thumb keeps showing its value after the last
+    // change (05-osd, Sliders).
+    readonly property int osdValueHoldMs: 1000
 
     // Every role fades: a swap that fades some and snaps others reads as a
     // glitch in the ones that snapped.
@@ -129,6 +129,9 @@ QtObject {
     // Disabled-affordance opacity — icon-buttons whose action is currently
     // unavailable (e.g. shuffle/repeat/seek unsupported by the active player).
     readonly property real opacityDisabled: 0.35
+    // What the rest of the shell dims to while the session surface is open:
+    // a modal backdrop, not a disabled control.
+    readonly property real opacitySessionDim: 0.35
     readonly property real opacitySelected: 0.12
     // A dragged item stays readable over what it passes across.
     readonly property real opacityDrag: 0.85

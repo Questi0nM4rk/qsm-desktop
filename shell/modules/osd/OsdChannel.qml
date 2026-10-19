@@ -30,9 +30,8 @@ QsmShellComponents.Slider {
     // Brightness has no mute: its thumb's double-click does nothing.
     property bool mutable: true
 
-    // 05-osd, Sliders: the value stays on the thumb for 1s after the last
-    // change, the same budget as the OSD's expiry. No Motion/Theme token has 1s.
-    readonly property int valueHoldMs: 1000
+    // 05-osd, Sliders: the value stays on the thumb for a while after the last change.
+    readonly property int valueHoldMs: Theme.osdValueHoldMs
     // Pressed, or changed (drag, wheel, keys, service) within valueHoldMs.
     // Not named `live`: Slider already owns a FINAL `live` property.
     readonly property bool showingValue: root.pressed || holdTimer.running
