@@ -57,6 +57,15 @@ QtObject {
             required property var notification
             target: link.notification
             ignoreUnknownSignals: true
+            property Instantiator actionLabels: Instantiator {
+                model: link.notification.actions
+                delegate: Connections {
+                    id: actionLink
+                    required property var modelData
+                    target: actionLink.modelData
+                    function onTextChanged(): void { root.sync(link.notificationId); }
+                }
+            }
             function onClosed(): void {
                 if (root.sources[link.notificationId] === link.notification)
                     root.closeFromProtocol(link.notificationId);
