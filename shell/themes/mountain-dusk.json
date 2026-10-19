@@ -2,19 +2,19 @@
   "name": "Mountain Dusk",
   "wallpaper": "assets/wallpapers/light-forest-dark-winter.jpg",
   "roles": {
-    "band": "#212033",
-    "edgeColor": "#473D8C",
-    "surface": "#3B3B4F",
-    "overlay": "#4C4C61",
+    "band": "#211F3A",
+    "edgeColor": "#48359D",
+    "surface": "#3B3A57",
+    "overlay": "#4B4B69",
     "text": "#EDEDF6",
-    "textMuted": "#BCBDD6",
-    "primary": "#B4C0FC",
-    "textOnPrimary": "#212033",
-    "accent": "#B4C0FC",
-    "focus": "#B4C0FC",
-    "info": "#89CFF1",
-    "success": "#A2D3A2",
-    "warning": "#D9C284",
-    "danger": "#F5AEB7"
+    "textMuted": "#BCBCDF",
+    "primary": "#B3C0FF",
+    "textOnPrimary": "#211F3A",
+    "accent": "#B3C0FF",
+    "focus": "#B3C0FF",
+    "info": "#84CFF3",
+    "success": "#A0D4A0",
+    "warning": "#DBC27F",
+    "danger": "#F8ACB7"
   }
 }

@@ -114,9 +114,10 @@ const meanHue = (ps: Lch[]) => {
 };
 const grey = share < 0.1;
 const tintHue = grey ? 0 : meanHue(chromatic);
-// Owner tune 2026-10-16 night: a little more of the wallpaper in the neutrals
-// and a little lighter frame than the brand book's 0.02 / 0.24.
-const TINT_C = grey ? 0 : 0.035;
+// Tuned for the notebook display (eDP-1), owner 2026-10-19: its narrow gamut
+// greys a low-chroma purple that the external monitor still shows as lilac,
+// so the neutrals carry more of the wallpaper's hue than the 0.035 of 2026-10-16.
+const TINT_C = grey ? 0 : 0.05;
 
 const BIN = 30;
 const bins: Lch[][] = Array.from({ length: 360 / BIN }, () => []);
@@ -146,7 +147,7 @@ const STATUS: Record<string, string> = { danger: "rose", warning: "yellow", succ
 for (const [role, pastel] of Object.entries(STATUS)) {
   if (hueDist(PASTELS[pastel], PASTELS[accentName]) < 30) throw new Error(`${role} (${pastel}) within 30 deg of the accent ${accentName}`);
 }
-const chroma = Math.min(0.085, ...Object.values(PASTELS).map((h) => maxChroma(HUE_L, h)));
+const chroma = Math.min(0.1, ...Object.values(PASTELS).map((h) => maxChroma(HUE_L, h)));
 
 const palette: Record<string, string> = {};
 for (const [n, lch] of Object.entries(ladder)) palette[n] = hex(fromLch(lch));
@@ -155,7 +156,9 @@ for (const [n, h] of Object.entries(PASTELS)) palette[n] = hex(fromLch({ L: HUE_
 // ---- roles --------------------------------------------------------------------------------
 // The edge colour (01-frame, owner 2026-10-18): the band a step lighter and a
 // touch more purple, a slight line at the silhouette's edge fading inward.
-palette.edgeColor = hex(fromLch({ L: ladder.band.L + 0.16, C: TINT_C + 0.09, h: tintHue }));
+// On the notebook panel the edge needs more chroma than lightness to read
+// purple rather than grey.
+palette.edgeColor = hex(fromLch({ L: ladder.band.L + 0.16, C: Math.min(TINT_C + 0.11, maxChroma(ladder.band.L + 0.16, tintHue)), h: tintHue }));
 
 const roles: Record<string, string> = {
   band: palette.band,
