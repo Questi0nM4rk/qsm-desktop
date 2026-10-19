@@ -13,6 +13,10 @@ QtObject {
     readonly property int fast: Theme.reducedMotion ? 80 : 180
     readonly property int normal: Theme.reducedMotion ? 100 : 260
 
+    // A workspace dot is 6px: the library's 1.08 growth would be under half a
+    // pixel, so it grows by half again to be seen at all.
+    readonly property real dotHoverScale: 1.5
+
     readonly property int standardEasing: Easing.OutCubic
     readonly property int emphasizedEasing: Easing.OutQuart
 

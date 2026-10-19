@@ -103,6 +103,7 @@ Item {
 
                 WorkspaceStrip {
                     id: workspaces
+                    screen: root.screen
                     width: parent.width
                     height: implicitHeight // plain Items do not self-adopt implicit size
                 }
