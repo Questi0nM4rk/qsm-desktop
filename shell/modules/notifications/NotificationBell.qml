@@ -67,6 +67,25 @@ Item {
 
     anchors.fill: parent
 
+    // One route for pointer, keyboard and screen reader.
+    function open(): void {
+        if (ShellState.modal !== "notifications")
+            ShellState.toggleModal("notifications");
+    }
+
+    activeFocusOnTab: root.shown
+    Accessible.role: Accessible.Button
+    Accessible.name: "Notifications"
+    Accessible.description: root.unread > 0 ? `${root.unread} unread` : "No unread notifications"
+    Accessible.onPressAction: root.open()
+    Keys.onPressed: event => {
+        if (event.key !== Qt.Key_Return && event.key !== Qt.Key_Enter && event.key !== Qt.Key_Space)
+            return;
+        event.accepted = true;
+        if (!event.isAutoRepeat)
+            root.open();
+    }
+
     onHoveredChanged: {
         if (hovered && root.shown && ShellState.modal === "none")
             ShellState.toggleModal("notifications");
@@ -89,17 +108,6 @@ Item {
         anchors.top: parent.top
         anchors.right: parent.right
 
-        Item {
-            parent: bulge.contentItem
-            anchors.fill: parent
-
-            QsmShellComponents.StateLayer {
-                anchors.fill: parent
-                target: null
-                interactive: root.shown
-                onClicked: if (ShellState.modal !== "notifications") ShellState.toggleModal("notifications")
-            }
-        }
     }
 
     // The glyph is not bulge content: the bulge's clip would cut it off the
@@ -114,12 +122,12 @@ Item {
         y: root.cornerCenter.y + (root.bulgeCenter.y - root.cornerCenter.y) * bulge.revealProgress
             - height / 2
 
-        // The count rides the glyph's top-right corner, so it travels with the
-        // bell and never sits clipped against the screen edge or over the glyph.
+        // The count sits IN the glyph's top-right corner, flush with it, so it
+        // travels with the bell and, tucked into the screen corner, is never
+        // pushed past the screen edge. Same rule as the rail's badge.
         QsmShellComponents.Badge {
             anchors.right: parent.right
-            anchors.rightMargin: -Theme.spaceTight
-            anchors.verticalCenter: parent.top
+            anchors.top: parent.top
             z: 1
             visible: root.unread > 0
             tone: "accent"
@@ -131,7 +139,8 @@ Item {
             anchors.centerIn: parent
             name: "bell"
             size: Theme.iconSm
-            color: root.unread > 0 ? Theme.text : Theme.textMuted
+            color: QsmShellStyle.Style.tone(root.unread > 0 ? Theme.text : Theme.textMuted,
+                bellLayer.hovered, bellLayer.pressed, false, root.shown, Theme.accent)
         }
 
         // Tucked into the corner with nothing unread, the bell is a hint,
@@ -141,14 +150,20 @@ Item {
         opacity: Theme.opacityRecede + (1 - Theme.opacityRecede) * bulge.revealProgress
     }
 
-    // The corner's click target is the whole zone, like its hover.
+    // The one click target is the whole live zone, like its hover: the
+    // corner at rest, glyph and bulge together while the bulge is up. The
+    // glyph answers it, growing a little and pushing in on press.
     QsmShellComponents.StateLayer {
-        x: root.cornerZone.x
-        y: root.cornerZone.y
-        width: root.cornerZone.width
-        height: root.cornerZone.height
+        id: bellLayer
+        x: (root.sticky ? root.bulgeZone : root.cornerZone).x
+        y: (root.sticky ? root.bulgeZone : root.cornerZone).y
+        width: (root.sticky ? root.bulgeZone : root.cornerZone).width
+        height: (root.sticky ? root.bulgeZone : root.cornerZone).height
         target: glyph
+        pressScale: QsmShellStyle.Motion.pressScale
+        focused: root.activeFocus
+        focusRadius: Theme.radiusMd
         interactive: root.shown
-        onClicked: if (ShellState.modal !== "notifications") ShellState.toggleModal("notifications")
+        onClicked: root.open()
     }
 }
