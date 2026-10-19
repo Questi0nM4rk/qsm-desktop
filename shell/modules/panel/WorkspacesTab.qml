@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell.Hyprland
 import Quickshell.Io
 import qs.QsmShell.Components as QsmShellComponents
+import qs.QsmShell.Style as QsmShellStyle
 import qs.components
 import qs.services
 import qs.theme
@@ -24,8 +25,22 @@ Item {
     // clients -j snapshots); Quickshell toplevels carry no window rects.
     readonly property var clients: HyprClientsService.clients
 
-    readonly property real tileWidth: 180
     readonly property real tileGap: Theme.space3
+
+    // The tab is as tall as the panel's body (PanelSurface's column), always,
+    // so the row of tiles does not jump with the number of workspaces.
+    implicitWidth: Theme.mediaContentWidth
+    implicitHeight: Theme.panelHeight - Theme.space4 * 2 - Theme.panelTabBarHeight - Theme.space3
+
+    // Tiles grow to the body: three share the column width (a tile and its
+    // hover growth are w * (2 + hoverScale) across, with two gaps), or the
+    // body's height when the monitor is tall, whichever is smaller; the rest
+    // scroll. The schematic keeps the monitor's aspect.
+    readonly property int tilesAcross: 3
+    readonly property real aspect: monitor ? monitor.height / Math.max(1, monitor.width) : 0.5625
+    readonly property real tileWidth: Math.min(
+        (width - tileGap * (tilesAcross - 1)) / (tilesAcross - 1 + hoverScale),
+        ((implicitHeight - Theme.space2) / hoverScale - labelBand - areaInset) / aspect + areaInset * 2)
 
     // Window rects live in their own area, inset from the tile's rounded
     // corners, below a band that belongs to the workspace number: a number
@@ -33,19 +48,16 @@ Item {
     // corner (the schematic keeps the monitor's aspect, so one often does).
     readonly property real areaInset: Theme.space2
     readonly property real areaWidth: tileWidth - areaInset * 2
-    readonly property real areaHeight: monitor
-        ? areaWidth * monitor.height / Math.max(1, monitor.width) : areaWidth * 0.5625
+    readonly property real areaHeight: areaWidth * aspect
     readonly property real labelBand: areaInset + labelMetrics.height
     readonly property real tileHeight: labelBand + areaHeight + areaInset
 
     // A hovered tile grows by this much (StateLayer, handed the same number
     // below); the strip clips, so it reserves the growth around the row
     // rather than cutting the tile's edge off.
-    readonly property real hoverScale: 1.08
+    readonly property real hoverScale: QsmShellStyle.Motion.capsuleHoverScale
     readonly property real growthX: Math.ceil(tileWidth * (hoverScale - 1) / 2)
     readonly property real growthY: Math.ceil(tileHeight * (hoverScale - 1) / 2)
-
-    implicitHeight: strip.height + Theme.space2
 
     TextMetrics {
         id: labelMetrics
@@ -70,13 +82,14 @@ Item {
 
     // ONE ROW, never stacked (owner 2026-08-21, spec/06 amended): workspaces
     // sit next to each other and the strip scrolls horizontally when more
-    // exist than fit. Centred while they fit — two tiles pinned to the left
-    // edge of a panel read as content that failed to load.
+    // exist than fit. The row hangs from the strip's start at a fixed width,
+    // so a workspace appearing or closing adds or removes a tile at the end
+    // and never re-centres the others.
     Flickable {
         id: strip
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
-        width: Math.min(parent.width, row.implicitWidth + root.growthX * 2)
+        width: parent.width
         height: root.tileHeight + root.growthY * 2
         contentWidth: row.implicitWidth + root.growthX * 2
         clip: true
@@ -103,6 +116,10 @@ Item {
                     height: root.tileHeight
                     radius: Theme.panelCardRadius
                     base: Theme.surface
+                    // Hover and press recolour the body (Style.tone); the layer
+                    // below grows it.
+                    hovered: tileLayer.hovered
+                    pressed: tileLayer.pressed
                     // Current is a state, not a border: the ladder's selected tint.
                     selected: current
 
@@ -116,8 +133,9 @@ Item {
                         text: tile.modelData.id
                     }
 
-                    // Hover grows the tile, never tints it; keyboard focus rings it.
+                    // Hover grows the tile slightly; keyboard focus rings it.
                     QsmShellComponents.StateLayer {
+                        id: tileLayer
                         anchors.fill: parent
                         focusRadius: tile.radius
                         hoverScale: root.hoverScale
