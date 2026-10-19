@@ -32,14 +32,14 @@
   Frame and every rollout are one silhouette painted as `band`; nothing draws its own frame,
   stroke, rim or shadow.
 - **RATIFIED (2026-10-16, owner)**: neutrals carry structure, pastels carry meaning. The ladder
-  is near grey with a trace (OKLCH C 0.05) of the wallpaper's hue, tuned for the NOTEBOOK
+  is near grey with a trace (OKLCH C 0.08) of the wallpaper's hue, tuned for the NOTEBOOK
   display (owner 2026-10-19: "na tom velikem ... border vypada lehce fialove, ale na main notebook
   display to vypada sede ... delali barvy pro notebook"); the external monitor shows it richer. Eight pastels share one
   lightness and one chroma (OKLCH L 0.82, C 0.085): rose 10 deg, peach 50, yellow 90, green 145,
   teal 185, sky 230, lavender 275, mauve 315. A pastel never fills a container.
 - **Deep Night, derived** (sRGB hex):
-  - palette: see shell/themes/deep-night.json for the generated values (band L 0.255, trace C 0.05) ·
-    ink #F0ECF5 (L 0.95) · ink-muted #C8B8D9 · edgeColor #63298D · rose #F5AEB7 · peach #F2B493 ·
+  - palette: see shell/themes/deep-night.json for the generated values (band L 0.255, trace C 0.08) ·
+    ink #F0ECF5 (L 0.95) · ink-muted #CDB2E8 · edgeColor #681999 · rose #F5AEB7 · peach #F2B493 ·
     yellow #D9C284 · green #A2D3A2 · teal #81D6CB · sky #89CFF1 · lavender #B4C0FC ·
     mauve #D9B4EA
   - roles: band=ground-0 · surface=ground-1 · overlay=ground-2 · text=ink · textMuted=ink-muted ·

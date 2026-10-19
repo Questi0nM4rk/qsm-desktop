@@ -116,8 +116,9 @@ const grey = share < 0.1;
 const tintHue = grey ? 0 : meanHue(chromatic);
 // Tuned for the notebook display (eDP-1), owner 2026-10-19: its narrow gamut
 // greys a low-chroma purple that the external monitor still shows as lilac,
-// so the neutrals carry more of the wallpaper's hue than the 0.035 of 2026-10-16.
-const TINT_C = grey ? 0 : 0.05;
+// so the neutrals carry much more of the wallpaper's hue (0.035 of 2026-10-16 still
+// read grey there, and so did 0.05).
+const TINT_C = grey ? 0 : 0.08;
 
 const BIN = 30;
 const bins: Lch[][] = Array.from({ length: 360 / BIN }, () => []);
