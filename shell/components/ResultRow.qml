@@ -46,33 +46,37 @@ QsmShellComponents.ListRow {
     // command glyph. All three sit in the row's own leading box, so the label
     // starts at the same x whichever one a given row has.
     leading: Item {
+        id: lead
         anchors.fill: parent
+        // The picture box exists only once the picture has loaded; until
+        // then the app icon or glyph stays, so no empty box flashes.
+        readonly property bool thumbReady: thumbImage.status === Image.Ready
 
         // Wallpaper thumbnail (>theme rows). 7:4, sized off the leading box so
         // compact rows shrink it with them.
         Rectangle {
             anchors.centerIn: parent
-            visible: root._thumb.toString().length > 0
+            opacity: lead.thumbReady ? 1 : 0
             height: parent.height
             width: height * 7 / 4
             radius: QsmShellStyle.Style.radiusSm
             color: QsmShellStyle.Style.surface
             clip: true
 
+            Behavior on opacity { NumberAnimation { duration: Motion.fast; easing.type: Motion.standardEasing } }
+
             Image {
+                id: thumbImage
                 anchors.fill: parent
                 source: root._thumb
                 fillMode: Image.PreserveAspectCrop
                 asynchronous: true
-                // Fades in over the glyph on this image's own load.
-                opacity: status === Image.Ready ? 1 : 0
-                Behavior on opacity { NumberAnimation { duration: Motion.fast; easing.type: Motion.standardEasing } }
             }
         }
 
         AppIcon {
             anchors.centerIn: parent
-            visible: root._thumb.toString().length === 0 && root._isApp
+            visible: !lead.thumbReady && root._isApp
             implicitSize: parent.height
             icon: root._appIcon
         }
@@ -82,7 +86,7 @@ QsmShellComponents.ListRow {
         // just has to start the text in the same place.
         QsmShellComponents.SvgIcon {
             anchors.centerIn: parent
-            visible: root._thumb.toString().length === 0 && !root._isApp
+            visible: !lead.thumbReady && !root._isApp
             name: root.item?.icon ?? "sparkle"
             size: root.compact ? QsmShellStyle.Style.iconSm : QsmShellStyle.Style.iconMd
             // A kill row must not look like a launch row (owner 2026-08-21):
