@@ -97,6 +97,15 @@ QtObject {
         return value >= 0.9 ? danger : value >= 0.7 ? warning : success;
     }
 
+    // Battery charge below which a reading turns danger: the popout and the
+    // Performance tab share one threshold, and the rail's low badge warns
+    // earlier so a person has time to plug in.
+    readonly property real lowBatteryFraction: 0.15
+    readonly property real railLowBatteryFraction: 0.2
+
+    // A sparkline's stroke, in px: a line of content, thinner than a track.
+    readonly property real sparklineThickness: 1.5
+
     // Theme-swap choreography (11 DEFAULT: 200ms). Lives HERE, not in Motion:
     // Motion already reads Theme.reducedMotion, and a token both singletons
     // need would make that a cycle.
