@@ -20,7 +20,8 @@ QtObject {
     // overshoot made every reveal read as a popup, not a roll. Reveal is a
     // strong decelerate (fast out of the border, soft landing); retract a
     // gentle accelerate-decelerate. Goo, where enabled, supplies any
-    // organic feel. Reduced motion clamps every duration to 120ms.
+    // organic feel. Reduced motion shortens each duration (press 40, micro 60,
+    // fast 80, normal 100); the reveal and glide durations clamp to 120.
     // Only the SMALL tier has a desktop consumer left (BarPopouts): the
     // large tier and the settle pair (microPopScale/microPopDuration) moved
     // with Rollout to the library's own Motion (qsm-shell, 11c).
