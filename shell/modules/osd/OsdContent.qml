@@ -56,7 +56,6 @@ FocusScope {
             Layout.preferredHeight: Theme.osdTrackHeight
                 + microphoneChannel.topPadding + microphoneChannel.bottomPadding
             Layout.preferredWidth: Theme.osdWidth - Theme.space2 * 2
-            visible: AudioService.microphoneAvailable || OsdState.kind === "microphone"
             icon: AudioService.microphoneMuted ? "microphone-muted" : "microphone"
             value: AudioService.microphoneValue
             muted: AudioService.microphoneMuted
