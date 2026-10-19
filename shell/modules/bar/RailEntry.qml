@@ -1,5 +1,6 @@
 import QtQuick
 import qs.QsmShell.Components as QsmShellComponents
+import qs.QsmShell.Style as QsmShellStyle
 import qs.theme
 
 // One rail cell. StateLayer is the only interaction source — the entry's own
@@ -15,7 +16,6 @@ Item {
     default property alias content: contentSlot.data
     property string icon
     property color iconColor: Theme.text
-    property string caption
     property bool active
     // Compact rows are reserved for controls within a rail group. Their 16px
     // glyphs stay legible while the group reads as a unit rather than five
@@ -63,8 +63,28 @@ Item {
     signal interaction(string action)
 
     implicitWidth: Theme.railWidth
-    implicitHeight: caption.length > 0 ? 48
-        : compact ? Theme.space6 : Theme.railWidth
+    implicitHeight: compact ? Theme.space6 : Theme.railWidth
+
+    // A cell the pointer can act on is a keyboard stop too, and a screen
+    // reader names it by what its popout names.
+    activeFocusOnTab: interactive
+    Accessible.role: Accessible.Button
+    Accessible.name: popoutTitle
+    Accessible.description: popoutDetail
+    Accessible.onPressAction: root.activateByKey()
+
+    // Return and Space do what the pointer's click does; a cell that only
+    // reports hover (clickable false) opens its popout instead.
+    function activateByKey(): void {
+        if (layer.activate())
+            return;
+        if (root.popouts && root.popoutKind.length > 0)
+            root.popouts.show(root.popoutKind, root, root.popoutTitle,
+                root.popoutDetail, root.popoutData);
+    }
+    Keys.onReturnPressed: root.activateByKey()
+    Keys.onEnterPressed: root.activateByKey()
+    Keys.onSpacePressed: root.activateByKey()
 
     // Selected, active and danger are one state read three ways: the accent
     // (danger: the danger role) at opacitySelected over a transparent base,
@@ -80,6 +100,8 @@ Item {
         base: "transparent"
         accent: root.danger && !root.selected ? Theme.danger : Theme.accent
         selected: root.selected || root.danger || root.active
+        hovered: layer.hovered
+        pressed: layer.pressed
 
         Behavior on anchors.rightMargin {
             NumberAnimation { duration: Motion.micro; easing.type: Motion.standardEasing }
@@ -89,7 +111,6 @@ Item {
     QsmShellComponents.SvgIcon {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
-        anchors.verticalCenterOffset: root.caption.length > 0 ? Theme.railCaptionOffset : 0
         // An empty name means the cell paints its own content in the slot
         // below; loading "".svg would just log a miss.
         visible: root.icon.length > 0
@@ -109,18 +130,6 @@ Item {
         anchors.fill: parent
     }
 
-    QsmShellComponents.Prose {
-        // Fine print under a glyph, made of digits — metadata AND technical,
-        // the same pairing as a percentage under an icon.
-        role: "metadata"
-        technical: true
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: Theme.railCaptionBottomMargin
-        visible: root.caption.length > 0
-        text: root.caption
-    }
-
     QsmShellComponents.StateLayer {
         id: layer
         anchors.fill: parent
@@ -129,10 +138,11 @@ Item {
         // lands on the entry, never on dead band. Visuals stay in the cell;
         // the tint is band-colored so the overhang never reads.
         anchors.leftMargin: -(Theme.reservedLeft - Theme.railWidth) / 2
-        // A 40px cell can take 10% and still read as deliberate rather than
-        // as a wobble (09: growth, not tint).
-        hoverScale: 1.1
-        pressScale: 0.9
+        // The cell's Surface recolours on hover and press, so the layer only
+        // grows it, and a press never resizes a body.
+        hoverScale: QsmShellStyle.Motion.hoverScale
+        focused: root.activeFocus
+        focusRadius: Theme.radiusMd
         interactive: root.interactive
         clickable: root.clickable
         manualHoverOverride: root.selected

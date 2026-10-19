@@ -73,10 +73,21 @@ ColumnLayout {
             onCommitted: root.interacted("output-level", { value: outputSlider.value })
         }
 
+        // Reserved for the widest reading, right-aligned, so 9% becoming 10%
+        // never moves the slider's track.
         QsmShellComponents.Prose {
+            id: outputReading
             role: "metadata"
             technical: true
+            Layout.preferredWidth: widest.advanceWidth
+            horizontalAlignment: Text.AlignRight
             text: `${Math.round(AudioService.outputValue * 100)}%`
+
+            TextMetrics {
+                id: widest
+                font: outputReading.font
+                text: "100%"
+            }
         }
     }
 

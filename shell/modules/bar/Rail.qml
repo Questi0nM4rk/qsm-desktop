@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import Quickshell.Services.SystemTray
 import Quickshell.Services.UPower
 import qs.QsmShell.Components as QsmShellComponents
+import qs.QsmShell.Style as QsmShellStyle
 import qs.services
 import qs.state
 import qs.theme
@@ -31,6 +32,7 @@ Item {
 
         // The mark and the updates cell are one compact group.
         Column {
+            id: markGroup
             width: parent.width
             spacing: Theme.railItemGap
 
@@ -58,8 +60,8 @@ Item {
                 popoutDetail: UpdateService.count > 0
                     ? `${UpdateService.count} packages can be updated · click to upgrade`
                     : UpdateService.count === 0
-                        ? "Up to date · click to run the full upgrade anyway"
-                        : "Counting… (is pacman-contrib installed?)"
+                        ? "Up to date · click to upgrade anyway"
+                        : "Counting…"
                 onClicked: UpdateService.upgrade()
 
                 // The count riding the cell's corner. Hidden at zero and while
@@ -67,12 +69,13 @@ Item {
                 // hover card does the telling.
                 QsmShellComponents.Badge {
                     visible: UpdateService.available
-                    // On the corner, capped, so the pill stays a chip and
-                    // leaves the glyph readable beside it.
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.rightMargin: Theme.spaceTight
-                    anchors.topMargin: -Theme.spaceTight
+                    // In the glyph's own top-right corner, tucked in by one
+                    // tight step, so the chip rides the corner diagonally and
+                    // leaves the glyph's body readable.
+                    anchors.left: parent.horizontalCenter
+                    anchors.bottom: parent.verticalCenter
+                    anchors.leftMargin: Theme.iconSm / 2 - Theme.spaceTight
+                    anchors.bottomMargin: Theme.iconSm / 2 - Theme.spaceTight
                     tone: "accent"
                     filled: true
                     text: UpdateService.count > 99 ? "99+" : String(UpdateService.count)
@@ -80,18 +83,27 @@ Item {
             }
         }
 
-        RailDivider {}
+        RailDivider { id: topDivider }
 
         // Workspaces, the pin and the tray are ONE group: the pin acts on the
         // band the workspaces live in, and a tray icon under the pin never
         // reads as one more app row.
         RailGroup {
+            // What is left once the bottom cluster, the mark group, both
+            // dividers, the stack's gaps and one app row are paid for: when
+            // the group wants more than that, it scales down as one block
+            // instead of pushing the clock off the band.
+            maximumHeight: Math.max(0, root.height - bottomStack.height
+                - Theme.space4 * 2 - markGroup.height - topDivider.height * 2
+                - Theme.railItemGap * 4 - Theme.railAppSlot)
+
             Column {
                 width: parent.width
                 spacing: Theme.railItemGap
 
                 WorkspaceStrip {
                     id: workspaces
+                    screen: root.screen
                     width: parent.width
                     height: implicitHeight // plain Items do not self-adopt implicit size
                 }
@@ -126,6 +138,20 @@ Item {
                         width: parent.width
                         height: Theme.space6
 
+                        function open(): void {
+                            root.popouts.show("tray", trayEntry,
+                                trayEntry.modelData.title || trayEntry.modelData.id, "",
+                                trayEntry.modelData);
+                        }
+
+                        activeFocusOnTab: true
+                        Accessible.role: Accessible.Button
+                        Accessible.name: trayEntry.modelData.title || trayEntry.modelData.id
+                        Accessible.onPressAction: trayEntry.open()
+                        Keys.onReturnPressed: trayEntry.open()
+                        Keys.onEnterPressed: trayEntry.open()
+                        Keys.onSpacePressed: trayEntry.open()
+
                         // One tone with the outline glyphs around it, like the
                         // rail's app rows.
                         Image {
@@ -139,17 +165,22 @@ Item {
                             layer.effect: MultiEffect {
                                 colorization: 1
                                 colorizationColor: Theme.textMuted
-                                brightness: 0.5
+                                brightness: Theme.trayGlyphBrightness
                             }
                         }
 
                         QsmShellComponents.StateLayer {
                             anchors.fill: parent
-                            hoverScale: 1.12
-                            pressScale: 0.9
-                            onClicked: root.popouts.show("tray", trayEntry,
-                                trayEntry.modelData.title || trayEntry.modelData.id, "",
-                                trayEntry.modelData)
+                            // A bare glyph has no body to recolour: the layer
+                            // paints the hover disc and the glyph itself grows
+                            // and pushes in.
+                            target: trayImage
+                            hoverTint: true
+                            hoverScale: QsmShellStyle.Motion.rowHoverScale
+                            pressScale: QsmShellStyle.Motion.pressScale
+                            focused: trayEntry.activeFocus
+                            focusRadius: Theme.radiusMd
+                            onClicked: trayEntry.open()
                         }
                     }
                 }
@@ -200,7 +231,13 @@ Item {
                 readonly property bool laptop: battery?.isLaptopBattery ?? false
                 readonly property bool charging: battery?.state === UPowerDeviceState.Charging
                 readonly property real charge: battery?.percentage ?? 0
-                readonly property bool low: laptop && !charging && charge <= 0.2
+                readonly property bool low: laptop && !charging && charge <= Theme.railLowBatteryFraction
+
+                // The battery popout's profile switch reads this singleton,
+                // and a laptop's cell never does: touching it here loads the
+                // profile at startup, so the switch row is there when the card
+                // opens instead of arriving a moment after it.
+                Component.onCompleted: PowerProfileService.refresh()
 
                 // The NUMBER, not a glyph (owner 2026-09-05). A machine with
                 // no battery still shows its power profile, because there is

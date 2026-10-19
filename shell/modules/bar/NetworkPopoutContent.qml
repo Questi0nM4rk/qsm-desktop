@@ -224,6 +224,10 @@ ColumnLayout {
             onClicked: root.toggleWifi()
         }
 
+        // The spacer sits BEFORE Rescan: the pill is pinned to the right edge,
+        // so the Wi-Fi capsule changing its label never moves it.
+        Item { Layout.fillWidth: true }
+
         QsmShellComponents.Capsule {
             size: "sm"
             icon: "motion"
@@ -236,8 +240,6 @@ ColumnLayout {
             enabled: NetworkService.wifiAvailable && root.wifiEnabled && !root.scanning
             onClicked: root.rescan()
         }
-
-        Item { Layout.fillWidth: true }
     }
 
     Repeater {

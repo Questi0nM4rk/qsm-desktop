@@ -7,7 +7,8 @@ import qs.services
 import qs.theme
 
 // Bluetooth popout (caelestia's control set): adapter power + discovering
-// toggles, devices sorted connected-first with connect/forget, manager for
+// toggles, devices in the service's stable order (connection is shown as the
+// row's state, never by moving it) with connect/forget, manager for
 // pairing depth (BlueZ stays the owner — delegation law).
 ColumnLayout {
     id: root
@@ -15,7 +16,6 @@ ColumnLayout {
     readonly property var adapter: BluetoothService.adapter
     readonly property var devices: BluetoothService.devices.slice()
         .filter(device => device.paired || device.connected)
-        .sort((left, right) => (right.connected ? 1 : 0) - (left.connected ? 1 : 0))
         .slice(0, Theme.popoutDeviceListMax)
     signal interacted(string action, var payload)
 
@@ -46,6 +46,10 @@ ColumnLayout {
             onClicked: root.operate("adapter-power")
         }
 
+        // Before Scan, so the pill stays on the right edge whatever the power
+        // capsule's label does.
+        Item { Layout.fillWidth: true }
+
         QsmShellComponents.Capsule {
 
             size: "sm"
@@ -56,8 +60,6 @@ ColumnLayout {
             enabled: !BluetoothService.busy
             onClicked: root.operate("discovery")
         }
-
-        Item { Layout.fillWidth: true }
     }
 
     Repeater {

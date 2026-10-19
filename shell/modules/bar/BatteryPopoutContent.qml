@@ -188,7 +188,7 @@ ColumnLayout {
         // Charging is not a threshold breach and low is not a warning here, so
         // the colour is stated rather than derived: Meter's own `low` would
         // paint amber where this surface means danger.
-        fill: (root.device?.percentage ?? 1) < 0.15 && !root.charging
+        fill: (root.device?.percentage ?? 1) < Theme.lowBatteryFraction && !root.charging
             ? Theme.danger : root.charging ? Theme.success : Theme.accent
     }
 

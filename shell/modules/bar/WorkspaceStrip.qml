@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell.Hyprland
 import qs.QsmShell.Components as QsmShellComponents
+import qs.QsmShell.Style as QsmShellStyle
 import qs.theme
 
 // Workspace slots (03 RATIFIED 2026-10-16): every Hyprland workspace, in one
@@ -12,14 +13,19 @@ import qs.theme
 Item {
     id: root
 
-    // Globally focused workspace via the focused monitor — the same notify
-    // chain ShellState and the pre-reel widget already rely on. (When testing
+    // The rail's own screen: each rail lists and follows ITS monitor's
+    // workspaces, never another monitor's.
+    required property var screen
+    readonly property var monitor: Hyprland.monitorFor(screen)
+
+    // This monitor's active workspace — the same notify chain ShellState and
+    // the pre-reel widget already rely on. (When testing
     // switches from a script on this Lua-dispatch Hyprland, use
     // `hl.dsp.focus({ workspace = "N" })`; plain `hyprctl dispatch workspace N`
     // errors and no-ops, which reads exactly like a stale binding — bit us.)
-    readonly property int activeWorkspaceId: Hyprland.focusedMonitor?.activeWorkspace?.id ?? 1
+    readonly property int activeWorkspaceId: monitor?.activeWorkspace?.id ?? 1
     readonly property var allWorkspaces: Hyprland.workspaces.values
-        .filter(workspace => workspace.id > 0)
+        .filter(workspace => workspace.id > 0 && workspace.monitor?.name === root.monitor?.name)
         .sort((left, right) => left.id - right.id);
 
     function workspaceFor(id: int): var {
@@ -75,15 +81,27 @@ Item {
                 implicitWidth: Theme.railWorkspaceSlot
                 implicitHeight: Theme.railWorkspaceSlot
 
+                activeFocusOnTab: true
+                Accessible.role: Accessible.Button
+                Accessible.name: `Workspace ${workspaceId}`
+                Accessible.onPressAction: root.activate(slot.workspaceId)
+                Keys.onReturnPressed: root.activate(slot.workspaceId)
+                Keys.onEnterPressed: root.activate(slot.workspaceId)
+                Keys.onSpacePressed: root.activate(slot.workspaceId)
+
                 Rectangle {
                     id: dot
                     anchors.centerIn: parent
                     width: Theme.railWorkspaceDot
                     height: width
                     radius: Theme.radiusPill
-                    color: slot.urgent ? Theme.danger
-                        : slot.occupied ? Theme.textMuted
-                        : Theme.overlay
+                    // Hover and press recolour the dot through the one state
+                    // matrix, so it answers like every other target.
+                    color: QsmShellStyle.Style.tone(
+                        slot.urgent ? Theme.danger
+                            : slot.occupied ? Theme.textMuted
+                            : Theme.overlay,
+                        dotLayer.hovered, dotLayer.pressed, false, true, Theme.accent)
                     // The pill covers the active slot; its dot steps aside
                     // instead of doubling under the number.
                     opacity: slot.active ? 0 : 1
@@ -93,12 +111,15 @@ Item {
                     }
                 }
 
-                // Hover grows the dot (09); the slot stays the hit area.
+                // Hover grows and recolours the dot (09); the slot stays the
+                // hit area, and a press recolours without resizing.
                 QsmShellComponents.StateLayer {
+                    id: dotLayer
                     anchors.fill: parent
                     target: dot
-                    hoverScale: 1.5
-                    pressScale: 0.9
+                    hoverScale: Motion.dotHoverScale
+                    focused: slot.activeFocus
+                    focusRadius: Theme.radiusPill
                     onClicked: root.activate(slot.workspaceId)
                 }
             }
