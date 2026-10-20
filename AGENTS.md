@@ -15,3 +15,5 @@
 - End-to-end contract + defect review: `spec/13-implementation.md`
 - Interaction contract (workbench): `../qsm-workbench/docs/interaction-contract.md`
 - Desktop ideology: `docs/desktop-ideology.md`
+- UIX audit of the desktop, after the library: `qsd-zbo`; method and library status
+  `../qsm-shell/docs/UIX-AUDIT.md`

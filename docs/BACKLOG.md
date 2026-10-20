@@ -5,6 +5,17 @@ each entry records what was found, so the next session does not re-derive it.
 
 Current checks and the remaining release gates: [Release handoff](#release-handoff).
 
+## UIX audit of the desktop, after the library
+
+- The owner ordered a strict UIX review of every surface, with the library first and the
+  desktop after it, and full redesign allowed including the shared silhouette. The library half
+  lives in `../qsm-shell` (`docs/UIX-AUDIT.md`, plan
+  `openspec/changes/uix-component-audit/`, tracker `qss-9zk`). This repository's half is
+  `qsd-zbo`: the desktop's own surfaces, their states, controls, motion, input geometry and
+  measured findings, with the hitbox and pointer-path mathematics the owner asked for.
+  Desktop work starts only after the owner accepts the library items the desktop uses.
+  Until then, findings below are the older source-reviewed gaps and keep their own scope.
+
 ## Source-reviewed interaction gaps
 
 - Owner-directed visual touchups follow the 2026-10-16 design: icon-only app rows, the
