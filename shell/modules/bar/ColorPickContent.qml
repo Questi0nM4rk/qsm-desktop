@@ -8,7 +8,7 @@ import qs.components
 import qs.services
 import qs.theme
 
-// The colour MENU (owner 2026-08-24). This second rollout IS the whole thing —
+// The colour MENU. This second rollout IS the whole thing —
 // an earlier attempt hung a third rollout off it, which the owner rejected: the
 // features belong in the surface you already opened, not one step further out.
 //
@@ -330,8 +330,7 @@ Item {
             text: "Accent set"
         }
 
-        // Squares only, no hex rows (owner 2026-08-24: "its okay to just display
-        // the color squares there at the bottom"). Each one carries its OWN copy
+        // Squares only, no hex rows. Each one carries its OWN copy
         // acknowledgement — a tick over the swatch for a beat — rather than the
         // menu keeping one shared readout line. Deliberately not a separate copy
         // BUTTON per square: clicking the swatch is already the copy, and a
@@ -381,7 +380,7 @@ Item {
         }
 
         // --- the editor ------------------------------------------------------
-        // Hands the colour at the TOP to a real editor (owner 2026-08-24) and
+        // Hands the colour at the TOP to a real editor and
         // takes back whatever comes out as a new pick. Not a second pick route:
         // picking reads a pixel off the screen, editing changes a colour you
         // already have. Different actions, one control each.

@@ -7,7 +7,7 @@ import qs.services
 import qs.state
 import qs.theme
 
-// The session backdrop (08 RATIFIED): the library's scrim strength over a
+// The session backdrop (08): the library's scrim strength over a
 // background the compositor genuinely blurs — the ONE sanctioned second
 // surface besides the scene window (09), because compositor blur needs its own
 // layer surface. Always mapped (transparent + input-transparent when idle) so
@@ -52,7 +52,7 @@ PanelWindow {
     // that arrived while the previous write was still in flight — assigning
     // running = true on a running Process does nothing — and the compositor
     // kept whatever it had last been told. Open the session menu and close it
-    // quickly and the desktop stayed blurred with no way back (owner, 2026-08-18).
+    // quickly and the desktop stayed blurred with no way back.
     //
     // So: remember what was actually written (`applied`), write only what we
     // will record (`writing`), and re-check on every exit until the two agree.

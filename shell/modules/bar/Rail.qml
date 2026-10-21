@@ -9,12 +9,12 @@ import qs.services
 import qs.state
 import qs.theme
 
-// The rail (03-rail lineup, RATIFIED 2026-10-16): the mark and the updates
+// The rail (03-rail lineup): the mark and the updates
 // cell, then workspace slots with the PIN and the TRAY icons, then the
 // current workspace's apps spread across the middle, and at the bottom the
 // CLOCK, the battery number, the QUICK MENU (actions, network, bluetooth,
 // sound) and power. CPU and RAM live in the Dashboard only (06). Groups
-// are separated by the rail's divider lines (owner 2026-10-16). The popout
+// are separated by the rail's divider lines. The popout
 // interaction lives in the PopoutController.
 Item {
     id: root
@@ -45,7 +45,7 @@ Item {
                 compact: true
             }
 
-            // System updates (owner 2026-08-25, HyDE parity): directly under
+            // System updates (HyDE parity): directly under
             // the mark. The badge carries the pending count; click opens the
             // full upgrade in a terminal — the ONE action. Hover names the
             // state instead.
@@ -125,8 +125,8 @@ Item {
                     onClicked: ShellState.toggleRail(root.screen.name)
                 }
 
-                // Tray icons: clicking one rolls out its DBusMenu (03
-                // RATIFIED). A machine with no tray icons shows nothing here.
+                // Tray icons: clicking one rolls out its DBusMenu (03). A
+                // machine with no tray icons shows nothing here.
                 Repeater {
                     model: SystemTray.items.values
 
@@ -213,7 +213,7 @@ Item {
 
         RailDivider {}
 
-        // ONE bottom cluster in one rhythm (owner 2026-10-17): the clock, the
+        // ONE bottom cluster in one rhythm: the clock, the
         // battery reading and the quick menu. CPU and RAM live in the
         // Dashboard only.
         Column {
@@ -225,7 +225,7 @@ Item {
             }
 
             // The clock reads time, the rest are controls: a divider between
-            // them (owner 2026-10-19).
+            // them.
             RailDivider {}
 
             RailEntry {
@@ -243,7 +243,7 @@ Item {
                 // opens instead of arriving a moment after it.
                 Component.onCompleted: PowerProfileService.refresh()
 
-                // The NUMBER, not a glyph (owner 2026-09-05). A machine with
+                // The NUMBER, not a glyph. A machine with
                 // no battery still shows its power profile, because there is
                 // no percentage to show there.
                 icon: laptop ? "" : PowerProfileService.glyph

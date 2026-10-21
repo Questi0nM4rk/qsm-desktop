@@ -48,7 +48,7 @@ Item {
     Component.onCompleted: syncSampling()
     Component.onDestruction: PerformanceService.watchDetails(root, false)
 
-    // Handle-ride source of truth (06-top-panel amended 2026-08-18): the
+    // Handle-ride source of truth (06-top-panel): the
     // rollout's top edge is pinned at the wall (source expansion,
     // 02-rollouts) while height grows downward, so y + height IS the
     // panel's current bottom (leading) edge — already offsetScale-driven,
@@ -211,9 +211,9 @@ Item {
     }
 
     // The panel stays open while the pointer is inside the union of its
-    // trigger zone and its own body, and closes Motion.hoverGrace (180ms)
-    // after it has left both (06, owner 2026-10-18). Passing from the dots
-    // zone down into the panel never leaves the union.
+    // trigger zone and its own body, and closes Motion.hoverGrace after it has
+    // left both. Passing from the dots zone down into the panel never leaves
+    // the union.
     readonly property bool pointerHeld: panelHover.hovered || root.scene.panelHandleHovered
         || root.scene.panelGripHovered
     onPointerHeldChanged: {

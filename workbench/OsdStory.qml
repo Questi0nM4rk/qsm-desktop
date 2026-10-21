@@ -145,7 +145,7 @@ Item {
         return null;
     }
 
-    // Mute is the channel's one route (05-osd 2026-10-16): the thumb's
+    // Mute is the channel's one route (05-osd): the thumb's
     // double-click, Space, and this story action all call toggleMute().
     function canToggleMute(name: string): bool {
         const channel = root.channelTarget(name);

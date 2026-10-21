@@ -7,7 +7,7 @@ import qs.QsmShell.Style as QsmShellStyle
 import qs.services
 import qs.theme
 
-// Dashboard tab (06 RATIFIED, caelestia-parity card grid): user identity,
+// Dashboard tab (06, caelestia-parity card grid): user identity,
 // weather, datetime, month calendar, resource rings, media mini-player —
 // each its own Card card inside the panel's single silhouette.
 GridLayout {
@@ -264,8 +264,7 @@ GridLayout {
                 // The SAME type the media tab uses, so the two cannot drift
                 // apart again. It used to be a square sleeve with a half ring
                 // behind it — and the sleeve's own corners hid the arc, which
-                // is what two independent assemblies of one idea get you
-                // (owner 2026-09-06).
+                // is what two independent assemblies of one idea get you.
                 QsmShellComponents.Avatar {
                     anchors.centerIn: parent
                     size: Theme.dashboardMediaArtSize

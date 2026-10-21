@@ -6,7 +6,7 @@ import qs.QsmShell.Style as QsmShellStyle
 import qs.services
 import qs.theme
 
-// Media tab (06 RATIFIED, per references/media-tab.png): circular artwork
+// Media tab (06, per references/media-tab.png): circular artwork
 // with a progress ring, title/album/artist, transport + seek, per-player
 // source picker. Fallbacks (DEFAULT): no artwork -> type glyph in the
 // circle; no player -> centered "nothing playing". Three zones (owner

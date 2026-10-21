@@ -36,7 +36,7 @@ Scope {
     Keybind {
         name: "clipboard"
         description: "Clipboard history"
-        // Its OWN surface since 2026-08-20, not a launcher preset. `>clip` is
+        // Its OWN surface, not a launcher preset. `>clip` is
         // gone rather than kept beside it: two routes to one feature is what
         // 09 removes.
         onPressed: ShellState.toggleModal("clipboard")

@@ -13,7 +13,7 @@ import qs.theme
 // connect/disconnect, rescan; plus ethernet + VPN rows and the editor for
 // anything deeper — NetworkManager owns networking (delegation law).
 //
-// PASSWORD PROMPT (owner 2026-08-22, second round): a secured network that
+// PASSWORD PROMPT: a secured network that
 // needs a password expands the field DIRECTLY UNDER ITS OWN ROW — the answer
 // appears where the question was asked, never at the bottom of the list. The
 // prompt carries the full feedback loop (09: every input gets a visible
@@ -49,7 +49,7 @@ ColumnLayout {
     // Turning the radio OFF is the one control in here that can take the
     // machine off the network it is being used over, so it ARMS first, like the
     // destructive session buttons and the destructive quick actions. The owner
-    // LIVED the alternative (2026-08-22): one click killed the radio
+    // LIVED the alternative: one click killed the radio
     // mid-session, and nothing on screen afterwards connected the empty list to
     // the cause. Turning it back ON is a single click -- restoring connectivity
     // is never the mistake.

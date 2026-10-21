@@ -29,7 +29,7 @@ ShellRoot {
         value: !ShellState.keyboardOwnsSelection
     }
 
-    // ACTIVATION (13 phase 9, 2026-08-19). The shell IS the desktop now, so
+    // ACTIVATION (13 phase 9). The shell IS the desktop now, so
     // the QSM_BAR_TRIAL / QSM_FRAME_TRIAL / QSM_FRAME_RESERVE flags that gated
     // the scene through development are gone: there is no half-on shell to
     // select any more, and every one of them was already set to "on" in the

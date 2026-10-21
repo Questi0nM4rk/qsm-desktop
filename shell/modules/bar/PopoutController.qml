@@ -7,7 +7,7 @@ import QtQuick
 // in on kind changes.
 //
 // The WHEN — whether the popout stays open — is NOT this object's job
-// (03-rail "Popouts", RATIFIED 2026-09-07: a rollout is held open by WHERE
+// (03-rail "Popouts": a rollout is held open by WHERE
 // THE POINTER IS, decided by one geometric region test against the live
 // rects). That test needs both hosts and the scene's own hover point, so it
 // lives on EdgeScene, which owns both controllers already. This object only

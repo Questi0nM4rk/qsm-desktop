@@ -29,7 +29,7 @@ Item {
 
     // Hover-enter opens the calendar; whether it STAYS open is EdgeScene's
     // geometric region test, not a leave-time close call here (03-rail
-    // "Popouts", RATIFIED 2026-09-07).
+    // "Popouts").
     HoverHandler {
         onHoveredChanged: {
             if (hovered)

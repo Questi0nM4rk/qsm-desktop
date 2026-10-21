@@ -19,7 +19,7 @@ import qs.theme
 // systemctl). Destructive actions arm-then-fire. The 35% dim + blur backdrop is
 // SessionBackdrop (the one sanctioned second surface).
 //
-// KEYBOARD-DRIVEN as well as pointer-driven (owner 2026-08-24): Up/Down move
+// KEYBOARD-DRIVEN as well as pointer-driven: Up/Down move
 // the selection, Enter or Space activates it, and activation runs the same
 // arm-then-fire — so reaching shutdown by keyboard costs two presses, exactly
 // as it costs two clicks. Hover writes the SAME selection, so there is one mark
@@ -42,10 +42,9 @@ Item {
     readonly property bool fullscreen: FullscreenService.fullscreenFor(targetScreen)
     readonly property bool revealed: rollout.visible
 
-    // The set and its order are spec/08 RATIFIED, so this list IS the spec.
+    // The set and its order are spec/08, so this list IS the spec.
     // Five near-identical declarations were five places to keep in step, and
-    // the keyboard needs an index anyway. Hibernate REPLACED suspend (owner
-    // 2026-08-21): this machine hibernates rather than sleeps, and one path to
+    // the keyboard needs an index anyway. Hibernate REPLACES suspend: this machine hibernates rather than sleeps, and one path to
     // one feature means suspend is gone rather than kept beside it.
     readonly property var actions: [
         { icon: "lock", label: "Lock", role: "lock", destructive: false },

@@ -4,7 +4,7 @@ import QtQuick
 import Quickshell.Io
 import qs.services
 
-// Pending system updates (owner 2026-08-25, HyDE parity): a count the rail's
+// Pending system updates (HyDE parity): a count the rail's
 // updates cell wears as a badge, and ONE click action — the full upgrade in a
 // terminal, exactly like the old HyDE icon.
 //

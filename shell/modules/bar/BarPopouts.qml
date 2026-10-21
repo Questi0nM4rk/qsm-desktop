@@ -280,7 +280,7 @@ QsmShellComponents.Rollout {
         id: popout
 
         required property string name
-        // HOW THIS TIER IS SIZED (owner 2026-08-24, "we should have options"):
+        // HOW THIS TIER IS SIZED:
         //
         //   "content"  hug what the tier draws. A description or tooltip card:
         //              the right size for a sentence about the cell you hovered.

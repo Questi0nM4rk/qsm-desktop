@@ -5,8 +5,7 @@ import qs.services
 import qs.state
 import qs.theme
 
-// The bell in the top-right corner (04, owner 2026-10-17, read state
-// 2026-10-18). Two places, one glyph:
+// The bell in the top-right corner (04). Two places, one glyph:
 //   unread, menu open or pointer on it: a bulge out of the top band, flush
 //     with the right frame, carrying the bell and the unread count;
 //   everything read: the bulge retracts and the bell travels DIAGONALLY up
@@ -146,8 +145,7 @@ Item {
 
         // Tucked into the corner with nothing unread, the bell is a hint,
         // not a control asking to be read: it recedes as the bulge retracts
-        // and comes back to full strength as the bulge returns (owner
-        // 2026-10-19: "vic opaque, jakoze little invisible").
+        // and comes back to full strength as the bulge returns.
         opacity: QsmShellStyle.Style.opacityRecede + (1 - QsmShellStyle.Style.opacityRecede) * bulge.revealProgress
     }
 

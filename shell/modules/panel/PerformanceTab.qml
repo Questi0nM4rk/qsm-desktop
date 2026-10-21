@@ -6,10 +6,8 @@ import qs.QsmShell.Style as QsmShellStyle
 import qs.services
 import qs.theme
 
-// Performance tab (06 RATIFIED bullet superseded 2026-08-17 owner
-// caelestia-parity ruling: this replaces the "three rings" anatomy with
-// caelestia's card grid, simplified per owner keep-it-simple — no
-// decorative morphing blob). CPU/GPU hero cards (usage ring + temp read-
+// Performance tab (06): caelestia's card grid, simplified — no
+// decorative morphing blob. CPU/GPU hero cards (usage ring + temp read-
 // out), memory/storage rings, a network card with a live sparkline, and a
 // battery tank (UPower) when a battery exists. CPU, memory and storage are
 // always there and read "—" until their first sample, the same as the

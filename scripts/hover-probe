@@ -52,10 +52,9 @@ if [ "$move" -eq 1 ]; then
   origin="$(hyprctl monitors -j | jq -r --arg n "$output" '.[] | select(.name == $n) | "\(.x) \(.y)"')"
   [ -n "$origin" ] || { printf 'no such output: %s\n' "$output" >&2; exit 1; }
   read -r origin_x origin_y <<<"$origin"
-  # Pointer motion goes through the marketplace compuse drive (owner ruling
-  # 2026-08-21): calibrated ydotool movement, one implementation shared with
-  # everything else that drives this desktop. The repo-local cursor-warp is
-  # gone; drive move is its replacement.
+  # Pointer motion goes through the marketplace compuse drive: calibrated
+  # ydotool movement, one implementation shared with everything else that
+  # drives this desktop.
   drive="${QSM_MARKETPLACE:-$HOME/Projects/FullStack.qsm/qsm-marketplace}/tools/qsm-compuse/scripts/drive"
   [ -x "$drive" ] || { printf 'hover-probe needs the qsm-compuse drive: %s\n' "$drive" >&2; exit 1; }
   # drive pos prints hyprctl cursorpos ("x, y"); strip the space so the

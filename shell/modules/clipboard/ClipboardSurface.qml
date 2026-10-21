@@ -9,7 +9,7 @@ import qs.services
 import qs.state
 import qs.theme
 
-// Clipboard history, its own surface (owner 2026-08-20).
+// Clipboard history, its own surface.
 //
 // It used to be the launcher's `>clip` mode. Moving it out is not a reshuffle:
 // clipboard history is reached constantly and by one key, so it earns a surface
@@ -72,7 +72,7 @@ Item {
     // than the last things copied.
     // A clipboard entry can be a whole file, and a plain subsequence match will
     // find any four letters somewhere inside one in order -- "zzqq" matched two
-    // real entries and "No match" was practically unreachable (audit UX-6). The
+    // real entries and "No match" was practically unreachable. The
     // span cap says the match has to be LOCAL: a query of N characters that only
     // matches by wandering across more than ~8N of a payload is not the entry
     // anyone meant. The floor keeps one- and two-character queries usable.
@@ -269,7 +269,7 @@ exit 0`, "_", ...images.map(image => image.file)];
             }
         }
 
-        // What the two keys do (audit UX-5: both were invisible, and the cheat
+        // What the two keys do (both were invisible, and the cheat
         // sheet only knows compositor binds, so this surface's own contract was
         // written down nowhere). A footer rather than per-row hints: it is the
         // list that has the contract, not each entry.

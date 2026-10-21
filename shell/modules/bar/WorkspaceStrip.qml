@@ -5,16 +5,15 @@ import qs.QsmShell.Components as QsmShellComponents
 import qs.QsmShell.Style as QsmShellStyle
 import qs.theme
 
-// Workspace slots (03 RATIFIED 2026-10-16): every Hyprland workspace, in one
-// compact 16px slot each with a 4px gap, a 6px dot per slot (occupied
-// textMuted, urgent danger, empty overlay), and ONE moving part: the
-// library's accent count chip with the active number in textOnPrimary,
-// gliding between slots. Wheel switches, click jumps, no popout.
+// Workspace slots (03): every Hyprland workspace, in one compact slot each, a
+// dot per slot (occupied textMuted, urgent danger, empty overlay), and ONE
+// moving part: the library's accent count chip with the active number in
+// textOnPrimary, gliding between slots. Wheel switches, click jumps, no popout.
 Item {
     id: root
 
     // Every rail renders the identical column of ALL workspaces, active =
-    // the globally focused one (03, owner ratified 2026-10-16).
+    // the globally focused one (03).
 
     // The globally focused workspace via the focused monitor — the same notify chain ShellState and
     // the pre-reel widget already rely on. (When testing

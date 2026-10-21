@@ -7,8 +7,7 @@ import qs.components
 import qs.state
 import qs.theme
 
-// Keybind cheat sheet (decision-table row 9, built 2026-08-20, owner round
-// 2026-08-21). The clipboard rollout is reachable ONLY by its keybind, which
+// Keybind cheat sheet. The clipboard rollout is reachable ONLY by its keybind, which
 // made this surface load-bearing: a surface with no visible affordance has to
 // be discoverable somewhere, and this is the somewhere.
 //
@@ -22,8 +21,7 @@ import qs.theme
 // files the bind under "Other".
 //
 // Rows are a REFERENCE, not actions: no selection, no Enter, no hover cursor
-// (owner 2026-08-21 — a keybind row answers by being read, not by being
-// chosen). Search FILTERS, arrows scroll, and the list keeps hyprctl's own
+// (a keybind row answers by being read, not by being chosen). Search FILTERS, arrows scroll, and the list keeps hyprctl's own
 // order inside each group, which is the lua file's curated order. The bottom
 // fade and a thin position thumb are the only scroll furniture.
 Item {
@@ -60,7 +58,7 @@ Item {
 
     // FILTERED, never re-sorted: a score sort would fragment the group runs
     // into repeated headers. The config's order IS the presentation order.
-    // NO selection and NO dim (owner 2026-08-21): a reference has nothing to
+    // NO selection and NO dim: a reference has nothing to
     // select — a keybind row answers by being read, not by being chosen —
     // so the filter alone is the search's whole answer.
     readonly property var results: binds
@@ -182,7 +180,7 @@ Item {
                 boundsBehavior: Flickable.StopAtBounds
                 model: root.results
 
-                // Group separators (owner 2026-08-21: "nice and visible"): the
+                // Group separators: the
                 // group's name in the accent between two faded rules, the
                 // library's header row. The group name is also part of every
                 // row's search haystack, so typing "windows" keeps the whole
@@ -205,7 +203,7 @@ Item {
                     width: rows.width
                     height: Theme.cheatSheetRowHeight
 
-                    // No dim, no curl, no selection mark (owner 2026-08-21):
+                    // No dim, no curl, no selection mark:
                     // there is nothing to select on a reference row, and the
                     // edge-curl compress made rows unreadable exactly where the
                     // reader was scanning toward. Every visible row reads at
@@ -255,8 +253,7 @@ Item {
                     : (root.binds.length === 0 ? "No described keybinds" : "No match")
             }
 
-            // Roll-away fade and position mark (owner 2026-08-21:
-            // unmissable). Both are the library's now: the two rules this
+            // Roll-away fade and position mark. Both are the library's now: the two rules this
             // surface learned the hard way -- read `visibleArea` rather than
             // contentY, and cap the mark's length so it stays a position and
             // not a gauge -- are what `ScrollCue` carries.

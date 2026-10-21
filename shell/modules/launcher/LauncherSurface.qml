@@ -15,7 +15,7 @@ import qs.theme
 // copies), >kill (windows + processes, Enter kills — deliberate, no confirm),
 // >theme (a horizontal carousel instead of the row list — Left/Right
 // highlight, Enter applies instantly, same as click). A bare '>' lists all
-// commands. `>clip` was REMOVED 2026-08-20: clipboard history earned its own
+// commands. `>clip` is not a mode: clipboard history is its own
 // surface, and keeping the mode too would be two routes to one feature.
 // App ranking = fuzzy subsequence + frecency.
 Item {
@@ -186,9 +186,8 @@ Item {
             : root.results.findIndex(item => root.resultIdentity(item) === root.selectedIdentity)
 
     // The body keeps ONE height whatever the result count; results scroll
-    // inside it (owner 2026-10-19: "NENAVIDIM RANDOM UI JUMPING"). The list
-    // gap is the standard one: a kill list's wider gap scrolls, it never
-    // resizes the body.
+    // inside it, so the UI never jumps. The list gap is the standard one: a
+    // kill list's wider gap scrolls, it never resizes the body.
     readonly property real preferredBodyHeight: Theme.launcherMaxRows * Theme.launcherRowHeight
         + (Theme.launcherMaxRows - 1) * QsmShellStyle.Style.space1
         + QsmShellStyle.Style.size("TextField", "lg") + QsmShellStyle.Style.space3 + QsmShellStyle.Style.rolloutPadding * 2
@@ -1055,7 +1054,7 @@ Item {
         // A missing qalc is a DEGRADED SURFACE, not a result. The probe used to
         // `echo "qalc not installed"` into the result string, so the row looked
         // like an answer and Enter wl-copied that sentence into the clipboard
-        // (audit 2026-08-20). Now the exit code says it, the row says what to
+        // Now the exit code says it, the row says what to
         // do about it, and Enter has nothing to copy.
         onExited: exitCode => {
             root.calcAvailable = exitCode !== 127;
@@ -1121,7 +1120,7 @@ ps -eo pid,pcpu,comm --no-headers --sort=-pcpu | head -25 | awk '{printf "P|%s|%
         anchors.margins: QsmShellStyle.Style.rolloutPadding
         spacing: QsmShellStyle.Style.space3
 
-        // Results ABOVE the search field (07 RATIFIED): bottom-up so the
+        // Results ABOVE the search field (07): bottom-up so the
         // first result sits adjacent to the input. Hidden (not destroyed) in
         // >theme mode, where the horizontal carousel below takes over —
         // Layouts exclude invisible children so no space is reserved twice.
@@ -1141,7 +1140,7 @@ ps -eo pid,pcpu,comm --no-headers --sort=-pcpu | head -25 | awk '{printf "P|%s|%
 
                 anchors.fill: parent
                 clip: true
-                // UX-8 (07 RATIFIED 2026-08-25): >kill rows separate wider. The
+                // >kill rows separate wider (07). The
                 // standard 4px gap put a mis-hover 4px from an irreversible kill;
                 // space3 gives the pointer room without a confirm, which 07
                 // deliberately rejects. The body height is fixed, so the taller
@@ -1365,7 +1364,7 @@ ps -eo pid,pcpu,comm --no-headers --sort=-pcpu | head -25 | awk '{printf "P|%s|%
             items: root.results
             currentIndex: root.themeIndex
             onActivated: index => root.activate(index)
-            // UX-3 one-cursor: hovering a card selects it, exactly as the
+            // One cursor: hovering a card selects it, exactly as the
             // result rows do — the centered card is always what Enter fires.
             onHoverSelect: index => root.themeIndex = Math.max(0,
                 Math.min(root.results.length - 1, index))

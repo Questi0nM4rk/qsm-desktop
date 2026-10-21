@@ -16,7 +16,7 @@ import qs.theme
 // UPower smooths time-to-empty over its own history and re-reads the battery on
 // its own ~30s cadence, so selecting performance left this card claiming the
 // same hours as eco for a minute afterwards — which is the "performance and eco
-// have the same battery life" the owner reported (2026-08-24). UPower
+// have the same battery life" symptom. UPower
 // implements no Refresh() to poke either: it is introspectable on the device
 // interface and answers UnknownMethod. Beating that cadence means reading the
 // same kernel file UPower reads.

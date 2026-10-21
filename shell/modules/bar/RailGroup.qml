@@ -1,7 +1,7 @@
 import QtQuick
 import qs.theme
 
-// A rail group with a PREFERRED and a MAXIMUM size (owner 2026-08-18).
+// A rail group with a PREFERRED and a MAXIMUM size.
 //
 // Every group asks for the size its contents want (`preferredHeight`) and is
 // never given more than `maximumHeight`. When the rail cannot afford even the

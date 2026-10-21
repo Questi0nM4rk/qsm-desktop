@@ -32,7 +32,7 @@ QtObject {
         "hibernate": ["systemctl", "hibernate"],
         "reboot": ["systemctl", "reboot"],
         "shutdown": ["systemctl", "poweroff"],
-        // The full system upgrade in a terminal (owner 2026-08-25, HyDE
+        // The full system upgrade in a terminal (HyDE
         // parity): repo + AUR via the owner's helper, holding the terminal
         // open at the end so the result is readable before it closes.
         // Swap the helper here, nowhere else.

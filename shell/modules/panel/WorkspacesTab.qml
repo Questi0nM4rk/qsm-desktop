@@ -95,7 +95,7 @@ Item {
         onExited: HyprClientsService.refresh()
     }
 
-    // ONE ROW, never stacked (owner 2026-08-21, spec/06 amended): workspaces
+    // ONE ROW, never stacked (spec/06): workspaces
     // sit next to each other and the strip scrolls horizontally when more
     // exist than fit. The row hangs from the strip's start at a fixed width,
     // so a workspace appearing or closing adds or removes a tile at the end

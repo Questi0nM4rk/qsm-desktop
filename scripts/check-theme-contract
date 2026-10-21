@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# The Style.backend contract, checked from the consumer's side.
+# The Style.backend contract, checked from the consumer's side against what the
+# library answers when asked.
 #
 # The library resolves every value as `backend?.x ?? Tokens.x`. A consumer that
 # declares x shadows the library's value: the two drift apart and nothing
@@ -8,12 +9,18 @@
 #
 #   - the colour roles of its themes, the fonts and the mode flags;
 #   - size-table entries it ADDS by name, never one the library already has;
-#   - its own layout and policy, under names Style never asks for.
+#   - its own layout and policy, under names Style never exposes.
 #
-# It fails when Theme re-types a name Style asks for, when Theme restates a
+# The library's names come from scripts/public-names.qml, which asks the live
+# Style and Motion what they expose, and its size presets from
+# tokens/deep-night.json with the documented rule that a type without its own
+# table shares the Control ladder. No library source is read.
+#
+# It fails when Theme re-types a name Style exposes, when Theme restates a
 # library size preset, when a theme role is missing from Theme, when any QML
-# reads `Tokens`, and when any QML reads a Theme name that Theme does not
-# declare (that read is the library's value, spelled with the wrong object).
+# reads `Tokens`, when any QML reads a Theme name that Theme does not declare
+# (that read is the library's value, spelled with the wrong object), and when
+# any QML reads a Style or Motion name the library does not expose.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 python3 -I - "$@" <<'PY'

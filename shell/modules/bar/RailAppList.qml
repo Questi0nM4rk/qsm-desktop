@@ -7,7 +7,7 @@ import qs.QsmShell.Style as QsmShellStyle
 import qs.services
 import qs.theme
 
-// The rail's MIDDLE section (03 RATIFIED 2026-10-16): the CURRENT
+// The rail's MIDDLE section (03): the CURRENT
 // workspace's apps, per monitor, ICON ONLY. Each row is a rail slot with an
 // app glyph, the rail's own gap; no caption. The window title lives in the hover
 // popout as "app · live-title". The focused row carries accent at
@@ -38,8 +38,7 @@ Item {
     }
 
     // The rows sit in the middle of the free area between the workspace group
-    // and the bottom cluster (owner 2026-10-16, reaffirmed 2026-10-19 when a
-    // top-pinned list read as off-centre).
+    // and the bottom cluster: a top-pinned list read as off-centre.
     ListView {
         id: appList
         anchors.centerIn: parent
@@ -146,8 +145,8 @@ Item {
                 anchors.centerIn: parent
                 implicitSize: Theme.railAppIconSize
                 icon: appRow.appClass
-                // The app's own colours, receded when not focused (owner
-                // 2026-10-19: a one-tone tint looked washed out). De-emphasis
+                // The app's own colours, receded when not focused (a one-tone
+                // tint looked washed out). De-emphasis
                 // by contrast, never by shrinking the target.
                 opacity: appRow.current ? 1 : QsmShellStyle.Style.opacityRecede
             }

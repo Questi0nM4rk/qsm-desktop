@@ -4,7 +4,7 @@ import qs.QsmShell.Components as QsmShellComponents
 import qs.QsmShell.Style as QsmShellStyle
 import qs.theme
 
-// ONE cell for bluetooth, whatever is connected (owner 2026-08-18).
+// ONE cell for bluetooth, whatever is connected.
 //
 // Nothing connected  -> the bluetooth mark itself.
 // One device         -> that device's glyph, full size.

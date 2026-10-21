@@ -16,7 +16,7 @@ import qs.state
 // an external owns the effect, we own the reading.
 //
 // The WARMTH, though, goes over that socket: `hyprctl hyprsunset temperature
-// <K>` answers "ok" on a running daemon (probed 2026-08-24). Changing the
+// <K>` answers "ok" on a running daemon (probed). Changing the
 // warmth therefore does NOT replace the process.
 //
 // It used to, and that cost the owner a real bug within an hour of the slider

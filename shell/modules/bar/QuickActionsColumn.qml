@@ -3,7 +3,7 @@ import qs.QsmShell.Style as QsmShellStyle
 import qs.services
 import qs.theme
 
-// The quick-actions column (03, owner 2026-08-20): a SECOND rail, rolled out
+// The quick-actions column (03): a SECOND rail, rolled out
 // beside the first. Glyph cells stacked under each other, no labels — and
 // anything that needs to say more expands once further right, exactly as the
 // left band does.
@@ -25,7 +25,7 @@ Item {
     // own title. The column is the one place that knows which cell is which.
     signal interacted(string kind, string action, string title)
 
-    // CLEARANCE, not decoration (owner 2026-08-20). A detail card is centred on
+    // CLEARANCE, not decoration. A detail card is centred on
     // the cell that opened it, so for the FIRST and LAST cells it lands level
     // with the column's own rounded corners — and a small card's square left
     // edge meeting a 28px curve is the jagged seam the owner kept seeing.
@@ -150,7 +150,7 @@ Item {
             popouts: root.controller
             icon: "sparkle"
             popoutTitle: "Colours"
-            // Its own tier, and a MENU rather than a card (owner 2026-08-24):
+            // Its own tier, and a MENU rather than a card:
             // the current colour with its hex and a copy, a scrollable history
             // of picks, and an accent set generated from whichever one is
             // selected.

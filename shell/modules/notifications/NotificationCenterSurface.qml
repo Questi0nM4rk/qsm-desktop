@@ -4,7 +4,7 @@ import qs.services
 import qs.state
 import qs.theme
 
-// The notification menu (04, owner 2026-10-17): the searchable history,
+// The notification menu (04): the searchable history,
 // opened from the bell in the top-right corner. Everything about the list
 // (search, grouping, the keyboard cursor, the empty state, the unread dot)
 // lives in the library; this wires it to the service. The menu opens on the
@@ -22,8 +22,8 @@ QsmShellComponents.NotificationCenter {
     // The list scrolls directly on the rollout's band, not on a card.
     fadeColor: Theme.band
     dnd: ShellState.dnd
-    // A colour-picker announcement's summary IS the picked hex (owner
-    // 2026-08-25); the app name that decides this is the one hardcoded
+    // A colour-picker announcement's summary IS the picked hex;
+    // the app name that decides this is the one hardcoded
     // name this shell owns and the library must never see.
     swatchFor: entry => entry.appName === ColorPickService.notifyAppName
         && /^#[0-9a-fA-F]{6}$/.test(entry.summary) ? entry.summary : undefined

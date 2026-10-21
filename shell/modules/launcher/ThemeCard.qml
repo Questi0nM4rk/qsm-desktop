@@ -3,11 +3,11 @@ import qs.QsmShell.Components as QsmShellComponents
 import qs.QsmShell.Style as QsmShellStyle
 import qs.theme
 
-// One >theme carousel card (07 RATIFIED, caelestia WallpaperList idea):
+// One >theme carousel card (07, caelestia WallpaperList idea):
 // wallpaper thumbnail + name, scaled/dimmed off-center so the centered card
 // reads as the selection.
 //
-// UX-3 (07 RATIFIED): hover SELECTS, like every other result
+// Hover SELECTS (07), like every other result
 // surface. The hovered card becomes the centered one — one cursor shared by
 // pointer and keyboard — so Enter always applies the card that is visibly
 // marked. Hover adds no growth of its own: selection IS the response, and a

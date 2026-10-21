@@ -3,9 +3,9 @@ import qs.QsmShell.Components as QsmShellComponents
 import qs.QsmShell.Style as QsmShellStyle
 import qs.theme
 
-// The idle affordance of the top panel (06, owner 2026-10-17): a small band
+// The idle affordance of the top panel (06): a small band
 // bulge on the panel's leading edge carrying four dots, the drawer's
-// grip, as small as a grip can be (owner 2026-10-17).
+// grip, as small as a grip can be.
 // Hover (the generous zone EdgeScene owns, no delay) or click opens the
 // panel on Dashboard. The fill is painted by the shader through
 // registerBulge; this only carries the dots and the click area.
@@ -63,8 +63,8 @@ Item {
             model: 4
 
             Rectangle {
-                // dotGlyphSize, not dotRadius * 2: a 2px circle rasterises soft
-                // and its peak fell to 2.4:1; the text role clears 3:1.
+                // A 2px circle rasterises soft and its peak fell to 2.4:1; at
+                // this size the text role clears 3:1.
                 width: Theme.dotGlyphSize
                 height: width
                 radius: QsmShellStyle.Style.radiusPill

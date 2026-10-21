@@ -4,7 +4,7 @@ import qs.QsmShell.Components as QsmShellComponents
 import qs.QsmShell.Style as QsmShellStyle
 import qs.theme
 
-// >theme carousel (07 RATIFIED N-theme picker, caelestia WallpaperList idea
+// >theme carousel (07 N-theme picker, caelestia WallpaperList idea
 // simplified to a keyboard-driven horizontal ListView instead of a PathView
 // arc). One card per Theme.themes entry (via LauncherSurface.results) — a
 // new theme JSON adds a card with zero code. Centering + keyboard nav are
@@ -17,7 +17,7 @@ Item {
     required property var items
     property int currentIndex: 0
     signal activated(int index)
-    // UX-3 one-cursor: a hovered card asks the host to select it; the host
+    // One cursor: a hovered card asks the host to select it; the host
     // owns the index (it also drives it from the search field's arrows).
     signal hoverSelect(int index)
 

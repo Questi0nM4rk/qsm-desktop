@@ -19,8 +19,8 @@ Item {
     readonly property real handleRadius: Theme.handleRadius
     readonly property point handleCenter: Qt.point(root.leadingEdgeX + Theme.osdHandleProud
         - root.handleRadius, root.height / 2)
-    // The nub's hover zone: the painted circle grown by Style.hoverReach (owner
-    // 2026-10-18), reaching to the window's right edge. The open corridor is
+    // The nub's hover zone: the painted circle grown by Style.hoverReach,
+    // reaching to the window's right edge. The open corridor is
     // the rollout grown the same way, so a drag that wanders off a slider
     // does not retract the rollout under the pointer.
     readonly property rect _nubZone: QsmShellStyle.Style.hoverZone(

@@ -21,8 +21,7 @@ import qs.theme
 // rail, and every rollout as plain items in one scene — the previous
 // per-window path is gone, so this is the only surface composition.
 // The melt mechanism itself — the two registries, the uniform packing, the
-// shader — is a hosted ShellBorder (qsm-shell, docs/design-2026-09-06-
-// shell-border.md); EdgeScene owns everything Wayland-shaped around it: the
+// shader — is the library's hosted ShellBorder (spec/12-mechanism.md); EdgeScene owns everything Wayland-shaped around it: the
 // window, the layer shell, the input mask, fullscreen/focus-mode policy, and
 // rail hosting. Every rollout's own composition is a module-owned component
 // (OsdSurface, NotificationPopupStack, PanelSurface, LauncherSurface) that
@@ -356,7 +355,7 @@ PanelWindow {
     // right edge, so mousing toward a logout button crossed the OSD strip and
     // rolled the brightness bulge out from beneath the buttons the owner was
     // aiming at. The panel handle already carried this
-    // guard inline (audit UX-2); hoisted here it is ONE rule for every handle
+    // guard inline; hoisted here it is ONE rule for every handle
     // instead of one rule per handle, remembered or not.
     readonly property bool handlesArmed: ShellState.modal === "none" && !root.fullscreen && !root.focusMode
 
@@ -430,13 +429,13 @@ PanelWindow {
     // fullscreenMode uniform, driven by the `fullscreen` binding below).
     //
     // The mechanism itself — both registries, the uniform packing, the melt
-    // shader (spec/12-mechanism.md) — is the library's ShellBorder
-    // (qsm-shell, docs/design-2026-09-06-shell-border.md); everything bound
-    // here is either dynamic Wayland-shaped state the library may never hold
-    // (leftEdge, fullscreen) or a consumer-owned handle affordance (handle0). Every other uniform default (band paint, meltSmoothing,
-    // edgeSnapReach, seamOverlap, viewportRadius, edge) resolves through
-    // Style.backend, which shell.qml already binds to this Theme — so it
-    // already matches without being repeated here.
+    // shader (spec/12-mechanism.md) — is the library's ShellBorder;
+    // everything bound here is either dynamic Wayland-shaped state the
+    // library may never hold (leftEdge, fullscreen) or a consumer-owned
+    // handle affordance (handle0). Every other uniform (band paint,
+    // meltSmoothing, edgeSnapReach, seamOverlap, viewportRadius, edge) is the
+    // library's own value, which this Theme does not answer, so it is not
+    // repeated here.
     QsmShellComponents.ShellBorder {
         id: border
         anchors.fill: parent
@@ -463,8 +462,8 @@ PanelWindow {
     // that can hold each other open, "why is this still up" is unanswerable
     // from the outside without the hover flags that decide it.
     readonly property string openSubPopoutKind: popoutStack.childKind
-    // Live readout of the geometric region test below (03-rail "Popouts",
-    // RATIFIED 2026-09-07) — exposed for IPC status the same way the old
+    // Live readout of the geometric region test below (03-rail "Popouts")
+    // — exposed for IPC status the same way the old
     // hovered/closing flags were, so a live check can see the decision the
     // rollout is actually being held open (or not) by.
     readonly property bool popoutInRegion: popoutStack.parentHeld
@@ -579,7 +578,7 @@ PanelWindow {
     // The rail band is NOT re-added here — it is already permanently in the
     // mask via railMaskRect — so this id only ever needs to reach the card.
     //
-    // ACCEPTED COST (03-rail "Popouts", RATIFIED 2026-09-07): this used to be
+    // ACCEPTED COST (03-rail "Popouts"): this used to be
     // the full-height strip from the screen edge through the popout, which
     // made the whole column below/above the card solid whenever any popout
     // was open. Registering only the card's own bounding box instead means
@@ -731,8 +730,8 @@ PanelWindow {
             border.unregisterRolloutRegion("session-catch");
     }
 
-    // The panel handle's hover zone (06, owner 2026-10-18: "musime to roztahnout,
-    // abych nemusel mit pixel perfect aim"): the dots bulge as it is painted
+    // The panel handle's hover zone (06), generous enough that no pixel-perfect
+    // aim is needed: the dots bulge as it is painted
     // at rest, grown by Style.hoverReach, clipped to the window. It stays
     // parked at the rest position while the reading rides the panel rim, and
     // sits in the input mask so the pointer is seen there at all.
@@ -760,12 +759,12 @@ PanelWindow {
         }
     }
 
-    // Entering the zone opens the panel at once (no hover-intent delay, owner
-    // 2026-10-18). Read from the scene pointer, which sees every descendant,
+    // Entering the zone opens the panel at once (no hover-intent delay).
+    // Read from the scene pointer, which sees every descendant,
     // rather than a HoverHandler a surface above the zone would shadow. Only
     // from a CLEAN desktop: hover is not a deliberate act, and it used to
     // fire over any open modal, so mousing toward the cheat sheet's own
-    // search field swapped the sheet for the panel (audit UX-2).
+    // search field swapped the sheet for the panel.
     // `handlesArmed` is that rule, shared with the OSD handle.
     readonly property bool panelHandleHovered: panelHandleZone.width > 0
         && scenePointer.contains(panelHandleZone)
@@ -783,7 +782,7 @@ PanelWindow {
     // LAST so the full-scene catch wins z-order over the rail.
     //
     // Launcher: bottom-center; the body keeps one height whatever the result
-    // count (owner 2026-10-19). 07 RATIFIED: Theme.launcherWidth, and
+    // count (07): Theme.launcherWidth, and
     // Theme.launcherMaxRows rows plus the search field.
     ModalHost {
         scene: root
@@ -804,8 +803,8 @@ PanelWindow {
 
     // Clipboard: the same host scaffolding as the launcher — a full-scene
     // click-catch so clicking anywhere dismisses, and a Rollout that registers
-    // only its silhouette. It descends from the TOP band at the LEFT (owner
-    // 2026-08-20), so it corner-joins the rail as well as the top border, and
+    // only its silhouette. It descends from the TOP band at the LEFT,
+    // so it corner-joins the rail as well as the top border, and
     // it starts beside the rail rather than under it.
     ModalHost {
         scene: root

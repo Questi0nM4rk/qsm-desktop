@@ -54,8 +54,8 @@ QtObject {
     // and keyboard drive ONE cursor rather than two competing highlights (09
     // one-path). The flaw only shows while typing: the results RESHUFFLE under
     // a cursor that never moved, so whichever row slid beneath it grabbed the
-    // selection and Enter launched something the owner never aimed at (owner
-    // 2026-08-24, searching with the pointer resting mid-launcher). A hover
+    // selection and Enter launched something the owner never aimed at (searching with the
+    // pointer resting mid-launcher). A hover
     // that the LIST caused is not a pointer gesture and gets no say.
     //
     // Claimed by SearchField on each typed character; released by the scene's
@@ -135,11 +135,11 @@ QtObject {
         return openLauncher(seed);
     }
 
-    // Opening lands on the LAST USED tab (06 RATIFIED) unless a tab is named;
+    // Opening lands on the LAST USED tab (06) unless a tab is named;
     // re-toggling the same tab (or the bare panel) closes.
     function togglePanel(tab: string): bool {
-        // A persisted tab that no longer exists (notifications left the panel
-        // 2026-10-17) lands on Dashboard.
+        // A persisted tab that no longer exists (notifications left the panel)
+        // lands on Dashboard.
         const target = panelTabs.includes(tab) ? tab
             : panelTabs.includes(panelTab) ? panelTab : "dashboard";
         if (modal === "panel" && panelTab === target) {

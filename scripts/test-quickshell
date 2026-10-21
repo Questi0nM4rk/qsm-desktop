@@ -26,14 +26,12 @@ trap cleanup EXIT
 
 start_shell() {
   # A fullscreen client hides the band/rail by design (spec 09), which poisons
-  # every mask-width assertion below. This used to REFUSE and tell the owner to
-  # unfullscreen -- but the fullscreen window is routinely his session terminal,
-  # so refusing meant the suite simply never ran (owner 2026-08-24: "the tests
-  # should unfullscreen by default, i can fullscreen what i need after again").
+  # every mask-width assertion below. Refusing would mean the suite never ran,
+  # because the fullscreen window is routinely the owner's session terminal.
   #
-  # So clear them instead. The fullscreen STATE is deliberately not restored,
-  # per the owner -- putting a window back to fullscreen behind his back is the
-  # more surprising act.
+  # So clear them instead. The fullscreen STATE is deliberately not restored:
+  # putting a window back to fullscreen behind the owner's back is the more
+  # surprising act.
   #
   # Each window is addressed DIRECTLY. The previous version focused the window,
   # toggled the state of whatever was then active, and focused back, which was
@@ -255,7 +253,7 @@ qs ipc --path "$config" call qsm toggle notifications | grep -q '^true$'
 qs ipc --path "$config" call qsm status | grep -q '"modal":"notifications"'
 qs ipc --path "$config" call qsm toggle dashboard | grep -q '^true$'
 qs ipc --path "$config" call qsm status | grep -q '"modal":"panel"'
-# Panel tabs answer the keyboard (06 RATIFIED 2026-08-25): the seam drives
+# Panel tabs answer the keyboard (06): the seam drives
 # the same stepTab the Left/Right keys call — forward, back, and clamped.
 qs ipc --path "$config" call qsm panelTabStepTest 1 | grep -q '^true$'
 qs ipc --path "$config" call qsm status | grep -q '"panelTab":"media"'
@@ -269,7 +267,7 @@ qs ipc --path "$config" call qsm themeToggle | grep -q '^false$'
 qs ipc --path "$config" call qsm status | grep -Eq '"screenCount":[1-9][0-9]*'
 qs ipc --path "$config" call qsm status | grep -Eq '"workspaceCount":[1-9][0-9]*'
 qs ipc --path "$config" call qsm status | grep -Eq '"applicationCount":[1-9][0-9]*'
-# Updates cell (owner 2026-08-25, HyDE parity): the count field exists and is
+# Updates cell (HyDE parity): the count field exists and is
 # a number (-1 unknown / 0 none / N pending). The VALUE is machine state, not
 # an assertion.
 qs ipc --path "$config" call qsm status | grep -Eq '"updates":-?[0-9]+'
@@ -297,7 +295,7 @@ for i in 2 3 4 5; do
 done
 crit_id="$(qs ipc --path "$config" call qsm notifyTest "Critical" "body" critical 0)"
 qs ipc --path "$config" call qsm status | grep -q '"notificationCount":6'
-# 6 live, window caps at 5 (04 RATIFIED; was 4 before the S1 choreography).
+# 6 live, window caps at 5 (04).
 qs ipc --path "$config" call qsm status | grep -q '"popupCount":5'
 # a short-timeout notification expires on its own; the critical one and the
 # 5s-default ones must survive the same window

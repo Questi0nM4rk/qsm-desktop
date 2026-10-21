@@ -200,8 +200,8 @@ Item {
         inputEnabled: root.fullscreen
             ? capsule.acceptsInput
             : rollout.shouldBeActive && rollout.hitActive
-        // A colour-picker announcement's summary IS the picked hex
-        // (owner 2026-08-25); the app name that decides this is the one
+        // A colour-picker announcement's summary IS the picked hex;
+        // the app name that decides this is the one
         // hardcoded name this shell owns and the library must never see.
         swatchFor: entry => entry.appName === root.swatchAppName
             && /^#[0-9a-fA-F]{6}$/.test(entry.summary) ? entry.summary : undefined
