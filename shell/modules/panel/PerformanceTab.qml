@@ -48,8 +48,8 @@ ColumnLayout {
             }
 
             QsmShellComponents.Prose {
-                role: "reading"
-                font.pixelSize: QsmShellStyle.Style.textXs
+                role: "metadata"
+                technical: true
                 color: tempRow.alert ? Theme.danger : Theme.textMuted
                 text: `${tempRow.tempC}°`
             }

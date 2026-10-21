@@ -20,7 +20,6 @@ Open items only, one line each; what is fixed or historical is in git.
 
 ## Defects and gaps
 
-- `PerformanceTab`'s temperature readout sets `textXs` (10 px) directly, under the 12 px floor.
 - The rail's keyboard route is source-reviewed only (Tab order, the card a focused quick-action cell opens, the workspace slots' focus ring, accessible names): Quickshell is not on the AT-SPI bus without `QT_LINUX_ACCESSIBILITY_ALWAYS_ON=1` at launch, so no tree was read and no key was driven.
 - Theme artwork (`dark-rain-world.png`, `light-forest-dark-winter.jpg`) is untracked, so a fresh checkout lacks the images the theme JSONs name (`qsd-i63`).
 - `EdgeScene.handlesArmed` disables every monitor for one global modal; `keyboardGrab` has no surface or screen owner and a prompt's closure can release another instance's grab (`qsd-om3`).

@@ -438,7 +438,8 @@ GridLayout {
                 value: Math.max(0, PerformanceService.memUsed)
                 reading: PerformanceService.memUsed < 0
                     ? "—" : `${Math.round(PerformanceService.memUsed * 100)}%`
-                label: "Memory"
+                // Short enough to fit inside the ring at the 12 px floor.
+                label: "RAM"
                 fill: Theme.loadTone(PerformanceService.memUsed)
             }
 
@@ -449,7 +450,7 @@ GridLayout {
                 value: Math.max(0, PerformanceService.storageUsed)
                 reading: PerformanceService.storageUsed < 0
                     ? "—" : `${Math.round(PerformanceService.storageUsed * 100)}%`
-                label: "Storage"
+                label: "Disk"
                 fill: Theme.loadTone(PerformanceService.storageUsed)
             }
         }
