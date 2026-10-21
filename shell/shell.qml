@@ -96,6 +96,10 @@ ShellRoot {
         // clip question ("does the hover response survive its container?") can
         // only be guessed at from the layer's own rect, which is the padded
         // hit area and not the thing that moves.
+        // The device pixels per side a layer grows by right now, whether it
+        // drives a target or its host applies the number to its own body.
+        if (item.hoverScale !== undefined && item.growth !== undefined && item.growth !== 0)
+            entry.growthPx = Math.round(item.growth * 1000) / 1000;
         if (item.hoverScale !== undefined && item.target !== undefined && item.target !== null
             && item.target.mapToItem !== undefined) {
             const grown = item.target.mapToItem(null, 0, 0);

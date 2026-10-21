@@ -30,7 +30,7 @@ Item {
         anchors.right: parent.right
         spacing: Theme.railItemGap
 
-        // The mark and the updates cell are one compact group.
+        // The mark and the updates cell are one group.
         Column {
             id: markGroup
             width: parent.width
@@ -40,9 +40,8 @@ Item {
             // band (03 DEFAULT: no click, no popout).
             RailEntry {
                 icon: "arch"
-                iconSize: QsmShellStyle.Style.iconMd
+                iconSize: Theme.railMark
                 iconColor: Theme.accent
-                compact: true
             }
 
             // System updates (HyDE parity): directly under
@@ -52,7 +51,6 @@ Item {
             RailEntry {
                 interactive: true
                 icon: "updates"
-                compact: true
                 iconColor: UpdateService.available ? Theme.text : Theme.textMuted
                 popouts: root.popouts
                 popoutKind: "updates"
@@ -69,13 +67,14 @@ Item {
                 // hover card does the telling.
                 QsmShellComponents.Badge {
                     visible: UpdateService.available
-                    // In the glyph's own top-right corner, tucked in by one
-                    // tight step, so the chip rides the corner diagonally and
-                    // leaves the glyph's body readable.
+                    // On the glyph's own top-right corner, one rhythm step
+                    // in from the capsule's centre lines, so the chip rides
+                    // the corner diagonally and leaves the glyph's body
+                    // readable; both of its edges sit on whole device pixels.
                     anchors.left: parent.horizontalCenter
                     anchors.bottom: parent.verticalCenter
-                    anchors.leftMargin: QsmShellStyle.Style.iconSm / 2 - QsmShellStyle.Style.spaceTight
-                    anchors.bottomMargin: QsmShellStyle.Style.iconSm / 2 - QsmShellStyle.Style.spaceTight
+                    anchors.leftMargin: QsmShellStyle.Style.space1
+                    anchors.bottomMargin: QsmShellStyle.Style.space1
                     tone: "accent"
                     filled: true
                     text: UpdateService.count > 99 ? "99+" : String(UpdateService.count)
@@ -95,7 +94,7 @@ Item {
             // instead of pushing the clock off the band.
             maximumHeight: Math.max(0, root.height - bottomStack.height
                 - QsmShellStyle.Style.space4 * 2 - markGroup.height - topDivider.height * 2
-                - Theme.railItemGap * 4 - Theme.railAppSlot)
+                - Theme.railItemGap * 4 - Theme.railCapsule)
 
             Column {
                 width: parent.width
@@ -113,7 +112,6 @@ Item {
                     readonly property bool retracted: ShellState.isRailCollapsed(root.screen.name)
 
                     icon: retracted ? "pin" : "pin-off"
-                    compact: true
                     iconColor: Theme.textMuted
                     interactive: true
                     popouts: root.popouts
@@ -135,7 +133,7 @@ Item {
                         required property var modelData
 
                         width: parent.width
-                        height: Theme.railCompactHeight
+                        height: Theme.railCapsule
 
                         function open(): void {
                             root.popouts.show("tray", trayEntry,
@@ -150,6 +148,17 @@ Item {
                         Keys.onReturnPressed: trayEntry.open()
                         Keys.onEnterPressed: trayEntry.open()
                         Keys.onSpacePressed: trayEntry.open()
+
+                        // The capsule every rail item is: it recolours and grows by
+                        // whole device pixels, the glyph keeps its size.
+                        QsmShellComponents.Surface {
+                            anchors.fill: parent
+                            anchors.margins: -trayLayer.growth
+                            radius: QsmShellStyle.Style.radiusMd
+                            base: "transparent"
+                            hovered: trayLayer.hovered
+                            pressed: trayLayer.pressed
+                        }
 
                         // One tone with the outline glyphs around it, like the
                         // rail's app rows.
@@ -169,14 +178,11 @@ Item {
                         }
 
                         QsmShellComponents.StateLayer {
+                            id: trayLayer
                             anchors.fill: parent
-                            // A bare glyph has no body to recolour: the layer
-                            // paints the hover disc and the glyph itself grows
-                            // and pushes in.
-                            target: trayImage
-                            hoverTint: true
-                            hoverScale: QsmShellStyle.Motion.rowHoverScale
-                            pressScale: QsmShellStyle.Motion.pressScale
+                            anchors.leftMargin: -Theme.railGutter
+                            target: null
+                            growthCap: QsmShellStyle.Motion.hoverGrowthWithin(Theme.railItemGap)
                             focused: trayEntry.activeFocus
                             focusRadius: QsmShellStyle.Style.radiusMd
                             onClicked: trayEntry.open()
@@ -248,7 +254,6 @@ Item {
                 // no percentage to show there.
                 icon: laptop ? "" : PowerProfileService.glyph
                 iconColor: low ? Theme.danger : Theme.text
-                compact: true
                 interactive: true
                 popouts: root.popouts
                 popoutKind: "battery"
@@ -261,6 +266,7 @@ Item {
                     anchors.centerIn: parent
                     visible: batteryCell.laptop
                     text: Math.round(batteryCell.charge * 100) + "%"
+                    font.pixelSize: Theme.railReading
                     // Charging is the one state the number cannot state, so
                     // it says it in the accent rather than by growing a
                     // second glyph beside itself.
@@ -274,7 +280,7 @@ Item {
                 }
             }
 
-            // The quick menu: compact cells. Active or connected
+            // The quick menu: active or connected
             // draws the glyph in text, off in textMuted; state changes the
             // glyph's SHAPE, never colour alone. Hover rolls out, click does
             // the cell's one cheap toggle, the rollout owns any escape to a
@@ -282,7 +288,6 @@ Item {
             RailEntry {
                 icon: "zap"
                 iconColor: Theme.textMuted
-                compact: true
                 interactive: true
                 popouts: root.popouts
                 popoutKind: "actions"
@@ -295,7 +300,6 @@ Item {
                 icon: NetworkService.glyph
                 iconColor: NetworkService.ethernetActive || NetworkService.wifiConnected
                     ? Theme.text : Theme.textMuted
-                compact: true
                 interactive: true
                 popouts: root.popouts
                 popoutKind: "network"
@@ -307,7 +311,6 @@ Item {
             // Bluetooth: ONE cell that becomes what is connected, and
             // subdivides up to four ways.
             RailDeviceCell {
-                compact: true
                 popouts: root.popouts
             }
 
@@ -316,7 +319,6 @@ Item {
             RailEntry {
                 icon: AudioService.outputMuted ? "volume-muted" : "volume"
                 iconColor: AudioService.outputMuted ? Theme.textMuted : Theme.text
-                compact: true
                 interactive: true
                 popouts: root.popouts
                 popoutKind: "sound"
@@ -333,7 +335,6 @@ Item {
         RailEntry {
             icon: "power"
             iconColor: Theme.danger
-            compact: true
             interactive: true
             popouts: root.popouts
             popoutKind: "session"

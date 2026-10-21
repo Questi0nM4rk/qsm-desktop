@@ -548,7 +548,7 @@ Item {
     Column {
         visible: !root._isDelegatedStory
         enabled: !root._isDelegatedStory
-        x: (Theme.reservedLeft - Theme.railWidth) / 2
+        x: Theme.railGutter
         y: QsmShellStyle.Style.space6 * 2
         width: Theme.railWidth
         spacing: QsmShellStyle.Style.space1
@@ -558,7 +558,6 @@ Item {
 
             width: parent.width
             icon: "zap"
-            compact: true
             interactive: true
             popouts: popoutStack.parentController
             popoutKind: "actions"

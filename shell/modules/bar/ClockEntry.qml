@@ -4,47 +4,20 @@ import qs.QsmShell.Components as QsmShellComponents
 import qs.QsmShell.Style as QsmShellStyle
 import qs.theme
 
-// The larger time sits above one smaller numeric date, all in the technical face.
-Item {
+// The larger time sits above one smaller numeric date, all in the technical
+// face, inside the rail's one capsule: hover, click and keys open the calendar
+// like every other cell's rollout, with its pill, its growth and its hit area.
+RailEntry {
     id: root
 
-    property var popouts: null
     readonly property date now: clock.date
 
-    width: Theme.railWidth
-    implicitHeight: content.implicitHeight + QsmShellStyle.Style.space2 * 2
-
-    function openCalendar(): void {
-        root.popouts?.show("calendar", root, Qt.formatDate(root.now, "MMMM yyyy"), "", null);
-    }
-
-    // Hover, click and keys open the same calendar.
-    activeFocusOnTab: true
-    Accessible.role: Accessible.Button
+    interactive: true
+    // Hover and the keys open the calendar; a click would only repeat it.
+    clickable: false
+    popoutKind: "calendar"
+    popoutTitle: Qt.formatDate(root.now, "MMMM yyyy")
     Accessible.name: "Calendar"
-    Accessible.onPressAction: root.openCalendar()
-    Keys.onReturnPressed: root.openCalendar()
-    Keys.onEnterPressed: root.openCalendar()
-    Keys.onSpacePressed: root.openCalendar()
-
-    // Hover-enter opens the calendar; whether it STAYS open is EdgeScene's
-    // geometric region test, not a leave-time close call here (03-rail
-    // "Popouts").
-    HoverHandler {
-        onHoveredChanged: {
-            if (hovered)
-                root.openCalendar();
-        }
-    }
-
-    // Click and the keyboard ring only: the reading does not grow or recolour.
-    QsmShellComponents.StateLayer {
-        anchors.fill: parent
-        target: null
-        focused: root.activeFocus
-        focusRadius: QsmShellStyle.Style.radiusMd
-        onClicked: root.openCalendar()
-    }
 
     // One shared system clock at minute precision — the display shows no
     // seconds, so a per-instance 1s timer was 60x the wakeups for nothing.
@@ -123,7 +96,7 @@ Item {
     }
 
     Column {
-        id: content
+        id: stack
         anchors.centerIn: parent
         spacing: 0
 
@@ -136,8 +109,7 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             role: "reading"
             technical: true
-            topPadding: QsmShellStyle.Style.space1
-            width: Theme.railWidth - QsmShellStyle.Style.space1
+            width: Theme.railCapsule - QsmShellStyle.Style.space1
             horizontalAlignment: Text.AlignHCenter
             text: Qt.formatDate(root.now, "dd.MM")
             font.pixelSize: Theme.railClockDateSize

@@ -554,7 +554,7 @@ PanelWindow {
             // Center the rail column in the left band (01-frame): the band is
             // thicker than frameThickness, so a frameThickness margin would push
             // the column toward screen center.
-            anchors.leftMargin: (Theme.reservedLeft - Theme.railWidth) / 2
+            anchors.leftMargin: Theme.railGutter
             width: Theme.railWidth
             screen: root.modelData
             popouts: popoutController

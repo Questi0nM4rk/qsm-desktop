@@ -33,16 +33,19 @@ Item {
         anchors.centerIn: parent
         visible: root.toplevels.length === 0
         name: "monitor"
-        size: Theme.railAppIconSize
+        size: Theme.railMark
         color: Theme.textMuted
     }
 
     // The rows sit in the middle of the free area between the workspace group
     // and the bottom cluster: a top-pinned list read as off-centre.
+    // The list reaches the screen edge across the band's gutter, so a row's
+    // hit area is the capsule's own, like every other rail item's.
     ListView {
         id: appList
-        anchors.centerIn: parent
-        width: parent.width
+        x: -Theme.railGutter
+        y: (parent.height - height) / 2
+        width: parent.width + Theme.railGutter
         height: Math.min(parent.height, contentHeight)
         visible: root.toplevels.length > 0
         clip: true
@@ -96,7 +99,7 @@ Item {
             }
 
             width: appList.width
-            height: Theme.railAppSlot
+            height: Theme.railCapsule
 
             activeFocusOnTab: true
             Accessible.role: Accessible.Button
@@ -118,9 +121,10 @@ Item {
             // The focused row is a state, not a hover: accent at
             // opacitySelected behind the glyph.
             QsmShellComponents.Surface {
-                anchors.centerIn: parent
-                width: Theme.railAppSlot
-                height: Theme.railAppSlot
+                id: capsule
+                anchors.right: parent.right
+                width: Theme.railCapsule
+                height: Theme.railCapsule
                 radius: QsmShellStyle.Style.radiusMd
                 base: "transparent"
                 selected: appRow.current
@@ -142,8 +146,8 @@ Item {
 
             AppIcon {
                 id: rowIcon
-                anchors.centerIn: parent
-                implicitSize: Theme.railAppIconSize
+                anchors.centerIn: capsule
+                implicitSize: Theme.railMark
                 icon: appRow.appClass
                 // The app's own colours, receded when not focused (a one-tone
                 // tint looked washed out). De-emphasis
@@ -154,12 +158,12 @@ Item {
             QsmShellComponents.StateLayer {
                 id: rowLayer
                 anchors.fill: parent
-                // The ICON grows, not the row: the row sits in a clipping
-                // ListView, so growing it would shave the response. The
-                // row's slot above recolours on hover and press.
-                target: rowIcon
-                hoverScale: QsmShellStyle.Motion.hoverScale
-                pressScale: QsmShellStyle.Motion.pressScale
+                // The row sits in a clipping ListView, so growing its capsule
+                // would shave the response, and an app's bitmap is not scaled:
+                // the capsule above recolours on hover and press and the row
+                // does not grow.
+                target: null
+                growthCap: 0
                 focused: appRow.activeFocus
                 focusRadius: QsmShellStyle.Style.radiusMd
                 onClicked: appRow.focusWindow()

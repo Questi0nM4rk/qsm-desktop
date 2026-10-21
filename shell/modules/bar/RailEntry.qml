@@ -17,10 +17,6 @@ Item {
     property string icon
     property color iconColor: Theme.text
     property bool active
-    // Compact rows are reserved for controls within a rail group. Their
-    // glyphs stay legible while the group reads as a unit rather than a
-    // column of isolated buttons.
-    property bool compact
     // Destructive-flavored entry (power): slight danger-tinted base.
     property bool danger
     property bool interactive
@@ -28,6 +24,9 @@ Item {
     // A rail cell carries no label, so its glyph takes the small icon step.
     // The Arch logo is the one deliberate larger glyph, at the top of the band.
     property int iconSize: QsmShellStyle.Style.iconSm
+    // How far a selected pill reaches to the right: to the wall of the rollout
+    // it joins, which is the band's own wall for the left rail.
+    property real reach: Theme.railReach
     property var popouts: null
     property string popoutKind
     property string popoutTitle
@@ -62,8 +61,8 @@ Item {
     // rollout move.
     signal interaction(string action)
 
-    implicitWidth: Theme.railWidth
-    implicitHeight: compact ? Theme.railCompactHeight : Theme.railWidth
+    implicitWidth: Theme.railCapsule
+    implicitHeight: Theme.railCapsule
 
     // A cell the pointer can act on is a keyboard stop too, and a screen
     // reader names it by what its popout names.
@@ -91,8 +90,12 @@ Item {
     // which is Surface's own answer to "selected".
     QsmShellComponents.Surface {
         anchors.fill: parent
-        // Selected: reach the band's inner wall — connected to the column.
-        anchors.rightMargin: root.selected ? -(Theme.reservedLeft - Theme.railWidth) / 2 : 0
+        // Hover grows the body by whole device pixels on every side and leaves
+        // the glyph alone. Selected: the right side reaches the band's inner
+        // wall instead, exactly, so the pill joins the rollout's own edge and
+        // never overshoots it.
+        anchors.margins: -layer.growth
+        anchors.rightMargin: root.selected ? -root.reach : -layer.growth
         radius: QsmShellStyle.Style.radiusMd
         // Plugged into the wall it reaches: square on that side, so the pill
         // joins the column instead of ending in two rounded notches.
@@ -134,15 +137,17 @@ Item {
         id: layer
         anchors.fill: parent
         // Fitts reach: the hit area extends across the band's
-        // outer 10px gutter to the TRUE screen edge — an edge-slammed cursor
+        // outer gutter to the TRUE screen edge — an edge-slammed cursor
         // lands on the entry, never on dead band. Visuals stay in the cell;
         // the tint is band-colored so the overhang never reads.
-        anchors.leftMargin: -(Theme.reservedLeft - Theme.railWidth) / 2
-        // The cell's Surface recolours on hover and press, so the layer only
-        // grows it, and a press never resizes a body. Growth is capped by the
-        // rail's gap, because the open cell stays grown while the next one is
-        // entered, so two neighbours can be grown at once.
-        hoverScale: QsmShellStyle.Motion.hoverScaleWithin(root.height, Theme.railItemGap)
+        anchors.leftMargin: -Theme.railGutter
+        // The cell's Surface recolours on hover and press and grows by
+        // `growth`, applied above, so the layer drives no target and a press
+        // never resizes a body. Growth is capped by the rail's gap, because the
+        // open cell stays grown while the next one is entered, so two
+        // neighbours can be grown at once.
+        target: null
+        growthCap: QsmShellStyle.Motion.hoverGrowthWithin(Theme.railItemGap)
         focused: root.activeFocus
         focusRadius: QsmShellStyle.Style.radiusMd
         interactive: root.interactive

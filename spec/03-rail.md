@@ -33,8 +33,28 @@ routes; pointer and Return call the same submit function. Each input reports
 intent separately from the backend result, with no password in event payloads.
 
 - The rail is one column of readouts and buttons, vertically stacked; readouts have numbers,
-  buttons do not. Entries may expose a popout on hover. Nothing in the rail carries a 40x32
-  "cell" box; hit areas are invisible.
+  buttons do not. Entries may expose a popout on hover. A hit area is invisible.
+- **RATIFIED (owner)**: every rail item is ONE capsule with ONE hit area, the clock included.
+  Owner: "Všechny ty glyph invisible capsules mají být stejně velké, takže by ten baterry měl
+  být stejně daleko od všeho, pokud měříš rovně z leva do prava. Jen scaling in them should be
+  different." and "Ideálně nechceme takovýhle float scaling. Plus říkám od všeho, takže i od
+  hodin, takže všechny ty bottom capsules musíš zvětšit, potom můžeš lehce zmenšit ten text
+  uvnitř, ale capsule a hitbox musí být u všeho stejně."
+  - The capsule is `Theme.railCapsule`, the smallest Control size in which the clock fits once
+    its text steps down one type step (digits 14, date 10: line boxes 17 + 17 + 12 = 46): Control
+    lg, **48x48**. The hit area is the capsule plus the band's 8px gutter to the true screen
+    edge, **56x48**. The logo, the updates cell, the pin, tray icons, app rows, the clock, the
+    battery reading, the quick menu and power all use exactly these two rects, so a capsule is
+    the same distance from its neighbours, from the band wall (4px) and from its rollout's
+    content (20px) wherever it sits.
+  - Only what is inside a capsule scales and it is centred there: glyphs 16, the logo and an
+    app's icon 24, the battery reading 14, the clock digits 14 and its date 10. The workspace
+    slots are not capsules: they are a strip of 16px aims with one moving chip.
+  - Hover is a whole-device-pixel size change of the capsule's body and never a fractional
+    scale (qsm-shell AGENTS.md, growth): the glyph keeps its size, the pixel edges stay on the
+    device grid, and the side of an open item's pill that joins its rollout does not grow, it
+    reaches the rollout body's edge exactly. App rows sit in a clipping list: they recolour
+    and do not grow.
 - **RATIFIED (2026-10-16, owner)**: lineup top→bottom: logo (decorative), SYSTEM UPDATES cell,
   then ONE group holding the workspace slots, PIN and the tray icons, then the
   current-workspace app list (the middle section, rows from a fixed origin under the workspace group so the first
@@ -52,7 +72,7 @@ intent separately from the backend result, with no password in event payloads.
   sit 4px from their neighbours, so a group boundary is one line of ink, not a 12px gap. Tray icons sit in the workspace/pin
   group (owner, 2026-08-24) so an app's tray icon never reads as one more app row, and a
   machine with no tray icons shows nothing there. Rail glyphs use the compact 16px step, with
-  the top Arch logo and the app list's application glyphs as the deliberate 20px exceptions.
+  the top Arch logo and the app list's application glyphs as the deliberate 24px mark step.
 - **RATIFIED (2026-10-16, owner)**: edge handles (the OSD handle and any edge tab) are 12x40
   tabs protruding 11px into the picture, `band` fill, 12px glyph (the icon scale's smallest step), hit area 24px minimum.
 - **DEFAULT (2026-08-16)**: logo entry is decorative — no click action, no popout.
@@ -157,8 +177,8 @@ intent separately from the backend result, with no password in event payloads.
 - **RATIFIED (2026-08-16, amended 2026-10-16)**: the rail's MIDDLE section lists the CURRENT
   workspace's apps, per monitor, icon-only. When the workspace is empty it shows the default:
   a monitor icon (as in `references/rail-closeup.png`).
-- **RATIFIED (2026-10-16, owner)** app-list mechanics: each row is a 32x32 slot with a 20px
-  glyph and a 4px gap; NO caption, vertical or otherwise. The window title lives in the hover
+- **RATIFIED (2026-10-16, owner)** app-list mechanics: each row is the rail capsule (48x48) with a
+  24px glyph and a 4px gap; NO caption, vertical or otherwise. The window title lives in the hover
   popout, reading **"app · live-title"** — identity first so an ellipsis can only eat the
   context tail; leading unread counters ("(2864) …") stripped; brand suffixes after a dash
   dropped. The current (focused) row carries `accent` at 12 percent opacity behind it over
@@ -174,7 +194,7 @@ intent separately from the backend result, with no password in event payloads.
 - The coffee/awake cell is REPLACED by a **quick actions** cell (`zap`). Hover only — there is
   nothing for a click to do that the column does not do better.
 - **RATIFIED (2026-10-16, owner)**: quick-menu cells (the rail's own and the second rail's) are
-  32x32 (target-frequent) with a 16px glyph. A connected/active state draws the glyph in
+  the rail capsule (48x48, target-frequent) with a 16px glyph. A connected/active state draws the glyph in
   `text`; an off/inactive state in `textMuted` with the "off" glyph SHAPE. Glyphs change shape
   for state, never colour alone: network = cable / wifi by signal / wifi-off; bluetooth = the
   mark, or the connected device's glyph (the ONE device cell that becomes what is connected,

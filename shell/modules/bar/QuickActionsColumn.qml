@@ -62,7 +62,7 @@ Item {
 
         anchors.centerIn: parent
         width: parent.width
-        spacing: 0
+        spacing: Theme.railItemGap
 
         QuickActionCell {
             id: keyboardCell
