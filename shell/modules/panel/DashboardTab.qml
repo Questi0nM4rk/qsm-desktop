@@ -388,6 +388,8 @@ GridLayout {
 
         QsmShellComponents.MonthCalendar {
             id: calendarContent
+            // The card shares the tab's height with the row above it.
+            size: "sm"
             anchors.fill: parent
             anchors.margins: QsmShellStyle.Style.space4
         }
