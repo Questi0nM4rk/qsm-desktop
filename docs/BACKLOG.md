@@ -20,6 +20,7 @@ Open items only, one line each; what is fixed or historical is in git.
 
 ## Defects and gaps
 
+- The colour picker rollout's history is eaten by its edge fades: the list viewport is a few rows tall and the library `ScrollCue` paints a fixed 48 px fade at each end (`modules/bar/ColorPickContent.qml` around line 309), so no swatch is fully visible (owner: "kdy je mala, tak ten fade in, and fade out na ni, proste sezere vsechny items"). Check every desktop scroll area the same way once the library bounds the fade by the viewport (qsm-shell backlog).
 - The rail's keyboard route is source-reviewed only (Tab order, the card a focused quick-action cell opens, the workspace slots' focus ring, accessible names): Quickshell is not on the AT-SPI bus without `QT_LINUX_ACCESSIBILITY_ALWAYS_ON=1` at launch, so no tree was read and no key was driven.
 - Theme artwork (`dark-rain-world.png`, `light-forest-dark-winter.jpg`) is untracked, so a fresh checkout lacks the images the theme JSONs name (`qsd-i63`).
 - `EdgeScene.handlesArmed` disables every monitor for one global modal; `keyboardGrab` has no surface or screen owner and a prompt's closure can release another instance's grab (`qsd-om3`).
