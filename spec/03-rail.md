@@ -52,9 +52,9 @@ intent separately from the backend result, with no password in event payloads.
   sit 4px from their neighbours, so a group boundary is one line of ink, not a 12px gap. Tray icons sit in the workspace/pin
   group (owner, 2026-08-24) so an app's tray icon never reads as one more app row, and a
   machine with no tray icons shows nothing there. Rail glyphs use the compact 16px step, with
-  the top Arch logo as the deliberate 20px exception.
+  the top Arch logo and the app list's application glyphs as the deliberate 20px exceptions.
 - **RATIFIED (2026-10-16, owner)**: edge handles (the OSD handle and any edge tab) are 12x40
-  tabs protruding 11px into the picture, `band` fill, 10px glyph, hit area 24px minimum.
+  tabs protruding 11px into the picture, `band` fill, 12px glyph (the icon scale's smallest step), hit area 24px minimum.
 - **DEFAULT (2026-08-16)**: logo entry is decorative — no click action, no popout.
 - **RATIFIED (2026-08-25, owner — HyDE parity; amended same day)**: a SYSTEM UPDATES cell lives
   in the logo's group, directly under the arch mark: a Pacman-and-pellet glyph with the
@@ -96,8 +96,8 @@ intent separately from the backend result, with no password in event payloads.
   TRAVELING numbered pill: ALL Hyprland workspaces globally (monitor-synced — every rail
   renders the identical column, active = the globally focused workspace); slots hold fixed
   positions with a 4px gap; each shows a 6px dot — occupied `textMuted`, urgent `danger`,
-  empty `overlay`; the ACTIVE workspace is marked by a 20px `accent` pill, 2px over its slot on each side, with the number in
-  `textOnPrimary`, which GLIDES between slots (popout-morph tier, no overshoot) — the pill is the
+  empty `overlay`; the ACTIVE workspace is marked by the library's count chip (the updates badge's own size, 28x16),
+  `accent` over its slot, with the number in `textOnPrimary`, which GLIDES between slots (popout-morph tier, no overshoot) — the pill is the
   only moving part; its dot fades aside beneath it. NO app icons — app identity lives ONLY in
   the center app list. Wheel switches; click a slot jumps.
 - **DEFAULT (2026-08-16)**: workspace model = Hyprland's dynamic per-monitor workspaces; one
@@ -159,7 +159,7 @@ intent separately from the backend result, with no password in event payloads.
 - **RATIFIED (2026-08-16, amended 2026-10-16)**: the rail's MIDDLE section lists the CURRENT
   workspace's apps, per monitor, icon-only. When the workspace is empty it shows the default:
   a monitor icon (as in `references/rail-closeup.png`).
-- **RATIFIED (2026-10-16, owner)** app-list mechanics: each row is a 32x32 slot with a 22px
+- **RATIFIED (2026-10-16, owner)** app-list mechanics: each row is a 32x32 slot with a 20px
   glyph and a 4px gap; NO caption, vertical or otherwise. The window title lives in the hover
   popout, reading **"app · live-title"** — identity first so an ellipsis can only eat the
   context tail; leading unread counters ("(2864) …") stripped; brand suffixes after a dash

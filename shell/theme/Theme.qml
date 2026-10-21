@@ -234,11 +234,10 @@ QtObject {
     // subdividing.
     readonly property int railDeviceMax: 4
     // Workspace slots: compact, because there is nothing to aim at beyond a
-    // wheel and a click; the numbered accent pill is the one moving part and
-    // overhangs its slot.
+    // wheel and a click; the numbered accent chip is the one moving part and
+    // overhangs its slot sideways.
     readonly property int railWorkspaceSlot: 16
     readonly property int railWorkspaceDot: 6
-    readonly property int railWorkspacePill: 20
     // The bell corner: a bulge that retracts when everything is read, the glyph
     // resting on the band's corner; its menu is a top-right modal the height of
     // the clipboard.

@@ -7,9 +7,9 @@ import qs.theme
 
 // Workspace slots (03 RATIFIED 2026-10-16): every Hyprland workspace, in one
 // compact 16px slot each with a 4px gap, a 6px dot per slot (occupied
-// textMuted, urgent danger, empty overlay), and ONE moving part: the 20px
-// accent pill with the active number in textOnPrimary, gliding between
-// slots. Wheel switches, click jumps, no popout.
+// textMuted, urgent danger, empty overlay), and ONE moving part: the
+// library's accent count chip with the active number in textOnPrimary,
+// gliding between slots. Wheel switches, click jumps, no popout.
 Item {
     id: root
 
@@ -124,21 +124,19 @@ Item {
         }
     }
 
-    // The numbered accent pill — the one moving part. Glides between the
+    // The numbered accent chip — the one moving part. Glides between the
     // fixed slots on the popout-morph tier and carries the active number.
-    // Badge, not a hand-built Rectangle+Text: it is the same pill language
-    // as the updates-cell badge (03-rail).
+    // The library's Badge at its own size, never resized: it is the same chip
+    // as the updates-cell badge (03-rail), so a Badge has one height.
     QsmShellComponents.Badge {
         id: activePill
 
         tone: "accent"
         filled: true
         text: String(root.activeWorkspaceId)
-        width: Theme.railWorkspacePill
-        height: Theme.railWorkspacePill
         anchors.horizontalCenter: parent.horizontalCenter
         y: slots.y + root.activeIndex * root.slotStride
-            + (Theme.railWorkspaceSlot - Theme.railWorkspacePill) / 2
+            + (Theme.railWorkspaceSlot - height) / 2
 
         Behavior on y {
             NumberAnimation { duration: Motion.morphGlide; easing.type: Motion.standardEasing }
