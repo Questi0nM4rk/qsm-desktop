@@ -336,7 +336,7 @@ ColumnLayout {
                         }
                         leading: QsmShellComponents.SvgIcon {
                             name: root.promptState === "ok" ? "check" : "lock"
-                            size: Theme.iconXs
+                            size: Theme.iconSm
                             color: root.promptState === "ok" ? Theme.accent : Theme.textMuted
                         }
                         trailing: QsmShellComponents.ControlLabel {

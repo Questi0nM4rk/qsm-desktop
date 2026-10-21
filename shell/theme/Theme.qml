@@ -427,9 +427,9 @@ QtObject {
     // 32px cell with different content, 4px apart, same hover rollout.
     readonly property int railItemGap: 4
     // Rail app list (03 RATIFIED 2026-10-16): icon-only rows, a 32px cell
-    // with a 22px glyph, no caption. The title lives in the hover popout.
+    // with a 20px glyph, no caption. The title lives in the hover popout.
     readonly property int railAppSlot: 32
-    readonly property int railAppIconSize: 22
+    readonly property int railAppIconSize: iconMd
     // Inactive rail apps sit back by contrast; the active one is at full strength.
     readonly property real railInactiveAppOpacity: 0.62
     // A tray icon is recoloured to textMuted and lifted by this much, so a

@@ -139,8 +139,10 @@ Item {
         // the tint is band-colored so the overhang never reads.
         anchors.leftMargin: -(Theme.reservedLeft - Theme.railWidth) / 2
         // The cell's Surface recolours on hover and press, so the layer only
-        // grows it, and a press never resizes a body.
-        hoverScale: QsmShellStyle.Motion.hoverScale
+        // grows it, and a press never resizes a body. Growth is capped by the
+        // rail's gap, because the open cell stays grown while the next one is
+        // entered: at the default 1.08 two 32px cells 4px apart closed to 1.44px.
+        hoverScale: QsmShellStyle.Motion.hoverScaleWithin(root.height, Theme.railItemGap)
         focused: root.activeFocus
         focusRadius: Theme.radiusMd
         interactive: root.interactive
