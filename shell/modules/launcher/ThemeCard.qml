@@ -29,9 +29,6 @@ QsmShellComponents.Card {
     implicitWidth: Theme.launcherThemeCardWidth
     implicitHeight: Theme.launcherThemeCardHeight
     surfaceColor: Theme.surface
-    // Opaque: this card carries a full-bleed photo, not the translucent
-    // wash Card defaults to for a panel sitting over the band.
-    surfaceOpacity: 1
     clip: true
     // A photo card stays flat: no glow edge, no shadow over the picture.
     glow: false

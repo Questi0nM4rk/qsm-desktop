@@ -198,7 +198,8 @@ QtObject {
         SpinBox: { sm: 32, md: 40, lg: 52 },
         Slider: { sm: 16, md: 24, lg: 40 },
         TextField: { sm: 32, md: 40, lg: 52 },
-        Segmented: { sm: 32, md: 40, lg: 52 }
+        Segmented: { sm: 32, md: 40, lg: 52 },
+        IconButton: { xl: 64 }
     })
 
     readonly property string fontFamily: "CaskaydiaCove Nerd Font"

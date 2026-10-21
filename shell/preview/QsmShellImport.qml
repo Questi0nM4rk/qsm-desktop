@@ -25,12 +25,7 @@ Window {
         property color danger: "#dd3344"
         property string fontFamily: "Sans"
         property string technicalFontFamily: "Monospace"
-        property real surfaceOpacity: 0.73
         property real opacityDisabled: 0.35
-        property int sliderThumbSize: 12
-        property int sliderTrackThickness: 4
-        property int controlHeight: 40
-        property int controlHeightSm: 26
     }
 
     Binding {
@@ -48,8 +43,6 @@ Window {
         interval: 0
         onTriggered: {
             if (!root.require(card.surfaceColor === fakeBackend.surface, "Card did not update after backend mutation"))
-                return;
-            if (!root.require(card.surfaceOpacity === fakeBackend.surfaceOpacity, "Card opacity did not resolve from backend"))
                 return;
             console.log("QSM_SHELL_IMPORT_OK");
             Qt.exit(0);

@@ -222,7 +222,7 @@ Item {
                 QsmShellComponents.IconButton {
                     id: shuffleButton
                     icon: "shuffle"
-                    size: Theme.iconMd
+                    size: "md"
                     color: MediaService.shuffle ? Theme.accent : Theme.text
                     enabled: MediaService.shuffleSupported
                     onClicked: MediaService.toggleShuffle()
@@ -230,14 +230,14 @@ Item {
 
                 QsmShellComponents.IconButton {
                     icon: "skip-back"
-                    size: Theme.iconLg
+                    size: "lg"
                     enabled: root.player?.canGoPrevious ?? false
                     onClicked: root.player?.previous()
                 }
 
                 QsmShellComponents.IconButton {
                     icon: (root.player?.isPlaying ?? false) ? "pause" : "play"
-                    size: Theme.iconXl
+                    size: "xl"
                     enabled: root.player?.canTogglePlaying ?? false
                     Accessible.name: root.player?.isPlaying ? "Pause" : "Play"
                     onClicked: root.player?.togglePlaying()
@@ -245,14 +245,14 @@ Item {
 
                 QsmShellComponents.IconButton {
                     icon: "skip-forward"
-                    size: Theme.iconLg
+                    size: "lg"
                     enabled: root.player?.canGoNext ?? false
                     onClicked: root.player?.next()
                 }
 
                 QsmShellComponents.IconButton {
                     icon: MediaService.loopState === MprisLoopState.Track ? "repeat-1" : "repeat"
-                    size: Theme.iconMd
+                    size: "md"
                     color: MediaService.loopState !== MprisLoopState.None ? Theme.accent : Theme.text
                     enabled: MediaService.loopSupported
                     onClicked: MediaService.cycleLoop()

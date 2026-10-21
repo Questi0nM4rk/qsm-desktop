@@ -78,8 +78,7 @@ QsmShellComponents.ListRow {
     QsmShellComponents.IconButton {
         visible: root.actionIcon.length > 0
         icon: root.actionIcon
-        size: QsmShellStyle.Style.iconSm
-        padding: QsmShellStyle.Style.space1
+        size: "xs"
         // Destructive is not the same as red-at-rest. A non-primary
         // destructive action gets tertiary treatment and only takes the danger
         // colour once the pointer is on its row — three red bins down the side

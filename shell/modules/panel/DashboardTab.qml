@@ -316,8 +316,7 @@ GridLayout {
                 QsmShellComponents.IconButton {
                     id: previousButton
                     icon: "skip-back"
-                    size: Theme.iconSm
-                    padding: Theme.space4
+                    size: "md"
                     enabled: mediaCard.player?.canGoPrevious ?? false
                     Accessible.name: "Previous track"
                     onClicked: mediaCard.player?.previous()
@@ -326,7 +325,7 @@ GridLayout {
                 QsmShellComponents.IconButton {
                     id: playButton
                     icon: (mediaCard.player?.isPlaying ?? false) ? "pause" : "play"
-                    size: Theme.iconMd
+                    size: "lg"
                     enabled: mediaCard.player?.canTogglePlaying ?? false
                     Accessible.name: mediaCard.player?.isPlaying ? "Pause" : "Play"
                     onClicked: mediaCard.player?.togglePlaying()
@@ -335,8 +334,7 @@ GridLayout {
                 QsmShellComponents.IconButton {
                     id: nextButton
                     icon: "skip-forward"
-                    size: Theme.iconSm
-                    padding: Theme.space4
+                    size: "md"
                     enabled: mediaCard.player?.canGoNext ?? false
                     Accessible.name: "Next track"
                     onClicked: mediaCard.player?.next()

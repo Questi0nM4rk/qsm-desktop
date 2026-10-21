@@ -11,7 +11,5 @@ QsmShellComponents.Divider {
     inset: Theme.railDividerInset
     implicitWidth: Theme.railWidth
     implicitHeight: Theme.space2
-    lineColor: Theme.railDivider
-    thickness: Theme.railDividerThickness
     strength: Theme.railDividerOpacity
 }

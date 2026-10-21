@@ -198,8 +198,7 @@ Item {
             visible: line.filled
             icon: justCopied ? "check" : "copy"
             color: justCopied ? Theme.success : Theme.textMuted
-            size: line.large ? Theme.iconSm : Theme.iconXs
-            padding: Theme.space1
+            size: "xs"
             onClicked: {
                 root.interacted("copy", { "target": "copy", "value": line.text });
                 ColorPickService.copy(line.text);
