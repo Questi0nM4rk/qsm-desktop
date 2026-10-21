@@ -104,7 +104,7 @@ Item {
                     opacity: slot.active ? 0 : 1
 
                     Behavior on opacity {
-                        NumberAnimation { duration: Motion.micro; easing.type: Motion.standardEasing }
+                        NumberAnimation { duration: QsmShellStyle.Motion.micro; easing.type: QsmShellStyle.Motion.standardEasing }
                     }
                 }
 
@@ -114,7 +114,7 @@ Item {
                     id: dotLayer
                     anchors.fill: parent
                     target: dot
-                    hoverScale: Motion.dotHoverScale
+                    hoverScale: Theme.railWorkspaceDotHoverScale
                     focused: slot.activeFocus
                     focusRadius: QsmShellStyle.Style.radiusPill
                     onClicked: root.activate(slot.workspaceId)
@@ -138,7 +138,7 @@ Item {
             + (Theme.railWorkspaceSlot - height) / 2
 
         Behavior on y {
-            NumberAnimation { duration: Motion.morphGlide; easing.type: Motion.standardEasing }
+            NumberAnimation { duration: QsmShellStyle.Motion.morphGlide; easing.type: QsmShellStyle.Motion.standardEasing }
         }
     }
 

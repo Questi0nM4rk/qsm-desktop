@@ -345,7 +345,7 @@ PanelWindow {
     readonly property real panelCenterX: (leftEdge + width - QsmShellStyle.Style.frameThickness) / 2
 
     Behavior on leftEdge {
-        NumberAnimation { duration: Motion.normal; easing.type: Motion.emphasizedEasing }
+        NumberAnimation { duration: QsmShellStyle.Motion.medium; easing.type: QsmShellStyle.Motion.emphasizedEasing }
     }
 
     // An open surface owns its region AND its triggers. A handle hover zone is
@@ -548,7 +548,7 @@ PanelWindow {
             opacity: root.sessionActive ? Theme.opacitySessionDim : 1
 
             Behavior on opacity {
-                NumberAnimation { duration: Motion.normal; easing.type: Motion.standardEasing }
+                NumberAnimation { duration: QsmShellStyle.Motion.medium; easing.type: QsmShellStyle.Motion.standardEasing }
             }
             anchors.top: parent.top
             anchors.bottom: parent.bottom
@@ -913,8 +913,8 @@ PanelWindow {
         tier: "large"
         shouldBeActive: root.testRollouts["top"] ?? false
         suppressed: root.fullscreen
-        bodyWidth: Theme.testRolloutLarge.width
-        bodyHeight: Theme.testRolloutLarge.height
+        bodyWidth: 340
+        bodyHeight: 220
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
 
@@ -939,13 +939,13 @@ PanelWindow {
         tier: "large"
         shouldBeActive: root.testRollouts["bottom"] ?? false
         suppressed: root.fullscreen
-        bodyWidth: Theme.testRolloutLarge.width
-        bodyHeight: Theme.testRolloutLarge.height
+        bodyWidth: 300
+        bodyHeight: 200
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         // One step off the left band's inner wall: inside melt reach, so the
         // corner auto-join arc to the second band segment must appear.
-        anchors.leftMargin: Theme.reservedLeft + QsmShellStyle.Style.space2
+        anchors.leftMargin: 70
 
         // Centred in the whole shape, band included -- these surfaces exist
         // to show the mechanism, so they must not display the defect it fixes.
@@ -968,8 +968,8 @@ PanelWindow {
         tier: "small"
         shouldBeActive: root.testRollouts["right"] ?? false
         suppressed: root.fullscreen
-        bodyWidth: Theme.testRolloutSmall.width
-        bodyHeight: Theme.testRolloutSmall.height
+        bodyWidth: 220
+        bodyHeight: 300
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
 
@@ -994,8 +994,8 @@ PanelWindow {
         tier: "small"
         shouldBeActive: root.testRollouts["left"] ?? false
         suppressed: root.fullscreen
-        bodyWidth: Theme.testRolloutSmall.width
-        bodyHeight: Theme.testRolloutSmall.height
+        bodyWidth: 220
+        bodyHeight: 260
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
 

@@ -19,8 +19,6 @@ QsmShellComponents.ListRow {
 
     // { kind, label, sub, icon (svg name) | appIcon (desktop icon name) | thumb }
     required property var item
-    // Compact rows (the clipboard): one ListRow size down.
-    property bool compact: false
 
     readonly property string _appIcon: root.item?.appIcon ?? ""
     readonly property url _thumb: root.item?.thumb ?? ""
@@ -31,7 +29,6 @@ QsmShellComponents.ListRow {
     // Action-picker group labels are model rows so the keyboard can preserve
     // its one cursor. They render as an inert divider, never as an action.
     header: (root.item?.kind ?? "") === "header"
-    size: root.compact ? "md" : "lg"
     primary: root.item?.label ?? ""
     supporting: root.item?.sub ?? ""
 
@@ -56,7 +53,7 @@ QsmShellComponents.ListRow {
             color: QsmShellStyle.Style.surface
             clip: true
 
-            Behavior on opacity { NumberAnimation { duration: Motion.fast; easing.type: Motion.standardEasing } }
+            Behavior on opacity { NumberAnimation { duration: QsmShellStyle.Motion.fast; easing.type: QsmShellStyle.Motion.standardEasing } }
 
             Image {
                 id: thumbImage

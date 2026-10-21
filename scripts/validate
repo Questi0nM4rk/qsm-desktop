@@ -9,7 +9,6 @@ required=(
   "spec/13-implementation.md"
   "shell/shell.qml"
   "shell/theme/Theme.qml"
-  "shell/theme/Motion.qml"
   "shell/screen/EdgeScene.qml"
   "shell/screen/WallpaperWindow.qml"
   "shell/screen/FrameExclusions.qml"

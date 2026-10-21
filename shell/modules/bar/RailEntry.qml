@@ -63,7 +63,7 @@ Item {
     signal interaction(string action)
 
     implicitWidth: Theme.railWidth
-    implicitHeight: compact ? QsmShellStyle.Style.space6 : Theme.railWidth
+    implicitHeight: compact ? Theme.railCompactHeight : Theme.railWidth
 
     // A cell the pointer can act on is a keyboard stop too, and a screen
     // reader names it by what its popout names.
@@ -104,7 +104,7 @@ Item {
         pressed: layer.pressed
 
         Behavior on anchors.rightMargin {
-            NumberAnimation { duration: Motion.micro; easing.type: Motion.standardEasing }
+            NumberAnimation { duration: QsmShellStyle.Motion.micro; easing.type: QsmShellStyle.Motion.standardEasing }
         }
     }
 

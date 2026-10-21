@@ -89,7 +89,7 @@ Item {
 
         Behavior on progress {
             enabled: !Theme.reducedMotion
-            NumberAnimation { duration: Motion.fast; easing.type: Motion.emphasizedEasing }
+            NumberAnimation { duration: QsmShellStyle.Motion.fast; easing.type: QsmShellStyle.Motion.emphasizedEasing }
         }
 
         QsmShellComponents.Prose {

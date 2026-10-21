@@ -97,7 +97,7 @@ PanelWindow {
         opacity: root.active && !root.fullscreen ? QsmShellStyle.Style.scrimOpacity : 0
 
         Behavior on opacity {
-            NumberAnimation { duration: Motion.fast; easing.type: Motion.standardEasing }
+            NumberAnimation { duration: QsmShellStyle.Motion.fast; easing.type: QsmShellStyle.Motion.standardEasing }
         }
     }
 }

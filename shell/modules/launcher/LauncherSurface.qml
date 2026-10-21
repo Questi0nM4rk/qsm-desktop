@@ -1161,6 +1161,7 @@ ps -eo pid,pcpu,comm --no-headers --sort=-pcpu | head -25 | awk '{printf "P|%s|%
                     required property var modelData
                     required property int index
                     width: root.menuTarget.width
+                    size: Theme.launcherRowSize
                     item: modelData
                     selected: resultRow.index === root.selectedIndex
                     focused: selected && (resultsList.activeFocus || resultRow.activeFocus)

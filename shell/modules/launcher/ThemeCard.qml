@@ -41,8 +41,8 @@ QsmShellComponents.Card {
     scale: centered ? 1 : QsmShellStyle.Motion.rowPressScale
     opacity: centered ? 1 : QsmShellStyle.Style.opacityRecede
 
-    Behavior on scale { NumberAnimation { duration: Motion.fast; easing.type: Motion.standardEasing } }
-    Behavior on opacity { NumberAnimation { duration: Motion.fast; easing.type: Motion.standardEasing } }
+    Behavior on scale { NumberAnimation { duration: QsmShellStyle.Motion.fast; easing.type: QsmShellStyle.Motion.standardEasing } }
+    Behavior on opacity { NumberAnimation { duration: QsmShellStyle.Motion.fast; easing.type: QsmShellStyle.Motion.standardEasing } }
 
     Image {
         anchors.fill: parent
@@ -71,7 +71,7 @@ QsmShellComponents.Card {
         opacity: interaction.pressed ? QsmShellStyle.Style.opacitySelected * 2
             : interaction.hovered ? QsmShellStyle.Style.opacitySelected : 0
 
-        Behavior on opacity { NumberAnimation { duration: Motion.micro; easing.type: Motion.standardEasing } }
+        Behavior on opacity { NumberAnimation { duration: QsmShellStyle.Motion.micro; easing.type: QsmShellStyle.Motion.standardEasing } }
     }
 
     Column {

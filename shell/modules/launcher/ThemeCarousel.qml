@@ -45,7 +45,7 @@ Item {
         highlightRangeMode: ListView.StrictlyEnforceRange
         preferredHighlightBegin: width / 2 - Theme.launcherThemeCardWidth / 2
         preferredHighlightEnd: width / 2 + Theme.launcherThemeCardWidth / 2
-        highlightMoveDuration: Motion.morphGlide
+        highlightMoveDuration: QsmShellStyle.Motion.morphGlide
 
         delegate: ThemeCard {
             required property var modelData

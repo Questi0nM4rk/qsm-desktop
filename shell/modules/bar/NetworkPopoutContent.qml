@@ -305,7 +305,7 @@ ColumnLayout {
                 implicitHeight: networkEntry.prompting ? promptBody.implicitHeight : 0
 
                 Behavior on implicitHeight {
-                    NumberAnimation { duration: Theme.reducedMotion ? 0 : Motion.fast; easing.type: Motion.standardEasing }
+                    NumberAnimation { duration: Theme.reducedMotion ? 0 : QsmShellStyle.Motion.fast; easing.type: QsmShellStyle.Motion.standardEasing }
                 }
 
                 ColumnLayout {

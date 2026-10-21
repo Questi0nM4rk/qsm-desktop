@@ -135,7 +135,7 @@ Item {
                         required property var modelData
 
                         width: parent.width
-                        height: QsmShellStyle.Style.space6
+                        height: Theme.railCompactHeight
 
                         function open(): void {
                             root.popouts.show("tray", trayEntry,
@@ -269,7 +269,7 @@ Item {
                         : Theme.text
 
                     Behavior on color {
-                        ColorAnimation { duration: Motion.micro; easing.type: Motion.standardEasing }
+                        ColorAnimation { duration: QsmShellStyle.Motion.micro; easing.type: QsmShellStyle.Motion.standardEasing }
                     }
                 }
             }

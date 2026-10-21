@@ -77,12 +77,12 @@ QsmShellComponents.ListRow {
         // destructive action gets tertiary treatment and only takes the danger
         // colour once the pointer is on its row — three red bins down the side
         // of a device list shout louder than anything the list is for.
-        color: !root.hovered ? QsmShellStyle.Style.disabled(Theme.textMuted)
+        color: !root.hovered ? QsmShellStyle.Style.recede(Theme.textMuted)
             : root.actionDanger ? Theme.danger : Theme.textMuted
         onClicked: root.actionTriggered()
 
         Behavior on color {
-            ColorAnimation { duration: Motion.micro; easing.type: Motion.standardEasing }
+            ColorAnimation { duration: QsmShellStyle.Motion.micro; easing.type: QsmShellStyle.Motion.standardEasing }
         }
     }
 }

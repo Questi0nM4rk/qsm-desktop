@@ -72,7 +72,7 @@ Item {
                 color: root.dotsLit ? Theme.accent : Theme.text
 
                 Behavior on color {
-                    ColorAnimation { duration: Motion.micro; easing.type: Motion.standardEasing }
+                    ColorAnimation { duration: QsmShellStyle.Motion.micro; easing.type: QsmShellStyle.Motion.standardEasing }
                 }
             }
         }

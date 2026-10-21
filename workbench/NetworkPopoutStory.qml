@@ -74,14 +74,14 @@ Item {
     Rectangle { anchors.fill: parent; color: Theme.band }
     Rectangle {
         anchors.centerIn: content
-        width: content.width + QsmShellStyle.Style.space4 * 2
-        height: content.height + QsmShellStyle.Style.space4 * 2
+        width: content.width + QsmShellStyle.Style.rolloutPadding * 2
+        height: content.height + QsmShellStyle.Style.rolloutPadding * 2
         radius: QsmShellStyle.Style.rolloutRadius
         color: Theme.band
     }
     Bar.NetworkPopoutContent {
         id: content
-        width: Theme.popoutWidth - QsmShellStyle.Style.space4 * 2
+        width: Theme.popoutContentWidth
         anchors.centerIn: parent
         onInteracted: (action, payload) => root.eventRecorded({ origin: "component", kind: "network",
             name: "interacted", payload: Object.assign({ action: action }, payload) })

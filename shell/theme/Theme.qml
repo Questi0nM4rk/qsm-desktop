@@ -26,11 +26,10 @@ QtObject {
     readonly property bool reducedMotion: ShellState.reducedMotion
     readonly property bool reducedEffects: ShellState.reducedEffects
 
-    // [{ id, name, wallpaper, roles }] parsed from shell/themes/*.json.
+    // [{ id, name, wallpaper }] for every shell/themes/*.json: what the theme
+    // list shows. The roles of the current theme come from `themeFile`.
     property var themes: []
     readonly property string current: ShellState.theme
-    readonly property var currentTheme: themes.find(theme => theme.id === current) ?? null
-    readonly property string modeName: currentTheme?.name ?? "Deep Night"
     // Some IPC seams still read it.
     readonly property bool dark: current !== "mountain-dusk"
 
@@ -39,30 +38,19 @@ QtObject {
             ShellState.theme = themeId;
     }
 
-    // The default theme's roles, read from the file the theme list also reads,
-    // so the first frame has colours before themesProbe has answered. Not a
-    // fallback for a theme missing a role: a theme JSON is generated whole, and
-    // a role it lacks is reported once below.
-    property FileView defaultThemeFile: FileView {
-        path: Quickshell.shellPath("themes/deep-night.json")
+    // The current theme, read from its own file and blocking, so the first
+    // frame has its colours and a swap reads the next file. A theme the state
+    // names that is not installed, or a role its file lacks, is an error here,
+    // never another theme's colour: a theme JSON is generated whole.
+    property FileView themeFile: FileView {
+        path: Quickshell.shellPath("themes/" + root.current + ".json")
         blockLoading: true
+        onLoadFailed: error => console.error("Theme: cannot read", path, error)
     }
-    readonly property var preload: JSON.parse(defaultThemeFile.text()).roles
+    readonly property var currentTheme: JSON.parse(themeFile.text())
 
-    readonly property var _missingReported: ({})
     function role(name: string): color {
-        if (!currentTheme)
-            return preload[name];
-        const value = currentTheme.roles[name];
-        if (value === undefined) {
-            const key = current + "." + name;
-            if (!_missingReported[key]) {
-                _missingReported[key] = true;
-                console.error("Theme: theme", current, "has no role", name, "- regenerate it with scripts/derive-theme.ts");
-            }
-            return preload[name];
-        }
-        return value;
+        return currentTheme.roles[name];
     }
 
     // THE roles. Components read these and nothing else: never a palette name,
@@ -99,8 +87,8 @@ QtObject {
         return value >= 0.9 ? danger : value >= 0.7 ? warning : success;
     }
 
-    // Theme-swap choreography. It lives here, not in Motion: Motion reads
-    // Theme.reducedMotion, and a token both need would make that a cycle.
+    // Theme-swap choreography: the library has no theme swap, so the fade is
+    // this desktop's own.
     readonly property int themeSwapDuration: 200
 
     // Every role fades: a swap that fades some and snaps others reads as a
@@ -120,7 +108,7 @@ QtObject {
     Behavior on warning { ColorAnimation { duration: root.themeSwapDuration } }
     Behavior on danger { ColorAnimation { duration: root.themeSwapDuration } }
 
-    readonly property string wallpaper: currentTheme?.wallpaper ?? "assets/wallpapers/dark-rain-world.png"
+    readonly property string wallpaper: currentTheme.wallpaper
 
     // ── Style.backend: fonts and size-table additions ──────────────────
     readonly property string fontFamily: "CaskaydiaCove Nerd Font"
@@ -153,13 +141,15 @@ QtObject {
     // ── Launcher, clipboard, cheat sheet ───────────────────────────────
     readonly property int launcherWidth: 600
     readonly property int launcherMaxRows: 7
-    readonly property real launcherRowHeight: QsmShellStyle.Style.size("ListRow", "lg")
+    readonly property string launcherRowSize: "lg"
+    readonly property real launcherRowHeight: QsmShellStyle.Style.size("ListRow", launcherRowSize)
     // The clipboard is its own surface, narrower than the launcher because an
     // entry is one line of text, and taller in rows because scanning history
     // is the whole task.
     readonly property int clipboardWidth: 520
     readonly property int clipboardMaxRows: 10
-    readonly property real clipboardRowHeight: QsmShellStyle.Style.size("ListRow", "md")
+    readonly property string clipboardRowSize: "md"
+    readonly property real clipboardRowHeight: QsmShellStyle.Style.size("ListRow", clipboardRowSize)
     // Wider than the clipboard because a row is a key combo plus a sentence.
     // The combo column is fixed so the keys form a scannable spine.
     readonly property int cheatSheetWidth: 640
@@ -178,7 +168,8 @@ QtObject {
     readonly property int panelWidth: 854
     readonly property int panelHeight: 560
     readonly property int panelNavigationWidth: 620
-    readonly property real panelTabBarHeight: QsmShellStyle.Style.size("Segmented", "lg")
+    readonly property string panelTabBarSize: "lg"
+    readonly property real panelTabBarHeight: QsmShellStyle.Style.size("Segmented", panelTabBarSize)
     // Dashboard tab.
     readonly property int dashboardUserCardWidth: 320
     readonly property int dashboardWeatherCardWidth: 260
@@ -190,7 +181,6 @@ QtObject {
     // The progress ring around album art. The library's own is a share of the
     // picture, which is too heavy around a large cover.
     readonly property int artworkRingStroke: 6
-    readonly property int mediaArtSize: 160
     // The panel's column width: the panel less the column's two margins. The
     // media tab fills it and never grows past it, so a long title or a player
     // picker cannot widen the panel.
@@ -204,10 +194,6 @@ QtObject {
     readonly property int performanceSparklineHeight: 56
     readonly property int performanceBatteryTankWidth: 160
     readonly property int performanceBatteryTankHeight: 220
-    // A 3/4 ring (memory and storage cards) leaves a gap at the bottom instead
-    // of closing the circle.
-    readonly property real ringQuarterStartAngle: -225
-    readonly property real ringQuarterSweepAngle: 270
 
     // ── Frame, rail, notifications ─────────────────────────────────────
     // The left band is wider than the others: the rail lives inside it.
@@ -217,6 +203,9 @@ QtObject {
     // apart, with the same hover rollout.
     readonly property int railItemGap: QsmShellStyle.Style.space1
     readonly property int railAppSlot: QsmShellStyle.Style.size("Control", "sm")
+    // The compact cells of the band: the updates and quick-action cells and a
+    // tray icon.
+    readonly property int railCompactHeight: QsmShellStyle.Style.size("Control", "xs")
     readonly property int railAppIconSize: QsmShellStyle.Style.iconMd
     // A tray icon is recoloured to textMuted and lifted by this much, so a
     // coloured third-party glyph sits in the same tone as the rail's outline
@@ -238,6 +227,9 @@ QtObject {
     // overhangs its slot sideways.
     readonly property int railWorkspaceSlot: 16
     readonly property int railWorkspaceDot: 6
+    // The dot is so small that the library's hover growth would be under half
+    // a pixel, so it grows by half again to be seen at all.
+    readonly property real railWorkspaceDotHoverScale: QsmShellStyle.Style.reducedMotion ? 1 : 1.5
     // The bell corner: a bulge that retracts when everything is read, the glyph
     // resting on the band's corner; its menu is a top-right modal the height of
     // the clipboard.
@@ -245,22 +237,15 @@ QtObject {
     readonly property int notificationBellHeight: QsmShellStyle.Style.size("Control", "sm")
     readonly property int notificationMenuHeight: 520
 
-    // The mechanism demonstrations EdgeScene.testToggleRollout opens over IPC:
-    // one body per tier.
-    readonly property size testRolloutLarge: Qt.size(340, 220)
-    readonly property size testRolloutSmall: Qt.size(220, 260)
-
     // ── Handles ────────────────────────────────────────────────────────
     // The OSD circle nub and the top dot pair.
     readonly property real handleRadius: 7
-    readonly property real handleProud: 3
     // The dots handle sits mostly inside the band: a negative proud pulls it
     // up, so only its lower part shows.
     readonly property real panelHandleProud: -1
     // The OSD nub sinks into the right band the same way: its centre sits two
     // pixels inside it.
     readonly property real osdHandleProud: handleRadius + 2
-    readonly property real dotRadius: 1
     readonly property real dotSpacing: 3
     readonly property real dotGlyphSize: 2.5
     readonly property int panelHandleHeight: 8
@@ -305,9 +290,8 @@ for f in themes/*.json; do printf '===%s\\n' "$f"; cat "$f"; done`,
                         const parsed = JSON.parse(chunk.slice(newline + 1));
                         found.push({
                             id: file.replace(/^themes\//, "").replace(/\.json$/, ""),
-                            name: parsed.name ?? file,
-                            wallpaper: parsed.wallpaper ?? "",
-                            roles: parsed.roles ?? {}
+                            name: parsed.name,
+                            wallpaper: parsed.wallpaper
                         });
                     } catch (error) {
                         console.warn("Theme: skipping unparsable", file);

@@ -127,7 +127,7 @@ Item {
                         id: tabBar
                         objectName: "panelNavigation"
                         width: Math.max(navigation.width, Theme.panelNavigationWidth)
-                        size: "lg"
+                        size: Theme.panelTabBarSize
                         options: root.tabs
                         currentIndex: Math.max(0, root.tabs.findIndex(tab => tab.key === ShellState.panelTab))
                         tabNavigation: true

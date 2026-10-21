@@ -243,7 +243,7 @@ exit 0`, "_", ...images.map(image => image.file)];
 
                     width: rows.width
                     item: modelData
-                    compact: true
+                    size: Theme.clipboardRowSize
                     selected: ListView.isCurrentItem
                     onActivated: root.activate(index)
                     // Pointer and keyboard share ONE cursor (09 one-path).

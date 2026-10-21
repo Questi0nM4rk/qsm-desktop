@@ -52,5 +52,3 @@
 1	shell/state/ShellState.qml|signal-handler-parameters|Type QProcess::ExitStatus of parameter exitStatus in signal called exited was not found, but is required to compile onExited. Did you add all imports and dependencies?
 2	shell/state/ShellState.qml|unqualified|Unqualified access
 1	shell/state/ShellState.qml|unresolved-type|Property "adapter" has incomplete type "FileViewAdapter". You may be missing an import.
-1	shell/theme/Motion.qml|import|Type warnings occurred while evaluating file:
-6	shell/theme/Motion.qml|missing-property|Member "reducedMotion" not found on type "Theme"

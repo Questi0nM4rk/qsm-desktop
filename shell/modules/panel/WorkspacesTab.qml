@@ -208,8 +208,8 @@ Item {
                             y: Math.max(0, (modelData.at[1] - (root.monitor?.y ?? 0)) * scaleY)
                             width: Math.min(root.areaWidth - x, modelData.size[0] * scaleX)
                             height: Math.min(root.areaHeight - y, modelData.size[1] * scaleY)
-                            // Concentric with the tile: its radius less the inset the area keeps.
-                            radius: Math.max(0, tile.radius - root.areaInset)
+                            // Concentric with the tile, through the area's inset in it.
+                            radius: QsmShellStyle.Style.childRadius(windowArea)
                             // One ladder step above the tile separates it; no outline.
                             color: Theme.overlay
                             opacity: windowDrag.active ? Theme.opacityDrag : 1
