@@ -7,10 +7,10 @@ import qs.components
 import qs.services
 import qs.theme
 
-// Sound popout (03 AMENDED, owner-simplified): output-device list and
+// Sound popout (03): output-device list and
 // input-device list as PopoutRows — click a device to make it the default,
-// the current one carries the accent tick (a "Default" pill was never a
-// control, and six pills in a 248px box left the device names 132px),
+// the current one carries the accent tick (a "Default" pill is not a
+// control, and six pills in a 248px box leave the device names 132px),
 // a volume slider bound to the default sink (wheel-adjustable, OSD
 // convention), and the "Sound settings" row. Deeper mixer controls stay with
 // the delegated mixer (delegation law) — this popout never rebuilds it. The

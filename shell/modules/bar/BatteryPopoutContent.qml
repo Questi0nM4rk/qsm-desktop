@@ -41,14 +41,13 @@ ColumnLayout {
     // it rather than this guessing.
     property real kernelWatts: 0
 
-    // The SMOOTHED draw, and the reason the estimate stopped lying.
+    // The SMOOTHED draw, which keeps the estimate honest.
     //
     // power_now is an instantaneous reading, and instantaneous power on a
     // laptop swings with whatever the CPU did in the last half second. Divided
-    // straight into the remaining energy it produced an estimate that climbed
-    // three minutes and then fell back — the owner watched it do exactly that
-    // — which is worse than no estimate, because a number that moves the wrong
-    // way is one you learn to distrust.
+    // straight into the remaining energy it gives an estimate that climbs
+    // for minutes and then falls back, which is worse than no estimate,
+    // because a number that moves the wrong way is one you learn to distrust.
     //
     // An exponential average over roughly the last ten seconds (2s poll, 0.3
     // weight per sample) settles the number without deadening it: a power
@@ -138,9 +137,8 @@ ColumnLayout {
         text: "No battery detected"
     }
 
-    // Charge: the NUMBER leads, the estimate supports it. Both used to sit in
-    // one bold mono string ("99% · 2h 30m left"), which gave a reading and a
-    // guess the same weight.
+    // Charge: the NUMBER leads, the estimate supports it, so a reading and a
+    // guess never carry the same weight.
     RowLayout {
         visible: root.present
         Layout.fillWidth: true
@@ -179,8 +177,7 @@ ColumnLayout {
     }
 
     // The same slim level bar the OSD, the seek row and the thermal readout
-    // use — a battery popout with no battery in it was the one surface here
-    // that showed a level without drawing one.
+    // use, so a level is always drawn, not only read.
     QsmShellComponents.Meter {
         visible: root.present
         Layout.fillWidth: true
@@ -198,8 +195,7 @@ ColumnLayout {
     QsmShellComponents.Prose {
         role: "metadata"
         visible: !PowerProfileService.available
-        // What happened AND how to fix it — the old wording described the
-        // daemon's absence without saying what to do about it.
+        // What happened AND how to fix it.
         text: "No power profiles — install power-profiles-daemon"
         wrapMode: Text.Wrap
         Layout.fillWidth: true

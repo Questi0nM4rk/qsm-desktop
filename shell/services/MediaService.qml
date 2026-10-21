@@ -105,7 +105,7 @@ QtObject {
     }
 
     // mm:ss (or NN:ss past an hour, still fixed-width for typical tracks) —
-    // ponytail ceiling: multi-hour tracks widen past the caller's fixed-width
+    // multi-hour tracks widen past the caller's fixed-width
     // template, which is an accepted trade-off for this simple readout.
     function formatTime(totalSeconds: real): string {
         const clamped = Math.max(0, Math.floor(totalSeconds));

@@ -70,11 +70,10 @@ RailEntry {
         }
     }
 
-    // The arm-then-fire behaviour is the library's. It used to be a bool, a
-    // timer and a reset written out here AND again on the session tiles, and
-    // the two had already drifted on how long the intent stands -- a
-    // confirmation that behaves differently in two places is worse than none,
-    // because a person learns the lenient one and is caught by the strict one.
+    // The arm-then-fire behaviour is the library's and is shared with the
+    // session tiles: a confirmation that behaves differently in two places is
+    // worse than none, because a person learns the lenient one and is caught
+    // by the strict one.
     property QsmShellComponents.ArmedAction confirm: QsmShellComponents.ArmedAction {
         id: confirm
         destructive: root.destructive

@@ -38,21 +38,19 @@ PanelWindow {
     }
 
     // Runtime layer rule so the compositor blurs beneath the dim without a
-    // config edit; phase 9 integration persists it in the Hyprland config.
-    // Lua-parser Hyprland rejects the legacy `keyword layerrule` form
-    // outright ("keyword can't work with non-legacy parsers") — the old
-    // command failed silently forever (audit U15). eval + hl.layer_rule is
-    // the working runtime path, mirroring the owner's hyprland.lua rules.
+    // config edit; the Hyprland config carries the persistent copy.
+    // Lua-parser Hyprland rejects the `keyword layerrule` form outright
+    // ("keyword can't work with non-legacy parsers"), silently. eval +
+    // hl.layer_rule is the working runtime path, mirroring hyprland.lua's rules.
     // The rule must follow `active`: this surface is ALWAYS mapped (only
     // transparent when idle), and Hyprland blurs behind the surface region
-    // regardless of its alpha — a standing blur=true rule blurred the whole
-    // desktop permanently (owner-caught the moment it shipped).
+    // regardless of its alpha, so a standing blur=true rule would blur the
+    // whole desktop permanently.
     // The rule is a WRITE to the compositor, not a binding, so it needs to
-    // CONVERGE. The old `onWantBlurChanged: running = true` dropped any flip
-    // that arrived while the previous write was still in flight — assigning
-    // running = true on a running Process does nothing — and the compositor
-    // kept whatever it had last been told. Open the session menu and close it
-    // quickly and the desktop stayed blurred with no way back.
+    // CONVERGE. Assigning `running = true` on a running Process does nothing,
+    // so a flip that arrives while the previous write is in flight is dropped
+    // and the compositor keeps whatever it was last told: open the session
+    // menu and close it quickly and the desktop would stay blurred.
     //
     // So: remember what was actually written (`applied`), write only what we
     // will record (`writing`), and re-check on every exit until the two agree.
@@ -74,7 +72,7 @@ PanelWindow {
         }
 
         command: Delegate.argv("compositor", ["eval",
-            // Retire the old all-output rule before writing this output's rule.
+            // Retire the all-output rule before writing this output's rule.
             'hl.layer_rule({ name = "blur-qsm-session", match = { namespace = "qsm-session-backdrop" }, blur = false })\n'
             + "hl.layer_rule({ name = " + JSON.stringify("blur-qsm-session-" + root.modelData.name)
             + ", match = { namespace = " + JSON.stringify("qsm-session-backdrop-" + root.modelData.name)

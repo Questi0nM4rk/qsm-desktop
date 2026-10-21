@@ -8,11 +8,10 @@ import qs.components
 import qs.services
 import qs.theme
 
-// The colour MENU. This second rollout IS the whole thing —
-// an earlier attempt hung a third rollout off it, which the owner rejected: the
-// features belong in the surface you already opened, not one step further out.
+// The colour MENU. This second rollout IS the whole thing: the features live in
+// the surface you already opened, not one step further out.
 //
-// Layout, owner-specified top to bottom:
+// Layout, top to bottom:
 //
 //   [ swatch ][ hex ][ copy ]      the current colour, the LARGE row.
 //   ───────────────────────────    clicking the swatch starts a pick.
@@ -52,9 +51,8 @@ Item {
     // chosen -> lastColor -> history. `lastColor` is the LIVE fact, set the
     // instant a pick or an edit returns; the history is a persisted derivative
     // of it. Keying the menu off the derivative meant that if remembering ever
-    // failed, the whole surface reported "no colour" -- empty top row, empty
-    // history, and the editor row (gated on `has`) not drawn at all, which is
-    // exactly the three symptoms the owner reported at once.
+    // failed, the whole surface reported "no colour": empty top row, empty
+    // history, and the editor row (gated on `has`) not drawn at all.
     readonly property string current: root.chosen.length > 0 ? root.chosen
         : ColorPickService.lastColor.length > 0 ? ColorPickService.lastColor
         : (ColorPickService.history[0] ?? "")
@@ -189,7 +187,7 @@ Item {
             visible: !line.filled
         }
 
-        // Copy is its own control on every row, per the owner's layout. It
+        // Copy is its own control on every row. It
         // ACKNOWLEDGES: the glyph becomes a tick in the success colour for a
         // beat, because a clipboard write is otherwise invisible.
         QsmShellComponents.IconButton {
@@ -263,13 +261,11 @@ Item {
         // the leftover height through the gaps (15/14/16/11/11/11/11/12px) so
         // the dividers floated mid-gap instead of tightly separating groups,
         // and the whole layout reflowed the moment a first colour arrived.
-        // Giving the slack to the scroll region -- which is what the owner
-        // asked to be scrollable -- keeps every group at its own size and the
-        // dividers where they belong.
-        // Host, because the cue must be a SIBLING of the view. The bar this
-        // replaces was a declared child of the ListView, which puts it in the
-        // contentItem: it was positioned from visibleArea AND carried by the
-        // scrolling surface underneath it, so it moved twice.
+        // Giving the slack to the scroll region keeps every group at its own
+        // size and the dividers where they belong.
+        // Host, because the cue must be a SIBLING of the view: a declared child
+        // of the ListView lands in its contentItem, positioned from visibleArea
+        // AND carried by the scrolling surface, so it would move twice.
         Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -319,7 +315,7 @@ Item {
         Item { Layout.preferredHeight: QsmShellStyle.Style.space3 }
 
         // --- accent generation ------------------------------------------------
-        // "Auto accent colour generation for the picked colour" (owner). The
+        // Accent generation for the picked colour. The
         // shell's own accent language: an accent, a secondary a third of the
         // wheel away, and the ramp a theme needs for its surfaces. Named for
         // what a THEME calls them, not for the maths, because that is the form
@@ -334,9 +330,8 @@ Item {
         // acknowledgement — a tick over the swatch for a beat — rather than the
         // menu keeping one shared readout line. Deliberately not a separate copy
         // BUTTON per square: clicking the swatch is already the copy, and a
-        // second control for one action is what 09 removes. The tick is the
-        // "copy next to them" the owner asked for, sitting on the affordance
-        // that does it.
+        // second control for one action is what 09 removes. The tick sits on
+        // the affordance that does the copy.
         RowLayout {
             Layout.fillWidth: true
             Layout.bottomMargin: QsmShellStyle.Style.space1
@@ -369,9 +364,8 @@ Item {
                         size: QsmShellStyle.Style.iconXs
                         // The swatch already worked out which ink reads on its
                         // own sample, by WCAG contrast against the composited
-                        // colour. This used to answer the same question with
-                        // `hslLightness > 0.5`, which is the cruder of the two
-                        // and disagrees with it in the mid-tones.
+                        // colour; `hslLightness > 0.5` is cruder and disagrees
+                        // with it in the mid-tones.
                         color: token.ink
                     }
                 }

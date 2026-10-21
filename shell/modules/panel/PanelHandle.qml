@@ -16,7 +16,7 @@ Item {
     property string registryId: "panel-handle"
     // The host says the panel is already open: the grip then only rides the
     // rim and holds the panel open under the pointer, so it stops offering
-    // the open action it no longer performs.
+    // an open action it does not perform.
     property bool open: false
     readonly property bool pointerOver: interaction.hovered
     readonly property bool dotsLit: !open && (interaction.hovered || interaction.pressed)

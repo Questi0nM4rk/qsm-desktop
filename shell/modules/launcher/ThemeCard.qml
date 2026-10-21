@@ -11,7 +11,7 @@ import qs.theme
 // surface. The hovered card becomes the centered one — one cursor shared by
 // pointer and keyboard — so Enter always applies the card that is visibly
 // marked. Hover adds no growth of its own: selection IS the response, and a
-// 1.04 hover scale outrunning the selected card's 1.0 was the defect. The
+// hover scale would outrun the selected card's 1.0. The
 // hover and press response is a colour veil over the photo, never a resize.
 //
 // One owner for scale and opacity: the card's own centred/receded binding.

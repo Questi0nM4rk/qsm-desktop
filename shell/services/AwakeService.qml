@@ -6,7 +6,7 @@ import Quickshell.Io
 
 // Idle-inhibitor state, owned once for the whole shell — per-monitor bar
 // entries bind this instead of each running their own poll processes.
-// The awake script is a legacy-kept external (see the proposal's register).
+// The awake script is an external, delegated one.
 QtObject {
     id: root
 

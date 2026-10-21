@@ -116,8 +116,8 @@ Item {
                     })
                     // Keys that live INSIDE the shell's own surfaces — the
                     // compositor never sees them, so hyprctl cannot list
-                    // them, and the audit found them undiscoverable (the
-                    // clipboard is keyboard-only AND its keys were secret).
+                    // them (the clipboard is keyboard-only, so its keys would
+                    // otherwise be secret).
                     .concat([
                         { combo: "ENTER", group: "In surfaces", description: "Launcher/clipboard: run or paste the selection" },
                         { combo: "DEL", group: "In surfaces", description: "Clipboard: remove the selected entry" },

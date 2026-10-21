@@ -29,7 +29,7 @@ Item {
         && !root.scene.popupActive
 
     // Where the glyph lives: on the band's rounded corner fill, one frame
-    // thickness in from each edge (the owner accepted this placement), or
+    // thickness in from each edge, or
     // centred in the bulge. Half a thickness would clip the 16px glyph.
     readonly property point cornerCenter: Qt.point(root.width - QsmShellStyle.Style.frameThickness,
         QsmShellStyle.Style.frameThickness)

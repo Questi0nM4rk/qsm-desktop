@@ -21,12 +21,10 @@ RailEntry {
     id: root
 
     // NO local `popouts` property. RailEntry already owns one, and
-    // re-declaring it here SHADOWED the base's: Rail filled the derived
-    // property while the entry's own rollout wiring kept reading the base one,
-    // which stayed null — so this cell had no rollout. That shadowing, found by
-    // qmllint's property-override check, was the real cause of the dead
-    // bluetooth hover; the hand-rolled HoverHandler that appeared to fix it was
-    // only reading the derived property. Never redeclare a base property.
+    // re-declaring it here SHADOWS the base's: Rail fills the derived
+    // property while the entry's own rollout wiring keeps reading the base one,
+    // which stays null, so the cell has no rollout (qmllint's property-override
+    // check finds it). Never redeclare a base property.
     readonly property var connected: (Bluetooth.devices?.values ?? [])
         .filter(device => device.connected)
         .slice(0, Theme.railDeviceMax)

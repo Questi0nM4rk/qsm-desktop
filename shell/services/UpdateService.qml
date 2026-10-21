@@ -6,11 +6,11 @@ import qs.services
 
 // Pending system updates (HyDE parity): a count the rail's
 // updates cell wears as a badge, and ONE click action — the full upgrade in a
-// terminal, exactly like the old HyDE icon.
+// terminal, like the HyDE icon.
 //
 // The count is passive and read-only: `checkupdates` compares the local sync
 // database against installed packages, so it costs no network and never
-// changes the system. The UPGRADE is the owner's explicit click; this service
+// changes the system. The UPGRADE is the person's explicit click; this service
 // only hands the job to the delegated terminal (Delegate "upgrade" role) and
 // re-counts once the upgrade has had time to finish.
 QtObject {

@@ -5,7 +5,7 @@ import Quickshell.Io
 
 // Who and what: user, distro, WM and uptime for the dashboard identity card
 // (06 DEFAULT). The card is an IDENTITY card, so it has to say whose session
-// this is — it used to show only the window manager and the uptime.
+// this is.
 QtObject {
     id: root
 

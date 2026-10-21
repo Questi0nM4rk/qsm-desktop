@@ -54,8 +54,8 @@ QtObject {
     // and keyboard drive ONE cursor rather than two competing highlights (09
     // one-path). The flaw only shows while typing: the results RESHUFFLE under
     // a cursor that never moved, so whichever row slid beneath it grabbed the
-    // selection and Enter launched something the owner never aimed at (searching with the
-    // pointer resting mid-launcher). A hover
+    // selection and Enter launched something never aimed at (searching with
+    // the pointer resting mid-launcher). A hover
     // that the LIST caused is not a pointer gesture and gets no say.
     //
     // Claimed by SearchField on each typed character; released by the scene's
@@ -138,8 +138,7 @@ QtObject {
     // Opening lands on the LAST USED tab (06) unless a tab is named;
     // re-toggling the same tab (or the bare panel) closes.
     function togglePanel(tab: string): bool {
-        // A persisted tab that no longer exists (notifications left the panel)
-        // lands on Dashboard.
+        // A persisted tab that is not a panel tab lands on Dashboard.
         const target = panelTabs.includes(tab) ? tab
             : panelTabs.includes(panelTab) ? panelTab : "dashboard";
         if (modal === "panel" && panelTab === target) {
@@ -189,7 +188,7 @@ QtObject {
     property alias theme: persisted.theme
     property alias reducedMotion: persisted.reducedMotion
     property alias reducedEffects: persisted.reducedEffects
-    // DND (09 persistence key — it used to reset every restart).
+    // DND (09 persistence key).
     property alias dnd: persisted.dnd
     // Bounded notification history; NotificationService owns its shape.
     property alias notificationHistory: persisted.notificationHistory
@@ -198,16 +197,11 @@ QtObject {
     property alias nightLightTemperature: persisted.nightLightTemperature
     // Picked colours, newest first, bounded (ColorPickService owns the shape).
     // JSON rather than a database: this is a recent list of ~24 short strings,
-    // not an archive anybody queries. The owner raised SQLite for the desktop
-    // as a whole and the honest answer was "yes, but for the notification
-    // archive, and not as a prerequisite for this" — the 200-entry cap on
-    // notificationHistory is the thing that actually wants a DB.
+    // not an archive anybody queries; the 200-entry cap on notificationHistory
+    // is the list that would want a DB.
     property alias colorHistory: persisted.colorHistory
 
-    // ONE state file (09 DEFAULT): ~/.local/state/qsm/state.json — was three
-    // (shell/theme/notifications.json under Quickshell's by-shell dir).
-    // Old files are abandoned in place, not migrated: theme and rail-pin
-    // reseed to defaults once, history starts fresh.
+    // ONE state file (09 DEFAULT): ~/.local/state/qsm/state.json.
     readonly property string qsmStateDir:
         (Quickshell.env("XDG_STATE_HOME") || (Quickshell.env("HOME") + "/.local/state")) + "/qsm"
 

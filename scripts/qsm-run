@@ -50,7 +50,7 @@ fi
 rm -f "$stopfile"
 
 # Crash-dir hygiene: the built-in handler left one dir per abort and nothing
-# prunes them (20 when this was written). Keep the newest 5.
+# prunes them. Keep the newest 5.
 crashes="$HOME/.cache/quickshell/crashes"
 if [ -d "$crashes" ]; then
   /usr/bin/ls -1t "$crashes" 2>/dev/null | tail -n +6 \

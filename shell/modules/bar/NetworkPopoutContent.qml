@@ -48,11 +48,10 @@ ColumnLayout {
 
     // Turning the radio OFF is the one control in here that can take the
     // machine off the network it is being used over, so it ARMS first, like the
-    // destructive session buttons and the destructive quick actions. The owner
-    // LIVED the alternative: one click killed the radio
-    // mid-session, and nothing on screen afterwards connected the empty list to
-    // the cause. Turning it back ON is a single click -- restoring connectivity
-    // is never the mistake.
+    // destructive session buttons and the destructive quick actions. One
+    // unarmed click would kill the radio mid-session, and nothing on screen
+    // afterwards would connect the empty list to the cause. Turning it back ON
+    // is a single click -- restoring connectivity is never the mistake.
     property bool wifiOffArmed: false
     readonly property bool scanning: NetworkService.scanning
     onWifiEnabledChanged: {
@@ -213,8 +212,8 @@ ColumnLayout {
             size: "sm"
             // The glyph says which way round this is even before the words are
             // read, and the OFF state is LOUD: danger-coloured, naming itself,
-            // and saying what a click does about it. An off radio used to read
-            // as an ordinary inactive pill next to an empty list.
+            // and saying what a click does about it, so it never reads as an
+            // ordinary inactive pill next to an empty list.
             icon: root.wifiEnabled ? "wifi" : "wifi-off"
             label: !root.wifiEnabled ? "Wi-Fi OFF · click to enable"
                 : root.wifiOffArmed ? "Turn Wi-Fi off?"
@@ -373,8 +372,8 @@ ColumnLayout {
         }
     }
 
-    // The empty list gets a reason. Without one, a radio the owner switched off
-    // three minutes ago looks like a shell that stopped finding networks.
+    // The empty list gets a reason. Without one, a switched-off radio looks
+    // like a shell that stopped finding networks.
     QsmShellComponents.Prose {
         role: "body"
         visible: !root.wifiEnabled

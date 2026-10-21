@@ -133,7 +133,7 @@ Item {
     QsmShellComponents.StateLayer {
         id: layer
         anchors.fill: parent
-        // Fitts reach (audit X1): the hit area extends across the band's
+        // Fitts reach: the hit area extends across the band's
         // outer 10px gutter to the TRUE screen edge — an edge-slammed cursor
         // lands on the entry, never on dead band. Visuals stay in the cell;
         // the tint is band-colored so the overhang never reads.

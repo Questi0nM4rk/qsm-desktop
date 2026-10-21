@@ -53,10 +53,6 @@ qs --version | grep -q 'Quickshell 0\.3\.' || {
 
 # The IPC smoke suite runs ONCE, and here rather than earlier: it needs `qs`,
 # so it belongs after the guards that prove `qs` exists at the right version.
-# It used to run twice -- once above those guards and once here -- which
-# doubled the slowest step in the gate for nothing. Nothing in either call site
-# explained the second one; it was almost certainly added with the version
-# guard by someone who did not notice the suite already ran.
 "$root/scripts/test-quickshell"
 
 # Shader freshness: committed .qsb must match what build-shaders regenerates

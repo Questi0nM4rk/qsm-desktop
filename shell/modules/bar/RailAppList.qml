@@ -64,7 +64,7 @@ Item {
             readonly property string appIdentity: appRow.appClass.split(".").pop() || "app"
             readonly property string appContext: {
                 // Unread counters ("(2864) Video") stripped — they read as a
-                // bare number (owner once mistook one for a PID). The brand
+                // bare number (easily mistaken for a PID). The brand
                 // suffix after a dash drops; the class carries identity.
                 const raw = modelData.title || appRow.info?.title || appRow.appClass || "";
                 const title = String(raw).replace(/^\(\d+\)\s*/, "");

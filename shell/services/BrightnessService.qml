@@ -71,7 +71,7 @@ QtObject {
     // listener still does (brightnessctl -s / -r around the idle window), and
     // sysfs announces nothing — so without a slow poll the slider keeps
     // reporting the pre-dim value and the next key press steps from a number
-    // that is no longer true.
+    // that is stale.
     property Timer reconcileTimer: Timer {
         interval: 30000
         repeat: true

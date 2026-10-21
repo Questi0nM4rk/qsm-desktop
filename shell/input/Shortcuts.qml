@@ -10,8 +10,7 @@ import qs.state
 // Level controls (volume, brightness) are routed THROUGH the shell rather
 // than through wpctl/brightnessctl in the compositor config, for one reason:
 // the OSD has to know. brightnessctl writing sysfs behind the shell's back is
-// invisible to it — which is exactly why the brightness keys used to change
-// the screen with no OSD at all. Owning the write means the readout, the
+// invisible to it, so the screen would change with no OSD at all. Owning the write means the readout, the
 // slider and the rollout all follow from the same event.
 // A Scope, not an Item: these bind keys, they draw nothing.
 Scope {

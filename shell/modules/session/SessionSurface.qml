@@ -107,8 +107,7 @@ Item {
         registerHitRect: false // the host's full-scene catch region is the hit area
         shouldBeActive: root.active
         suppressed: root.fullscreen || root.scene.focusMode
-        // One token for spec-08's 96, shared with the button itself (was the
-        // literal duplicated across both files — S5-F14).
+        // One token for spec-08's 96, shared with the button itself.
         bodyWidth: QsmShellStyle.Style.tileWidth + QsmShellStyle.Style.rolloutPadding * 2
         bodyHeight: column.implicitHeight + QsmShellStyle.Style.rolloutPadding * 2
         anchors.right: parent.right

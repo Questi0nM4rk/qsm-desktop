@@ -11,15 +11,14 @@ import qs.theme
 
 // Clipboard history, its own surface.
 //
-// It used to be the launcher's `>clip` mode. Moving it out is not a reshuffle:
-// clipboard history is reached constantly and by one key, so it earns a surface
-// instead of a prefix, and `>clip` is REMOVED rather than kept alongside —
-// otherwise it is two routes to one feature (09 one-path law).
+// Clipboard history is reached constantly and by one key, so it earns a
+// surface instead of a launcher prefix (09 one-path law: one route to one
+// feature).
 //
 // Reachable ONLY by its keybind. There is no handle, no hover zone, nothing on
-// the band. That is the owner's call, and it makes the keybind cheat sheet
-// load-bearing rather than decorative: a surface with no visible affordance has
-// to be discoverable somewhere.
+// the band, which makes the keybind cheat sheet load-bearing rather than
+// decorative: a surface with no visible affordance has to be discoverable
+// somewhere.
 //
 // The search field sits at the TOP because this surface attaches to the TOP
 // band. The rule across the shell is that the field goes nearest the attached
@@ -147,8 +146,7 @@ mkdir -p "$dir" || exit 0
 for name in "$@"; do
   file="$dir/$name"
   # cliphist reads the entry from STDIN. Given the id as an argument it exits
-  # silently with nothing, which is why the first version of this wrote empty
-  # files and every row fell back to the glyph.
+  # silently with nothing, so every row would fall back to the glyph.
   [ -s "$file" ] || printf '%s' "\${name%%.*}" | cliphist decode > "$file" 2>/dev/null || true
   [ -s "$file" ] || rm -f "$file"
 done

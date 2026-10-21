@@ -29,11 +29,8 @@ ShellRoot {
         value: !ShellState.keyboardOwnsSelection
     }
 
-    // ACTIVATION (13 phase 9). The shell IS the desktop now, so
-    // the QSM_BAR_TRIAL / QSM_FRAME_TRIAL / QSM_FRAME_RESERVE flags that gated
-    // the scene through development are gone: there is no half-on shell to
-    // select any more, and every one of them was already set to "on" in the
-    // only run that mattered. `qs --path shell` with an empty environment
+    // ACTIVATION. The shell IS the desktop: there are no environment flags
+    // gating the scene, and `qs --path shell` with an empty environment
     // brings up the real thing.
     //
     // The scene instance hosting the currently focused monitor. Looked up by
@@ -45,7 +42,7 @@ ShellRoot {
         return edgeSceneVariants.instances.find(instance => instance.modelData === ShellState.focusedScreen);
     }
 
-    // UI forensics walker (qsm-uix audit skills): serializes an item subtree
+    // UI forensics walker: serializes an item subtree
     // so an agent can assert real geometry — positions, sizes, colors, radii —
     // instead of estimating them from screenshots. Root functions, not
     // IpcHandler ones, for the same reason as focusedEdgeScene(): only
@@ -384,7 +381,7 @@ ShellRoot {
             return ShellState.toggleRail(ShellState.focusedScreen?.name ?? "");
         }
 
-        // Test-only seam (task 2.2 smoke coverage): drives the focused
+        // Test-only seam: drives the focused
         // monitor's in-scene PopoutController through its real show/dismiss
         // path so the suite can assert the rollout mask rect joining and
         // leaving the live mask, matching the notifyTest convention.
@@ -400,7 +397,7 @@ ShellRoot {
         // railPopoutTest's generalisation (EdgeScene.testShowPopout): any
         // popout TIER on either host, pointer-free — every surface was
         // otherwise reachable only by a human hovering the rail, making
-        // "measure that tier" a request to the owner. kind is a BarPopouts
+        // "measure that tier" a request to a human. kind is a BarPopouts
         // tier name ("sound", "network", "actions", "nightlight",
         // "colorpick", ...); level 1 is the rail host, level 2 the nested
         // quick-actions detail host. New IPC function — needs a shell
@@ -425,18 +422,16 @@ ShellRoot {
 
         // Invoke the colour pick directly, bypassing the UI entirely.
         //
-        // WHY this seam exists: the owner reported picking as dead, and from
-        // outside there is no way to tell "the swatch's click never reaches
-        // pick()" from "pick() runs and hyprpicker returns nothing". Both
-        // present identically -- pickLast stays empty. hyprpicker itself was
-        // tested standalone and starts clean, so the split is exactly here, and
-        // guessing at it twice already cost the owner two round trips.
+        // WHY this seam exists: from outside there is no way to tell "the
+        // swatch's click never reaches pick()" from "pick() runs and
+        // hyprpicker returns nothing". Both present identically: pickLast
+        // stays empty.
         function pickTest(): bool {
             ColorPickService.pick();
             return ColorPickService.busy;
         }
 
-        // Phase 2 gate seam: toggles the per-edge test Rollouts on the
+        // Test seam: toggles the per-edge test Rollouts on the
         // focused monitor (EdgeScene.testToggleRollout).
         function rolloutTest(edge: string, open: bool): bool {
             const scene = root.focusedEdgeScene();
@@ -446,7 +441,7 @@ ShellRoot {
             return scene.testToggleRollout(edge, open);
         }
 
-        // UI forensics dump (qsm-uix audit skills): the live item tree of one
+        // UI forensics dump: the live item tree of one
         // monitor's scene as JSON, scene-mapped coordinates. screen "" =
         // focused monitor; visibleOnly prunes hidden subtrees. New IPC
         // function — needs a shell restart like any other.

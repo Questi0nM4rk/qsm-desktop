@@ -99,7 +99,7 @@ PanelWindow {
         return id === "osd" || id === "notify-popups";
     }
 
-    // ShellBorder.entryFilter (11c gap): the library's registries are not
+    // ShellBorder.entryFilter: the library's registries are not
     // filtered by fullscreen or focus mode — that policy is Wayland-shaped
     // knowledge the mechanism must never hold — so this is where the
     // allowlist above actually applies, to every one of the border's three
@@ -353,10 +353,8 @@ PanelWindow {
     // discovery is meaningless while a modal already owns the screen. Worse,
     // the zones sit UNDER the modals: the session column and the OSD share the
     // right edge, so mousing toward a logout button crossed the OSD strip and
-    // rolled the brightness bulge out from beneath the buttons the owner was
-    // aiming at. The panel handle already carried this
-    // guard inline; hoisted here it is ONE rule for every handle
-    // instead of one rule per handle, remembered or not.
+    // rolled the brightness bulge out from beneath the buttons being
+    // aiming at. ONE rule for every handle instead of one per handle.
     readonly property bool handlesArmed: ShellState.modal === "none" && !root.fullscreen && !root.focusMode
 
     screen: modelData
@@ -578,15 +576,12 @@ PanelWindow {
     // The rail band is NOT re-added here — it is already permanently in the
     // mask via railMaskRect — so this id only ever needs to reach the card.
     //
-    // ACCEPTED COST (03-rail "Popouts"): this used to be
-    // the full-height strip from the screen edge through the popout, which
-    // made the whole column below/above the card solid whenever any popout
-    // was open. Registering only the card's own bounding box instead means
-    // the strip above/below a short card is click-through again while the
-    // card is open — narrower than before, and the exact cost the spec names
-    // (the travel-triangle bounding box, not the whole column, stops being
-    // click-through). The popout's silhouette bulge is self-registered by
-    // BarPopouts; this strip uses a DISTINCT id.
+    // Only the card's own bounding box is registered, not the full-height
+    // strip from the screen edge through the popout: the strip above/below a
+    // short card stays click-through while the card is open (03-rail
+    // "Popouts" names this cost: the travel-triangle bounding box, not the
+    // whole column, stops being click-through). The popout's silhouette bulge
+    // is self-registered by BarPopouts; this strip uses a DISTINCT id.
     readonly property real popoutMaskRight: actionPopoutController.active
         ? root.popout2Rect.x + root.popout2Rect.width
         : root.popout1Rect.x + root.popout1Rect.width
@@ -888,7 +883,7 @@ PanelWindow {
         return true;
     }
 
-    // Phase 2 gate rollouts: one Rollout per edge, driven over IPC
+    // Gate rollouts: one Rollout per edge, driven over IPC
     // (rolloutTest), proving reveal choreography, live-rect registries,
     // the near-settled hit law, flush attachment, and corner auto-join
     // (the bottom rollout sits near the left band on purpose). Removed

@@ -1,7 +1,7 @@
 import QtQuick
 
 // The one owner of the bar popout's WHAT: which popout is up, what it says,
-// and where it anchors. The popout's HOME is FIXED (owner law: a predefined
+// and where it anchors. The popout's HOME is FIXED (a predefined
 // bottom-left corner rollout that only expands — it never follows the
 // cursor), so showing is just content + kind; RailPopout fades fresh content
 // in on kind changes.

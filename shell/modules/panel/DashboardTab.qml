@@ -95,7 +95,7 @@ GridLayout {
                     width: Theme.dashboardBadgeSize
                     height: Theme.dashboardBadgeSize
                     // Separation by VALUE, not a stroke — 11-theme ratifies
-                    // flat fills with no outlines anywhere (audit S5-F1): the
+                    // flat fills with no outlines anywhere: the
                     // avatar disc is overlay, so the badge takes band.
                     radius: QsmShellStyle.Style.radiusPill
                     color: Theme.band
@@ -262,9 +262,7 @@ GridLayout {
                 Layout.preferredHeight: Theme.dashboardMediaArtSize + Theme.artworkRingStroke * 2
 
                 // The SAME type the media tab uses, so the two cannot drift
-                // apart again. It used to be a square sleeve with a half ring
-                // behind it — and the sleeve's own corners hid the arc, which
-                // is what two independent assemblies of one idea get you.
+                // apart.
                 QsmShellComponents.Avatar {
                     anchors.centerIn: parent
                     size: Theme.dashboardMediaArtSize

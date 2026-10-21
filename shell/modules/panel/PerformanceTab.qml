@@ -129,9 +129,7 @@ ColumnLayout {
                 spacing: QsmShellStyle.Style.space2
 
                 // Every ring on this tab reads the same way: glyph, the
-                // NUMBER, then what it is. CPU and GPU used to show a glyph
-                // and a name with no number at all, so two of the four cards
-                // answered "how much?" and two did not.
+                // NUMBER, then what it is, so every card answers "how much?".
                 //
                 // Usage is -1 until the SECOND /proc/stat sample — a rate needs
                 // two readings — and printing that as "0%" claims an idle
@@ -419,9 +417,9 @@ ColumnLayout {
             }
 
             // The level is a thin meter on the overlay track, filled by what it
-            // means (healthy, low, critical), never by the accent: the old tank
-            // painted a tinted accent block behind the text and dragged its
-            // caption under 3:1. The text stays on the plain card.
+            // means (healthy, low, critical), never by the accent: an accent
+            // block behind the text would drag its caption under 3:1. The text
+            // stays on the plain card.
             ColumnLayout {
                 anchors.centerIn: parent
                 spacing: QsmShellStyle.Style.space3

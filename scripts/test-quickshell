@@ -27,19 +27,18 @@ trap cleanup EXIT
 start_shell() {
   # A fullscreen client hides the band/rail by design (spec 09), which poisons
   # every mask-width assertion below. Refusing would mean the suite never ran,
-  # because the fullscreen window is routinely the owner's session terminal.
+  # because the fullscreen window is routinely the user's session terminal.
   #
   # So clear them instead. The fullscreen STATE is deliberately not restored:
-  # putting a window back to fullscreen behind the owner's back is the more
+  # putting a window back to fullscreen behind the user's back is the more
   # surprising act.
   #
-  # Each window is addressed DIRECTLY. The previous version focused the window,
-  # toggled the state of whatever was then active, and focused back, which was
-  # two ways to be wrong at once: `hyprctl dispatch fullscreenstate 0 0` is the
-  # pre-Lua syntax and this config's Lua dispatcher rejects it outright (exit
-  # 7, one line of stderr, and `set -e` took the suite down before it ran a
-  # single assertion), and focusing across workspaces does not reliably put the
-  # intended window under the toggle anyway. Naming the window needs neither.
+  # Each window is addressed DIRECTLY by address. Toggling whatever is active
+  # is wrong twice: `hyprctl dispatch fullscreenstate 0 0` is the pre-Lua
+  # syntax and this config's Lua dispatcher rejects it outright (exit 7, and
+  # `set -e` takes the suite down before a single assertion), and focusing
+  # across workspaces does not reliably put the intended window under the
+  # toggle.
   local fs_addrs
   fs_addrs="$(hyprctl clients -j | jq -r '.[] | select(.fullscreen != 0) | .address')"
   if [[ -n "$fs_addrs" ]]; then
@@ -50,7 +49,7 @@ start_shell() {
       hyprctl dispatch "hl.dsp.window.fullscreen({ window = \"address:$addr\", mode = \"maximized\", action = \"unset\" })" >/dev/null 2>&1 || true
     done <<< "$fs_addrs"
     # Verify, because a compositor that refused leaves the assertions poisoned
-    # and a cryptic mid-suite failure is exactly what the old refusal avoided.
+    # and a cryptic mid-suite failure follows.
     if [[ "$(hyprctl clients -j | jq '[.[] | select(.fullscreen != 0)] | length')" != 0 ]]; then
       printf 'could not clear every fullscreen client; the mask assertions would be poisoned\n' >&2
       trap - EXIT
@@ -112,8 +111,8 @@ wait_status() {
 
 start_shell
 
-# Single-scene architecture (adopt-single-scene-rendering): the legacy
-# per-window path is gone entirely, so no qsm-bar / qsm-osd / qsm-notify-* /
+# Single-scene architecture (adopt-single-scene-rendering): there is no
+# per-window path, so no qsm-bar / qsm-osd / qsm-notify-* /
 # qsm-launcher namespace can ever exist. Everything the shell PAINTS lives on
 # qsm-edge-scene, qsm-wallpaper, or qsm-session-backdrop (08's sanctioned
 # blur surface). The qsm-frame-*-exclusion surfaces are the one other kind
@@ -274,16 +273,15 @@ qs ipc --path "$config" call qsm status | grep -Eq '"updates":-?[0-9]+'
 qs ipc --path "$config" call qsm osd output 0.42 false >/dev/null
 qs ipc --path "$config" call qsm status | grep -q '"osdKind":"output"'
 qs ipc --path "$config" call qsm status | grep -q '"osdVisible":true'
-# Activation (13 phase 9): a bare environment brings up the real desktop —
-# scene mapped, preview sheet OFF. The trial env flags are gone, so the proof
-# is the scene's own geometry, not a flag echo.
+# Activation: a bare environment brings up the real desktop — scene mapped,
+# preview sheet OFF. The proof is the scene's own geometry, not a flag echo.
 qs ipc --path "$config" call qsm status | grep -q '"preview":false'
 qs ipc --path "$config" call qsm status | jq -e '.sceneRailMaskWidth > 0' >/dev/null
 # UI forensics seam: inspect dumps a parseable item tree with real geometry
 # for the focused monitor, and errors cleanly for an unknown screen name.
 qs ipc --path "$config" call qsm inspect "" true | jq -e '.tree.w > 0 and (.tree | has("children"))' >/dev/null
 qs ipc --path "$config" call qsm inspect no-such-screen false | jq -e 'has("error")' >/dev/null
-# Notification model + popup stack (task 5.1): previewable over IPC, no bus
+# Notification model + popup stack: previewable over IPC, no bus
 # claim. Six posts -> six live, popups capped at 4; dismissing one drops both;
 # a critical notification has no expiry (still alive after the normal 5s
 # window would have long passed for the short-timeout one we post).
@@ -306,7 +304,7 @@ qs ipc --path "$config" call qsm status | grep -q '"notificationCount":6'
 qs ipc --path "$config" call qsm notifyDismiss "$crit_id" | grep -q '^true$'
 qs ipc --path "$config" call qsm status | grep -q '"notificationCount":5'
 qs ipc --path "$config" call qsm notifyDismiss 99999 | grep -q '^false$'
-# Model depth (task 5.2). Everything closed so far (Short, the critical, and
+# Model depth. Everything closed so far (Short, the critical, and
 # the five 5s-default posts once they expire) is non-transient -> archived.
 sleep 5
 qs ipc --path "$config" call qsm status | grep -q '"notificationCount":0'
@@ -395,7 +393,7 @@ qs ipc --path "$config" call qsm status | jq -e '.sceneRailMaskWidth == 16' >/de
 qs ipc --path "$config" call qsm railToggle | grep -q '^false$'
 qs ipc --path "$config" call qsm status | jq -e '.sceneRailMaskWidth == 60' >/dev/null
 
-# Rollout mask merge (design.md decision 2, the OPEN mechanism from task 1):
+# Rollout mask merge:
 # the bar popout is the first real registerRolloutRegion caller. Opening it
 # joins the live mask; retracting it leaves. The test-only IPC drives the
 # real PopoutController.show/dismiss path, not a synthetic hover.
@@ -427,7 +425,7 @@ wait_status '.subPopout == "colorpick" and .sceneBulges == 2 and .subPopoutOrigi
 qs ipc --path "$config" call qsm popoutTest actions 1 false "" | grep -q '^true$'
 wait_status '.sceneRolloutRects == 0 and .sceneBulges == 0' 'nested rail rollouts did not leave the registries'
 
-# Task 2.3: OSD migrated in-scene. The real `qsm osd` IPC proves the connected
+# OSD in-scene. The real `qsm osd` IPC proves the connected
 # right-frame rollout joins/leaves the live mask with only its free left edge
 # rounded.
 qs ipc --path "$config" call qsm osd output 0.5 false >/dev/null
@@ -447,7 +445,7 @@ done
   exit 1
 }
 
-# Task 2.4: notification popups + sidebar migrated in-scene.
+# Notification popups + sidebar in-scene.
 # Notification model is fresh in this shell instance (in-memory `live` does
 # not survive the restart above; the baseline is 0, unlike the rail-popout
 # check which had to settle a startup device event).
@@ -512,11 +510,11 @@ done
   exit 1
 }
 
-# Task 2.5: launcher migrated in-scene.
+# Launcher in-scene.
 # Toggling the launcher modal joins its own mask rect (registerRolloutRegion
 # "launcher"); closing it leaves. Mirrors the notify-sidebar proof above but
 # through the launcher modal. sceneBulges is the exact case registerBulge
-# exists for (task 4.1): the mask rect is deliberately full-scene
+# exists for: the mask rect is deliberately full-scene
 # (click-anywhere-closes), but the melt bulge is the drawer's own bounds —
 # two different rects, same "one open rollout" count.
 qs ipc --path "$config" call qsm toggle launcher | grep -q '^true$'
@@ -537,7 +535,7 @@ done
   exit 1
 }
 
-# Phase 2 Rollout component: each per-edge test rollout joins both
+# Rollout component: each per-edge test rollout joins both
 # registries when opened (bulge immediately, hit rect near-settled) and
 # leaves both when retracted.
 for edge in top bottom right left; do

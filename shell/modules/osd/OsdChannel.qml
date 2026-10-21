@@ -5,11 +5,9 @@ import qs.theme
 
 // One OSD channel: the library's slider, dressed the way this surface needs.
 //
-// It used to be `OsdSlider`, and that name is the one the library's own laws
-// cite as the mistake — a type named after where it is used, reimplementing a
-// slider's orientation, value mapping, fill, thumb, travel, drag, wheel and
-// grab margin because the surface wanted three numbers changed. Nothing here
-// reimplements anything now; it states colours and fills two slots.
+// It reimplements nothing of the slider (orientation, value mapping, fill,
+// thumb, travel, drag, wheel, grab margin); it states colours and fills two
+// slots.
 //
 // What IS this surface's, and stays: the thumb is the one thing a channel
 // draws besides its track (05-osd). It rests as the channel's 16px glyph and
@@ -17,7 +15,7 @@ import qs.theme
 //
 // Every channel draws the same way: track `surface`, fill `primary`. The thumb
 // is `band` on every channel, at rest and live: against the `primary` fill
-// that is 9:1, where the old `textMuted` thumb was 1.03:1 and vanished into it.
+// that is 9:1, where a `textMuted` thumb would be 1.03:1 and vanish into it.
 // Its content rests in `textMuted`, the same for all three; only the channel
 // being changed (showingValue) lights up in `text`. A muted channel stays
 // `textMuted` even while changed. No shadow under the thumb, nothing at the

@@ -8,8 +8,8 @@ import qs.theme
 // anything that needs to say more expands once further right, exactly as the
 // left band does.
 //
-// Everything here is a quality-of-life action the owner wants two gestures
-    // away and nowhere else: stateful toggles, one irreversible sweep,
+// Everything here is a quality-of-life action two gestures
+// away and nowhere else: stateful toggles, one irreversible sweep,
 // one screen tool. Anything needing real UI belongs in its own popout or in a
 // delegated app instead.
 Item {
@@ -28,7 +28,7 @@ Item {
     // CLEARANCE, not decoration. A detail card is centred on
     // the cell that opened it, so for the FIRST and LAST cells it lands level
     // with the column's own rounded corners — and a small card's square left
-    // edge meeting a 28px curve is the jagged seam the owner kept seeing.
+    // edge meeting a 28px curve is a jagged seam.
     //
     // Reserving space above the first cell and below the last one moves that
     // junction into the column's straight flank, where two flush rects read as
@@ -37,9 +37,8 @@ Item {
     // is itself 20px below the cells' top; clearing a 28px radius therefore
     // needs ~50px, and BarPopouts already contributes 16 of it.
     //
-    // The alternative — stretching the card to the column's full height so the
-    // seam becomes one straight line — was built and rejected: the cards should
-    // stay small.
+    // Stretching the card to the column's full height instead would make the
+    // seam one straight line, but the cards are meant to stay small.
     readonly property int clearance: QsmShellStyle.Style.space6 + QsmShellStyle.Style.space2
 
     implicitWidth: Theme.railWidth

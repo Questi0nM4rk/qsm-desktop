@@ -8,8 +8,7 @@ import qs.theme
 // closes — the mask must therefore cover the whole scene, not the drawer),
 // the Rollout with the modal's silhouette, the open() re-fire when the modal
 // becomes active, and the catch-region registration under `<name>-catch`.
-// It exists because the third copy of this block landed with the cheat sheet
-// and the review called the tipping point; a fourth modal is now ~10 lines.
+// A new modal is ~10 lines on top of it.
 //
 // The consumer provides content (default property) and calls its surface's
 // open() from onOpened. Placement follows from `edges` — the shell-wide

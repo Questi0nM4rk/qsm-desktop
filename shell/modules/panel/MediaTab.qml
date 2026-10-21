@@ -9,8 +9,8 @@ import qs.theme
 // Media tab (06, per references/media-tab.png): circular artwork
 // with a progress ring, title/album/artist, transport + seek, per-player
 // source picker. Fallbacks (DEFAULT): no artwork -> type glyph in the
-// circle; no player -> centered "nothing playing". Three zones (owner
-// caelestia-parity ruling, keep-it-simple): artwork | title, seek, transport
+// circle; no player -> centered "nothing playing". Three zones
+// (keep-it-simple, caelestia parity): artwork | title, seek, transport
 // and the per-player source row. Cava/lyrics/bongocat are explicitly not
 // ported. The tab is as tall as the panel's body, always, so nothing in it
 // moves when a track, a player or the artwork appears.
@@ -79,9 +79,7 @@ Item {
             Keys.onRightPressed: event => { event.accepted = canSeek; seekBy(root.seekStepSeconds); }
 
             // The artwork AND how far through it we are: one thing, one type.
-            // This surface and the dashboard used to assemble it separately
-            // and reached two different pictures, which is the proof it never
-            // belonged to either of them.
+            // The dashboard shares the same type.
             QsmShellComponents.Avatar {
                 id: avatar
                 anchors.centerIn: parent

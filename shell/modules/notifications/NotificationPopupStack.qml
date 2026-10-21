@@ -16,7 +16,7 @@ Item {
     // The ShellBorder answering the library's seven-call contract.
     required property var host
     // Injection keeps this exact production surface hostable in an isolated
-    // Workbench scene without acquiring the owner's notification bus/history.
+    // Workbench scene without acquiring the live notification bus/history.
     required property var notificationService
     property bool focused: false
     property string modal: "none"

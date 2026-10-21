@@ -247,8 +247,8 @@ QtObject {
                 setTiledMaximized("unset");
             }
         }
-        // Snapshots from the old shortcut changed persisted rail state.
-        // Current focus presentation is workspace-local and never writes it.
+        // Focus presentation is workspace-local and never writes persisted
+        // rail state; only a saved snapshot restores it.
         if (saved.railCollapsed !== undefined)
             setRail(saved.monitor, saved.railCollapsed);
         clear();

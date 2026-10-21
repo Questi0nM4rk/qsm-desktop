@@ -1051,11 +1051,9 @@ Item {
         stdout: StdioCollector {
             onStreamFinished: root.calcResult = text.trim()
         }
-        // A missing qalc is a DEGRADED SURFACE, not a result. The probe used to
-        // `echo "qalc not installed"` into the result string, so the row looked
-        // like an answer and Enter wl-copied that sentence into the clipboard
-        // Now the exit code says it, the row says what to
-        // do about it, and Enter has nothing to copy.
+        // A missing qalc is a DEGRADED SURFACE, not a result: the exit code
+        // says it, the row says what to do about it, and Enter has nothing to
+        // copy.
         onExited: exitCode => {
             root.calcAvailable = exitCode !== 127;
             if (!root.calcAvailable)
@@ -1241,7 +1239,7 @@ ps -eo pid,pcpu,comm --no-headers --sort=-pcpu | head -25 | awk '{printf "P|%s|%
                     }
 
         // Editors are components, not inline blocks: the Loader picks one by kind,
-        // and each one is a real control the owner can focus, type into and read.
+        // and each one is a real control a person can focus, type into and read.
         Component {
             id: volumeEditor
             QsmShellComponents.Slider {

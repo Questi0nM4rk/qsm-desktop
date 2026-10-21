@@ -99,7 +99,7 @@ Item {
 
     // Live input, through the same driver the flows use. Each option names a
     // real target and a real move; nothing here calls a controller or a
-    // service, so the owner's pointer really travels the scene. Setup controls
+    // service, so the real pointer travels the scene. Setup controls
     // stay in their own groups below.
     readonly property var controls: _storyControls
     readonly property var actions: _storyActions

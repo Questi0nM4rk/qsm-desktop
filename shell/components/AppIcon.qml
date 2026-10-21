@@ -18,10 +18,8 @@ import qs.QsmShell.Style as QsmShellStyle
 // Quickshell's; a component library has no business knowing either.
 //
 // The FALLBACK comes from the library's icon set and takes the theme's colour.
-// It used to be a raw SVG out of a second copy of that set living in this
-// repo — 79 files, byte-identical to the library's, kept alive by this one
-// reference. A themed glyph is also the better answer: a flat white
-// placeholder among themed icons reads as a rendering fault.
+// A themed glyph is the better answer than a flat white
+// placeholder, which among themed icons reads as a rendering fault.
 Item {
     id: root
 

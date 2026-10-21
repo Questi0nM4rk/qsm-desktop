@@ -19,12 +19,11 @@ import qs.state
 // <K>` answers "ok" on a running daemon (probed). Changing the
 // warmth therefore does NOT replace the process.
 //
-// It used to, and that cost the owner a real bug within an hour of the slider
-// shipping: each apply ran `pkill; setsid hyprsunset &`, and the `&` means the
-// bash wrapper exits IMMEDIATELY, so the pgrep that reconciles `active` raced
-// the new daemon and usually lost — the toggle read false on alternate applies
-// and the cell flipped off/on as he scrolled. A restart per notch also dropped
-// the colour transform for a frame each time.
+// Replacing it per apply (`pkill; setsid hyprsunset &`) would race: the `&`
+// makes the bash wrapper exit IMMEDIATELY, so the pgrep that reconciles
+// `active` races the new daemon and usually loses, and the toggle reads false
+// on alternate applies. A restart per notch also drops the colour transform
+// for a frame each time.
 QtObject {
     id: root
 
@@ -42,7 +41,7 @@ QtObject {
     // has no single owner for it. Writers go through setStrength().
     readonly property int temperature: ShellState.nightLightTemperature
 
-    // 0 = neutral, 1 = warmest. The control the owner actually turns is
+    // 0 = neutral, 1 = warmest. The control a person turns is
     // "how warm", and warmth goes UP as Kelvin goes DOWN — exposing Kelvin as
     // the slider would put a control on screen whose right-hand end means less
     // of the thing it is named after.
@@ -149,7 +148,7 @@ QtObject {
     // development) must not silently undo a setting the user made.
     //
     // The leading pkill is belt-and-braces against a stray daemon from an
-    // earlier session, NOT how warmth is applied any more (see the header).
+    // earlier session, NOT how warmth is applied (see the header).
     // This runs on a toggle only.
     property Process startProcess: Process {
         command: ["bash", "-c",

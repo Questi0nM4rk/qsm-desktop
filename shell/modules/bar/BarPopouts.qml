@@ -221,8 +221,8 @@ QsmShellComponents.Rollout {
 
             // App row identity + live context. The rail cell shows only the
             // icon; the words live here, horizontal and unelided, because a
-            // 40px band cannot carry readable text (owner: my judgment over
-            // 03's sideways caption).
+            // 40px band cannot carry readable text (03's sideways caption is
+            // not used).
             Popout {
                 name: "app"
                 sourceComponent: PopoutBody {

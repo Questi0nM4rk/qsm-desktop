@@ -26,9 +26,8 @@ QtObject {
     // archive, which is a different feature with a different storage answer.
     // The name this service posts its notifications under, and therefore the
     // name the two notification surfaces recognise to draw a colour swatch
-    // instead of an app icon. It was written out as a literal in three places
-    // — here, the card and the centre — which is three chances for a rename to
-    // half-land. The service that CHOOSES the name owns it.
+    // instead of an app icon. The service that CHOOSES the name owns it, so the
+    // card and the centre never retype the literal.
     readonly property string notifyAppName: "Colour picker"
 
     readonly property int historyLimit: 24
@@ -85,20 +84,18 @@ QtObject {
     property Process pickProcess: Process {
         // NO -a. hyprpicker's autocopy writes the clipboard behind our back, so
         // the shell never learned what was copied and no surface could
-        // acknowledge it -- the swatch ticks all read `copied`, which stayed
-        // empty after a pick. Copying through our own copy() gives that one
-        // owner, and it removes any dependence on whether autocopy also feeds
-        // stdout (which is the value everything else here is parsed from).
+        // acknowledge it (the swatch ticks read `copied`). Copying through our
+        // own copy() gives that one owner, and it removes any dependence on
+        // whether autocopy also feeds stdout (which is the value everything
+        // else here is parsed from).
         //
         // -r is NOT optional on this machine. hyprpicker does not freeze
         // INACTIVE displays without it, so picking on the monitor that is not
         // focused returns nothing and exits 0 — indistinguishable from a
-        // cancel. That is exactly what the owner hit: "I picked a color on the
-        // second monitor" and the display never updated. This shell is
-        // two-monitor by default, so rendering inactive outputs is the normal
-        // case, not a flag for an edge case.
+        // cancel. This shell is two-monitor by default, so rendering inactive
+        // outputs is the normal case, not a flag for an edge case.
         //
-        // NO -q, and this was the bug the owner reported for days. hyprpicker
+        // NO -q. hyprpicker
         // prints the picked colour through the same logging path its chatter
         // uses, so --quiet ("Disable most logs") eats the ANSWER. Measured on
         // v0.4.7 with a driven click, one variable at a time:
@@ -106,12 +103,11 @@ QtObject {
         //   -r -f hex -l -q  -> exit 0, stdout EMPTY
         //   -r -f hex -l     -> exit 0, stdout "#1e1e2e\n"
         //
-        // Every pick therefore landed in the empty-stdout branch below and was
-        // read as a cancel, which is why `lastColor` was never set once, the
-        // history stayed empty, and the accent squares and editor row -- both
-        // gated on having a colour -- were never drawn. One flag, three
-        // symptoms. Without -q stdout is exactly the hex and nothing else (od
-        // -c confirms: no ANSI, no prefix), so there was never any chatter to
+        // With -q every pick lands in the empty-stdout branch below and reads
+        // as a cancel: `lastColor` is never set, the history stays empty, and
+        // the accent squares and editor row, both gated on having a colour,
+        // are never drawn. Without -q stdout is exactly the hex and nothing
+        // else (od -c confirms: no ANSI, no prefix), so there is no chatter to
         // keep out; -b is not needed either.
         //
         // -f hex + -l give the form anyone pastes into code.
@@ -124,12 +120,10 @@ QtObject {
                 // That is a user decision, not a failure, so it must not
                 // overwrite the last real pick or announce anything.
                 //
-                // But it must not be SILENT either. This branch swallowed a
-                // real defect for as long as it existed: with hyprpicker unable
-                // to render the inactive monitor, every pick over there landed
-                // here and looked to the owner like a dead button, with nothing
-                // in the log to say otherwise. A path that cannot be told apart
-                // from a bug has to announce itself.
+                // But it must not be SILENT either: with hyprpicker unable to
+                // render the inactive monitor, every pick over there lands
+                // here and looks like a dead button. A path that cannot be
+                // told apart from a bug has to announce itself.
                 if (value.length === 0) {
                     console.info("ColorPickService: pick returned nothing"
                         + " (cancelled, or hyprpicker could not read that output)");
