@@ -29,76 +29,20 @@ RailEntry {
         precision: SystemClock.Minutes
     }
 
-    component RollingDigits: Item {
-        id: digits
-
-        required property string value
-        property string previous: value
-        property string current: value
-        property bool ready: false
-        property real progress: 1
-
-        TextMetrics {
-            id: metrics
-            font: currentReading.font
-            text: "00"
-        }
-
-        // The rail's width and the next step of the 4 rhythm above the line,
-        // so every box of the clock sits on whole device pixels.
-        implicitWidth: Theme.railWidth
-        implicitHeight: Math.ceil(metrics.height / QsmShellStyle.Style.space1) * QsmShellStyle.Style.space1
-        clip: true
-
-        onValueChanged: {
-            if (!ready || Theme.reducedMotion) {
-                current = value;
-                previous = value;
-                progress = 1;
-                return;
-            }
-            previous = current;
-            current = value;
-            progress = 0;
-            Qt.callLater(() => progress = 1);
-        }
-        Component.onCompleted: ready = true
-
-        Behavior on progress {
-            enabled: !Theme.reducedMotion
-            NumberAnimation { duration: QsmShellStyle.Motion.fast; easing.type: QsmShellStyle.Motion.emphasizedEasing }
-        }
-
-        QsmShellComponents.Prose {
-            role: "hero"
-            technical: true
-            y: -digits.progress * height
-            width: parent.width
-            height: parent.height
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            text: digits.previous
-            opacity: 1 - digits.progress
-            font.pixelSize: Theme.railClockDigitSize
-            font.weight: QsmShellStyle.Style.weightBold
-            elide: Text.ElideNone
-        }
-
-        QsmShellComponents.Prose {
-            id: currentReading
-            role: "hero"
-            technical: true
-            y: parent.height - digits.progress * height
-            width: parent.width
-            height: parent.height
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            text: digits.current
-            opacity: digits.progress
-            font.pixelSize: Theme.railClockDigitSize
-            font.weight: QsmShellStyle.Style.weightBold
-            elide: Text.ElideNone
-        }
+    // The two digit pairs swap in place: the clock changes every minute, a
+    // thousand times a day, and a roll on each is motion nobody asked for. A
+    // box is the rail's width and the next step of the 4 rhythm above the
+    // line, so every box of the clock sits on whole device pixels.
+    component Digits: QsmShellComponents.Prose {
+        role: "hero"
+        technical: true
+        width: Theme.railWidth
+        height: Math.ceil(implicitHeight / QsmShellStyle.Style.space1) * QsmShellStyle.Style.space1
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+        font.pixelSize: Theme.railClockDigitSize
+        font.weight: QsmShellStyle.Style.weightBold
+        elide: Text.ElideNone
     }
 
     Column {
@@ -107,14 +51,16 @@ RailEntry {
         width: parent.width
         spacing: 0
 
-        RollingDigits { value: Qt.formatTime(root.now, "HH") }
-        RollingDigits { value: Qt.formatTime(root.now, "mm") }
+        Digits { text: Qt.formatTime(root.now, "HH") }
+        Digits { text: Qt.formatTime(root.now, "mm") }
         QsmShellComponents.Prose {
             role: "reading"
             technical: true
             topPadding: QsmShellStyle.Style.space1
             width: parent.width
-            height: Math.ceil(implicitHeight / QsmShellStyle.Style.space1) * QsmShellStyle.Style.space1
+            // The cell is a multiple of 8 high, so its centre is a multiple of
+            // 4 and the calendar centred on it lands on whole device pixels.
+            height: QsmShellStyle.Style.space5
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             text: Qt.formatDate(root.now, "dd.MM")
