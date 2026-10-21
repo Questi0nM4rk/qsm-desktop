@@ -133,8 +133,9 @@ intent separately from the backend result, with no password in event payloads.
   (the pointer floor; a wheel and a click are the only aim there), tiled with no gap, + a
   numbered pill: at most SIX Hyprland workspaces globally (monitor-synced — every rail
   renders the identical column, active = the globally focused workspace), the six nearest the
-  active one; each shows an 8px dot — occupied `textMuted`, urgent `danger`,
-  empty `overlay`; the ACTIVE workspace is marked by the library's count chip (the updates badge's own size, 32x16),
+  active one; each shows an 8px mark whose SHAPE is the state — occupied a `textMuted` dot, empty a
+  `textMuted` ring, urgent a `danger` dot inside a 16px `danger` ring (colour alone never
+  carries meaning); the ACTIVE workspace is marked by the library's count chip (the updates badge's own size, 32x16),
   `accent` over its slot, with the real number in `textOnPrimary`; it hops between slots and
   never glides (a switch is the most frequent thing the rail does); hovering it grows it and
   lifts its fill like any body. Its dot fades aside beneath it. NO app icons — app identity lives ONLY in

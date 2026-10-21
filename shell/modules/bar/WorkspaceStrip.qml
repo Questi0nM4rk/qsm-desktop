@@ -6,10 +6,11 @@ import qs.theme
 
 // Workspace slots (03): at most six Hyprland workspaces, the six nearest the
 // active one, one slot each as wide as the rail and tall enough for a pointer,
-// a dot per slot (occupied textMuted, urgent danger, empty overlay), and the
-// active slot's dot is the library's accent count chip with the real number in
-// textOnPrimary. A switch is the most frequent thing the rail does, so the chip
-// hops and never glides. Wheel switches, click jumps, no popout.
+// a mark per slot (occupied a textMuted dot, empty a ring, urgent a danger dot
+// in a ring), and the active slot's dot is the library's accent count chip
+// with the real number in textOnPrimary. A switch is the most frequent thing
+// the rail does, so the chip hops and never glides. Wheel switches, click
+// jumps, no popout.
 Item {
     id: root
 
@@ -81,6 +82,9 @@ Item {
                 readonly property bool occupied: (workspace?.toplevels.values.length ?? 0) > 0
                 readonly property bool urgent: workspace?.urgent ?? false
 
+                // Two device pixels, whatever the scale.
+                readonly property real ringStroke: 2 * QsmShellStyle.Style.stroke(QsmShellStyle.Style.hairline, slot)
+
                 width: parent.width
                 height: Theme.railWorkspaceSlot
 
@@ -102,13 +106,18 @@ Item {
                     width: Theme.railWorkspaceDot + 2 * dotLayer.growth
                     height: width
                     radius: QsmShellStyle.Style.radiusPill
-                    // Hover and press recolour the dot through the one state
-                    // matrix, so it answers like every other target.
-                    color: QsmShellStyle.Style.tone(
-                        slot.urgent ? Theme.danger
-                            : slot.occupied ? Theme.textMuted
-                            : Theme.overlay,
+                    // Shape carries the state and colour repeats it: occupied
+                    // is a filled dot, empty a ring, urgent a filled dot with
+                    // a ring around it (below). Hover and press recolour it
+                    // through the one state matrix, so it answers like every
+                    // other target.
+                    readonly property color ink: QsmShellStyle.Style.tone(
+                        slot.urgent ? Theme.danger : Theme.textMuted,
                         dotLayer.hovered, dotLayer.pressed, false, true, Theme.accent)
+                    readonly property bool filled: slot.occupied || slot.urgent
+                    color: dot.filled ? dot.ink : "transparent"
+                    border.width: dot.filled ? 0 : slot.ringStroke
+                    border.color: dot.ink
                     // The pill covers the active slot; its dot steps aside
                     // instead of doubling under the number.
                     opacity: slot.active ? 0 : 1
@@ -116,6 +125,20 @@ Item {
                     Behavior on opacity {
                         NumberAnimation { duration: QsmShellStyle.Motion.micro; easing.type: QsmShellStyle.Motion.standardEasing }
                     }
+                }
+
+                // An urgent workspace asks for attention, so its dot wears a
+                // ring as well as the danger colour.
+                Rectangle {
+                    x: (parent.width - width) / 2
+                    y: (parent.height - height) / 2
+                    width: Theme.railWorkspaceRing + 2 * dotLayer.growth
+                    height: width
+                    radius: QsmShellStyle.Style.radiusPill
+                    visible: slot.urgent && !slot.active
+                    color: "transparent"
+                    border.width: slot.ringStroke
+                    border.color: Theme.danger
                 }
 
                 // The active slot's dot is the numbered accent chip: the library's

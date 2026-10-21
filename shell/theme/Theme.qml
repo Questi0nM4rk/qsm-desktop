@@ -242,6 +242,8 @@ QtObject {
     readonly property int railWorkspaceSlot: QsmShellStyle.Style.size("Control", "xs")
     readonly property int railWorkspaceSlots: 6
     readonly property int railWorkspaceDot: QsmShellStyle.Style.space2
+    // The ring around an urgent workspace's dot.
+    readonly property int railWorkspaceRing: QsmShellStyle.Style.iconSm
     // The dot is so small that the library's hover growth would be under half
     // a pixel, so it grows by half again to be seen at all.
     readonly property real railWorkspaceDotHoverScale: QsmShellStyle.Style.reducedMotion ? 1 : 1.5
