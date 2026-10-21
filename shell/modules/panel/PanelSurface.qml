@@ -31,8 +31,8 @@ Item {
     readonly property bool revealed: rollout.visible
     readonly property bool animating: rollout.animating
     readonly property real bodyWidth: Math.max(0, Math.min(Theme.panelWidth,
-        Math.floor(2 * Math.min(root.scene.panelCenterX - root.host.leftEdge,
-            root.width - QsmShellStyle.Style.frameThickness - root.scene.panelCenterX) - QsmShellStyle.Style.rolloutPadding * 2)))
+        Math.floor(2 * Math.min(root.scene.panelCenterX - root.scene.panelViewportLeft,
+            root.width - root.scene.panelCenterX) - QsmShellStyle.Style.rolloutPadding * 2)))
     readonly property real bodyHeight: Math.max(0, Math.min(Theme.panelHeight,
         Math.floor(root.height - QsmShellStyle.Style.frameThickness * 2 - QsmShellStyle.Style.space4
             - Theme.panelHandleHeight / 2 - Theme.panelHandleProud)))

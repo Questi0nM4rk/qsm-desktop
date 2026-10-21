@@ -17,7 +17,7 @@ ColumnLayout {
     id: root
 
     property var batteryDevice: UPower.displayDevice
-    spacing: QsmShellStyle.Style.space3
+    spacing: Theme.panelGap
 
     // The tab is the panel's content box: two rows of one height.
     readonly property real rowHeight: (Theme.panelContentHeight - spacing) / 2

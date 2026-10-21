@@ -16,8 +16,8 @@ import qs.theme
 GridLayout {
     id: root
     columns: 3
-    rowSpacing: QsmShellStyle.Style.space3
-    columnSpacing: QsmShellStyle.Style.space3
+    rowSpacing: Theme.panelGap
+    columnSpacing: Theme.panelGap
 
     // Every card has one padding.
     readonly property real cardPadding: QsmShellStyle.Style.space4

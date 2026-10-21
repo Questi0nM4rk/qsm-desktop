@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import qs.QsmShell.Components as QsmShellComponents
 import qs.QsmShell.Style as QsmShellStyle
@@ -20,6 +21,11 @@ Item {
     property bool open: false
     readonly property bool pointerOver: interaction.hovered
     readonly property bool dotsLit: !open && (interaction.hovered || interaction.pressed)
+    // The grip sits on whole device pixels in both directions: a round dot
+    // that starts between two pixels rasterises soft and its peak loses the
+    // contrast the `text` role gives it.
+    readonly property real pixelRatio: root.Window.window?.devicePixelRatio ?? 1
+    readonly property real dotSize: QsmShellStyle.Style.stroke(Theme.dotGlyphSize, root)
     signal activated
     readonly property var actions: [({ name: "open-panel", invoke: () => root.activate() })]
 
@@ -56,17 +62,15 @@ Item {
 
     Row {
         id: grip
-        anchors.centerIn: parent
-        spacing: Theme.dotSpacing
+        x: Math.round((root.width - width) * root.pixelRatio / 2) / root.pixelRatio
+        y: Math.floor((root.height - height) * root.pixelRatio / 2) / root.pixelRatio
+        spacing: QsmShellStyle.Style.stroke(Theme.dotSpacing, root)
 
         Repeater {
             model: 4
 
             Rectangle {
-                // Four whole device pixels each, pitch two steps: a smaller dot
-                // rasterises soft and its peak falls under 3:1, which the text
-                // role keeps clear of.
-                width: Theme.dotGlyphSize + 2 * interaction.growth
+                width: root.dotSize + 2 * interaction.growth
                 height: width
                 radius: QsmShellStyle.Style.radiusPill
                 // Hover is the grip about to act: the dots take the accent.
@@ -82,8 +86,8 @@ Item {
     QsmShellComponents.StateLayer {
         id: interaction
         anchors.fill: parent
-        // The dots grow under the pointer, a whole device pixel at least, though
-        // they are 2.5px across; the bulge is the shader's.
+        // The dots grow under the pointer, a whole device pixel at least; the
+        // bulge is the shader's.
         extent: Theme.dotGlyphSize
         hoverScale: root.open ? 1 : QsmShellStyle.Motion.hoverScale
         interactive: root.visible && root.enabled

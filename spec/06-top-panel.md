@@ -23,8 +23,9 @@ not the library's default.
 
 - **RATIFIED (2026-10-17, owner; replaces the clock bump of 2026-10-16)**: the panel handle
   is a tiny DOTS bulge: an 8 px tall bulge out of the top band, bottom corners 4 px, `band`
-  fill, four 4 px `text` dots at a pitch of 8 as the drawer's grip (whole device pixels at
-  1.25), padding 0 4. The clock stays in the rail (03). It sits on the panel's LEADING (bottom)
+  fill, four `text` dots as the drawer's grip, each three device pixels (2.4 px at 1.25) and
+  four device pixels apart (3.2 px), padding 0 4, so the row and the bump stand on whole device
+  pixels. The clock stays in the rail (03). It sits on the panel's LEADING (bottom)
   EDGE: as the panel rolls out it travels WITH that edge — always at the surface's outermost rim, like
   a tab on a drawer front — and rides it back on retract; never parked at the band while the
   surface moves beneath it. Hover over the bump opens
@@ -33,7 +34,7 @@ not the library's default.
   hover zone is never the 8 px paint: it is the bump as painted at rest grown by
   `Style.hoverReach` (20) on every side and clipped to the screen (owner 2026-10-18: "ty ctyri
   tecky nahore, tam musim byt upe super presny ... musime to roztahnout, abych nemusel mit
-  pixel perfect aim"), so the 36 x 8 px bump is a 76 px wide target reaching from the screen
+  pixel perfect aim"), so the 27.2 x 8 px bump is a 67.2 px wide target reaching from the screen
   edge down to 36 px. The zone stays parked at the rest position while the handle rides the
   panel rim and sits in the input mask, so the pointer is seen there. The handle has no popout
   of its own.
@@ -49,9 +50,10 @@ not the library's default.
   keys first; the tab step takes only keys no content claimed.
 - **DEFAULT (2026-08-16)**: closes on: Escape, click outside, shortcut re-press, or cursor
   leaving the union of the handle zone and the panel for 180ms (`Motion.hoverGrace`, owner
-  2026-10-18; was 400ms). The panel and handle are horizontally centered in the live
-  frame viewport between the left band edge and the right frame edge; the center follows
-  the live edge during pin, unpin, and peek. Tab bar at the panel's top, order: Dashboard,
+  2026-10-18; was 400ms). The panel and handle are horizontally centered between the nearest
+  structure on each side: the rail band while it is shown (the monitor's edge when it is not) and
+  the monitor's right edge, never the frame that runs along it; the center follows the live
+  edge during pin, unpin, and peek. Tab bar at the panel's top, order: Dashboard,
   Media, Performance, Workspaces — label only (a control is a glyph or a label, never both). Notifications left the panel for the
   top-right bell (04, owner 2026-10-17).
 - **RATIFIED (2026-10-16, owner)**: the current tab is `accent` text on an `accent` 12 percent
@@ -118,17 +120,20 @@ center is not a tab (owner 2026-10-17): it is the bell's menu in the top-right c
 
 ## Numbers (RATIFIED 2026-08-16)
 
-- Panel preferred outer footprint **860x560 logical px**, clamped to the scene's
-  available viewport. The width is the one whose left edge lands on the 4 px grid when the panel
-  is centred between the rail band and the right frame, and whose content (the width less the
-  padding) splits into four tab segments and three card columns that are multiples of 4.
+- Panel preferred outer footprint **864x556 logical px**, clamped to the scene's
+  available viewport. The width is a multiple of 8, so both edges land on whole device pixels
+  when the panel is centred between the rail band and the monitor's right edge, and its content
+  (the width less the padding, 832) splits into three equal card columns of 272; the tab bar's
+  four segments are whole device pixels wide (the library's `Segmented`), and the height leaves
+  two card rows of 228.
   All four tabs share that footprint, a stable navigation strip and one content box: the tab
   bar's left and right edge, one `space3` below it. A tab never centres itself in that box;
-  Dashboard and Performance fill it, Media and Workspaces hang from its top edge. Cards are
-  `space3` apart and share one padding, `rolloutPadding`. Tab choice, empty/missing data and content length never resize the outer
+  Dashboard and Performance fill it with cards, Media and Workspaces are one card that fills it
+  with their content in its middle. Cards are `Theme.panelGap` (8) apart and share one
+  padding, `rolloutPadding`. Tab choice, empty/missing data and content length never resize the outer
   body. Dashboard and Performance fit the body without scrolling (owner, 2026-10-18:
   "rozsir ho tak, aby dashboard a performance nemuseli scrollovat"); only a screen too short for the clamp scrolls. Model-backed tabs keep their own scrolling route. The tab bar baseline is **48px**.
-- Dots handle: 8 px tall, width = four 4 px dots + three 4 px gaps + padding 0 4 (36 px),
+- Dots handle: 8 px tall, width = four 2.4 px dots + three 3.2 px gaps + padding 0 4 (27.2 px),
   bottom corners 4 px.
   Fullscreen/focus suppression withdraws both paint and input. Detailed sampling remains tied to the dashboard/performance tab.
 

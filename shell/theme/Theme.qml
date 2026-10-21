@@ -168,16 +168,16 @@ QtObject {
 
     // ── Top panel ──────────────────────────────────────────────────────
     // One outer footprint; tab content owns overflow, never the shell body. The
-    // width is the one whose left edge lands on the 4 px grid when the panel
-    // is centred between the rail band and the right frame (a multiple of 8 plus
-    // 4, since the viewport's centre is a half step), and whose content, less its
-    // padding, splits into a tab bar of four 4-multiple segments and three
-    // 4-multiple columns.
-    readonly property int panelWidth: 860
-    readonly property int panelHeight: 560
+    // width is a multiple of 8, so the body is centred between the rail band and
+    // the monitor's right edge with both edges on whole device pixels at 1.25;
+    // the height leaves two card rows of one height a multiple of 4.
+    readonly property int panelWidth: 864
+    readonly property int panelHeight: 556
     readonly property int panelNavigationWidth: 620
     readonly property string panelTabBarSize: "lg"
     readonly property real panelTabBarHeight: QsmShellStyle.Style.size("Segmented", panelTabBarSize)
+    // Cards of a tab sit this far apart, in both directions.
+    readonly property int panelGap: QsmShellStyle.Style.space2
     // The box every tab fills: the same left and right edge as the tab bar and
     // one step under it, so choosing a tab never moves where content starts.
     readonly property int panelContentWidth: panelWidth - QsmShellStyle.Style.rolloutPadding * 2
@@ -266,8 +266,10 @@ QtObject {
     // The OSD nub sinks into the right band the same way: its centre sits two
     // pixels inside it.
     readonly property real osdHandleProud: handleRadius + 2
-    readonly property real dotSpacing: QsmShellStyle.Style.space1
-    readonly property real dotGlyphSize: QsmShellStyle.Style.space1
+    // A dot is three device pixels at 1.25 and the gap four: a grip that stays
+    // quiet. The handle snaps both to whole device pixels on any scale.
+    readonly property real dotGlyphSize: 2.4
+    readonly property real dotSpacing: 3.2
     readonly property int panelHandleHeight: 8
 
     // ── Popouts and OSD ────────────────────────────────────────────────

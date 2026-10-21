@@ -340,11 +340,17 @@ PanelWindow {
     // band OVER the windows below — the exclusion zone (FrameExclusions)
     // tracks only the pin state, never the peek.
     property int leftEdge: railRevealed ? Theme.reservedLeft : QsmShellStyle.Style.frameThickness
-    // The left band is wider than the others, so the physical midpoint is the
-    // wrong viewport center.
-    readonly property real panelCenterX: (leftEdge + width - QsmShellStyle.Style.frameThickness) / 2
+    // The panel centres between the nearest structure on each side: the rail
+    // band while it is shown, otherwise the monitor's edge, and on the right
+    // always the monitor's edge. The frame that runs along a screen edge is not
+    // a structure to measure from.
+    property real panelViewportLeft: railRevealed ? Theme.reservedLeft : 0
+    readonly property real panelCenterX: (panelViewportLeft + width) / 2
 
     Behavior on leftEdge {
+        NumberAnimation { duration: QsmShellStyle.Motion.medium; easing.type: QsmShellStyle.Motion.emphasizedEasing }
+    }
+    Behavior on panelViewportLeft {
         NumberAnimation { duration: QsmShellStyle.Motion.medium; easing.type: QsmShellStyle.Motion.emphasizedEasing }
     }
 
