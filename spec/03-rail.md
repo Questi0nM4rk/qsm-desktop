@@ -325,13 +325,27 @@ Physical key delivery, live layout and screen-reader output await owner review.
   a delayed fade/unload callback. Content switches use the existing size morph,
   not a second host-owned open/close effect.
 
-- Popouts are rollouts (02-rollouts law): flush with the band, one silhouette, corner
-  auto-join near top/bottom edges.
+- Popouts are rollouts (02-rollouts law): flush with the band, one silhouette.
+- **RATIFIED (2026-10-21, owner)** placement: a rail popout is CENTRED on its trigger along the
+  rail axis. Its centre equals the trigger glyph's centre, in monitor coordinates, on the first
+  reveal and after every entry-to-entry morph; it never hangs from the glyph's top edge. The
+  owner, on a battery card whose top sat on the glyph's top: "VYPADA TO STRASNE jak to visi z
+  tech glyphs", and the rule: "rollout co se nevejde centered na obrazovku, tak se posune
+  automaticky tak, aby se vlezl, o to minimum a spoji se s tim okrajem pod kterym by byl."
+  A popout that does not fit centred moves by exactly the overflow and no further, so its edge
+  lands on the top or bottom frame band's inner face, and there it JOINS that band into one
+  silhouette, the way it already joins the left band. Size, content and insets are untouched.
+  A nested card centres on its own cell the same way, held inside its parent's span. The
+  join's corner is the shell border's own weld, not a rule of its own. A popout that FITS
+  centred but stops within `Theme.edgeSnapReach` of a band is still closed to that band by the
+  shell border's edge snap (owner 2026-08-18, reach 2026-08-19): the content stays centred and
+  only the painted silhouette reaches the band. OPEN (owner): whether that snap should keep
+  applying to a popout that did not cross the band.
 - **RATIFIED (2026-08-16)**: popouts open INSTANTLY on entry hover; while open, sliding to
-  another entry MORPHS the popout in place (glides to the new entry's height, content swaps —
-  one continuous shape). Reveal position rule: the popout appears AT the hovered entry's
-  height — the morph animation runs only between two already-open positions, never on first
-  reveal.
+  another entry MORPHS the popout in place (glides to the new entry, content swaps — one
+  continuous shape). Reveal position rule: the popout appears AT the hovered entry, centred on
+  it (see placement above) — the morph animation runs only between two already-open positions,
+  never on first reveal.
 - **RATIFIED (2026-09-07, owner — SUPERSEDES the ~180ms closing grace):** ~~a rollout is
   never held open by TIME. It is held open by WHERE THE POINTER IS, and it closes the moment
   the pointer is somewhere else.~~ **SUPERSEDED the same day, below.**
