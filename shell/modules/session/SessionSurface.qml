@@ -169,6 +169,7 @@ Item {
                         buttonWidth: Theme.sessionButtonWidth
                         buttonHeight: Theme.sessionButtonHeight
                         selected: root.selectedIndex === index
+                        focused: selected && sessionFocus.activeFocus
                         armed: arm.armed
                         onSelectedChanged: if (!selected) arm.disarm()
                         onEntered: root.select(index)

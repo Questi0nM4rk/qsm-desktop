@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 import QtQuick
+import qs.QsmShell.Components as QsmShellComponents
 import qs.theme
 
 // >theme carousel (07 RATIFIED N-theme picker, caelestia WallpaperList idea
@@ -18,6 +19,14 @@ Item {
     // UX-3 one-cursor: a hovered card asks the host to select it; the host
     // owns the index (it also drives it from the search field's arrows).
     signal hoverSelect(int index)
+
+    QsmShellComponents.EmptyState {
+        anchors.centerIn: parent
+        visible: root.items.length === 0
+        icon: "search"
+        title: "No matching themes"
+        detail: "Try another name"
+    }
 
     ListView {
         id: view

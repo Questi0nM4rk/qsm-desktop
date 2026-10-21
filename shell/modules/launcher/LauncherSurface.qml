@@ -1253,7 +1253,7 @@ ps -eo pid,pcpu,comm --no-headers --sort=-pcpu | head -25 | awk '{printf "P|%s|%
                 to: 1
                 value: level.value()
                 wheelUnits: QsmShellStyle.Style.sliderKeyboardUnits
-                Accessible.name: level.name
+                accessibleName: level.name
                 onMoved: {
                     root.interacted("moved", { identity: root.resultIdentity(resultRow.modelData), value: value });
                     level.set(value);
@@ -1346,7 +1346,9 @@ ps -eo pid,pcpu,comm --no-headers --sort=-pcpu | head -25 | awk '{printf "P|%s|%
             QsmShellComponents.EmptyState {
                 anchors.centerIn: parent
                 visible: root.results.length === 0
+                icon: "search"
                 title: root.mode === "apps" ? "No matching applications" : "No matches"
+                detail: root.mode === "apps" ? "Try another name, or type > for commands" : "Try a different search"
             }
 
             // The results list is capped at a visible row count (07), so it
