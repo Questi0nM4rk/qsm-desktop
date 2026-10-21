@@ -747,7 +747,7 @@ PanelWindow {
         y: panelSurface.leadingEdgeY - height / 2 + Theme.panelHandleProud
         open: ShellState.modal === "panel"
         // Hover already opened it; a click only opens, never toggles it shut.
-        onActivated: if (ShellState.modal !== "panel") ShellState.togglePanel("dashboard")
+        onActivated: if (ShellState.modal !== "panel") ShellState.togglePanelByPointer("dashboard")
         readonly property rect hitRect: visible ? Qt.rect(x, y, width, height) : Qt.rect(0, 0, 0, 0)
         onHitRectChanged: {
             if (visible) border.registerRolloutRegion("panel-handle", hitRect);
@@ -770,7 +770,7 @@ PanelWindow {
     readonly property bool panelGripHovered: panelHandle.visible && panelHandle.pointerOver
     onPanelHandleHoveredChanged: {
         if (panelHandleHovered && root.handlesArmed)
-            ShellState.togglePanel("dashboard");
+            ShellState.togglePanelByPointer("dashboard");
     }
 
     // The keyboard modals ride ModalHost (click-catch + Rollout + open()

@@ -111,7 +111,7 @@ QtObject {
 
     function changeModal(name: string, byPointer: bool): bool {
         if (panelTabs.includes(name))
-            return togglePanel(name);
+            return changePanel(name, byPointer);
         if (!modalNames.includes(name))
             return false;
 
@@ -155,16 +155,29 @@ QtObject {
     // Opening lands on the LAST USED tab (06) unless a tab is named;
     // re-toggling the same tab (or the bare panel) closes.
     function togglePanel(tab: string): bool {
+        return changePanel(tab, false);
+    }
+
+    // The panel handle under the pointer: the one way in that keeps the motion.
+    function togglePanelByPointer(tab: string): bool {
+        return changePanel(tab, true);
+    }
+
+    function changePanel(tab: string, byPointer: bool): bool {
         // A persisted tab that is not a panel tab lands on Dashboard.
         const target = panelTabs.includes(tab) ? tab
             : panelTabs.includes(panelTab) ? panelTab : "dashboard";
         if (modal === "panel" && panelTab === target) {
+            // The request that closes it decides how it leaves.
+            modalByPointer = byPointer;
             closeModal();
             return true;
         }
         if (modalBlocked)
             return false;
 
+        // Before `modal` moves, so the surface that reveals reads the way in.
+        modalByPointer = byPointer;
         panelTab = target;
         modal = "panel";
         return true;
@@ -172,6 +185,12 @@ QtObject {
 
     function closeModal(): void {
         modal = "none";
+    }
+
+    // Escape on a surface that a pointer opened: a key closes it in one frame too.
+    function closeModalByKey(): void {
+        modalByPointer = false;
+        closeModal();
     }
 
     // Per-monitor rail collapse. Keyed by output name; reassigned (never

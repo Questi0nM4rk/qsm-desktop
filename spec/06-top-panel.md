@@ -41,7 +41,8 @@ not the library's default.
   synced with an external calendar app (khal with vdirsyncer, task `qsd-zss`); the rail
   clock keeps the read-only quick view (03). Not built yet.
 - **RATIFIED (2026-08-16)**: also opens via keyboard (09: Super+D last-used, Super+N
-  notification center, Super+W workspaces).
+  notification center, Super+W workspaces). A key, the IPC or a launcher command opens it at full
+  depth in one frame and a key closes it the same way; the dots handle keeps the rollout's motion (10).
 - **RATIFIED (2026-08-25, owner)**: with the panel open, **Left/Right move the tab
   selection** — the same horizontal vocabulary as the >theme carousel. Clamped at the
   ends, never wrapping. A focused text field (notification search) keeps its own cursor

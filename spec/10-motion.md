@@ -19,8 +19,8 @@ not establish correctness of their service or input routes.
   content scale/fade, travelling panel or source-border sink is part of the target.
 - Retract takes 80 percent of the reveal duration (`Motion.exit`): 200ms small, 400ms large.
 - A surface reached by a key, the IPC or a service event (the launcher, the clipboard, the cheat
-  sheet, the session column, a level shown by the OSD) is at full depth in one frame; the
-  pointer's routes (the power cell, the bell, the OSD handle) keep the motion. A key-opened
+  sheet, the session column, the top panel, a level shown by the OSD) is at full depth in one frame;
+  the pointer's routes (the power cell, the bell, the panel's dots, the OSD handle) keep the motion. A key-opened
   modal also leaves in one frame, and the OSD, shown at once, leaves at the exit pace when its
   timer ends. `ShellState.modalByPointer` says how the open modal was reached.
 - OSD and rail popouts use the small tier. Outgoing content and dimensions survive

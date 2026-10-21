@@ -77,6 +77,10 @@ Item {
         rolloutId: "panel"
         edges: ["top"]
         tier: "large"
+        // A key, the IPC and a launcher command show the panel in one frame; the
+        // pointer on its handle makes it roll out.
+        instantReveal: !ShellState.modalByPointer
+        instantRetract: !ShellState.modalByPointer
         registerHitRect: false // the host's full-scene catch region is the hit area
         shouldBeActive: root.active
         suppressed: root.fullscreen || root.scene.focusMode
@@ -90,7 +94,7 @@ Item {
         FocusScope {
             id: panelFocus
             anchors.fill: parent
-            Keys.onEscapePressed: ShellState.closeModal()
+            Keys.onEscapePressed: ShellState.closeModalByKey()
             Keys.onLeftPressed: {
                 ShellState.claimKeyboardSelection();
                 root.stepTab(-1);
