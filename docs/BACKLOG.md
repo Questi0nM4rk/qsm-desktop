@@ -1240,10 +1240,17 @@ theme JSON field.
 - `shell/theme/Motion.qml` types press, micro, fast, normal, reveal and glide durations and
   two easings the library's `Motion` already owns. Moving them changes reduced-motion
   timings, which the owner has not ruled on.
-- Dimming by `opacity` on a composite: the rail while the session surface is open
-  (`opacitySessionDim`), `PopoutRow`, `ColorPickContent`, inactive rail apps and the bell.
-  The library's way is `Style.disabled` / `Style.recede` by colour, but an app icon or a
-  scene-wide fade cannot be blended toward the band.
+- Dimming by `opacity`: the rail while the session surface is open (`opacitySessionDim`),
+  inactive rail apps, the off-centre theme cards and the bell. The library's way is
+  `Style.disabled` / `Style.recede` by colour, but an app icon, a photo or a scene-wide fade
+  cannot be blended toward the band.
+- `Theme.dotSpacing` and `dotGlyphSize` (the panel handle's dots) sit off the 4 px rhythm: a
+  2 px dot rasterised soft and fell under 3:1. The owner eyeballs the on-rhythm pair first.
+- A rail popout is centred on its trigger, so an odd-height body lands on a half logical pixel
+  (measured: sound popout y 273.5, height 317), which is 0.625 device px at 1.25. Snapping it
+  is a placement change in the library's `Rollout`; whether it blurs the text is unjudged.
+- Many comments carry owner dates and "ratified" history. They predate the rule that code holds
+  no history and need a pass of their own.
 - `Theme.artworkRingStroke`: the library's own avatar ring is a share of the picture and
   reads heavy around a large cover.
 - Receded muted text measures 4.48:1 on this desktop's band (the library's `opacityRecede`

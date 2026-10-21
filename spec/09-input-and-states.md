@@ -189,8 +189,9 @@ Every interactive element speaks these states and no others; they sit under the 
   fill.
 - **Focus** (keyboard): a 2 px `focus` ring outside the control, 2 px offset, visible on every
   focusable element, always, because the keyboard owns selection.
-- **Disabled**: the whole control at opacity 0.35. Non-current rows of a pick list recede to
-  0.45.
+- **Disabled**: every colour of the control blended toward the band at `opacityDisabled`
+  (0.35), never opacity on the composite. Non-current rows of a pick list recede by the same
+  blend at `opacityRecede` (0.70), the lowest strength that keeps muted text above 4.5:1.
 - **Status glyphs change shape** for state, not only colour (wifi, cable, wifi-off; bluetooth
   mark, the connected device's glyph; volume, volume-muted). Colour alone never carries
   meaning: a number or a glyph is the word, colour repeats it.

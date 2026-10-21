@@ -105,10 +105,9 @@ center is no longer a tab (owner 2026-10-17): it is the bell's menu in the top-r
   compositor cannot capture unfocused workspaces) — each tile draws its windows as
   positioned rounded rects with the app icon; dragging a window-rect between tiles dispatches
   the compositor move. FLAGGED to the owner (changes the word "live").
-- **RATIFIED (2026-08-21, owner)**: the window rects inside workspace tiles KEEP their 1px
-  outline — the tiles are a diagram, not a surface, so 11-theme's flat-fill law does not
-  reach them. Same ruling: workspaces lay out NEXT TO each other (one row, horizontal
-  scroll when more workspaces than fit), never stacked below each other.
+- **RATIFIED (2026-08-21, owner)**: workspaces lay out NEXT TO each other (one row, horizontal
+  scroll when more workspaces than fit), never stacked below each other. The window rects inside
+  a tile carry no outline: they sit one ladder step above the tile, like every other body.
 
 - **RATIFIED (2026-08-16)**: opening the panel by keyboard lands on the LAST USED tab; the
   dots handle (hover or click) opens Dashboard.

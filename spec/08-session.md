@@ -11,8 +11,8 @@ Reference: `references/session-panel-right.png`.
   and blur; only the rolled-out buttons stay in focus. Closing restores instantly.
 - **RATIFIED (2026-08-16)**: destructive actions (shutdown/reboot/logout) CONFIRM: first
   click arms the button (visual shift), second click fires.
-- **RATIFIED (2026-08-16)**: backdrop = **35%** dim overlay, genuinely blurred by the
-  compositor (Hyprland layerrule blur on the overlay surface); buttons stay sharp above it.
+- **RATIFIED (2026-08-16)**: backdrop = the library's scrim (`scrimOpacity`) over a background
+  genuinely blurred by the compositor (Hyprland layerrule blur on the overlay surface); buttons stay sharp above it.
 - **RATIFIED (2026-08-16)**: buttons **96px** wide; Escape and click-outside both close.
 - **RATIFIED (2026-08-24, owner)**: the column is KEYBOARD-DRIVEN as well as pointer-driven.
   Up/Down move the selection, Enter or Space activates it, Escape closes. Activation runs the
