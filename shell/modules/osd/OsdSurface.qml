@@ -45,7 +45,7 @@ Item {
     readonly property var rolloutPresentation: rollout
     readonly property bool fullscreenPresentation: root.fullscreen
 
-    // Capsule keepOpen includes focus, which would latch expiry after a click.
+    // Pointer intent only: keyboard focus never holds the OSD (spec 05-osd.md).
     readonly property bool pointerIntent: root.fullscreen
         ? capsule.pointerHovered
         : rollout.wantsOpen
@@ -218,6 +218,7 @@ Item {
         orientation: Qt.Vertical
         preferredLength: osdContent.implicitHeight + Theme.space4 * 2
         padding: 0
+        elevated: false
         anchors.right: parent.right
         anchors.rightMargin: Theme.space4
         anchors.verticalCenter: parent.verticalCenter

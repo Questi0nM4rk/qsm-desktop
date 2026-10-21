@@ -32,9 +32,14 @@ QsmShellComponents.Slider {
 
     // 05-osd, Sliders: the value stays on the thumb for a while after the last change.
     readonly property int valueHoldMs: Theme.osdValueHoldMs
-    // Pressed, or changed (drag, wheel, keys, service) within valueHoldMs.
-    // Not named `live`: Slider already owns a FINAL `live` property.
-    readonly property bool showingValue: root.pressed || holdTimer.running
+    // Shared by the channels of one OSD: `current` is the channel changed last,
+    // the only one whose hold may show a reading.
+    property var liveGroup: null
+
+    // Pressed, or the newest channel changed (drag, wheel, keys, service) within
+    // valueHoldMs. Not named `live`: Slider already owns a FINAL `live` property.
+    readonly property bool showingValue: root.pressed
+        || (holdTimer.running && (!root.liveGroup || root.liveGroup.current === root))
 
     // The one mute route: the thumb's double-click, Space on the focused
     // thumb, and the workbench story all end here.
@@ -61,8 +66,9 @@ QsmShellComponents.Slider {
 
     // Glyph at rest (the muted variant comes from `icon`), reading while live.
     // No percent sign: the glyph says which channel this is.
-    thumbIcon: root.showingValue ? "" : root.icon
-    thumbText: root.showingValue ? (root.muted ? "—" : `${Math.round(root.value * 100)}`) : ""
+    // A muted channel keeps its muted glyph (the icon-swap law), never a reading.
+    thumbIcon: root.showingValue && !root.muted ? "" : root.icon
+    thumbText: root.showingValue && !root.muted ? `${Math.round(root.value * 100)}` : ""
     // Lit only while this channel is being changed; every other thumb's
     // content, and a muted channel's, stays `textMuted`.
     thumbContentColor: root.showingValue && !root.muted ? Theme.text : Theme.textMuted
@@ -71,9 +77,17 @@ QsmShellComponents.Slider {
         id: holdTimer
         interval: root.valueHoldMs
     }
-    onValueChanged: holdTimer.restart()
-    onMutedChanged: holdTimer.restart()
-    onPressedChanged: holdTimer.restart()
+    function _touch(): void {
+        if (root.liveGroup)
+            root.liveGroup.current = root;
+        holdTimer.restart();
+    }
+    onValueChanged: root._touch()
+    onMutedChanged: root._touch()
+    onPressedChanged: root._touch()
+
+    // Screen-reader activation reaches the same mute route as the double-click.
+    Accessible.onPressAction: root.toggleMute()
 
     // Double-click on the THUMB only (the Slider reports it from its one
     // pointer path). `grabThumb` makes the first press a plain grab, so it

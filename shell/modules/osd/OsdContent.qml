@@ -17,6 +17,12 @@ FocusScope {
     readonly property OsdChannel microphoneTarget: microphoneChannel
     readonly property OsdChannel brightnessTarget: brightnessChannel
 
+    // One channel at a time holds a reading (05-osd, Sliders).
+    QtObject {
+        id: liveValue
+        property QtObject current: null
+    }
+
     implicitWidth: channels.implicitWidth
     implicitHeight: channels.implicitHeight
 
@@ -31,6 +37,8 @@ FocusScope {
         OsdChannel {
             id: outputChannel
             objectName: "output"
+            accessibleName: "Output volume"
+            liveGroup: liveValue
             Layout.alignment: Qt.AlignHCenter
             Layout.preferredHeight: Theme.osdTrackHeight
                 + outputChannel.topPadding + outputChannel.bottomPadding
@@ -52,6 +60,8 @@ FocusScope {
         OsdChannel {
             id: microphoneChannel
             objectName: "microphone"
+            accessibleName: "Microphone"
+            liveGroup: liveValue
             Layout.alignment: Qt.AlignHCenter
             Layout.preferredHeight: Theme.osdTrackHeight
                 + microphoneChannel.topPadding + microphoneChannel.bottomPadding
@@ -73,6 +83,8 @@ FocusScope {
         OsdChannel {
             id: brightnessChannel
             objectName: "brightness"
+            accessibleName: "Brightness"
+            liveGroup: liveValue
             Layout.alignment: Qt.AlignHCenter
             Layout.preferredHeight: Theme.osdTrackHeight
                 + brightnessChannel.topPadding + brightnessChannel.bottomPadding
