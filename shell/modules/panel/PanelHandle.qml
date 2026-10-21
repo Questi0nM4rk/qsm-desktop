@@ -19,6 +19,7 @@ Item {
     // the open action it no longer performs.
     property bool open: false
     readonly property bool pointerOver: interaction.hovered
+    readonly property bool dotsLit: !open && (interaction.hovered || interaction.pressed)
     signal activated
     readonly property var actions: [({ name: "open-panel", invoke: () => root.activate() })]
 
@@ -68,7 +69,7 @@ Item {
                 height: width
                 radius: width / 2
                 // Hover is the grip about to act: the dots take the accent.
-                color: !root.open && (interaction.hovered || interaction.pressed) ? Theme.accent : Theme.text
+                color: root.dotsLit ? Theme.accent : Theme.text
 
                 Behavior on color {
                     ColorAnimation { duration: Motion.micro; easing.type: Motion.standardEasing }

@@ -18,6 +18,8 @@ Item {
     // The tab group is the shared control, so the panel's keyboard contract
     // is the library's, not a second hand-rolled one.
     readonly property Item tabsTarget: tabBar
+    // Untyped on purpose: each tab type offers its own optional focusFirst.
+    readonly property var tabContent: contentLoader.item
     property bool loadContent: true
     property Component performanceContent: Component { PerformanceTab {} }
     signal tabSelected(string key)
@@ -140,7 +142,7 @@ Item {
                         Keys.onDownPressed: {
                             // The tab names its first operable control; a tab with none
                             // leaves focus on the bar, where its ring is.
-                            const content = contentLoader.item;
+                            const content = root.tabContent;
                             if (content && content.focusFirst) content.focusFirst();
                         }
                     }

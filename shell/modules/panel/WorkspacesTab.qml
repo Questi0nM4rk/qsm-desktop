@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell.Hyprland
 import Quickshell.Io
@@ -145,7 +146,7 @@ Item {
                         if (!target)
                             return;
                         if (carry && tile.tileClients.length > 0)
-                            root.moveWindow(tile.tileClients[0].address, target.modelData.id);
+                            root.moveWindow(tile.tileClients[0].address, root.workspaces[tile.index + delta].id);
                         else
                             target.forceActiveFocus();
                     }

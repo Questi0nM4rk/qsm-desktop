@@ -158,6 +158,7 @@ Item {
         x: sceneFacts.panelCenterX - width / 2
         y: panel.leadingEdgeY - height / 2 + Theme.panelHandleProud
         visible: !root.focusSuppressed && root.previewEnvironment?.fullscreen !== true
+        open: ShellState.modal === "panel"
         onActivated: {
             ShellState.modal = ShellState.modal === "panel" ? "" : "panel";
             root.record("component", "tab-selected", { tab: ShellState.panelTab, source: "handle" });
@@ -170,6 +171,9 @@ Item {
         readonly property bool focusMode: root.focusSuppressed
         readonly property real panelCenterX: (Theme.reservedLeft + root.width - Theme.frameThickness) / 2
         readonly property real width: root.width
+        // The preview has no trigger zone; the grip is the one handle that exists.
+        readonly property bool panelHandleHovered: false
+        readonly property bool panelGripHovered: handle.visible && handle.pointerOver
     }
 
     Panel.PanelSurface {
