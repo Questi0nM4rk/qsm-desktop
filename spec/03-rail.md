@@ -51,7 +51,10 @@ intent separately from the backend result, with no password in event payloads.
   - Height follows the content: a glyph cell, a tray icon and an app row are
     `Theme.railCellHeight`, Control sm, **32** (hit area 56x32). The clock is as tall as its three
     lines need at their reading sizes (digits textLg bold, date textSm, 8px above and below), so
-    the time reads; it is not squeezed to a cell.
+    the time reads; it is not squeezed to a cell. Its three boxes are 24 high, so it is **88**
+    and its centre is a multiple of 4, which lets the calendar centred on it land on whole device
+    pixels. The digits swap in place when the minute changes: the clock changes a thousand times
+    a day and a roll on each is motion nobody asked for.
   - What is inside a capsule is centred there at its own step: glyphs 16, the logo and an app's
     icon 24, the battery reading at the title step (14, medium), the clock digits and date at the
     sizes above, every box on the 4 rhythm. The workspace slots are not capsules: they are a
@@ -201,9 +204,14 @@ intent separately from the backend result, with no password in event payloads.
   `surface`. Rows are click-to-focus; more rows than fit → the list scrolls (wheel), never
   overflows the band.
 - **RATIFIED (2026-10-18, owner: "v sidebaru u clock mam quick view")**: the rail clock's
-  calendar popout is a READ-ONLY quick view: the MONTH GRID, today marked, wheel/arrows change
-  month, weeks start Monday. Events come later from the same backend as the top panel's
+  calendar popout is a READ-ONLY quick view: the MONTH GRID (32px cells, 4px apart, 248px wide:
+  the rollout's content width), today marked, wheel/arrows change month, weeks start Monday. Events come later from the same backend as the top panel's
   read/write calendar (06, task `qsd-zss`).
+
+- **DEFAULT (2026-10-21)**: a popout body grows in steps of `Theme.popoutBodyStep` (8) and its
+  content sits centred in the padded body on a device pixel. The body is centred on its cell,
+  whose centre is a multiple of 4, so half the body must be one too for both edges to land on
+  whole device pixels at 1.25. The list rows of the network and bluetooth popouts are 40 high.
 
 ## Quick actions (RATIFIED 2026-08-20, owner)
 

@@ -155,7 +155,7 @@ ColumnLayout {
             spacing: 0
 
             QsmShellComponents.Prose {
-                role: "heading"
+                role: "display"
                 technical: true
                 text: `${Math.round((root.device?.percentage ?? 0) * 100)}%`
             }
@@ -184,9 +184,10 @@ ColumnLayout {
         value: root.device?.percentage ?? 0
         // Charging is not a threshold breach and low is not a warning here, so
         // the colour is stated rather than derived: Meter's own `low` would
-        // paint amber where this surface means danger.
+        // paint amber where this surface means danger. A level is a reading,
+        // not what is current, so the accent is not its colour.
         fill: (root.device?.percentage ?? 1) < Theme.lowBatteryFraction && !root.charging
-            ? Theme.danger : root.charging ? Theme.success : Theme.accent
+            ? Theme.danger : root.charging ? Theme.success : Theme.textMuted
     }
 
     // Empty/unavailable state comes before the happy one: with no provider

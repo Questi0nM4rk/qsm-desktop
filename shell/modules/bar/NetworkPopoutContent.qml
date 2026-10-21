@@ -301,6 +301,9 @@ ColumnLayout {
             Item {
                 Layout.fillWidth: true
                 clip: true
+                // Closed it is gone, not only clipped: a hidden field must not
+                // stay in the focus order or the accessibility tree.
+                visible: implicitHeight > 0
                 implicitHeight: networkEntry.prompting ? promptBody.implicitHeight : 0
 
                 Behavior on implicitHeight {
@@ -359,10 +362,6 @@ ColumnLayout {
                             : root.promptState === "joining" ? "Joining…"
                             : root.promptState === "ok" ? "Connected"
                             : ""
-                        // Original size (textXs); supporting's role default is
-                        // body-sized (textSm) — kept here so the status line
-                        // stays subordinate to the field it sits under.
-                        font.pixelSize: QsmShellStyle.Style.textXs
                         color: root.promptState === "failed" ? Theme.danger
                             : root.promptState === "ok" ? Theme.accent
                             : Theme.textMuted
@@ -380,8 +379,6 @@ ColumnLayout {
         Layout.fillWidth: true
         text: "Wi-Fi radio is off — nothing can be seen until it is back on"
         color: Theme.danger
-        // Original size (textXs); body's role default is textSm — recorded.
-        font.pixelSize: QsmShellStyle.Style.textXs
     }
 
     QsmShellComponents.Prose {
@@ -398,8 +395,6 @@ ColumnLayout {
         Layout.fillWidth: true
         text: root.connectError
         color: Theme.warning
-        // Original size (textXs); body's role default is textSm — recorded.
-        font.pixelSize: QsmShellStyle.Style.textXs
     }
 
     QsmShellComponents.Section {

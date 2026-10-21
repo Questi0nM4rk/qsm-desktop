@@ -36,9 +36,9 @@ QsmShellComponents.ListRow {
     signal clicked
     signal actionTriggered
 
-    // The compact row: a device list is a scan target, and a roomier pitch
-    // fills the popout with air.
-    size: "sm"
+    // A device list is a scan target, and a row is a pointer target first: 40
+    // high, the size a list row has by default.
+    size: "md"
     recede: false
     primary: root.label
     selected: root.active
@@ -64,7 +64,6 @@ QsmShellComponents.ListRow {
         // face for technical values: "72%" is one, "connected" is a word, and
         // deciding that per call site is how the two drifted apart.
         role: /\d/.test(root.value) ? "reading" : "metadata"
-        font.pixelSize: QsmShellStyle.Style.textXs
         muted: true
         text: root.value
     }

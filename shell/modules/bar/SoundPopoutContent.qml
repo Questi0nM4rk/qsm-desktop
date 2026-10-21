@@ -51,6 +51,10 @@ ColumnLayout {
             text: "No output devices"
         }
 
+        // The volume as a number, as large as the one reading a rollout
+        // carries, and the slider under it at the card's full width. The
+        // reading's width is that of the widest value, so 9% becoming 10%
+        // never moves anything.
         RowLayout {
             Layout.topMargin: QsmShellStyle.Style.space1
             Layout.fillWidth: true
@@ -62,24 +66,11 @@ ColumnLayout {
                 color: Theme.textMuted
             }
 
-            QsmShellComponents.Slider {
-                id: outputSlider
-                Layout.fillWidth: true
-                value: AudioService.outputValue
-                enabled: AudioService.outputAvailable
-                Accessible.name: "Output volume"
-                // Matches the OSD pill's nudge, so the wheel means the same amount
-                // wherever you turn it at a volume.
-                wheelUnits: Math.round(Theme.osdWheelStep / stepSize)
-                onMoved: AudioService.setOutput(outputSlider.value)
-                onCommitted: root.interacted("output-level", { value: outputSlider.value })
-            }
+            Item { Layout.fillWidth: true }
 
-            // Reserved for the widest reading, right-aligned, so 9% becoming 10%
-            // never moves the slider's track.
             QsmShellComponents.Prose {
                 id: outputReading
-                role: "metadata"
+                role: "display"
                 technical: true
                 Layout.preferredWidth: widest.advanceWidth
                 horizontalAlignment: Text.AlignRight
@@ -91,6 +82,19 @@ ColumnLayout {
                     text: "100%"
                 }
             }
+        }
+
+        QsmShellComponents.Slider {
+            id: outputSlider
+            Layout.fillWidth: true
+            value: AudioService.outputValue
+            enabled: AudioService.outputAvailable
+            Accessible.name: "Output volume"
+            // Matches the OSD pill's nudge, so the wheel means the same amount
+            // wherever you turn it at a volume.
+            wheelUnits: Math.round(Theme.osdWheelStep / stepSize)
+            onMoved: AudioService.setOutput(outputSlider.value)
+            onCommitted: root.interacted("output-level", { value: outputSlider.value })
         }
     }
 

@@ -75,7 +75,8 @@ QsmShellComponents.Rollout {
     // straight line with no step; anything else hugs its content.
     readonly property real nonAnimHeight: currentPopout?.sizing === "match" && root.matchHeight > 0
         ? root.matchHeight
-        : (currentPopout?.implicitHeight ?? 0) + QsmShellStyle.Style.rolloutPadding * 2
+        : Math.ceil(((currentPopout?.implicitHeight ?? 0) + QsmShellStyle.Style.rolloutPadding * 2)
+            / Theme.popoutBodyStep) * Theme.popoutBodyStep
 
     function syncRenderKind(): void {
         if (suppressed) {
@@ -291,8 +292,13 @@ QsmShellComponents.Rollout {
         property string sizing: "content"
         readonly property bool shouldBeActive: root.hasCurrent && root.controller.kind === name
         readonly property bool shouldBeRendered: root.renderKind === name
+        readonly property real dpr: Window.window?.devicePixelRatio ?? 1
 
-        anchors.centerIn: parent
+        // Centred in the padded body, on a whole device pixel: the body is
+        // taller than its content by up to a step, and half of that is
+        // seldom a whole pixel.
+        x: Math.round((parent.width - width) / 2 * dpr) / dpr
+        y: Math.round((parent.height - height) / 2 * dpr) / dpr
 
         active: shouldBeRendered
         enabled: shouldBeActive

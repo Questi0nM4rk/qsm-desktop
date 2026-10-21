@@ -267,6 +267,10 @@ QtObject {
 
     // ── Popouts and OSD ────────────────────────────────────────────────
     readonly property int popoutWidth: 280
+    // A rollout body grows in this step. A body is centred on its rail cell,
+    // whose centre is a multiple of 4, so half the body must be one too for
+    // both of its edges to land on whole device pixels at 1.25.
+    readonly property int popoutBodyStep: QsmShellStyle.Style.space2
     // What a popout's content is given: its width less the rollout's padding.
     readonly property int popoutContentWidth: popoutWidth - QsmShellStyle.Style.rolloutPadding * 2
     // The Bluetooth popout caps its device rows, connected first.
