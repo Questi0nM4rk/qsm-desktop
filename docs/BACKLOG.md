@@ -4,6 +4,7 @@ Open items only, one line each; what is fixed or historical is in git.
 
 ## Decisions waiting on the owner
 
+- Top panel defaults that follow the rebuild spec over a ratified or trial line, each one constant to revert: 860 wide (854 put the panel's left edge on a half device pixel), label-only tabs, a date block with no time, four 4 px handle dots, three Performance rings with the storage as bytes under the memory ring, the distro mark `textMuted`.
 - Rail popout travel triangle is a geometric no-op at level 1 (the band already spans the rail's height): delete it, or narrow the band to the visible column so it bridges a gutter.
 - F5: popup Enter for the default action; spec/04 requires keyboard Enter only for the centre, and a second route may break 09's one-path law.
 - Notification group ordering: two apps tied on "has a live entry" compare equal, so a third group can split a section header; pick the tiebreak.
@@ -19,6 +20,9 @@ Open items only, one line each; what is fixed or historical is in git.
 
 ## Defects and gaps
 
+- The Workspaces strip scrolls by drag and by keyboard focus but not by the wheel: a vertical wheel over its horizontal Flickable does nothing, so workspace 10 is reached by drag or Right.
+- A tab change took about 130 ms in the switch clips, probably the library `Segmented` pill's glide; keyboard tab selection is a 100-a-day action with no motion in `spec/10`, and the key route was not timed (unverified).
+- `PerformanceTab`'s temperature readout sets `textXs` (10 px) directly, under the 12 px floor.
 - The rail's keyboard route is source-reviewed only (Tab order, the card a focused quick-action cell opens, the workspace slots' focus ring, accessible names): Quickshell is not on the AT-SPI bus without `QT_LINUX_ACCESSIBILITY_ALWAYS_ON=1` at launch, so no tree was read and no key was driven.
 - Theme artwork (`dark-rain-world.png`, `light-forest-dark-winter.jpg`) is untracked, so a fresh checkout lacks the images the theme JSONs name (`qsd-i63`).
 - `EdgeScene.handlesArmed` disables every monitor for one global modal; `keyboardGrab` has no surface or screen owner and a prompt's closure can release another instance's grab (`qsd-om3`).

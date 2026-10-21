@@ -28,24 +28,24 @@ Item {
 
     readonly property real tileGap: QsmShellStyle.Style.space3
 
-    // The tab is as tall as the panel's body (PanelSurface's column), always,
-    // so the row of tiles does not jump with the number of workspaces.
-    implicitWidth: Theme.mediaContentWidth
-    implicitHeight: Theme.panelHeight - QsmShellStyle.Style.rolloutPadding * 2 - Theme.panelTabBarHeight - QsmShellStyle.Style.space3
+    // The tab fills the panel's content box, always, so the row of tiles does
+    // not jump with the number of workspaces and starts where every tab does.
+    implicitWidth: Theme.panelContentWidth
+    implicitHeight: Theme.panelContentHeight
 
     // A hovered tile's body grows by whole device pixels (StateLayer), never
-    // more than this a side. The strip clips, so it reserves that much around
-    // the row rather than cutting the grown edge off.
+    // more than this a side. The strip clips, so it reaches this far past the
+    // content box on every side and the tiles' resting edges stay on it.
     readonly property real growthReserve: QsmShellStyle.Style.space1
 
-    // Tiles grow to the body: three share the column width with the reserve at
-    // both ends, or the body's height when the monitor is tall, whichever is
-    // smaller; the rest scroll. The schematic keeps the monitor's aspect.
+    // Tiles grow to the box: three share its width, or its height when the
+    // monitor is tall, whichever is smaller; the rest scroll. The schematic
+    // keeps the monitor's aspect, to a whole step.
     readonly property int tilesAcross: 3
     readonly property real aspect: monitor ? monitor.height / Math.max(1, monitor.width) : 0.5625
     readonly property real tileWidth: Math.min(
-        (width - tileGap * (tilesAcross - 1) - growthReserve * 2) / tilesAcross,
-        (implicitHeight - QsmShellStyle.Style.space2 - growthReserve * 2 - labelBand - areaInset) / aspect + areaInset * 2)
+        (width - tileGap * (tilesAcross - 1)) / tilesAcross,
+        (implicitHeight - growthReserve - labelBand - areaInset) / aspect + areaInset * 2)
 
     // Window rects live in their own area, inset from the tile's rounded
     // corners, below a band that belongs to the workspace number: a number
@@ -53,8 +53,8 @@ Item {
     // corner (the schematic keeps the monitor's aspect, so one often does).
     readonly property real areaInset: QsmShellStyle.Style.space2
     readonly property real areaWidth: tileWidth - areaInset * 2
-    readonly property real areaHeight: areaWidth * aspect
-    readonly property real labelBand: areaInset + labelMetrics.height
+    readonly property real areaHeight: QsmShellStyle.Style.rhythm(areaWidth * aspect)
+    readonly property real labelBand: QsmShellStyle.Style.rhythm(areaInset + labelMetrics.height)
     readonly property real tileHeight: labelBand + areaHeight + areaInset
 
     TextMetrics {
@@ -99,10 +99,11 @@ Item {
     // and never re-centres the others.
     Flickable {
         id: strip
-        anchors.left: parent.left
-        anchors.verticalCenter: parent.verticalCenter
-        width: parent.width
-        height: root.tileHeight + root.growthReserve * 2
+        x: -root.growthReserve
+        y: -root.growthReserve
+        width: parent.width + root.growthReserve * 2
+        // Room below the tiles for the position mark, clear of a focused tile's ring.
+        height: root.tileHeight + root.growthReserve + QsmShellStyle.Style.space3
         contentWidth: row.implicitWidth + root.growthReserve * 2
         clip: true
         boundsBehavior: Flickable.StopAtBounds

@@ -9,11 +9,11 @@ import qs.theme
 // Media tab (06, per references/media-tab.png): circular artwork
 // with a progress ring, title/album/artist, transport + seek, per-player
 // source picker. Fallbacks (DEFAULT): no artwork -> type glyph in the
-// circle; no player -> centered "nothing playing". Three zones
-// (keep-it-simple, caelestia parity): artwork | title, seek, transport
-// and the per-player source row. Cava/lyrics/bongocat are explicitly not
-// ported. The tab is as tall as the panel's body, always, so nothing in it
-// moves when a track, a player or the artwork appears.
+// circle; no player -> centered "nothing playing". Two zones: artwork | the
+// text block, seek, transport and the per-player source row, hung from the
+// artwork's top. Cava/lyrics/bongocat are explicitly not ported. The tab fills
+// the panel's content box, as tall as it, so nothing in it moves when a track,
+// a player or the artwork appears.
 
 Item {
     id: root
@@ -22,17 +22,16 @@ Item {
     readonly property real progress: (MediaService.lengthSupported && MediaService.length > 0)
         ? Math.max(0, Math.min(1, MediaService.position / MediaService.length)) : 0
 
-    // A constant: the tab fills the panel's column and never asks for more,
-    // so a long title or a second player cannot widen it (the row's own
-    // implicit width follows its text, which is why it is not read here).
-    implicitWidth: Theme.mediaContentWidth
-    // The panel body less its own margins, the tab bar and the gap under it
-    // (PanelSurface's column); the viewport scrolls when a screen is shorter.
-    implicitHeight: Theme.panelHeight - QsmShellStyle.Style.rolloutPadding * 2 - Theme.panelTabBarHeight - QsmShellStyle.Style.space3
+    // A constant: the tab fills the panel's content box and never asks for
+    // more, so a long title or a second player cannot widen it (the row's own
+    // implicit width follows its text, which is why it is not read here). The
+    // viewport scrolls when a screen is shorter.
+    implicitWidth: Theme.panelContentWidth
+    implicitHeight: Theme.panelContentHeight
 
-    // The artwork grows to the body, up to a third of the column so the text
+    // The artwork grows to the box, up to a third of the column so the text
     // keeps the rest.
-    readonly property real artBox: Math.min(implicitHeight - QsmShellStyle.Style.rolloutPadding * 2, Theme.mediaContentWidth / 3)
+    readonly property real artBox: Math.min(implicitHeight, Theme.panelContentWidth / 3)
     // How far an arrow key moves the playhead.
     readonly property real seekStepSeconds: 5
 
@@ -54,7 +53,6 @@ Item {
     RowLayout {
         id: mediaRow
         anchors.fill: parent
-        anchors.margins: QsmShellStyle.Style.rolloutPadding
         visible: root.player !== null
         spacing: QsmShellStyle.Style.space5
 
@@ -65,7 +63,7 @@ Item {
             readonly property bool canSeek: MediaService.canSeek && MediaService.lengthSupported && MediaService.length > 0
             Layout.preferredWidth: root.artBox
             Layout.preferredHeight: root.artBox
-            Layout.alignment: Qt.AlignVCenter
+            Layout.alignment: Qt.AlignTop
             activeFocusOnTab: canSeek
             Accessible.role: Accessible.Slider
             Accessible.name: "Seek"
@@ -126,8 +124,8 @@ Item {
             }
         }
 
-        // CENTER: title/artist/album, seek row, transport row of five, source
-        // row. Centred on the artwork; every line keeps its slot (an empty
+        // RIGHT: title/artist/album, seek row, transport row of five, source
+        // row. Hung from the artwork's top; every line keeps its slot (an empty
         // line still has its height) and the source row is always there, so
         // a track with no album or a second player never moves the rows.
         ColumnLayout {
@@ -135,7 +133,7 @@ Item {
             // Zero preferred width: the text's own width never sets the
             // column's, the row's remainder does, so ElideRight fires.
             Layout.preferredWidth: 0
-            Layout.alignment: Qt.AlignVCenter
+            Layout.alignment: Qt.AlignTop
             spacing: QsmShellStyle.Style.space2
 
             QsmShellComponents.Prose {

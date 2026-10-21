@@ -56,10 +56,10 @@ Item {
     readonly property real leadingEdgeY: rollout.y + rollout.height
 
     readonly property var tabs: [
-        { key: "dashboard", label: "Dashboard", icon: "layers" },
-        { key: "media", label: "Media", icon: "music" },
-        { key: "performance", label: "Performance", icon: "gauge" },
-        { key: "workspaces", label: "Workspaces", icon: "workspace" }
+        { key: "dashboard", label: "Dashboard" },
+        { key: "media", label: "Media" },
+        { key: "performance", label: "Performance" },
+        { key: "workspaces", label: "Workspaces" }
     ]
 
     // Tab stepping is the shared control's own action; Left/Right, Tab/Shift+Tab
@@ -156,13 +156,15 @@ Item {
                     id: contentFrame
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    clip: true
+                    // A model-backed tab clips itself and keeps room for a hovered
+                    // tile's growth beyond the frame.
+                    clip: root.staticContent
 
                     Flickable {
                         id: contentView
                         objectName: "panelContentViewport"
                         anchors.fill: parent
-                        clip: true
+                        clip: root.staticContent
                         interactive: root.staticContent
                         boundsBehavior: Flickable.StopAtBounds
                         flickableDirection: Flickable.AutoFlickDirection
@@ -176,7 +178,6 @@ Item {
                             width: contentView.contentWidth
                             height: root.staticContent
                                 ? Math.max(0, item?.implicitHeight ?? 0) : contentView.height
-                            y: root.staticContent ? Math.max(0, Math.round((contentView.height - height) / 2)) : 0
                             // Keep content through the retract, not its demand.
                             active: root.loadContent && (root.active || rollout.visible)
                             sourceComponent: {

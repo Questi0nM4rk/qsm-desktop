@@ -8,13 +8,22 @@ import qs.services
 import qs.theme
 
 // Dashboard tab (06, caelestia-parity card grid): user identity,
-// weather, datetime, month calendar, resource rings, media mini-player —
-// each its own Card card inside the panel's single silhouette.
+// weather, date, month calendar, resource rings, media mini-player —
+// each its own Card card inside the panel's single silhouette. Three columns
+// and two rows fill the panel's content box: the calendar sets the lower row
+// and its column, the upper row takes the rest of the height, and the right
+// column takes the rest of the width.
 GridLayout {
     id: root
     columns: 3
     rowSpacing: QsmShellStyle.Style.space3
     columnSpacing: QsmShellStyle.Style.space3
+
+    // Every card has one padding.
+    readonly property real cardPadding: QsmShellStyle.Style.space4
+    readonly property real lowerRowHeight: calendarContent.implicitHeight + cardPadding * 2
+    readonly property real upperRowHeight: Theme.panelContentHeight - rowSpacing - lowerRowHeight
+    readonly property real calendarColumnWidth: calendarContent.implicitWidth + cardPadding * 2
 
     Component.onCompleted: {
         WeatherService.refresh();
@@ -44,23 +53,21 @@ GridLayout {
         onLoadFailed: root.faceFound = false
     }
 
-    // Every card fills its column; the preferred widths are the floor the
-    // grid starts from, and both gutters are one step, so the right edges of
-    // row 0 and row 1 meet.
+    // The first two columns have a width of their own and the third takes the
+    // rest, so the right edges of both rows meet the tab bar's.
     // 1. User card: avatar + distro badge, WM pill, uptime.
     QsmShellComponents.Card {
         id: userCard
         Layout.row: 0
         Layout.column: 0
-        Layout.fillWidth: true
         Layout.preferredWidth: Theme.dashboardUserCardWidth
-        Layout.preferredHeight: userContent.implicitHeight + QsmShellStyle.Style.space4 * 2
+        Layout.preferredHeight: root.upperRowHeight
         Layout.fillHeight: true
 
         RowLayout {
             id: userContent
             anchors.fill: parent
-            anchors.margins: QsmShellStyle.Style.space4
+            anchors.margins: root.cardPadding
             spacing: QsmShellStyle.Style.space4
 
             Item {
@@ -104,7 +111,7 @@ GridLayout {
                         anchors.centerIn: parent
                         name: "arch"
                         size: QsmShellStyle.Style.iconSm
-                        color: Theme.accent
+                        color: Theme.textMuted
                     }
                 }
             }
@@ -176,9 +183,8 @@ GridLayout {
     QsmShellComponents.Card {
         Layout.row: 0
         Layout.column: 1
-        Layout.fillWidth: true
-        Layout.preferredWidth: Theme.dashboardWeatherCardWidth
-        Layout.preferredHeight: weatherContent.implicitHeight + QsmShellStyle.Style.space4 * 2
+        Layout.preferredWidth: root.calendarColumnWidth
+        Layout.preferredHeight: root.upperRowHeight
         Layout.fillHeight: true
 
         ColumnLayout {
@@ -218,10 +224,10 @@ GridLayout {
         Layout.row: 0
         Layout.column: 2
         Layout.fillWidth: true
-        Layout.preferredWidth: Theme.dashboardMediaCardWidth
+        Layout.preferredWidth: 0
         // One height for playing and idle, so the row does not jump when
         // playback starts or stops; the idle state centres inside it.
-        Layout.preferredHeight: playingContent.implicitHeight + QsmShellStyle.Style.space3 * 2
+        Layout.preferredHeight: root.upperRowHeight
         Layout.fillHeight: true
 
         readonly property var player: MediaService.active
@@ -231,7 +237,7 @@ GridLayout {
         ColumnLayout {
             id: emptyContent
             anchors.fill: parent
-            anchors.margins: QsmShellStyle.Style.space3
+            anchors.margins: root.cardPadding
             spacing: QsmShellStyle.Style.space2
             visible: mediaCard.player === null
 
@@ -251,7 +257,7 @@ GridLayout {
         ColumnLayout {
             id: playingContent
             anchors.fill: parent
-            anchors.margins: QsmShellStyle.Style.space3
+            anchors.margins: root.cardPadding
             spacing: QsmShellStyle.Style.space2
             visible: mediaCard.player !== null
 
@@ -338,60 +344,65 @@ GridLayout {
         }
     }
 
-    // 3. DateTime card: stacked big hours/minutes, 24h, live.
+    // 3. Date card: the day big, the weekday over it and the month under it. The
+    // time is the rail's; the dashboard does not tell it twice.
     QsmShellComponents.Card {
-        id: dateTimeCard
+        id: dateCard
         Layout.row: 1
         Layout.column: 0
-        Layout.fillWidth: true
+        Layout.preferredWidth: Theme.dashboardUserCardWidth
         Layout.fillHeight: true
-        Layout.preferredHeight: dateTimeContent.implicitHeight + QsmShellStyle.Style.space4 * 2
+        Layout.preferredHeight: root.lowerRowHeight
 
         property date now: new Date()
 
         Timer {
-            interval: 1000
+            interval: 60000
             running: true
             repeat: true
-            onTriggered: dateTimeCard.now = new Date()
+            onTriggered: dateCard.now = new Date()
         }
 
         ColumnLayout {
-            id: dateTimeContent
             anchors.centerIn: parent
-            spacing: 0
+            spacing: QsmShellStyle.Style.space1
 
             QsmShellComponents.Prose {
-                role: "hero"
-                technical: true
+                role: "supporting"
                 Layout.alignment: Qt.AlignHCenter
-                text: Qt.formatDateTime(dateTimeCard.now, "HH")
+                text: Qt.formatDate(dateCard.now, "dddd")
             }
 
             QsmShellComponents.Prose {
                 role: "hero"
                 technical: true
                 Layout.alignment: Qt.AlignHCenter
-                text: Qt.formatDateTime(dateTimeCard.now, "mm")
+                text: Qt.formatDate(dateCard.now, "d")
+            }
+
+            QsmShellComponents.Prose {
+                role: "supporting"
+                Layout.alignment: Qt.AlignHCenter
+                text: Qt.formatDate(dateCard.now, "MMMM yyyy")
             }
         }
     }
 
-    // 4. Calendar card: fills whatever width row 1 leaves between the
-    // datetime and resources cards.
+    // 4. Calendar card: the calendar at its own natural size, which sets the
+    // lower row's height and this column's width, so its cells stay whole.
     QsmShellComponents.Card {
         Layout.row: 1
         Layout.column: 1
-        Layout.fillWidth: true
+        Layout.preferredWidth: root.calendarColumnWidth
+        Layout.preferredHeight: root.lowerRowHeight
         Layout.fillHeight: true
-        Layout.preferredHeight: calendarContent.implicitHeight + QsmShellStyle.Style.space4 * 2
 
         QsmShellComponents.MonthCalendar {
             id: calendarContent
-            // The card shares the tab's height with the row above it.
+            // Small: the card shares the tab's height with the row above it.
             size: "sm"
             anchors.fill: parent
-            anchors.margins: QsmShellStyle.Style.space4
+            anchors.margins: root.cardPadding
         }
     }
 
@@ -400,8 +411,9 @@ GridLayout {
         Layout.row: 1
         Layout.column: 2
         Layout.fillWidth: true
+        Layout.preferredWidth: 0
+        Layout.preferredHeight: root.lowerRowHeight
         Layout.fillHeight: true
-        Layout.preferredHeight: resourcesContent.implicitHeight + QsmShellStyle.Style.space4 * 2
 
         ColumnLayout {
             id: resourcesContent

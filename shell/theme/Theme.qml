@@ -167,36 +167,39 @@ QtObject {
     readonly property int launcherThemeCardHeight: 178
 
     // ── Top panel ──────────────────────────────────────────────────────
-    // One outer footprint; tab content owns overflow, never the shell body.
-    readonly property int panelWidth: 854
+    // One outer footprint; tab content owns overflow, never the shell body. The
+    // width is the one whose left edge lands on the 4 px grid when the panel
+    // is centred between the rail band and the right frame (a multiple of 8 plus
+    // 4, since the viewport's centre is a half step), and whose content, less its
+    // padding, splits into a tab bar of four 4-multiple segments and three
+    // 4-multiple columns.
+    readonly property int panelWidth: 860
     readonly property int panelHeight: 560
     readonly property int panelNavigationWidth: 620
     readonly property string panelTabBarSize: "lg"
     readonly property real panelTabBarHeight: QsmShellStyle.Style.size("Segmented", panelTabBarSize)
-    // Dashboard tab.
-    readonly property int dashboardUserCardWidth: 320
-    readonly property int dashboardWeatherCardWidth: 260
-    readonly property int dashboardMediaCardWidth: 200
+    // The box every tab fills: the same left and right edge as the tab bar and
+    // one step under it, so choosing a tab never moves where content starts.
+    readonly property int panelContentWidth: panelWidth - QsmShellStyle.Style.rolloutPadding * 2
+    readonly property int panelContentHeight: panelHeight - QsmShellStyle.Style.rolloutPadding * 2
+        - panelTabBarHeight - QsmShellStyle.Style.space3
+    // Dashboard tab: three columns. The middle one is the month calendar's own
+    // width plus its card padding; the user card is the first and the media card
+    // fills what is left.
+    readonly property int dashboardUserCardWidth: 288
     readonly property int dashboardAvatarSize: 56
     readonly property int dashboardBadgeSize: 18
     readonly property int dashboardRingDiameter: 64
-    readonly property int dashboardMediaArtSize: 72
+    readonly property int dashboardMediaArtSize: 64
     // The progress ring around album art. The library's own is a share of the
     // picture, which is too heavy around a large cover.
     readonly property int artworkRingStroke: 6
-    // The panel's column width: the panel less the column's two margins. The
-    // media tab fills it and never grows past it, so a long title or a player
-    // picker cannot widen the panel.
-    readonly property int mediaContentWidth: panelWidth - QsmShellStyle.Style.rolloutPadding * 2
     // Performance tab.
     readonly property int performanceThermalAlertC: 90 // icon and bar flip to danger above this
     readonly property real performanceThermalScaleC: 100 // bar fraction = temp / this
-    readonly property int performanceNetworkCardWidth: 390
     // The sparkline's floor; the network card lets it grow into whatever
-    // height the row's tallest card sets.
+    // height its row sets.
     readonly property int performanceSparklineHeight: 56
-    readonly property int performanceBatteryTankWidth: 160
-    readonly property int performanceBatteryTankHeight: 220
 
     // ── Frame, rail, notifications ─────────────────────────────────────
     // The left band is wider than the others: the rail lives inside it. Its

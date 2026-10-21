@@ -52,15 +52,17 @@ not the library's default.
   2026-10-18; was 400ms). The panel and handle are horizontally centered in the live
   frame viewport between the left band edge and the right frame edge; the center follows
   the live edge during pin, unpin, and peek. Tab bar at the panel's top, order: Dashboard,
-  Media, Performance, Workspaces — icon + label. Notifications left the panel for the
+  Media, Performance, Workspaces — label only (a control is a glyph or a label, never both). Notifications left the panel for the
   top-right bell (04, owner 2026-10-17).
 - **RATIFIED (2026-10-16, owner)**: the current tab is `accent` text on an `accent` 12 percent
   pill, no underline bar. Panel cards are `surface` with radius 12.
 - **TRIAL (2026-10-17, owner: "try all three")**: dashboard cards carry the library Card's
   edge separation (the silhouette's own treatment, inside the card's edge), each card's
-  glyph takes its pastel (the mark `accent`, weather `info`, the resource rings
-  `success`/`warning`/`danger` by load), and `surface` stands one ladder step off the band (11-theme).
-  The owner judges which of the three stay.
+  glyph takes its pastel (weather `info`, the resource rings
+  `success`/`warning`/`danger` by load; the distro mark is `textMuted` and the network graph is
+  `text` and `textMuted`, because the accent is for what is current, never a passive reading), and
+  `surface` stands one ladder step off the band (11-theme). The owner judges which of the three
+  stay.
 
 ## Tabs
 
@@ -73,7 +75,7 @@ center is not a tab (owner 2026-10-17): it is the bell's menu in the top-right c
   is the composition authority): user card (avatar + WM pill + uptime), weather card, media
   mini-card (cover + half-ring progress + transport), big datetime block, month calendar,
   resources card (three vertical usage rings — CPU/memory/storage), all cards `surface` radius
-  12. `dashboard-tab.png` is a
+  12 and padding `rolloutPadding`. `dashboard-tab.png` is a
   capture of an OLDER caelestia: still valid for proportion/warmth checks, but its volume
   meters and identity-rows user card are superseded by the clone's anatomy.
 - **DEFAULT (2026-08-16, amended 2026-08-17)** dashboard sources: weather = wttr.in fetch,
@@ -90,7 +92,8 @@ center is not a tab (owner 2026-10-17): it is the bell's menu in the top-right c
   centered "nothing playing" empty state; default player = playing > paused > first seen.
 - **RATIFIED (2026-08-16)** Performance: exactly the performance captures — three rings (GPU
   temp+usage, CPU temp+usage, memory+storage); each ring hides individually if its sensor is
-  missing.
+  missing. Three equal columns over two rows of one height: the rings, then the network card over two
+  columns and the battery over the third.
 - **RULED (2026-10-19, owner: "Pridej trochu shadows, separations. At to nevypada vibecoded")**
   Performance cards take the edge separation like the dashboard's; the battery shows its level
   as a thin meter (success, or danger below 15 percent and not charging) beside text on the
@@ -115,9 +118,14 @@ center is not a tab (owner 2026-10-17): it is the bell's menu in the top-right c
 
 ## Numbers (RATIFIED 2026-08-16)
 
-- Panel preferred outer footprint **854x560 logical px**, clamped to the scene's
-  available viewport. All four tabs share that footprint and a stable navigation
-  strip. Tab choice, empty/missing data and content length never resize the outer
+- Panel preferred outer footprint **860x560 logical px**, clamped to the scene's
+  available viewport. The width is the one whose left edge lands on the 4 px grid when the panel
+  is centred between the rail band and the right frame, and whose content (the width less the
+  padding) splits into four tab segments and three card columns that are multiples of 4.
+  All four tabs share that footprint, a stable navigation strip and one content box: the tab
+  bar's left and right edge, one `space3` below it. A tab never centres itself in that box;
+  Dashboard and Performance fill it, Media and Workspaces hang from its top edge. Cards are
+  `space3` apart and share one padding, `rolloutPadding`. Tab choice, empty/missing data and content length never resize the outer
   body. Dashboard and Performance fit the body without scrolling (owner, 2026-10-18:
   "rozsir ho tak, aby dashboard a performance nemuseli scrollovat"); only a screen too short for the clamp scrolls. Model-backed tabs keep their own scrolling route. The tab bar baseline is **48px**.
 - Dots handle: 8 px tall, width = four 4 px dots + three 4 px gaps + padding 0 4 (36 px),
