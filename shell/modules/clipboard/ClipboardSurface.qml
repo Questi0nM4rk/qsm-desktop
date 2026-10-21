@@ -31,12 +31,17 @@ Item {
 
     property string query
 
-    // The one owner of the body height: ten rows, the search field and the
-    // hint footer, with the gaps the column below puts between them. The host
-    // reads it and computes nothing.
+    // The one owner of the body height: the visible rows, the search field and
+    // the gap between them. The host reads it and computes nothing.
     readonly property real preferredBodyHeight: Theme.clipboardMaxRows * Theme.clipboardRowHeight
         + (Theme.clipboardMaxRows - 1) * QsmShellStyle.Style.space1
-        + search.implicitHeight + footer.implicitHeight + QsmShellStyle.Style.space3 * 2 + QsmShellStyle.Style.rolloutPadding * 2
+        + search.implicitHeight + QsmShellStyle.Style.space2 + QsmShellStyle.Style.rolloutPadding * 2
+
+    // Why a read or a copy did not happen, shown where the list is. A failed
+    // read is not an empty history, and a failed copy must not close the
+    // surface as if it had worked.
+    property string readFailed: ""
+    property string copyFailed: ""
 
     // Deterministic thumbnail path: cache dir plus the cliphist id, so nothing
     // has to be parsed back out of the decoder. The only unknown is whether
@@ -82,16 +87,16 @@ Item {
             score: QsmShellComponents.Fuzzy.score(root.query, line, root.matchSpan) }))
         .filter(item => item.score >= 0)
         .sort((left, right) => right.score - left.score || left.index - right.index)
-        .slice(0, Theme.clipboardMaxRows)
+        .slice(0, Theme.clipboardMaxResults)
         .map(item => {
             const image = root.clipImageOf(item.line);
             return {
                 kind: "clip",
-                icon: "layers",
+                icon: "",
                 label: image
-                    ? `${image.ext.toUpperCase()} · ${image.dims}`
+                    ? `${image.ext.toUpperCase()} · ${image.dims} · ${image.size}`
                     : item.line.split("\t").slice(1).join(" "),
-                sub: image ? image.size : "",
+                sub: "",
                 thumb: (image && root.clipThumbGeneration > 0)
                     ? `file://${root.clipCacheDir}/${image.file}` : "",
                 data: item.line
@@ -100,6 +105,7 @@ Item {
 
     function open(): void {
         query = "";
+        copyFailed = "";
         search.clear();
         rows.currentIndex = 0;
         clipProbe.running = true;
@@ -110,18 +116,19 @@ Item {
         ShellState.closeModal();
     }
 
+    // The pipeline fails as a whole: without pipefail a failed decode hands
+    // wl-copy an empty stream and the clipboard is cleared with exit 0.
     function activate(index: int): void {
         const item = results[index];
         if (!item)
             return;
 
-        runner.command = ["bash", "-c", 'printf "%s" "$1" | cliphist decode | wl-copy', "_", item.data];
+        runner.command = ["bash", "-c", 'set -o pipefail; printf "%s" "$1" | cliphist decode | wl-copy', "_", item.data];
         runner.running = true;
-        close();
     }
 
-    function removeCurrent(): void {
-        const item = results[rows.currentIndex];
+    function remove(index: int): void {
+        const item = results[index];
         if (!item)
             return;
 
@@ -164,6 +171,7 @@ exit 0`, "_", ...images.map(image => image.file)];
                 root.decodeClipImages();
             }
         }
+        onExited: exitCode => root.readFailed = exitCode === 0 ? "" : `cliphist exited with code ${exitCode}`
     }
 
     Process {
@@ -176,12 +184,20 @@ exit 0`, "_", ...images.map(image => image.file)];
         onExited: clipProbe.running = true
     }
 
-    Process { id: runner }
+    Process {
+        id: runner
+        onExited: exitCode => {
+            if (exitCode === 0)
+                root.close();
+            else
+                root.copyFailed = `wl-copy exited with code ${exitCode}`;
+        }
+    }
 
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: QsmShellStyle.Style.rolloutPadding
-        spacing: QsmShellStyle.Style.space3
+        spacing: QsmShellStyle.Style.space2
 
         SearchField {
             id: search
@@ -189,11 +205,11 @@ exit 0`, "_", ...images.map(image => image.file)];
             Layout.fillWidth: true
             placeholder: "Clipboard history"
 
-            // Del removes the highlighted entry rather than a character, which
-            // only makes sense while the field owns the keyboard.
+            // Ctrl+Delete removes the highlighted entry; a plain Delete is
+            // still the key that edits the query.
             onKeyPressed: event => {
-                if (event.key === Qt.Key_Delete) {
-                    root.removeCurrent();
+                if (event.key === Qt.Key_Delete && (event.modifiers & Qt.ControlModifier)) {
+                    root.remove(rows.currentIndex);
                     event.accepted = true;
                 } else if (event.key === Qt.Key_Down) {
                     rows.incrementCurrentIndex();
@@ -202,14 +218,17 @@ exit 0`, "_", ...images.map(image => image.file)];
                     rows.decrementCurrentIndex();
                     event.accepted = true;
                 }
-                if (event.accepted)
+                if (event.accepted) {
+                    root.copyFailed = "";
                     ShellState.claimKeyboardSelection();
+                }
             }
 
             onAccepted: root.activate(rows.currentIndex)
             onEscaped: root.close()
             onTextChanged: {
                 root.query = text;
+                root.copyFailed = "";
                 rows.currentIndex = 0;
             }
         }
@@ -229,6 +248,7 @@ exit 0`, "_", ...images.map(image => image.file)];
                 id: rows
 
                 anchors.fill: parent
+                visible: root.copyFailed.length === 0
                 clip: true
                 spacing: QsmShellStyle.Style.space1
                 currentIndex: 0
@@ -236,6 +256,8 @@ exit 0`, "_", ...images.map(image => image.file)];
                 model: root.results
 
                 delegate: ResultRow {
+                    id: clipRow
+
                     required property var modelData
                     required property int index
 
@@ -246,6 +268,17 @@ exit 0`, "_", ...images.map(image => image.file)];
                     onActivated: root.activate(index)
                     // Pointer and keyboard share ONE cursor (09 one-path).
                     onHoveredEntered: rows.currentIndex = index
+
+                    // The pointer's way to remove an entry, on the row that
+                    // Enter would copy and nowhere else.
+                    QsmShellComponents.IconButton {
+                        visible: clipRow.selected
+                        icon: "trash-2"
+                        size: "xs"
+                        color: QsmShellStyle.Style.textMuted
+                        accessibleName: "Remove from history"
+                        onClicked: root.remove(clipRow.index)
+                    }
                 }
             }
 
@@ -255,36 +288,24 @@ exit 0`, "_", ...images.map(image => image.file)];
             // it is visible is when there is nothing to scroll.
             QsmShellComponents.EmptyState {
                 anchors.centerIn: parent
-                visible: rows.count === 0
-                title: root.clipLines.length === 0
-                    ? "Clipboard history is empty"
+                visible: rows.count === 0 || root.copyFailed.length > 0
+                icon: root.copyFailed.length > 0 || root.readFailed.length > 0 ? "alert-triangle" : ""
+                title: root.copyFailed.length > 0 ? "Could not copy the entry (wl-copy)"
+                    : root.readFailed.length > 0 ? "Could not read clipboard history (cliphist)"
+                    : root.clipLines.length === 0 ? "Clipboard history is empty"
                     : "No match"
+                detail: root.copyFailed.length > 0 ? root.copyFailed : root.readFailed
             }
 
+            // The fade says there is more past an edge; a mark beside it said
+            // so a second time.
             QsmShellComponents.ScrollCue {
                 view: rows
                 fadeColor: Theme.band
-            }
-        }
-
-        // What the two keys do (both were invisible, and the cheat
-        // sheet only knows compositor binds, so this surface's own contract was
-        // written down nowhere). A footer rather than per-row hints: it is the
-        // list that has the contract, not each entry.
-        // Always in the layout so the list and its empty state never move; an
-        // empty text hides the hint, a fixed height keeps the room.
-        QsmShellComponents.Prose {
-            id: footer
-            role: "metadata"
-            Layout.fillWidth: true
-            Layout.preferredHeight: hintMetrics.height
-            text: rows.count > 0 ? hintMetrics.text : ""
-            horizontalAlignment: Text.AlignRight
-
-            TextMetrics {
-                id: hintMetrics
-                font: footer.font
-                text: "Enter pastes · Del removes"
+                indicator: false
+                // Shallower than a row: the list is seven rows tall, and the
+                // default depth would take the seventh.
+                fadeDepth: QsmShellStyle.Style.space5
             }
         }
     }

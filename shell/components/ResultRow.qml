@@ -23,6 +23,9 @@ QsmShellComponents.ListRow {
     readonly property string _appIcon: root.item?.appIcon ?? ""
     readonly property url _thumb: root.item?.thumb ?? ""
     readonly property bool _isApp: root._appIcon.length > 0 || root.item?.kind === "app"
+    // An entry that names no glyph (`icon: ""`) has none, and an entry that
+    // does not say gets the sparkle.
+    readonly property string _glyph: root.item?.icon ?? "sparkle"
 
     // Action-picker group labels are model rows so the keyboard can preserve
     // its one cursor. They render as an inert divider, never as an action.
@@ -36,6 +39,9 @@ QsmShellComponents.ListRow {
     leading: Item {
         id: lead
         anchors.fill: parent
+        // Nothing to show: the row takes no leading box and its text starts at
+        // the row's inset, so a list of plain text is not indented by a blank.
+        visible: lead.thumbReady || root._isApp || root._glyph.length > 0
         // The picture box exists only once the picture has loaded; until
         // then the app icon or glyph stays, so no empty box flashes.
         readonly property bool thumbReady: thumbImage.status === Image.Ready
@@ -75,7 +81,7 @@ QsmShellComponents.ListRow {
         QsmShellComponents.SvgIcon {
             anchors.centerIn: parent
             visible: !lead.thumbReady && !root._isApp
-            name: root.item?.icon ?? "sparkle"
+            name: root._glyph
             size: root.glyphSize
             // A kill row must not look like a launch row: the glyph carries
             // the danger colour; the text stays ordinary.

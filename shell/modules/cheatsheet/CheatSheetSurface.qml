@@ -22,8 +22,8 @@ import qs.theme
 //
 // Rows are a REFERENCE, not actions: no selection, no Enter, no hover cursor
 // (a keybind row answers by being read, not by being chosen). Search FILTERS, arrows scroll, and the list keeps hyprctl's own
-// order inside each group, which is the lua file's curated order. The bottom
-// fade and a thin position thumb are the only scroll furniture.
+// order inside each group, which is the lua file's curated order. The edge fades
+// are the only scroll furniture.
 Item {
     id: root
 
@@ -119,8 +119,8 @@ Item {
                     // them (the clipboard is keyboard-only, so its keys would
                     // otherwise be secret).
                     .concat([
-                        { combo: "ENTER", group: "In surfaces", description: "Launcher/clipboard: run or paste the selection" },
-                        { combo: "DEL", group: "In surfaces", description: "Clipboard: remove the selected entry" },
+                        { combo: "ENTER", group: "In surfaces", description: "Launcher: run the selection · Clipboard: copy it" },
+                        { combo: "CTRL + DEL", group: "In surfaces", description: "Clipboard: remove the selected entry" },
                         { combo: "UP / DOWN", group: "In surfaces", description: "Move the selection, or scroll this sheet" },
                         { combo: "ESC", group: "In surfaces", description: "Close the open surface" },
                         { combo: "MMB", group: "In surfaces", description: "Notification popup: close it" }
@@ -136,7 +136,7 @@ Item {
         // that boundary and lands on the band, so the fade reads as running
         // into the ground.
         anchors.bottomMargin: QsmShellStyle.Style.space2
-        spacing: QsmShellStyle.Style.space3
+        spacing: QsmShellStyle.Style.space2
 
         // Field at the TOP: the surface descends from the top band, and the
         // shell-wide rule puts the input nearest the attached edge. Compact,
@@ -180,19 +180,30 @@ Item {
                 boundsBehavior: Flickable.StopAtBounds
                 model: root.results
 
-                // Group separators: the
-                // group's name in the accent between two faded rules, the
+                // A group's heading: its name between two faded rules, the
                 // library's header row. The group name is also part of every
                 // row's search haystack, so typing "windows" keeps the whole
-                // Windows section.
+                // Windows section. A group gap above every heading but the
+                // first, which has nothing above it.
                 section.property: "group"
-                section.delegate: QsmShellComponents.ListRow {
+                section.delegate: Item {
+                    id: heading
+
                     required property string section
+                    readonly property real gapAbove: heading.section === root.results[0]?.group
+                        ? 0 : QsmShellStyle.Style.space4
 
                     width: rows.width
-                    header: true
-                    accentHeader: true
-                    primary: section
+                    height: heading.gapAbove + label.height
+
+                    QsmShellComponents.ListRow {
+                        id: label
+
+                        y: heading.gapAbove
+                        width: parent.width
+                        header: true
+                        primary: heading.section
+                    }
                 }
 
                 delegate: Item {
@@ -253,18 +264,15 @@ Item {
                     : (root.binds.length === 0 ? "No described keybinds" : "No match")
             }
 
-            // Roll-away fade and position mark. Both are the library's now: the two rules this
-            // surface learned the hard way -- read `visibleArea` rather than
-            // contentY, and cap the mark's length so it stays a position and
-            // not a gauge -- are what `ScrollCue` carries.
-            //
-            // The fade goes to the BAND's fill, not the surface's: this list
-            // sits directly on the silhouette, so the last rows have to sink
-            // into the band rather than into a surface colour that is not
-            // there.
+            // The edge fade says there is more past an edge; a mark beside it
+            // said so a second time. It goes to the BAND's fill, not the
+            // surface's: this list sits directly on the silhouette, so the
+            // last rows have to sink into the band rather than into a surface
+            // colour that is not there.
             QsmShellComponents.ScrollCue {
                 view: rows
                 fadeColor: Theme.band
+                indicator: false
             }
         }
     }

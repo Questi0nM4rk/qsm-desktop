@@ -17,9 +17,15 @@ Open items only, one line each; what is fixed or historical is in git.
 - Notification popup Escape: whether it also dismisses all visible notifications.
 - The colour picker's card: centred on its sparkle cell (centre 736) it would run 44 below its column (bottom 808) and close a pocket of desktop between them, and the library places a nested rollout inside its parent's span; the ratified `match` tier keeps it flush with the column (centre 676). Keep it flush and say so in RR-1, or design the L-shaped union.
 - Which band is the design source: the library's `deep-night.json` says `#271e30`, the live theme renders `#2D1540` (written by `derive-theme` from the wallpaper), and the rebuild spec's contrast figures were computed on the first. Decide, then recompute them.
+- `>kill` runs on Enter without a confirm (spec/07 rejects one) and every kill row carries a danger glyph at rest; the rebuild audit wants a second Enter and danger only once armed (D-01, F-14).
+- The launcher's search text is 18 px (`TextField` lg); the rebuild spec gives 18 only to the clock role, so this is a library question about the lg field's text step (F-11).
+- Clipboard removal (the trash on the selected row, Ctrl+Delete) has no confirm and no undo: one entry is one copy; say if it should confirm like forget and clear do.
 
 ## Defects and gaps
 
+- A launcher row's keyboard focus ring is clipped on three sides by the list's clip rect (a detail view with the list focused, one row visible); the ring has to live outside the clip, or the list has to leave room for it.
+- A launcher row's matched letters are not marked (only the ranking changed: a keyword-only match sorts below a visible one); marking them needs a `ListRow` slot and a decision on how a match reads next to the selected accent name.
+- A `ListRow` trailing switch ends 12 px from the row's edge while its leading glyph starts 14 to 16 px from the other (the row inset is one number, the leading box centres its glyph).
 - The colour picker rollout's history is eaten by its edge fades: the list viewport is a few rows tall and the library `ScrollCue` paints a fixed 48 px fade at each end (`modules/bar/ColorPickContent.qml` around line 309), so no swatch is fully visible (owner: "kdy je mala, tak ten fade in, and fade out na ni, proste sezere vsechny items"). Check every desktop scroll area the same way once the library bounds the fade by the viewport (qsm-shell backlog).
 - The rail's keyboard route is source-reviewed only (Tab order, the card a focused quick-action cell opens, the workspace slots' focus ring, accessible names): Quickshell is not on the AT-SPI bus without `QT_LINUX_ACCESSIBILITY_ALWAYS_ON=1` at launch, so no tree was read and no key was driven.
 - Theme artwork (`dark-rain-world.png`, `light-forest-dark-winter.jpg`) is untracked, so a fresh checkout lacks the images the theme JSONs name (`qsd-i63`).

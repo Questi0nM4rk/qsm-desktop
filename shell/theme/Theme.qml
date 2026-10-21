@@ -147,17 +147,18 @@ QtObject {
     readonly property string launcherRowSize: "lg"
     readonly property real launcherRowHeight: QsmShellStyle.Style.size("ListRow", launcherRowSize)
     // The clipboard is its own surface, narrower than the launcher because an
-    // entry is one line of text, and taller in rows because scanning history
-    // is the whole task.
-    readonly property int clipboardWidth: 520
-    readonly property int clipboardMaxRows: 10
-    readonly property string clipboardRowSize: "md"
+    // entry is one line of text: seven rows of the small size, the most any
+    // list shows at once, and the older entries scroll behind an edge fade.
+    readonly property int clipboardWidth: 480
+    readonly property int clipboardMaxRows: 7
+    readonly property int clipboardMaxResults: 30
+    readonly property string clipboardRowSize: "sm"
     readonly property real clipboardRowHeight: QsmShellStyle.Style.size("ListRow", clipboardRowSize)
     // Wider than the clipboard because a row is a key combo plus a sentence.
     // The combo column is fixed so the keys form a scannable spine.
     readonly property int cheatSheetWidth: 640
     readonly property real cheatSheetRowHeight: QsmShellStyle.Style.size("ListRow", "sm")
-    readonly property int cheatSheetComboWidth: 190
+    readonly property int cheatSheetComboWidth: 192
     // The floor for a colour menu that normally takes the height of the column
     // it hangs off; the host hands the real span down.
     readonly property int colorMenuMinHeight: 240
@@ -251,8 +252,7 @@ QtObject {
     // a pixel, so it grows by half again to be seen at all.
     readonly property real railWorkspaceDotHoverScale: QsmShellStyle.Style.reducedMotion ? 1 : 1.5
     // The bell corner: a bulge that retracts when everything is read, the glyph
-    // resting on the band's corner; its menu is a top-right modal the height of
-    // the clipboard.
+    // resting on the band's corner; its menu is a top-right modal.
     readonly property int notificationBellWidth: QsmShellStyle.Style.size("Control", "md")
     readonly property int notificationBellHeight: QsmShellStyle.Style.size("Control", "sm")
     // With unread the bulge carries the count beside the glyph: a pad, the 16

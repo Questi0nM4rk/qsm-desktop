@@ -13,7 +13,8 @@ import qs.theme
 // The consumer provides content (default property) and calls its surface's
 // open() from onOpened. Placement follows from `edges` — the shell-wide
 // policy, not a per-consumer choice: a left-attached modal starts beside the
-// rail (reservedLeft), an unattached axis centers.
+// rail (reservedLeft), an unattached axis centres between the rail band and
+// the monitor's edge (the scene's panelCenterX).
 //
 // NOT handled here: WlrLayershell.keyboardFocus (EdgeScene enumerates every
 // keyboard modal in ONE expression — splitting that list across hosts is how
@@ -88,6 +89,11 @@ Item {
         // trips qml-lint's anchor-combinations check, which is static.
         // A left-attached modal starts beside the rail, not under it.
         anchors.leftMargin: root.edges.includes("left") ? Theme.reservedLeft : 0
+        // An unattached axis centres between the nearest structures: the rail
+        // band while it is shown and the monitor's edge, which is where the
+        // panel centres too, never the frame band along the edge.
+        anchors.horizontalCenterOffset: root.edges.includes("left") || root.edges.includes("right")
+            ? 0 : root.scene.panelCenterX - root.scene.width / 2
 
         Component.onCompleted: {
             if (root.edges.includes("top"))

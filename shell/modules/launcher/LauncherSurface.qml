@@ -146,7 +146,10 @@ Item {
     readonly property var indexedEntries: !root.applicationsEnabled ? [] : DesktopEntries.applications.values
         .map(entry => ({
             entry: entry,
-            text: `${entry.name} ${entry.genericName} ${entry.keywords.join(" ")}`
+            text: `${entry.name} ${entry.genericName} ${entry.keywords.join(" ")}`,
+            // What the row shows: a match here explains itself, a match only in
+            // the keywords does not.
+            shown: `${entry.name} ${entry.genericName || entry.comment}`
         }))
 
     // qmllint disable unqualified
@@ -190,7 +193,7 @@ Item {
     // kill list's wider gap scrolls, it never resizes the body.
     readonly property real preferredBodyHeight: Theme.launcherMaxRows * Theme.launcherRowHeight
         + (Theme.launcherMaxRows - 1) * QsmShellStyle.Style.space1
-        + QsmShellStyle.Style.size("TextField", "lg") + QsmShellStyle.Style.space3 + QsmShellStyle.Style.rolloutPadding * 2
+        + QsmShellStyle.Style.size("TextField", "lg") + QsmShellStyle.Style.space4 + QsmShellStyle.Style.rolloutPadding * 2
 
     onModeChanged: {
         if (mode === "kill")
@@ -284,7 +287,7 @@ Item {
             { kind: "action-detail", icon: "brightness", label: "Dim or restore", sub: "Toggle minimum and previous brightness", data: "brightness" }
         ],
         "nightlight": () => [
-            { kind: "action-detail", icon: NightLightService.active ? "moon" : "brightness", label: NightLightService.active ? "Turn night light off" : "Turn night light on", sub: "Toggle night light", data: "toggle" },
+            { kind: "action-detail", icon: NightLightService.active ? "moon" : "brightness", label: "Night light", sub: NightLightService.active ? "On · Enter to turn off" : "Off · Enter to turn on", data: "toggle" },
             { kind: "level", icon: "brightness", label: `Warmth · ${Math.round(NightLightService.strength * 100)}%`, sub: "Increase warmth", data: "up" },
             { kind: "level", icon: "brightness", label: "Decrease warmth", sub: "Cool the screen", data: "down" }
         ],
@@ -378,17 +381,21 @@ Item {
                 .map((item, index) => ({
                     item: item,
                     index: index,
-                    score: QsmShellComponents.Fuzzy.score(needle, item.text)
+                    score: QsmShellComponents.Fuzzy.score(needle, item.text),
+                    shown: QsmShellComponents.Fuzzy.score(needle, item.shown) >= 0
                 }))
                 .filter(scored => scored.score >= 0)
                 .map(scored => ({
                     scored: scored,
                     rank: scored.score + frecencyBoost(scored.item.entry.id)
                 }))
-                // Equal ranks: the SHORTER name wins ("Foot" before "Foot
-                // Server" on "foot"), then the original index — QML's sort is
-                // not stable, and an unbroken tie reshuffles per keystroke.
-                .sort((left, right) => right.rank - left.rank
+                // A row whose own text matches ranks above one that matches
+                // only a hidden keyword, frecency or not. Equal ranks: the
+                // SHORTER name wins ("Foot" before "Foot Server" on "foot"),
+                // then the original index — QML's sort is not stable, and an
+                // unbroken tie reshuffles per keystroke.
+                .sort((left, right) => Number(right.scored.shown) - Number(left.scored.shown)
+                    || right.rank - left.rank
                     || left.scored.item.entry.name.length - right.scored.item.entry.name.length
                     || left.scored.index - right.scored.index)
                 .slice(0, 8)
@@ -1116,7 +1123,9 @@ ps -eo pid,pcpu,comm --no-headers --sort=-pcpu | head -25 | awk '{printf "P|%s|%
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: QsmShellStyle.Style.rolloutPadding
-        spacing: QsmShellStyle.Style.space3
+        // The field and its results are two groups: the group gap, not the one
+        // inside a group.
+        spacing: QsmShellStyle.Style.space4
 
         // Results ABOVE the search field (07): bottom-up so the
         // first result sits adjacent to the input. Hidden (not destroyed) in
@@ -1350,9 +1359,12 @@ ps -eo pid,pcpu,comm --no-headers --sort=-pcpu | head -25 | awk '{printf "P|%s|%
 
             // The results list is capped at a visible row count (07), so it
             // overflows in ordinary use and said nothing about it.
+            // The fade says there is more past an edge; a mark beside it said
+            // so a second time.
             QsmShellComponents.ScrollCue {
                 view: resultsList
                 fadeColor: Theme.band
+                indicator: false
             }
         }
 
