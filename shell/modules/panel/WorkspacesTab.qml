@@ -12,7 +12,8 @@ import qs.theme
 // SCHEMATIC tiles (the compositor cannot capture unfocused workspaces) —
 // each tile draws its windows as positioned rounded rects with the app
 // icon. Click focuses the workspace; DRAGGING a window rect onto another
-// tile dispatches the compositor move (movetoworkspacesilent).
+// tile dispatches the compositor move (movetoworkspacesilent). The tab is one
+// card that fills the panel's content box; the tiles sit in its middle.
 Item {
     id: root
 
@@ -26,7 +27,8 @@ Item {
     // clients -j snapshots); Quickshell toplevels carry no window rects.
     readonly property var clients: HyprClientsService.clients
 
-    readonly property real tileGap: QsmShellStyle.Style.space3
+    readonly property real cardPadding: QsmShellStyle.Style.space4
+    readonly property real tileGap: QsmShellStyle.Style.space4
 
     // The tab fills the panel's content box, always, so the row of tiles does
     // not jump with the number of workspaces and starts where every tab does.
@@ -35,17 +37,17 @@ Item {
 
     // A hovered tile's body grows by whole device pixels (StateLayer), never
     // more than this a side. The strip clips, so it reaches this far past the
-    // content box on every side and the tiles' resting edges stay on it.
+    // card's inside on every side and the tiles' resting edges stay on it.
     readonly property real growthReserve: QsmShellStyle.Style.space1
 
-    // Tiles grow to the box: three share its width, or its height when the
-    // monitor is tall, whichever is smaller; the rest scroll. The schematic
+    // Tiles grow to the card's inside: three share its width, or its height when
+    // the monitor is tall, whichever is smaller; the rest scroll. The schematic
     // keeps the monitor's aspect, to a whole step.
     readonly property int tilesAcross: 3
     readonly property real aspect: monitor ? monitor.height / Math.max(1, monitor.width) : 0.5625
     readonly property real tileWidth: Math.min(
-        (width - tileGap * (tilesAcross - 1)) / tilesAcross,
-        (implicitHeight - growthReserve - labelBand - areaInset) / aspect + areaInset * 2)
+        (width - cardPadding * 2 - tileGap * (tilesAcross - 1)) / tilesAcross,
+        (implicitHeight - cardPadding * 2 - growthReserve * 2 - labelBand - areaInset) / aspect + areaInset * 2)
 
     // Window rects live in their own area, inset from the tile's rounded
     // corners, below a band that belongs to the workspace number: a number
@@ -92,6 +94,10 @@ Item {
         onExited: HyprClientsService.refresh()
     }
 
+    QsmShellComponents.Card {
+        anchors.fill: parent
+    }
+
     // ONE ROW, never stacked (spec/06): workspaces
     // sit next to each other and the strip scrolls horizontally when more
     // exist than fit. The row hangs from the strip's start at a fixed width,
@@ -99,11 +105,10 @@ Item {
     // and never re-centres the others.
     Flickable {
         id: strip
-        x: -root.growthReserve
-        y: -root.growthReserve
-        width: parent.width + root.growthReserve * 2
-        // Room below the tiles for the position mark, clear of a focused tile's ring.
-        height: root.tileHeight + root.growthReserve + QsmShellStyle.Style.space3
+        x: root.cardPadding - root.growthReserve
+        y: QsmShellStyle.Style.stroke((root.height - height) / 2, root)
+        width: root.width - root.cardPadding * 2 + root.growthReserve * 2
+        height: root.tileHeight + root.growthReserve * 2
         contentWidth: row.implicitWidth + root.growthReserve * 2
         clip: true
         boundsBehavior: Flickable.StopAtBounds
@@ -167,7 +172,8 @@ Item {
                         anchors.fill: parent
                         anchors.margins: -tileLayer.growth
                         radius: tile.radius
-                        base: Theme.surface
+                        // A tile is a raised body on the card; its windows sit back a step.
+                        base: Theme.overlay
                         hovered: tileLayer.hovered
                         pressed: tileLayer.pressed
                         // Current is a state, not a border: the ladder's selected tint.
@@ -216,8 +222,8 @@ Item {
                             height: Math.min(root.areaHeight - y, modelData.size[1] * scaleY)
                             // Concentric with the tile, through the area's inset in it.
                             radius: QsmShellStyle.Style.childRadius(windowArea)
-                            // One ladder step above the tile separates it; no outline.
-                            color: Theme.overlay
+                            // One ladder step below the tile separates it; no outline.
+                            color: Theme.surface
                             opacity: windowDrag.active ? Theme.opacityDrag : 1
 
                             AppIcon {
@@ -260,14 +266,41 @@ Item {
         }
     }
 
-    // The library's cue, which is the same fade language plus a position
-    // mark. The two rectangles it replaces read raw `contentX`, which is the
-    // arithmetic ScrollCue exists to avoid, and they snapped on and off
-    // instead of fading.
+    // The wheel scrolls the strip a tile at a time. A vertical wheel is the
+    // common one, and a horizontal Flickable does nothing with it. The area takes
+    // no button, so a tile under it still gets the click and the drag.
+    MouseArea {
+        anchors.fill: strip
+        acceptedButtons: Qt.NoButton
+        onWheel: wheel => {
+            const notch = wheel.angleDelta.x !== 0 ? wheel.angleDelta.x : wheel.angleDelta.y;
+            const room = strip.contentWidth - strip.width;
+            if (notch === 0 || room <= 0) {
+                wheel.accepted = false;
+                return;
+            }
+            const pitch = root.tileWidth + root.tileGap;
+            scroll.stop();
+            scroll.to = Math.max(0, Math.min(room, Math.round((strip.contentX - Math.sign(notch) * pitch) / pitch) * pitch));
+            scroll.start();
+        }
+    }
+
+    NumberAnimation {
+        id: scroll
+        target: strip
+        property: "contentX"
+        duration: QsmShellStyle.Motion.medium
+        easing.type: QsmShellStyle.Motion.standardEasing
+    }
+
+    // The edge fade is the cue that more tiles lie past an edge; it fades to
+    // the card the tiles sit on.
     QsmShellComponents.ScrollCue {
         view: strip
         orientation: Qt.Horizontal
-        fadeColor: Theme.band
+        fadeColor: Theme.surface
         fadeDepth: QsmShellStyle.Style.space5
+        indicator: false
     }
 }

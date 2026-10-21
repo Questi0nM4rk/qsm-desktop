@@ -116,6 +116,7 @@ Item {
                     Layout.preferredHeight: Theme.panelTabBarHeight
                     orientation: Qt.Horizontal
                     fadeColor: Theme.band
+                    indicator: false
 
                     function revealTab(): void {
                         const left = tabBar.currentIndex * tabBar.width / root.tabs.length;
@@ -199,12 +200,14 @@ Item {
                         orientation: Qt.Vertical
                         visible: root.staticContent
                         fadeColor: Theme.band
+                        indicator: false
                     }
                     QsmShellComponents.ScrollCue {
                         view: contentView
                         orientation: Qt.Horizontal
                         visible: root.staticContent
                         fadeColor: Theme.band
+                        indicator: false
                     }
                 }
             }

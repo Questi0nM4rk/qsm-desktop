@@ -11,9 +11,9 @@ import qs.theme
 // source picker. Fallbacks (DEFAULT): no artwork -> type glyph in the
 // circle; no player -> centered "nothing playing". Two zones: artwork | the
 // text block, seek, transport and the per-player source row, hung from the
-// artwork's top. Cava/lyrics/bongocat are explicitly not ported. The tab fills
-// the panel's content box, as tall as it, so nothing in it moves when a track,
-// a player or the artwork appears.
+// artwork's top. Cava/lyrics/bongocat are explicitly not ported. The tab is one
+// card that fills the panel's content box, so nothing in it moves when a track,
+// a player or the artwork appears; the content sits in the middle of the card.
 
 Item {
     id: root
@@ -29,9 +29,11 @@ Item {
     implicitWidth: Theme.panelContentWidth
     implicitHeight: Theme.panelContentHeight
 
-    // The artwork grows to the box, up to a third of the column so the text
-    // keeps the rest.
-    readonly property real artBox: Math.min(implicitHeight, Theme.panelContentWidth / 3)
+    readonly property real cardPadding: QsmShellStyle.Style.space4
+    // The artwork grows to the card's inside, up to a third of its width so the
+    // text keeps the rest.
+    readonly property real artBox: Math.min(implicitHeight - cardPadding * 2,
+        QsmShellStyle.Style.rhythm((implicitWidth - cardPadding * 2) / 3))
     // How far an arrow key moves the playhead.
     readonly property real seekStepSeconds: 5
 
@@ -43,6 +45,10 @@ Item {
             first.forceActiveFocus();
     }
 
+    QsmShellComponents.Card {
+        anchors.fill: parent
+    }
+
     // Same empty-state pattern as the launcher and clipboard surfaces.
     QsmShellComponents.EmptyState {
         anchors.centerIn: parent
@@ -52,7 +58,10 @@ Item {
 
     RowLayout {
         id: mediaRow
-        anchors.fill: parent
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.margins: root.cardPadding
+        y: QsmShellStyle.Style.stroke((root.height - height) / 2, root)
         visible: root.player !== null
         spacing: QsmShellStyle.Style.space5
 
@@ -82,7 +91,7 @@ Item {
                 id: avatar
                 anchors.centerIn: parent
                 size: artwork.width - 2 * (Theme.artworkRingStroke + QsmShellStyle.Style.spaceTight)
-                background: Theme.surface
+                background: Theme.overlay
                 source: root.player?.trackArtUrl ?? ""
                 icon: "music"
                 // The size this fallback had before the migration; Avatar's
@@ -268,6 +277,8 @@ Item {
                         required property var modelData
                         icon: "music"
                         label: modelData.identity || "player"
+                        // On the card the picked player is the one with a body.
+                        variant: "ghost"
                         checkable: true
                         active: MediaService.active === modelData
                         onClicked: MediaService.selected = modelData

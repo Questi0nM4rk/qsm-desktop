@@ -113,7 +113,10 @@ center is not a tab (owner 2026-10-17): it is the bell's menu in the top-right c
   the compositor move. FLAGGED to the owner (changes the word "live").
 - **RATIFIED (2026-08-21, owner)**: workspaces lay out NEXT TO each other (one row, horizontal
   scroll when more workspaces than fit), never stacked below each other. The window rects inside
-  a tile carry no outline: they sit one ladder step above the tile, like every other body.
+  a tile carry no outline: they sit one ladder step off the tile, like every other body. The
+  tiles sit in one `surface` card that fills the content box, in its middle; the strip shows
+  that more lie past an edge by the edge fade alone, with no scroll mark, and the wheel moves
+  it a tile at a time.
 
 - **RATIFIED (2026-08-16)**: opening the panel by keyboard lands on the LAST USED tab; the
   dots handle (hover or click) opens Dashboard.
