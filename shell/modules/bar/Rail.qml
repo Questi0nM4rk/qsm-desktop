@@ -11,11 +11,12 @@ import qs.theme
 
 // The rail (03-rail lineup): the mark and the updates
 // cell, then workspace slots with the PIN and the TRAY icons, then the
-// current workspace's apps spread across the middle, and at the bottom the
-// CLOCK, the battery number, the quick actions, network, bluetooth and sound,
-// and power, each group behind its own divider. CPU and RAM live in the
-// Dashboard only (06). Groups are separated by the rail's divider lines. The popout
-// interaction lives in the PopoutController.
+// current workspace's apps from the top of the middle, and at the bottom the
+// READOUTS (clock, battery), the CONTROLS (quick actions, network, bluetooth,
+// sound) and the SESSION (power). CPU and RAM live in the Dashboard only (06).
+// Groups are told apart by space; a line is drawn only at the two ends of the
+// app list and before power, where the groups either side look alike. The
+// popout interaction lives in the PopoutController.
 Item {
     id: root
 
@@ -82,19 +83,21 @@ Item {
             }
         }
 
-        RailDivider { id: topDivider }
+        // Glyph cells above, dots below: unlike kinds, so space alone parts
+        // them.
+        RailBreak { id: topBreak }
 
         // Workspaces, the pin and the tray are ONE group: the pin acts on the
         // band the workspaces live in, and a tray icon under the pin never
         // reads as one more app row.
         RailGroup {
             // What is left once the bottom cluster, the mark group, both
-            // dividers, the stack's gaps and one app row are paid for: when
+            // breaks, the stack's gaps and one app row are paid for: when
             // the group wants more than that, it scales down as one block
             // instead of pushing the clock off the band.
             maximumHeight: Math.max(0, root.height - bottomStack.height
-                - QsmShellStyle.Style.space4 * 2 - markGroup.height - topDivider.height * 2
-                - Theme.railItemGap * 4 - Theme.railCellHeight)
+                - QsmShellStyle.Style.space4 * 2 - markGroup.height - topBreak.height * 2
+                - Theme.railItemGap * 5 - Theme.railCellHeight)
 
             Column {
                 width: parent.width
@@ -191,7 +194,8 @@ Item {
             }
         }
 
-        RailDivider {}
+        // The app list's length varies, so its top is marked.
+        RailBreak { line: true }
     }
 
     // The middle section: the current workspace's apps, icon only, top-aligned
@@ -216,20 +220,18 @@ Item {
         anchors.bottomMargin: QsmShellStyle.Style.space4
         spacing: Theme.railItemGap
 
-        // Five groups, told apart by the divider and nothing else; inside a
-        // group the items sit one gap apart. What the item is decides the
-        // group: the time, the power reading, the quick actions, the
-        // connectivity and audio devices, the session.
-        RailDivider {}
+        // Three groups; inside a group the items sit one gap apart. What the
+        // item is decides the group: the readouts (the time and the battery),
+        // the controls (quick actions and the devices) and the session. The
+        // app list's bottom is marked, as its top is.
+        RailBreak { line: true }
 
-        // Time.
+        // Readouts: the time.
         ClockEntry {
             popouts: root.popouts
         }
 
-        RailDivider {}
-
-        // Power: the battery reading.
+        // Readouts: the battery reading.
         RailEntry {
             id: batteryCell
 
@@ -275,9 +277,10 @@ Item {
             }
         }
 
-        RailDivider {}
+        // Glyph cell above, glyph cell below: alike, so a line parts them.
+        RailBreak { line: true }
 
-        // Quick actions: active or connected
+        // Controls. Quick actions: active or connected
         // draws the glyph in text, off in textMuted; state changes the
         // glyph's SHAPE, never colour alone. Hover rolls out, click does
         // the cell's one cheap toggle, the rollout owns any escape to a
@@ -293,7 +296,9 @@ Item {
             popoutDetail: ""
         }
 
-        RailDivider {}
+        // Text above, glyph cells below: unlike kinds, so space alone parts
+        // them.
+        RailBreak {}
 
         // Connectivity and audio devices.
         RailEntry {
@@ -326,8 +331,6 @@ Item {
             popoutDetail: ""
             onClicked: AudioService.toggleOutputMuted()
         }
-
-        RailDivider {}
 
         // Session: opens the session surface (08), the glyph in danger.
         // Click, no hover card beyond its name.

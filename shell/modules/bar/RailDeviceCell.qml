@@ -92,19 +92,17 @@ RailEntry {
         // spanning the whole cell dwarfed the glyphs on either side of it.
         readonly property real armLength: root.glyphSize + QsmShellStyle.Style.spaceTight
 
-        // The rail's own rule, so weight and strength stay the divider's.
-        RailDivider {
+        // The library's rule, so weight and strength stay the divider's.
+        QsmShellComponents.Divider {
             anchors.centerIn: parent
             visible: root.shown > 1
-            inset: 0
             width: grid.armLength
             rotation: 90
         }
 
-        RailDivider {
+        QsmShellComponents.Divider {
             anchors.centerIn: parent
             visible: root.shown > 2
-            inset: 0
             width: grid.armLength
         }
     }

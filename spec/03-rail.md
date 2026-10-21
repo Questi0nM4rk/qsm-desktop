@@ -62,9 +62,11 @@ intent separately from the backend result, with no password in event payloads.
     reaches the rollout body's edge exactly. App rows sit in a clipping list: they recolour
     and do not grow.
   - The bottom of the rail is grouped by what the items are, and items of one group sit at the
-    rail's 4px gap with nothing floating between them; groups are told apart by the divider
-    alone: **time** (the clock), **power** (the battery reading), **quick actions**,
-    **connectivity and audio devices** (network, bluetooth, sound), **session** (power off).
+    rail's 4px gap with nothing floating between them; groups are told apart by a 16px
+    boundary (the 8px `RailBreak` between two 4px gaps): **readouts** (the clock, the battery
+    reading), **controls** (quick actions, network, bluetooth, sound), **session** (power off).
+    A line is drawn only where the groups either side look alike: before power (glyph cell
+    beside glyph cell) and at both ends of the app list; elsewhere space alone parts them.
 - **RATIFIED (2026-10-16, owner)**: lineup top→bottom: logo (decorative), SYSTEM UPDATES cell,
   then ONE group holding the workspace slots, PIN and the tray icons, then the
   current-workspace app list (the middle section, rows from a fixed origin under the workspace group so the first
@@ -76,10 +78,11 @@ intent separately from the backend result, with no password in event payloads.
   bluetooth, sound), then power (danger-tinted) at the very bottom. CPU and RAM are NOT in the rail (owner 2026-10-17):
   they live in the Dashboard only.
 - **RATIFIED (2026-10-16, owner, amended the same evening; one 4px rhythm 2026-10-17)**: groups are
-  separated by the rail's DIVIDER LINE (`RailDivider`: a 2px `textMuted` line at 0.8 opacity, inset
-  8px from both walls, centred in an 8px item). The morning's "spacing, never a divider" ruling is
-  reversed. The rail runs ONE 4px rhythm (`Theme.railItemGap`): every item and the divider's item
-  sit 4px from their neighbours, so a group boundary is one line of ink, not a 12px gap. Tray icons sit in the workspace/pin
+  separated by space, and by the rail's line (`RailBreak` with `line`: the library's hairline at
+  `dividerOpacity`, inset 8px from both walls, centred in an 8px item) only where space alone
+  would not say where a group ends. The rail runs ONE 4px rhythm (`Theme.railItemGap`): every
+  item and the break's item sit 4px from their neighbours, so a group boundary is 16px with its
+  line 8px from the item on each side. Tray icons sit in the workspace/pin
   group (owner, 2026-08-24) so an app's tray icon never reads as one more app row, and a
   machine with no tray icons shows nothing there. Rail glyphs use the compact 16px step, with
   the top Arch logo and the app list's application glyphs as the deliberate 20px mark step.
@@ -188,7 +191,7 @@ intent separately from the backend result, with no password in event payloads.
   workspace's apps, per monitor, icon-only. When the workspace is empty it shows the default:
   a monitor icon (as in `references/rail-closeup.png`).
 - **RATIFIED (2026-10-16, owner)** app-list mechanics: each row is the rail capsule (48x32) with a
-  20px glyph and a 4px gap; NO caption, vertical or otherwise. The window title lives in the hover
+  24px glyph and a 4px gap, hanging from the line above it; NO caption, vertical or otherwise. The window title lives in the hover
   popout, reading **"app · live-title"** — identity first so an ellipsis can only eat the
   context tail; leading unread counters ("(2864) …") stripped; brand suffixes after a dash
   dropped. The current (focused) row carries `accent` at 12 percent opacity behind it over

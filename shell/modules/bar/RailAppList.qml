@@ -29,22 +29,26 @@ Item {
 
     implicitWidth: Theme.railWidth
 
+    // An empty workspace says so in the first row's place: the list grows
+    // downward from the line above it, so nothing it holds ever moves its top.
     QsmShellComponents.SvgIcon {
-        anchors.centerIn: parent
+        anchors.horizontalCenter: parent.horizontalCenter
+        y: (Theme.railCellHeight - height) / 2
         visible: root.toplevels.length === 0
         name: "monitor"
         size: Theme.railMark
         color: Theme.textMuted
     }
 
-    // The rows sit in the middle of the free area between the workspace group
-    // and the bottom cluster: a top-pinned list read as off-centre.
-    // The list reaches the screen edge across the band's gutter, so a row's
-    // hit area is the capsule's own, like every other rail item's.
+    // The rows hang from the line above, the first one fixed there whatever
+    // the list holds: a list that is centred in its free area moves its first
+    // row with every window opened or closed. The list reaches the screen edge
+    // across the band's gutter, so a row's hit area is the capsule's own, like
+    // every other rail item's.
     ListView {
         id: appList
         x: -Theme.railGutter
-        y: (parent.height - height) / 2
+        y: 0
         width: parent.width + Theme.railGutter
         height: Math.min(parent.height, contentHeight)
         visible: root.toplevels.length > 0
