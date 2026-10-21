@@ -81,7 +81,7 @@ intent separately from the backend result, with no password in event payloads.
   times over ~3.6s so the list visibly reorders, then stops saying it. It is DISABLED while the
   radio is off — a control with nothing to scan does not pretend otherwise.
 - **RATIFIED (2026-08-16, relocated 2026-08-24)**: TRAY icons live in the workspace/pin group
-  (see the lineup amendment above — they used to sit at the head of the bottom cluster);
+  (see the lineup amendment above);
   clicking one rolls out its menu as a standard popout (per
   `references/bluetooth-menu-popout.png`).
 - **DEFAULT (2026-08-16)** tray menu rendering: the DBusMenu tree renders as popout rows —
@@ -115,8 +115,7 @@ intent separately from the backend result, with no password in event payloads.
 - **RATIFIED (2026-09-05, owner)**: the draw feeding the estimate is SMOOTHED — an
   exponential average, 0.3 weight per 2s sample, roughly the last ten seconds. Raw
   `power_now` is instantaneous and swings with whatever the CPU did in the last half
-  second, so the estimate climbed three minutes and then fell back while the owner watched
-  it: "obcas naroste o 3 min a pak klesne, ale spis roste". A number that moves the wrong
+  second, so the estimate would climb for minutes and then fall back. A number that moves the wrong
   way is worse than no number, because it teaches you to distrust the card. The average
   still lets a power-profile change show up within a couple of samples, which is the whole
   reason this reads the kernel file instead of UPower's own rate. First sample seeds it
@@ -143,13 +142,12 @@ intent separately from the backend result, with no password in event payloads.
   on hover: battery, media when present (`references/media-popout-over-app.png`). Tray icons
   open their menus on click; workspace slots have no popout (wheel/click only). The rail CLOCK
   opens the calendar quick view (below).
-- **VETOED (2026-08-20, owner)**: the "media when present" popout is REMOVED from the rail. It
-  was built (a cell above the tray, transport in its rollout) and then cut the same day: the
+- **VETOED (2026-08-20, owner)**: the "media when present" popout is REMOVED from the rail: the
   top panel's Media tab already carries full media control and the dashboard carries a
   mini-player, so a third transport made THREE routes to play/pause — exactly what 09's
   one-path law removes rather than keeps. A DEFAULT is owner-vetoable, so this is the law
   working, not an exception to it. `references/media-popout-over-app.png` documents caelestia's
-  behaviour and is no longer a target. The rail's hover popouts are therefore battery and the
+  behaviour and is not a target. The rail's hover popouts are therefore battery and the
   label/description/app/tray tiers.
 - **RATIFIED (2026-08-20)**: media keys still route THROUGH the shell (`mediaToggle`,
   `mediaNext`, `mediaPrev`), because the shell owns the active-player decision and playerctl in
@@ -194,13 +192,12 @@ intent separately from the backend result, with no password in event payloads.
 - **RATIFIED (2026-08-24, owner)**: NO DIPS AND NO BULGES at a nested seam. Two hosts that
   share a span join along an EXACTLY STRAIGHT line: square corners on the shared edge **and a
   blend factor of zero**, which the shader's `k = max(smoothFactor * param.y, 0.01)` floor
-  turns into a hard `min()` — an exact union. Both halves are load-bearing, and the owner
-  photographed the failure of each in turn:
+  turns into a hard `min()` — an exact union. Both halves are load-bearing:
   - rounded corners + smooth union = a **dip**. Each rect's radius curves away from the other
     and the melt reach (20) is smaller than the radii (28), so the fillet cannot close the
     wedge. 12-mechanism's edge snap already states the corner half of the rule ("corners on a
     snapped edge go square: they are inside the merged body now, and a radius there draws a
-    notch at the seam"); it was simply never applied to a popout-to-popout seam.
+    notch at the seam"); it applies to a popout-to-popout seam too.
   - square corners + smooth union = a **bulge**. The circular smin ADDS material wherever both
     fields sit inside the reach, so a flush seam grows a fillet outward instead.
 - **AMENDED (2026-08-25, measured; restated 2026-10-16 for the fill-only shell)**: a further
@@ -257,8 +254,8 @@ intent separately from the backend result, with no password in event payloads.
   to clipboard and to a notification on the shell's own bus). Growable; anything needing real
   UI belongs in its own popout or a delegated app instead.
 
-- **RATIFIED (2026-08-24, owner)**: the colour picker's level-2 rollout IS its menu (a level
-  THREE rollout was built and rejected: the features belong in the surface already open, not
+- **RATIFIED (2026-08-24, owner)**: the colour picker's level-2 rollout IS its menu (there is no
+  level-three rollout: the features belong in the surface already open, not
   one step further out). It carries three features — **History** (every pick, newest first, deduped, bounded at 24: past what a person
   can scan it stops being a memory aid and becomes an archive, which is a different feature
   with a different storage answer), **Harmony** (opposite + both triads of the selected colour,
@@ -342,11 +339,7 @@ Physical key delivery, live layout and screen-reader output await owner review.
   continuous shape). Reveal position rule: the popout appears AT the hovered entry, centred on
   it (see placement above) — the morph animation runs only between two already-open positions,
   never on first reveal.
-- **RATIFIED (2026-09-07, owner — SUPERSEDES the ~180ms closing grace):** ~~a rollout is
-  never held open by TIME. It is held open by WHERE THE POINTER IS, and it closes the moment
-  the pointer is somewhere else.~~ **SUPERSEDED the same day, below.**
-
-- **RATIFIED (2026-09-07, owner — SUPERSEDES the wording immediately above):** every rollout
+- **RATIFIED (2026-09-07, owner):** every rollout
   uses one rule: a hitbox larger than the item, covering the corridors a pointer actually
   sweeps through, and 180ms after the pointer leaves that hitbox the rollout closes.
 
@@ -356,14 +349,11 @@ Physical key delivery, live layout and screen-reader output await owner review.
   diagonally from an entry to a card that is clamped away from that entry's height. This region
   is still what decides WHETHER the pointer is holding the rollout open — a timer alone answers
   "has enough time passed" when the only question that matters is "is the pointer still on this
-  thing", and it cannot tell travelling from leaving. That is still true, and it is why the
-  region does the real work: every stuck and every snap-back defect recorded against the old
-  two-moment lifecycle (closeTimer/scheduleClose/childClosed) came from deciding closure at two
-  moments with a timer in between rather than from one region test.
+  thing", and it cannot tell travelling from leaving. The region does the real work; closure
+  is decided by one region test, never at two moments with a timer in between.
 
-  What changes: the CLOSE is no longer instant on the region's true-to-false transition. It is
-  delayed 180ms (`Motion.hoverGrace`), and a region re-entry within that window cancels the
-  pending close. The region still supplies the corridor coverage a hand sweeps through; the
+  The CLOSE is delayed 180ms (`Motion.hoverGrace`) after the region's true-to-false
+  transition, and a region re-entry within that window cancels the pending close. The region still supplies the corridor coverage a hand sweeps through; the
   delay only covers what a region test, evaluated once per frame at a hard boundary, cannot: the
   last few pixels of a fast exit and the frame in which the pointer is between two positions.
 

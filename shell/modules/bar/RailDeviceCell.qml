@@ -90,7 +90,7 @@ RailEntry {
         // The cross: vertical bar with the second device, horizontal with the
         // third. Each arm is a stub sized to the glyphs it separates — a rule
         // spanning the whole cell dwarfed the glyphs on either side of it.
-        readonly property real armLength: Math.round(root.glyphSize * 1.2)
+        readonly property real armLength: root.glyphSize + QsmShellStyle.Style.spaceTight
 
         // The rail's own rule, so weight and strength stay the divider's.
         RailDivider {

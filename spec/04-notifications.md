@@ -76,7 +76,7 @@ capsule paints the one fullscreen body, so a row's hole is an input area only
 and never a second painted body. A hole is withdrawn the moment its row stops
 being eligible, while the capsule keeps painting the retained or evicting
 column; no padding or retiring row is captured.
-The owner accepted the appearance of the previously reviewed capsule composition;
+The owner accepted the appearance of the reviewed capsule composition;
 that acceptance does not cover the revised resting body preview/actions or service
 integration. A production compositor-fullscreen run exercised the
 shared store through the existing IPC `notify` path (not D-Bus): collapsed rows

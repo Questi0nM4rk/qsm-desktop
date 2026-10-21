@@ -46,7 +46,7 @@
     primary=mauve (the one action per surface) · textOnPrimary=ground-0 (the design
     system's on-primary; QML reads on<Capital> as a signal handler and a Behavior on it crashes the
     shell) · accent=mauve (what is
-    current) · focus=mauve (2 px ring outside the control, 2 px offset) · info=sky ·
+    current) · focus=mauve (the ring outside the control) · info=sky ·
     success=green · warning=yellow · danger=rose. Status hues stay semantic.
   - roles that do not exist: `secondary`, `background`, `backgroundMid`, `backgroundEnd`,
     `bandFill` (band is the fill), `outline`, rim colour/strength/width. The edge separation of the

@@ -182,12 +182,12 @@ results, panel controls, notification cards, session buttons, sliders, tabs, han
 Every interactive element speaks these states and no others; they sit under the laws above.
 
 - **Hover** grows by transform (scale), never tints. A transform does not move layout bounds,
-  so neighbours never jitter. Press pushes (scale down) in 80 ms; release returns in 130 ms.
-- **Selected / current** is a state, not hover: `accent` at 12 percent opacity behind the row
-  or tab (over `surface`), plus `accent` on its text or glyph. The current workspace is a
-  20 px `accent` pill with its number in `textOnPrimary`. The current app row takes the 12 percent
-  fill.
-- **Focus** (keyboard): a 2 px `focus` ring outside the control, 2 px offset, visible on every
+  so neighbours never jitter. Press pushes (scale down) in `Motion.press`; release returns in `Motion.micro`.
+- **Selected / current** is a state, not hover: `accent` at `opacitySelected` behind the row
+  or tab (over `surface`), plus `accent` on its text or glyph. The current workspace is the
+  library's count chip in `accent` with its number in `textOnPrimary` (03). The current app row
+  takes the selected fill.
+- **Focus** (keyboard): the `focus` ring outside the control at `spaceTight`, visible on every
   focusable element, always, because the keyboard owns selection.
 - **Disabled**: every colour of the control blended toward the band at `opacityDisabled`,
   never opacity on the composite. Non-current rows of a pick list recede by the same blend at
@@ -196,5 +196,5 @@ Every interactive element speaks these states and no others; they sit under the 
 - **Status glyphs change shape** for state, not only colour (wifi, cable, wifi-off; bluetooth
   mark, the connected device's glyph; volume, volume-muted). Colour alone never carries
   meaning: a number or a glyph is the word, colour repeats it.
-- **Thresholded readouts** (cpu, ram): the whole item (14 px glyph plus 12 px number, one
+- **Thresholded readouts** (cpu, ram): the whole item (glyph plus number, one
   thing) is `textMuted` below 70 percent, `warning` from 70, `danger` from 90.

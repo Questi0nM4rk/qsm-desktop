@@ -12,9 +12,8 @@
 #   - its own layout and policy, under names Style never exposes.
 #
 # The library's names come from scripts/public-names.qml, which asks the live
-# Style and Motion what they expose, and its size presets from
-# tokens/deep-night.json with the documented rule that a type without its own
-# table shares the Control ladder. No library source is read.
+# Style and Motion what they expose and whether it already answers a size
+# preset. No library source or token file is read.
 #
 # It fails when Theme re-types a name Style exposes, when Theme restates a
 # library size preset, when a theme role is missing from Theme, when any QML
@@ -24,15 +23,9 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-public="$(QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software QT_FORCE_STDERR_LOGGING=1 \
-  /usr/lib/qt6/bin/qml -I vendor/qsm-shell/qml scripts/public-names.qml 2>&1 | sed -n 's/^qml: PUBLIC //p')"
-[[ -n "$public" ]] || { printf 'theme contract: the library did not report its public names\n' >&2; exit 1; }
+python3 -I - <<'PY'
+import json, os, pathlib, re, subprocess, sys
 
-python3 -I - "$public" <<'PY'
-import json, pathlib, re, subprocess, sys
-
-public = json.loads(sys.argv[1])
-tokens = json.loads(pathlib.Path('vendor/qsm-shell/tokens/deep-night.json').read_text())
 theme = pathlib.Path('shell/theme/Theme.qml').read_text()
 
 def code(text):
@@ -47,9 +40,6 @@ owned = roles | {'fontFamily', 'technicalFontFamily', 'reducedMotion', 'reducedE
 
 problems = []
 
-for name in sorted((set(public['Style']) & declared) - owned):
-    problems.append(f'Theme re-types the library value "{name}": delete it and read Style.{name}')
-
 for file, found in role_sets.items():
     for name in sorted(roles - found):
         problems.append(f'themes/{file} has no role "{name}": regenerate it with scripts/derive-theme.ts')
@@ -57,11 +47,24 @@ for name in sorted(roles - declared):
     problems.append(f'Theme does not answer the theme role "{name}"')
 
 sizes = re.search(r'property var sizes:\s*\(\{(.*?)\n    \}\)', theme, re.S)
-for kind, body in re.findall(r'(\w+):\s*\{([^}]*)\}', sizes.group(1) if sizes else ''):
-    table = tokens['sizes'].get(kind, tokens['sizes']['Control'])
-    for preset in re.findall(r'(\w+):\s*\d+', body):
-        if preset in table:
-            problems.append(f'Theme.sizes.{kind}.{preset} restates a library preset: delete it')
+asked = [[kind, preset]
+         for kind, body in re.findall(r'(\w+):\s*\{([^}]*)\}', sizes.group(1) if sizes else '')
+         for preset in re.findall(r'(\w+):\s*\d+', body)]
+
+reply = subprocess.run(
+    ['/usr/lib/qt6/bin/qml', '-I', 'vendor/qsm-shell/qml', 'scripts/public-names.qml', '--', json.dumps(asked)],
+    capture_output=True, text=True,
+    env={**os.environ, 'QT_QPA_PLATFORM': 'offscreen', 'QT_QUICK_BACKEND': 'software', 'QT_FORCE_STDERR_LOGGING': '1'})
+lines = [l[len('qml: PUBLIC '):] for l in (reply.stdout + reply.stderr).splitlines() if l.startswith('qml: PUBLIC ')]
+if not lines:
+    sys.exit('theme contract: the library did not report its public names')
+public = json.loads(lines[0])
+
+for name in sorted((set(public['Style']) & declared) - owned):
+    problems.append(f'Theme re-types the library value "{name}": delete it and read Style.{name}')
+
+for kind, preset in public['sizesAnswered']:
+    problems.append(f'Theme.sizes.{kind}.{preset} restates a library preset: delete it')
 
 tracked = subprocess.run(['git', 'ls-files', '--', '*.qml'], capture_output=True, text=True, check=True).stdout.split()
 for path in tracked:

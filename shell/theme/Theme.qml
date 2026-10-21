@@ -141,6 +141,9 @@ QtObject {
     // ── Launcher, clipboard, cheat sheet ───────────────────────────────
     readonly property int launcherWidth: 600
     readonly property int launcherMaxRows: 7
+    // A wallpaper thumbnail's width over its height; the picture box is as
+    // tall as the leading box of a row.
+    readonly property real wallpaperThumbAspect: 7 / 4
     readonly property string launcherRowSize: "lg"
     readonly property real launcherRowHeight: QsmShellStyle.Style.size("ListRow", launcherRowSize)
     // The clipboard is its own surface, narrower than the launcher because an

@@ -64,7 +64,7 @@ not the library's default.
 ## Tabs
 
 Per the references: **Dashboard / Media / Performance / Workspaces**. The notification
-center is no longer a tab (owner 2026-10-17): it is the bell's menu in the top-right corner
+center is not a tab (owner 2026-10-17): it is the bell's menu in the top-right corner
 (04-notifications).
 
 - **RATIFIED (2026-08-16, amended 2026-08-17 owner — caelestia-parity ruling)** Dashboard:

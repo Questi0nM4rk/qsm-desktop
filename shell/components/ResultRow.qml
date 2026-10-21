@@ -23,8 +23,6 @@ QsmShellComponents.ListRow {
     readonly property string _appIcon: root.item?.appIcon ?? ""
     readonly property url _thumb: root.item?.thumb ?? ""
     readonly property bool _isApp: root._appIcon.length > 0 || root.item?.kind === "app"
-    // A wallpaper's aspect: the picture box is as tall as the leading box.
-    readonly property real _thumbAspect: 7 / 4
 
     // Action-picker group labels are model rows so the keyboard can preserve
     // its one cursor. They render as an inert divider, never as an action.
@@ -48,7 +46,7 @@ QsmShellComponents.ListRow {
             anchors.centerIn: parent
             opacity: lead.thumbReady ? 1 : 0
             height: parent.height
-            width: height * root._thumbAspect
+            width: height * Theme.wallpaperThumbAspect
             radius: QsmShellStyle.Style.radiusSm
             color: QsmShellStyle.Style.surface
             clip: true

@@ -92,12 +92,12 @@ Reference: `references/osd-sliders-right.png`.
   closed (the painted nub grown by `Style.hoverReach`, found before anything shows) and open (the revealed rollout's full
   vertical extent), from its own leading edge and rollout bounds, and feeds both outward two
   ways: `EdgeScene` reads back only the current one, as `corridorZone`, for its input mask, and
-  no longer reaches into the rollout to open it; the library `Rollout` reads the same two shapes
+  never reaches into the rollout to open it; the library `Rollout` reads the same two shapes
   directly as `triggerAreas` (closed strip) and `hoverAreas` (open strip), so its own `wantsOpen`
   already answers "is the pointer holding this open" and `OsdState.setHovered` is fed straight
-  from that instead of a separate show-only handler. The corridor's numbers are no longer typed here (owner 2026-10-18: "musime to roztahnout,
+  from that instead of a separate show-only handler. The corridor's numbers are not typed here (owner 2026-10-18: "musime to roztahnout,
   abych nemusel mit pixel perfect aim"): the closed strip is the nub circle grown by
-  `Style.hoverReach` (20) reaching to the screen edge, the open strip the rollout grown by the
+  `Style.hoverReach` reaching to the screen edge, the open strip the rollout grown by the
   same reach above and below. `OsdState`'s ~1.5s auto-hide (below) is a different rule from the library's 180ms hover
   grace: one hides after silence, the other only cancels a close already scheduled.
 - **DEFAULT (2026-08-16)**: the handle exists on EVERY monitor; the surface itself appears on
