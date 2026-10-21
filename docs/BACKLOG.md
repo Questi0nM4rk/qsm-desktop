@@ -14,6 +14,8 @@ Open items only, one line each; what is fixed or historical is in git.
 - Whether the spec stamps keep their dates (`RATIFIED (date, owner)`); the markers stay either way.
 - Whether `Rollout.padding` defaults to `Style.rolloutPadding`, and whether `recede` stays band-only (library questions).
 - Notification popup Escape: whether it also dismisses all visible notifications.
+- The colour picker's card: centred on its sparkle cell (centre 736) it would run 44 below its column (bottom 808) and close a pocket of desktop between them, and the library places a nested rollout inside its parent's span; the ratified `match` tier keeps it flush with the column (centre 676). Keep it flush and say so in RR-1, or design the L-shaped union.
+- Which band is the design source: the library's `deep-night.json` says `#271e30`, the live theme renders `#2D1540` (written by `derive-theme` from the wallpaper), and the rebuild spec's contrast figures were computed on the first. Decide, then recompute them.
 
 ## Defects and gaps
 
@@ -32,7 +34,6 @@ Open items only, one line each; what is fixed or historical is in git.
 - Raw numbers remain in the bar popouts (letter spacing on the vertical app labels, margins, opacities, border widths, one `SvgIcon size: 58`) with no `Theme` token.
 - Dimming by `opacity` remains on the rail while the session surface is open, inactive rail apps, off-centre theme cards and the bell; an icon, photo or scene fade cannot blend toward the band.
 - `Theme.dotSpacing` and `dotGlyphSize` sit off the 4 px rhythm: a 2 px dot rasterised soft and fell under 3:1.
-- A rail popout centred on its trigger lands an odd-height body on a half logical pixel (sound popout y 273.5, height 317); snapping is a library `Rollout` placement change.
 - `Theme.artworkRingStroke`: the library avatar ring is a share of the picture and reads heavy around a large cover.
 - `ScrollCue.fadeColor` is hand-matched to each list's ground; no gate catches a wrong colour.
 - Receded muted text on `surface` and `overlay` is about 3.4 and 2.6 against the 4.5 floor; only the band is enforced.
