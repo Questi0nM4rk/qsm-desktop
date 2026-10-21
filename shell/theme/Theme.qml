@@ -203,9 +203,9 @@ QtObject {
     // apart, with the same hover rollout.
     readonly property int railItemGap: QsmShellStyle.Style.space1
     readonly property int railAppSlot: QsmShellStyle.Style.size("Control", "sm")
-    // The compact cells of the band: the updates and quick-action cells and a
-    // tray icon.
-    readonly property int railCompactHeight: QsmShellStyle.Style.size("Control", "xs")
+    // The compact cells of the band (the updates and quick-action cells and a
+    // tray icon) are as tall as an app's slot: every item is one cell.
+    readonly property int railCompactHeight: railAppSlot
     readonly property int railAppIconSize: QsmShellStyle.Style.iconMd
     // A tray icon is recoloured to textMuted and lifted by this much, so a
     // coloured third-party glyph sits in the same tone as the rail's outline
