@@ -1,33 +1,72 @@
 #!/usr/bin/env bash
-# The Style.backend contract, checked.
+# The Style.backend contract, checked from the consumer's side.
 #
-# The library resolves every token as `backend?.x ?? Tokens.x`. That fallback
-# is a feature (a consumer only overrides what it cares about) and a trap: a
-# name the Theme does not answer keeps working, reads the library's own
-# deep-night default, and stops responding to a theme swap. Nothing warns.
+# The library resolves every value as `backend?.x ?? Tokens.x`. A consumer that
+# declares x shadows the library's value: the two drift apart and nothing
+# warns. So this desktop answers only what it owns, and the library answers
+# everything else:
 #
-# So: every name Style asks the backend for must exist on Theme.
+#   - the colour roles of its themes, the fonts and the mode flags;
+#   - size-table entries it ADDS by name, never one the library already has;
+#   - its own layout and policy, under names Style never asks for.
+#
+# It fails when Theme re-types a name Style asks for, when Theme restates a
+# library size preset, when a theme role is missing from Theme, when any QML
+# reads `Tokens`, and when any QML reads a Theme name that Theme does not
+# declare (that read is the library's value, spelled with the wrong object).
 set -euo pipefail
 cd "$(dirname "$0")/.."
-python3 - "$@" <<'PY'
-import re, sys, pathlib
-style = pathlib.Path('vendor/qsm-shell/qml/QsmShell/Style/Style.qml').read_text()
-theme = pathlib.Path('shell/theme/Theme.qml').read_text()
-asked = sorted(set(re.findall(r'backend\?\.(\w+)', style)))
+python3 -I - "$@" <<'PY'
+import json, pathlib, re, subprocess, sys
 
-# ROOT-LEVEL DECLARATIONS ONLY, at exactly four spaces of indent.
-#
-# The first version also accepted any line beginning `<name>:`, which is not a
-# declaration at all — it matched the entries inside the `baseline` fallback
-# object. So deleting Theme's own `property color background` left the check
-# green, because `background:` still appeared inside baseline. A contract check
-# that passes on a broken contract is worse than no check.
-declared = set(re.findall(r'^    (?:readonly )?property\s+\w+\s+(\w+)\b', theme, re.M))
-missing = sorted(set(asked) - declared)
-if missing:
-    print(f"Theme does not answer {len(missing)} of the {len(asked)} names Style asks for:")
-    for k in missing:
-        print(f"  {k}")
+lib = pathlib.Path('vendor/qsm-shell')
+style = (lib / 'qml/QsmShell/Style/Style.qml').read_text()
+tokens = json.loads((lib / 'tokens/deep-night.json').read_text())
+theme = pathlib.Path('shell/theme/Theme.qml').read_text()
+
+def code(text):
+    return re.sub(r'//.*', '', text)
+
+asked = set(re.findall(r'backend\?\.(\w+)', style))
+declared = set(re.findall(r'^    (?:readonly )?property\s+\w+\s+(\w+)\b', code(theme), re.M))
+declared |= set(re.findall(r'^    function\s+(\w+)', code(theme), re.M))
+
+role_sets = {f.name: set(json.loads(f.read_text())['roles']) for f in sorted(pathlib.Path('shell/themes').glob('*.json'))}
+roles = set.union(*role_sets.values())
+owned = roles | {'fontFamily', 'technicalFontFamily', 'reducedMotion', 'reducedEffects', 'sizes'}
+
+problems = []
+
+for name in sorted((asked & declared) - owned):
+    problems.append(f'Theme re-types the library value "{name}": delete it and read Style.{name}')
+
+for file, found in role_sets.items():
+    for name in sorted(roles - found):
+        problems.append(f'themes/{file} has no role "{name}": regenerate it with scripts/derive-theme.ts')
+for name in sorted(roles - declared):
+    problems.append(f'Theme does not answer the theme role "{name}"')
+
+sizes = re.search(r'property var sizes:\s*\(\{(.*?)\n    \}\)', theme, re.S)
+for kind, body in re.findall(r'(\w+):\s*\{([^}]*)\}', sizes.group(1) if sizes else ''):
+    table = tokens['sizes'].get(kind, tokens['sizes']['Control'])
+    for preset in re.findall(r'(\w+):\s*\d+', body):
+        if preset in table:
+            problems.append(f'Theme.sizes.{kind}.{preset} restates a library preset: delete it')
+
+tracked = subprocess.run(['git', 'ls-files', '--', '*.qml'], capture_output=True, text=True, check=True).stdout.split()
+for path in tracked:
+    text = code(pathlib.Path(path).read_text())
+    if re.search(r'\bTokens\b', text):
+        problems.append(f'{path} reads Tokens: read Style')
+    if path == 'shell/theme/Theme.qml':
+        continue
+    for name in sorted(set(re.findall(r'(?<![\w.])Theme\.(\w+)', text)) - declared - {'qml'}):
+        problems.append(f'{path} reads Theme.{name}, which Theme does not declare: read Style.{name}')
+
+if problems:
+    print(f'theme contract: {len(problems)} problem(s)')
+    for problem in problems:
+        print(f'  {problem}')
     sys.exit(1)
-print(f"theme contract: {len(asked)}/{len(asked)} names answered")
+print(f'theme contract: Theme answers {len(declared & owned)} owned names and re-types none of the {len(asked)} the library asks for')
 PY

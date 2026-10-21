@@ -9,6 +9,7 @@
 - Keep useful findings in the relevant spec or `docs/BACKLOG.md`. Specs describe current truth; edit existing sections in place rather than keeping decision history.
 - A finding left unfixed needs a `docs/BACKLOG.md` entry with the reason it was left; a finding fixed needs none.
 - Use installed `qsm-workbench --provider <desktop-root>` and `qsm-workbench session`, not sibling checkout scripts. Attach by explicit PID and confirm provider and required story through `describe`; never reuse a stale session blindly.
+- **One definition, the library's.** `Theme` answers only the colour roles, fonts, mode flags, size-table presets it adds by name, and this desktop's own layout and policy. Every other number is read from `QsmShellStyle.Style`, never typed again and never read from `Tokens`; `scripts/check-theme-contract` fails when one is.
 - For requested recordings, capture actual frames at 25–60 fps according to motion complexity: roughly 25 fps is enough for simple content/fades; deep, difficult animation requires genuine 60 fps. A 60-fps CFR encode with duplicated frames does not prove 60-fps capture.
 
 ## Essential links

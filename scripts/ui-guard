@@ -49,9 +49,9 @@ output="${1:-}"
 
 ipc() { qs ipc --path "$root/shell" call qsm "$@" >/dev/null 2>&1 || true; }
 
-# Theme's own scales (shell/theme/Theme.qml). A value outside them is either a
-# new token that belongs in Theme or a number someone typed.
-spaces='[2,4,8,12,16,24,32]'
+# The library's space scale. A value outside it is either a new token that
+# belongs in the library or a number someone typed.
+spaces="$(jq -c '[.space[]]' "$root/vendor/qsm-shell/tokens/deep-night.json")"
 
 # One state's worth of findings, read from the live tree.
 collect() {
