@@ -1,8 +1,9 @@
 // Derive one theme JSON from one wallpaper, by the rules in spec/11-theme.md:
-// a fixed neutral ladder with a trace of the wallpaper's hue, eight pastels at
-// one lightness and one chroma, the accent the pastel nearest the wallpaper's
-// dominant hue, every contrast pair recomputed. A pair under its floor stops
-// the run; nothing is written.
+// the band a fixed lightness with a trace of the wallpaper's hue, the two
+// neutral steps above it from the library's ladder function (the one owner of
+// that ratio), eight pastels at one lightness and one chroma, the accent the
+// pastel nearest the wallpaper's dominant hue, every contrast pair recomputed.
+// A pair under its floor stops the run; nothing is written.
 //
 //   bun scripts/derive-theme.ts <id> <name> <wallpaper>
 //   bun scripts/derive-theme.ts deep-night "Deep Night" shell/assets/wallpapers/dark-rain-world.png
@@ -11,6 +12,8 @@
 
 import { $ } from "bun";
 import { dirname, join, relative, resolve } from "node:path";
+import tokens from "../vendor/qsm-shell/tokens/deep-night.json";
+import { ladder as neutralSteps } from "../vendor/qsm-shell/scripts/ladder.mjs";
 
 type Rgb = [number, number, number]; // 0..1 sRGB
 type Lch = { L: number; C: number; h: number };
@@ -128,16 +131,17 @@ const best = bins.reduce((a, b) => (weight(b) > weight(a) ? b : a));
 const accentHue = grey ? 275 : meanHue(best);
 
 // ---- the ladder --------------------------------------------------------------------------
-// Owner tune 2026-10-17: a card stands 1.45:1 off the band so it reads as a
-// thing, not a traced rectangle; the overlay keeps 1.30:1 on the card.
-const STEPS: Record<string, number> = { surface: 1.45, overlay: 1.3 };
-const ladder: Record<string, Lch> = {};
-ladder.band = { L: 0.255, C: TINT_C, h: tintHue }; // lighter than the wallpaper's median: a frame, not a hole
-for (const [stepName, below] of [["surface", "band"], ["overlay", "surface"]] as const) {
-  ladder[stepName] = { L: nextStep(shipped(ladder[below]), ladder[below].L, TINT_C, tintHue, STEPS[stepName]), C: TINT_C, h: tintHue };
-}
-ladder.text = { L: 0.95, C: grey ? 0 : 0.012, h: tintHue };
-ladder.textMuted = { L: nextStep(shipped(ladder.overlay), ladder.overlay.L, TINT_C, tintHue, 4.5), C: TINT_C, h: tintHue };
+// The band is the one colour typed here, lighter than the wallpaper's median: a
+// frame, not a hole. The surface and overlay above it are the library's.
+const STEP: number = tokens.ladder.step;
+const band: Lch = { L: 0.255, C: TINT_C, h: tintHue };
+const neutrals: Record<string, string> = { band: hex(fromLch(band)) };
+for (const [stepName, value] of Object.entries(neutralSteps(neutrals.band, STEP))) neutrals[stepName] = (value as string).toUpperCase();
+const overlay = parseHex(neutrals.overlay);
+const ink: Record<string, Lch> = {
+  text: { L: 0.95, C: grey ? 0 : 0.012, h: tintHue },
+  textMuted: { L: nextStep(overlay, toLch(overlay).L, TINT_C, tintHue, 4.5), C: TINT_C, h: tintHue },
+};
 
 // ---- the pastels: fixed hues, one lightness, one chroma ------------------------------------
 const HUE_L = 0.82;
@@ -150,16 +154,15 @@ for (const [role, pastel] of Object.entries(STATUS)) {
 }
 const chroma = Math.min(0.1, ...Object.values(PASTELS).map((h) => maxChroma(HUE_L, h)));
 
-const palette: Record<string, string> = {};
-for (const [n, lch] of Object.entries(ladder)) palette[n] = hex(fromLch(lch));
+const palette: Record<string, string> = { ...neutrals };
+for (const [n, lch] of Object.entries(ink)) palette[n] = hex(fromLch(lch));
 for (const [n, h] of Object.entries(PASTELS)) palette[n] = hex(fromLch({ L: HUE_L, C: chroma, h }));
 
 // ---- roles --------------------------------------------------------------------------------
-// The edge colour (01-frame, owner 2026-10-18): the band a step lighter and a
-// touch more purple, a slight line at the silhouette's edge fading inward.
-// On the notebook panel the edge needs more chroma than lightness to read
-// purple rather than grey.
-palette.edgeColor = hex(fromLch({ L: ladder.band.L + 0.16, C: Math.min(TINT_C + 0.11, maxChroma(ladder.band.L + 0.16, tintHue)), h: tintHue }));
+// The edge colour (01-frame): the band a step lighter and a touch more purple,
+// a slight line at the silhouette's edge fading inward. On the notebook panel
+// the edge needs more chroma than lightness to read purple rather than grey.
+palette.edgeColor = hex(fromLch({ L: band.L + 0.16, C: Math.min(TINT_C + 0.11, maxChroma(band.L + 0.16, tintHue)), h: tintHue }));
 
 const roles: Record<string, string> = {
   band: palette.band,
@@ -181,7 +184,7 @@ const roles: Record<string, string> = {
 // ---- pairs: every floor, measured on the shipped 8-bit values -----------------------------
 const rgb = (n: string) => parseHex(roles[n]);
 const floors: [string, string, number][] = [
-  ["surface", "band", STEPS.surface], ["overlay", "surface", STEPS.overlay],
+  ["surface", "band", STEP], ["overlay", "surface", STEP],
   ["textOnPrimary", "primary", 4.5], ["textOnPrimary", "accent", 4.5], ["textOnPrimary", "info", 4.5],
   ["textOnPrimary", "success", 4.5], ["textOnPrimary", "warning", 4.5], ["textOnPrimary", "danger", 4.5],
 ];

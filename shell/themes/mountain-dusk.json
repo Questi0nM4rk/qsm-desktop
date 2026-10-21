@@ -4,10 +4,10 @@
   "roles": {
     "band": "#201A47",
     "edgeColor": "#492BAC",
-    "surface": "#393665",
-    "overlay": "#4A4777",
+    "surface": "#332E5E",
+    "overlay": "#434071",
     "text": "#EDEDF6",
-    "textMuted": "#B8B7F0",
+    "textMuted": "#AFAEE6",
     "primary": "#B3C0FF",
     "textOnPrimary": "#201A47",
     "accent": "#B3C0FF",

@@ -58,7 +58,7 @@ not the library's default.
 - **TRIAL (2026-10-17, owner: "try all three")**: dashboard cards carry the library Card's
   edge separation (the silhouette's own treatment, inside the card's edge), each card's
   glyph takes its pastel (the mark `accent`, weather `info`, the resource rings
-  `success`/`warning`/`danger` by load), and `surface` stands 1.45:1 off the band (11-theme).
+  `success`/`warning`/`danger` by load), and `surface` stands one ladder step off the band (11-theme).
   The owner judges which of the three stay.
 
 ## Tabs

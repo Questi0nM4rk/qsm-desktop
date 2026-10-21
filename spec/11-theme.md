@@ -22,10 +22,11 @@
 - **RATIFIED (2026-10-16, owner)**: the frame is one step LIGHTER than the wallpaper's median
   lightness, never darker (a darker frame reads as a hole). Deep Night: wallpaper median OKLCH
   L 0.20, band L 0.255 (owner tune 2026-10-16 night, up from the brand book's 0.24).
-- **RATIFIED (2026-10-16, owner)**: lightness separates. Containers step up a three-step neutral
-  ladder: `band` (rollout fill) -> `surface` (a card, row group, 1.45:1 on the band since the
-  owner's 2026-10-17 tune, so a card reads as a thing, not a traced rectangle) -> `overlay`
-  (1.30:1 on the card). No
+- **RATIFIED (2026-10-16, owner; one ratio 2026-10-21)**: lightness separates. Containers step up
+  a three-step neutral ladder: `band` (rollout fill) -> `surface` (a card, row group) ->
+  `overlay` (a popout over a card), each 1.30:1 on the one below. The band is the one colour
+  `derive-theme.ts` types; the library's `ladder()` computes the two steps above it from the
+  library's `ladder.step`, so the ratio has one owner and no theme types a step. No
   hairline, no 1px card border, no rim, no shadow does that job (a card in a list of cards adds a
   slight shadow under the step, 01-frame); a line in the shell is content
   (slider track, meter), never an edge. A fourth container level is a design error, not a step.
@@ -39,7 +40,7 @@
   teal 185, sky 230, lavender 275, mauve 315. A pastel never fills a container.
 - **Deep Night, derived** (sRGB hex):
   - palette: see shell/themes/deep-night.json for the generated values (band L 0.255, trace C 0.08) ·
-    ink #F0ECF5 (L 0.95) · ink-muted #CDB2E8 · edgeColor #681999 · rose #F5AEB7 · peach #F2B493 ·
+    ink #F0ECF5 (L 0.95) · ink-muted #C3A8DD · edgeColor #681999 · rose #F5AEB7 · peach #F2B493 ·
     yellow #D9C284 · green #A2D3A2 · teal #81D6CB · sky #89CFF1 · lavender #B4C0FC ·
     mauve #D9B4EA
   - roles: band=ground-0 · surface=ground-1 · overlay=ground-2 · text=ink · textMuted=ink-muted ·
@@ -51,13 +52,13 @@
   - roles that do not exist: `secondary`, `background`, `backgroundMid`, `backgroundEnd`,
     `bandFill` (band is the fill), `outline`, rim colour/strength/width. The edge separation of the
     silhouette (01-frame, role `edgeColor`) and the rail's divider line (03-rail) stay.
-- **Pairs** (WCAG, 8-bit): text on band/surface/overlay 13.7/9.4/7.2 · textMuted 8.6/5.9/4.5 ·
-  every pastel on band >= 9.1, on surface >= 7.0, on overlay >= 5.4 · textOnPrimary on any pastel
-  >= 9.1. Floors: 4.5 text, 3 glyphs/controls/focus ring, 1.3 between ladder steps, 1.2 between
+- **Pairs** (WCAG, 8-bit): text on band/surface/overlay 13.9/10.6/8.2 · textMuted 7.7/5.9/4.5 ·
+  every pastel on band >= 8.9, on surface >= 6.8, on overlay >= 5.2 · textOnPrimary on any pastel
+  >= 8.9. Floors: 4.5 text, 3 glyphs/controls/focus ring, 1.3 between ladder steps, 1.2 between
   adjacent states of one control.
 - Scales: text **10/12/14/18/22/28/44** (CaskaydiaCove Nerd Font, Mono cut for tabular values) ·
   spacing 2 (tight)/4/8/12/16/24/32 · radii **4/8/12/16/20 (melt)/28 (silhouette)**/pill ·
-  icons 12/16/20/26/34/44 · targets 24 min, 32 frequent · motion as 10-motion (press 80, micro
+  icons 12/16/20/24/32/44 · targets 24 min, 32 frequent · motion as 10-motion (press 80, micro
   130, fast 180, normal 260, reveal small 250 / large 500, theme swap 200, reduced <= 120).
   Nested corner = outer radius minus inset (card inset 16 in a 28 corner -> 12).
 - **RATIFIED (2026-08-19)**: EVERY radius in the shell is one of the ladder's names. The 8px
