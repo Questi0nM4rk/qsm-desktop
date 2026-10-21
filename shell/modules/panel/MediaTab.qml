@@ -36,6 +36,14 @@ Item {
     // How far an arrow key moves the playhead.
     readonly property real seekStepSeconds: 5
 
+    // Down from the tab bar (06): the seek ring when it can seek, else the
+    // first transport button.
+    function focusFirst(): void {
+        const first = artwork.canSeek ? artwork : shuffleButton;
+        if (first.enabled)
+            first.forceActiveFocus();
+    }
+
     // Same empty-state pattern as the launcher and clipboard surfaces.
     QsmShellComponents.EmptyState {
         anchors.centerIn: parent
@@ -75,6 +83,7 @@ Item {
             // and reached two different pictures, which is the proof it never
             // belonged to either of them.
             QsmShellComponents.Avatar {
+                id: avatar
                 anchors.centerIn: parent
                 size: artwork.width - 2 * (Theme.dashboardRingStroke + QsmShellStyle.Style.spaceTight)
                 background: Theme.surface
@@ -90,19 +99,28 @@ Item {
                 ringWidth: Theme.dashboardRingStroke
             }
 
+            // Only the focus ring: the seek target is the ring band, not the
+            // picture, so nothing grows or turns into a hand over the whole
+            // circle.
             QsmShellComponents.StateLayer {
                 anchors.fill: parent
                 interactive: artwork.canSeek
+                clickable: false
+                target: null
                 focused: artwork.activeFocus
                 focusRadius: width / 2
             }
 
-            // Seek by clicking the ring's angle (12 o'clock = 0).
+            // Seek by clicking the ring's angle (12 o'clock = 0). A tap on the
+            // picture inside the ring, or on the corner outside it, is not a seek.
             TapHandler {
                 enabled: artwork.canSeek
                 onTapped: (eventPoint, button) => {
                     const dx = eventPoint.position.x - artwork.width / 2;
                     const dy = eventPoint.position.y - artwork.height / 2;
+                    const r = Math.hypot(dx, dy);
+                    if (r < avatar.size / 2 || r > Math.max(avatar.implicitWidth, artwork.width) / 2)
+                        return;
                     let angle = Math.atan2(dy, dx) + Math.PI / 2;
                     if (angle < 0)
                         angle += Math.PI * 2;
@@ -178,6 +196,7 @@ Item {
                     Layout.fillWidth: true
                     thickness: Theme.sliderTrackThickness
                     thumbSize: Theme.sliderThumbSize
+                    accessibleName: "Seek"
                     enabled: MediaService.canSeek && MediaService.lengthSupported && MediaService.length > 0
                     value: root.progress
                     onMoved: MediaService.seek(seekSlider.value)
@@ -201,6 +220,7 @@ Item {
                 spacing: Theme.space2
 
                 QsmShellComponents.IconButton {
+                    id: shuffleButton
                     icon: "shuffle"
                     size: Theme.iconMd
                     color: MediaService.shuffle ? Theme.accent : Theme.text
@@ -254,6 +274,7 @@ Item {
                         required property var modelData
                         icon: "music"
                         label: modelData.identity || "player"
+                        checkable: true
                         active: MediaService.active === modelData
                         onClicked: MediaService.selected = modelData
                     }

@@ -20,6 +20,18 @@ GridLayout {
         SystemInfoService.refresh();
     }
 
+    // Down from the tab bar lands on the first operable control (06), the
+    // mini-player's transport; a card with nothing to drive keeps focus on
+    // the bar.
+    function focusFirst(): void {
+        for (const button of [previousButton, playButton, nextButton]) {
+            if (button.enabled) {
+                button.forceActiveFocus();
+                return;
+            }
+        }
+    }
+
     // The avatar picture exists only where the user put one: the Image is
     // given ~/.face only once that file has loaded, so a machine without it
     // shows Avatar's icon with no load warning.
@@ -122,12 +134,22 @@ GridLayout {
                     textFormat: Text.PlainText
                 }
 
-                QsmShellComponents.Capsule {
-                    Layout.alignment: Qt.AlignLeft
+                RowLayout {
                     Layout.topMargin: Theme.space1
-                    size: "sm"
-                    icon: "window"
-                    label: SystemInfoService.wm
+                    spacing: Theme.space2
+                    visible: SystemInfoService.wm.length > 0
+
+                    QsmShellComponents.SvgIcon {
+                        name: "window"
+                        size: Theme.iconSm
+                        color: Theme.textMuted
+                    }
+
+                    QsmShellComponents.Prose {
+                        role: "metadata"
+                        text: SystemInfoService.wm
+                        textFormat: Text.PlainText
+                    }
                 }
 
                 RowLayout {
@@ -292,6 +314,7 @@ GridLayout {
                 // target itself (icon stays the mini-card's own size) and
                 // the button carries hover/press/focus for free.
                 QsmShellComponents.IconButton {
+                    id: previousButton
                     icon: "skip-back"
                     size: Theme.iconSm
                     padding: Theme.space4
@@ -301,6 +324,7 @@ GridLayout {
                 }
 
                 QsmShellComponents.IconButton {
+                    id: playButton
                     icon: (mediaCard.player?.isPlaying ?? false) ? "pause" : "play"
                     size: Theme.iconMd
                     enabled: mediaCard.player?.canTogglePlaying ?? false
@@ -309,6 +333,7 @@ GridLayout {
                 }
 
                 QsmShellComponents.IconButton {
+                    id: nextButton
                     icon: "skip-forward"
                     size: Theme.iconSm
                     padding: Theme.space4

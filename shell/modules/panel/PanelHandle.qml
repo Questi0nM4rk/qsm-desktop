@@ -1,5 +1,6 @@
 import QtQuick
 import qs.QsmShell.Components as QsmShellComponents
+import qs.QsmShell.Style as QsmShellStyle
 import qs.theme
 
 // The idle affordance of the top panel (06, owner 2026-10-17): a small band
@@ -13,6 +14,11 @@ Item {
 
     required property var host
     property string registryId: "panel-handle"
+    // The host says the panel is already open: the grip then only rides the
+    // rim and holds the panel open under the pointer, so it stops offering
+    // the open action it no longer performs.
+    property bool open: false
+    readonly property bool pointerOver: interaction.hovered
     signal activated
     readonly property var actions: [({ name: "open-panel", invoke: () => root.activate() })]
 
@@ -62,7 +68,7 @@ Item {
                 height: width
                 radius: width / 2
                 // Hover is the grip about to act: the dots take the accent.
-                color: interaction.hovered || interaction.pressed ? Theme.accent : Theme.text
+                color: !root.open && (interaction.hovered || interaction.pressed) ? Theme.accent : Theme.text
 
                 Behavior on color {
                     ColorAnimation { duration: Motion.micro; easing.type: Motion.standardEasing }
@@ -76,6 +82,7 @@ Item {
         anchors.fill: parent
         // The dots grow under the pointer; the bulge is the shader's.
         target: grip
+        hoverScale: root.open ? 1 : QsmShellStyle.Motion.hoverScale
         interactive: root.visible && root.enabled
         focused: root.activeFocus
         focusRadius: root.height / 2

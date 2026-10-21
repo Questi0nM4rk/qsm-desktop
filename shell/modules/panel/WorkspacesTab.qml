@@ -73,6 +73,20 @@ Item {
         mover.running = true;
     }
 
+    // Down from the tab bar (06): the first tile.
+    function focusFirst(): void {
+        tiles.itemAt(0)?.forceActiveFocus();
+    }
+
+    // Keyboard focus moves along the strip, so the strip follows it.
+    function revealTile(tile: Item): void {
+        const left = row.x + tile.x - growthX;
+        const right = row.x + tile.x + tile.width + growthX;
+        strip.contentX = Math.max(0, Math.min(strip.contentWidth - strip.width,
+            left < strip.contentX ? left
+            : right > strip.contentX + strip.width ? right - strip.width : strip.contentX));
+    }
+
     Component.onCompleted: HyprClientsService.refresh()
 
     Process {
@@ -103,11 +117,13 @@ Item {
             spacing: root.tileGap
 
             Repeater {
+                id: tiles
                 model: root.workspaces
 
                 QsmShellComponents.Surface {
                     id: tile
                     required property var modelData
+                    required property int index
                     readonly property bool current: root.monitor?.activeWorkspace?.id === modelData.id
                     readonly property var tileClients: root.clients.filter(client =>
                         client.workspace?.id === tile.modelData.id && client.mapped !== false)
@@ -115,6 +131,35 @@ Item {
                     width: root.tileWidth
                     height: root.tileHeight
                     radius: Theme.panelCardRadius
+                    activeFocusOnTab: true
+                    Accessible.role: Accessible.Button
+                    Accessible.name: `Workspace ${modelData.id}`
+                    Accessible.onPressAction: modelData.activate()
+                    onActiveFocusChanged: if (activeFocus) root.revealTile(tile)
+
+                    // Return and Space switch to the workspace; Left and Right walk
+                    // the tiles (the tab step takes only keys no content claimed)
+                    // and with Shift carry the tile's first window to the neighbour.
+                    function step(delta: int, carry: bool): void {
+                        const target = tiles.itemAt(tile.index + delta);
+                        if (!target)
+                            return;
+                        if (carry && tile.tileClients.length > 0)
+                            root.moveWindow(tile.tileClients[0].address, target.modelData.id);
+                        else
+                            target.forceActiveFocus();
+                    }
+                    Keys.onReturnPressed: modelData.activate()
+                    Keys.onEnterPressed: modelData.activate()
+                    Keys.onSpacePressed: modelData.activate()
+                    Keys.onLeftPressed: event => {
+                        event.accepted = true;
+                        tile.step(-1, (event.modifiers & Qt.ShiftModifier) !== 0);
+                    }
+                    Keys.onRightPressed: event => {
+                        event.accepted = true;
+                        tile.step(1, (event.modifiers & Qt.ShiftModifier) !== 0);
+                    }
                     base: Theme.surface
                     // Hover and press recolour the body (Style.tone); the layer
                     // below grows it.

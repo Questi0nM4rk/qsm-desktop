@@ -138,8 +138,10 @@ Item {
                             root.tabSelected(root.tabs[index].key);
                         }
                         Keys.onDownPressed: {
-                            const content = contentLoader.item as Item;
-                            if (content) content.forceActiveFocus();
+                            // The tab names its first operable control; a tab with none
+                            // leaves focus on the bar, where its ring is.
+                            const content = contentLoader.item;
+                            if (content && content.focusFirst) content.focusFirst();
                         }
                     }
                 }
@@ -211,6 +213,7 @@ Item {
     // after it has left both (06, owner 2026-10-18). Passing from the dots
     // zone down into the panel never leaves the union.
     readonly property bool pointerHeld: panelHover.hovered || root.scene.panelHandleHovered
+        || root.scene.panelGripHovered
     onPointerHeldChanged: {
         if (pointerHeld)
             leaveTimer.stop();
