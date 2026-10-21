@@ -125,13 +125,15 @@ intent separately from the backend result, with no password in event payloads.
 - **RATIFIED (2026-08-16)**: toggle-state entries (awake/coffee, and all future toggles) show
   state by SWAPPING THE ICON (empty cup ↔ full cup), NEVER by a glow/light ring around it.
   The current highlight treatment is abolished.
-- **RATIFIED (2026-10-16, owner)**: workspace indicator = FIXED 16x16 slots (compact: a wheel and a click are the only aim there) + a
-  TRAVELING numbered pill: ALL Hyprland workspaces globally (monitor-synced — every rail
-  renders the identical column, active = the globally focused workspace); slots hold fixed
-  positions with a 4px gap; each shows a 6px dot — occupied `textMuted`, urgent `danger`,
-  empty `overlay`; the ACTIVE workspace is marked by the library's count chip (the updates badge's own size, 28x16),
-  `accent` over its slot, with the number in `textOnPrimary`, which GLIDES between slots (popout-morph tier, no overshoot) — the pill is the
-  only moving part; its dot fades aside beneath it. NO app icons — app identity lives ONLY in
+- **RATIFIED (2026-10-16, owner)**: workspace indicator = FIXED slots, rail-wide and 24px high
+  (the pointer floor; a wheel and a click are the only aim there), tiled with no gap, + a
+  numbered pill: at most SIX Hyprland workspaces globally (monitor-synced — every rail
+  renders the identical column, active = the globally focused workspace), the six nearest the
+  active one; each shows an 8px dot — occupied `textMuted`, urgent `danger`,
+  empty `overlay`; the ACTIVE workspace is marked by the library's count chip (the updates badge's own size, 32x16),
+  `accent` over its slot, with the real number in `textOnPrimary`; it hops between slots and
+  never glides (a switch is the most frequent thing the rail does); hovering it grows it and
+  lifts its fill like any body. Its dot fades aside beneath it. NO app icons — app identity lives ONLY in
   the center app list. Wheel switches; click a slot jumps.
 - **DEFAULT (2026-08-16)**: workspace model = Hyprland's dynamic per-monitor workspaces; one
   slot per EXISTING workspace of that monitor.

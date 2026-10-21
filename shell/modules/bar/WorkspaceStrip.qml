@@ -1,14 +1,15 @@
 import QtQuick
-import QtQuick.Layouts
 import Quickshell.Hyprland
 import qs.QsmShell.Components as QsmShellComponents
 import qs.QsmShell.Style as QsmShellStyle
 import qs.theme
 
-// Workspace slots (03): every Hyprland workspace, in one compact slot each, a
-// dot per slot (occupied textMuted, urgent danger, empty overlay), and ONE
-// moving part: the library's accent count chip with the active number in
-// textOnPrimary, gliding between slots. Wheel switches, click jumps, no popout.
+// Workspace slots (03): at most six Hyprland workspaces, the six nearest the
+// active one, one slot each as wide as the rail and tall enough for a pointer,
+// a dot per slot (occupied textMuted, urgent danger, empty overlay), and the
+// active slot's dot is the library's accent count chip with the real number in
+// textOnPrimary. A switch is the most frequent thing the rail does, so the chip
+// hops and never glides. Wheel switches, click jumps, no popout.
 Item {
     id: root
 
@@ -46,23 +47,29 @@ Item {
         activate(target);
     }
 
-    readonly property int activeIndex:
+    // The six nearest the active workspace, in order: with more than six the
+    // window keeps the active one in its third slot where the list allows, and
+    // the chip names the real number whichever slots are shown.
+    readonly property int activeIndexAll:
         Math.max(0, allWorkspaces.findIndex(workspace => workspace.id === activeWorkspaceId))
-    readonly property real slotStride: Theme.railWorkspaceSlot + QsmShellStyle.Style.space1
+    readonly property int windowStart: Math.max(0,
+        Math.min(activeIndexAll - 2, allWorkspaces.length - Theme.railWorkspaceSlots))
+    readonly property var shownWorkspaces:
+        allWorkspaces.slice(windowStart, windowStart + Theme.railWorkspaceSlots)
+    readonly property int activeIndex: activeIndexAll - windowStart
 
     implicitWidth: Theme.railWidth
     implicitHeight: slots.implicitHeight
 
-    ColumnLayout {
+    Column {
         id: slots
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.left: parent.left
+        anchors.right: parent.right
         anchors.top: parent.top
-        // The 4px step between slots; slotStride above must move with it,
-        // because the travelling pill walks slotStride.
-        spacing: QsmShellStyle.Style.space1
+        spacing: 0
 
         Repeater {
-            model: root.allWorkspaces
+            model: root.shownWorkspaces
 
             Item {
                 id: slot
@@ -74,9 +81,8 @@ Item {
                 readonly property bool occupied: (workspace?.toplevels.values.length ?? 0) > 0
                 readonly property bool urgent: workspace?.urgent ?? false
 
-                Layout.alignment: Qt.AlignHCenter
-                implicitWidth: Theme.railWorkspaceSlot
-                implicitHeight: Theme.railWorkspaceSlot
+                width: parent.width
+                height: Theme.railWorkspaceSlot
 
                 activeFocusOnTab: true
                 Accessible.role: Accessible.Button
@@ -86,9 +92,13 @@ Item {
                 Keys.onEnterPressed: root.activate(slot.workspaceId)
                 Keys.onSpacePressed: root.activate(slot.workspaceId)
 
+                // Centred by arithmetic, never by `anchors.centerIn`: that
+                // rounds to a whole LOGICAL pixel, which is between two device
+                // pixels at 1.25 once hover has grown the body.
                 Rectangle {
                     id: dot
-                    anchors.centerIn: parent
+                    x: (parent.width - width) / 2
+                    y: (parent.height - height) / 2
                     width: Theme.railWorkspaceDot + 2 * dotLayer.growth
                     height: width
                     radius: QsmShellStyle.Style.radiusPill
@@ -108,37 +118,40 @@ Item {
                     }
                 }
 
-                // Hover grows and recolours the dot (09); the slot stays the
-                // hit area, and a press recolours without resizing.
+                // The active slot's dot is the numbered accent chip: the library's
+                // Badge at its own size, the same chip as the updates-cell
+                // badge (03-rail), so a Badge has one height. Hovering the slot
+                // grows it by whole device pixels and lifts its fill, like a
+                // body.
+                QsmShellComponents.Badge {
+                    x: (parent.width - width) / 2
+                    y: (parent.height - height) / 2
+                    visible: slot.active
+                    tone: "accent"
+                    filled: true
+                    text: String(slot.workspaceId)
+                    color: QsmShellStyle.Style.tone(Theme.accent, dotLayer.hovered,
+                        dotLayer.pressed, false, true, Theme.accent)
+                    width: implicitWidth + 2 * dotLayer.growth
+                    height: implicitHeight + 2 * dotLayer.growth
+                }
+
+                // The slot is the hit area, as wide as the rail and across the
+                // band's gutter to the true screen edge like every rail cell.
+                // Hover grows and recolours what is in it (09): the dot, or the
+                // chip on the active slot; a press recolours without resizing.
                 QsmShellComponents.StateLayer {
                     id: dotLayer
                     anchors.fill: parent
-                    extent: Theme.railWorkspaceDot
-                    hoverScale: Theme.railWorkspaceDotHoverScale
+                    anchors.leftMargin: -Theme.railGutter
+                    extent: slot.active ? QsmShellStyle.Style.badgeHeight : Theme.railWorkspaceDot
+                    hoverScale: slot.active ? QsmShellStyle.Motion.hoverScale
+                        : Theme.railWorkspaceDotHoverScale
                     focused: slot.activeFocus
                     focusRadius: QsmShellStyle.Style.radiusPill
                     onClicked: root.activate(slot.workspaceId)
                 }
             }
-        }
-    }
-
-    // The numbered accent chip — the one moving part. Glides between the
-    // fixed slots on the popout-morph tier and carries the active number.
-    // The library's Badge at its own size, never resized: it is the same chip
-    // as the updates-cell badge (03-rail), so a Badge has one height.
-    QsmShellComponents.Badge {
-        id: activePill
-
-        tone: "accent"
-        filled: true
-        text: String(root.activeWorkspaceId)
-        anchors.horizontalCenter: parent.horizontalCenter
-        y: slots.y + root.activeIndex * root.slotStride
-            + (Theme.railWorkspaceSlot - height) / 2
-
-        Behavior on y {
-            NumberAnimation { duration: QsmShellStyle.Motion.morphGlide; easing.type: QsmShellStyle.Motion.standardEasing }
         }
     }
 

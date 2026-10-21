@@ -229,19 +229,19 @@ QtObject {
     // The rail clock: time above a smaller numeric date.
     readonly property int railClockDigitSize: QsmShellStyle.Style.textLg
     readonly property int railClockDateSize: QsmShellStyle.Style.textSm
-    // A group separator in the rail is the library's line at the band's
-    // strength, inset from both walls.
+    // A rail group rule is the library's line, inset from both walls.
     readonly property real railDividerInset: QsmShellStyle.Style.space2
     // A tray menu's separators are short lines.
     readonly property int menuSeparatorWidth: 96
     // How many connected devices the one BLE cell splits into before it stops
     // subdividing.
     readonly property int railDeviceMax: 4
-    // Workspace slots: compact, because there is nothing to aim at beyond a
-    // wheel and a click; the numbered accent chip is the one moving part and
-    // overhangs its slot sideways.
-    readonly property int railWorkspaceSlot: 16
-    readonly property int railWorkspaceDot: 6
+    // Workspace slots: the pointer floor high and the whole rail wide, tiled
+    // with no gap between them; at most this many show, the six nearest the
+    // active one, and the accent chip carries the real number.
+    readonly property int railWorkspaceSlot: QsmShellStyle.Style.size("Control", "xs")
+    readonly property int railWorkspaceSlots: 6
+    readonly property int railWorkspaceDot: QsmShellStyle.Style.space2
     // The dot is so small that the library's hover growth would be under half
     // a pixel, so it grows by half again to be seen at all.
     readonly property real railWorkspaceDotHoverScale: QsmShellStyle.Style.reducedMotion ? 1 : 1.5
