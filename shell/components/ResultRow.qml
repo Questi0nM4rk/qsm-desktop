@@ -19,12 +19,14 @@ QsmShellComponents.ListRow {
 
     // { kind, label, sub, icon (svg name) | appIcon (desktop icon name) | thumb }
     required property var item
-    // Compact rows (the clipboard): one ListRow size down, one icon step down.
+    // Compact rows (the clipboard): one ListRow size down.
     property bool compact: false
 
     readonly property string _appIcon: root.item?.appIcon ?? ""
     readonly property url _thumb: root.item?.thumb ?? ""
     readonly property bool _isApp: root._appIcon.length > 0 || root.item?.kind === "app"
+    // A wallpaper's aspect: the picture box is as tall as the leading box.
+    readonly property real _thumbAspect: 7 / 4
 
     // Action-picker group labels are model rows so the keyboard can preserve
     // its one cursor. They render as an inert divider, never as an action.
@@ -43,13 +45,13 @@ QsmShellComponents.ListRow {
         // then the app icon or glyph stays, so no empty box flashes.
         readonly property bool thumbReady: thumbImage.status === Image.Ready
 
-        // Wallpaper thumbnail (>theme rows). 7:4, sized off the leading box so
+        // Wallpaper thumbnail (>theme rows), sized off the leading box so
         // compact rows shrink it with them.
         Rectangle {
             anchors.centerIn: parent
             opacity: lead.thumbReady ? 1 : 0
             height: parent.height
-            width: height * 7 / 4
+            width: height * root._thumbAspect
             radius: QsmShellStyle.Style.radiusSm
             color: QsmShellStyle.Style.surface
             clip: true
@@ -72,16 +74,16 @@ QsmShellComponents.ListRow {
             icon: root._appIcon
         }
 
-        // The glyph keeps its own smaller size inside the shared box — a
-        // command glyph should not be as loud as an application's icon, it
-        // just has to start the text in the same place.
+        // The row's own glyph size inside the shared box: a command glyph
+        // is not as loud as an application's icon, it just has to start the
+        // text in the same place.
         QsmShellComponents.SvgIcon {
             anchors.centerIn: parent
             visible: !lead.thumbReady && !root._isApp
             name: root.item?.icon ?? "sparkle"
-            size: root.compact ? QsmShellStyle.Style.iconSm : QsmShellStyle.Style.iconMd
-            // A kill row must not look like a launch row (owner 2026-08-21):
-            // the glyph carries the danger colour; the text stays ordinary.
+            size: root.glyphSize
+            // A kill row must not look like a launch row: the glyph carries
+            // the danger colour; the text stays ordinary.
             color: (root.item?.kind ?? "").startsWith("kill")
                 ? Theme.danger : Theme.text
         }

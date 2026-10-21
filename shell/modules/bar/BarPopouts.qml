@@ -70,12 +70,12 @@ QsmShellComponents.Rollout {
         const body = root.currentBody;
         return body && typeof body.readout === "function" ? body.readout(name) : null;
     }
-    readonly property real nonAnimWidth: (currentPopout?.implicitWidth ?? 0) + QsmShellStyle.Style.space4 * 2
+    readonly property real nonAnimWidth: (currentPopout?.implicitWidth ?? 0) + QsmShellStyle.Style.rolloutPadding * 2
     // "match" copies the parent rollout's height so the seam between them is a
     // straight line with no step; anything else hugs its content.
     readonly property real nonAnimHeight: currentPopout?.sizing === "match" && root.matchHeight > 0
         ? root.matchHeight
-        : (currentPopout?.implicitHeight ?? 0) + QsmShellStyle.Style.space4 * 2
+        : (currentPopout?.implicitHeight ?? 0) + QsmShellStyle.Style.rolloutPadding * 2
 
     function syncRenderKind(): void {
         if (suppressed) {
@@ -130,7 +130,7 @@ QsmShellComponents.Rollout {
         Item {
             id: contentColumn
             anchors.fill: parent
-            anchors.margins: QsmShellStyle.Style.space4
+            anchors.margins: QsmShellStyle.Style.rolloutPadding
 
             Popout {
                 name: "network"
@@ -201,7 +201,7 @@ QsmShellComponents.Rollout {
                 name: "colorpick"
                 sizing: "match"
                 sourceComponent: ColorPickContent {
-                    spanHeight: root.matchHeight - QsmShellStyle.Style.space4 * 2
+                    spanHeight: root.matchHeight - QsmShellStyle.Style.rolloutPadding * 2
                 }
             }
 
@@ -231,7 +231,7 @@ QsmShellComponents.Rollout {
                         role: "body"
                         muted: true
                         visible: text.length > 0
-                        width: Theme.popoutWidth - QsmShellStyle.Style.space4 * 2
+                        width: Theme.popoutContentWidth
                         text: root.controller.detail
                         // Prose leaves a wrapping role's elide at None
                         // ("somewhere to go"); this one is capped at two
@@ -260,7 +260,7 @@ QsmShellComponents.Rollout {
             Popout {
                 name: "calendar"
                 sourceComponent: QsmShellComponents.MonthCalendar {
-                    width: Theme.popoutWidth - QsmShellStyle.Style.space4 * 2
+                    width: Theme.popoutContentWidth
                 }
             }
 
@@ -308,7 +308,7 @@ QsmShellComponents.Rollout {
             QsmShellComponents.Prose {
                 role: "body"
                 muted: true
-                width: Theme.popoutWidth - QsmShellStyle.Style.space4 * 2
+                width: Theme.popoutContentWidth
                 text: root.controller.detail
             }
         }
@@ -321,7 +321,7 @@ QsmShellComponents.Rollout {
         default property alias content: inner.data
         property string title
 
-        width: Theme.popoutWidth - QsmShellStyle.Style.space4 * 2
+        width: Theme.popoutContentWidth
         spacing: QsmShellStyle.Style.space2
 
         QsmShellComponents.Prose {
@@ -367,7 +367,7 @@ QsmShellComponents.Rollout {
         }
 
         ColumnLayout {
-            width: Theme.popoutWidth - QsmShellStyle.Style.space4 * 2
+            width: Theme.popoutContentWidth
             spacing: QsmShellStyle.Style.space2
 
             RowLayout {

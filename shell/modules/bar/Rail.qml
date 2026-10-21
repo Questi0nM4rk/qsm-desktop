@@ -36,7 +36,7 @@ Item {
             width: parent.width
             spacing: Theme.railItemGap
 
-            // The mark: decorative, in the accent, the one 20px glyph of the
+            // The mark: decorative, in the accent, the one larger glyph of the
             // band (03 DEFAULT: no click, no popout).
             RailEntry {
                 icon: "arch"
@@ -274,7 +274,7 @@ Item {
                 }
             }
 
-            // The quick menu: 32px cells, 16px glyphs. Active or connected
+            // The quick menu: compact cells. Active or connected
             // draws the glyph in text, off in textMuted; state changes the
             // glyph's SHAPE, never colour alone. Hover rolls out, click does
             // the cell's one cheap toggle, the rollout owns any escape to a
@@ -328,7 +328,7 @@ Item {
 
         RailDivider {}
 
-        // Opens the session surface (08): a 32px cell, the glyph in danger.
+        // Opens the session surface (08): a cell with the glyph in danger.
         // Click, no hover card beyond its name.
         RailEntry {
             icon: "power"

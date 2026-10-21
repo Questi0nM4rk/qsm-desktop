@@ -23,94 +23,100 @@ ColumnLayout {
     readonly property int activeSourceId: AudioService.source?.id ?? -1
     signal interacted(string action, var payload)
 
-    // 4 between rows, not 8: whatever groups elements must have MORE space
-    // around the group than within it (visual-craft). The section labels below
-    // carry the group gap; a uniform 8 made three kinds of thing read as one
-    // undifferentiated list.
+    // Rows sit one step apart and a section starts a step clear of what
+    // precedes it: whatever groups elements must have MORE space around the
+    // group than within it.
     spacing: QsmShellStyle.Style.space1
 
-    QsmShellComponents.Prose { role: "section"; text: "Output" }
-
-    Repeater {
-        model: AudioService.sinks
-
-        PopoutRow {
-            required property var modelData
-            Layout.fillWidth: true
-            icon: "volume"
-            label: modelData.nickname || modelData.description || modelData.name
-            active: modelData.id === root.activeSinkId
-            onClicked: { root.interacted("output-device", { id: modelData.id }); AudioService.setDefaultSink(modelData); }
-        }
-    }
-
-    QsmShellComponents.Prose {
-        role: "metadata"
-        visible: AudioService.sinks.length === 0
-        text: "No output devices"
-    }
-
-    RowLayout {
-        Layout.topMargin: QsmShellStyle.Style.space1
+    QsmShellComponents.Section {
         Layout.fillWidth: true
-        spacing: QsmShellStyle.Style.space2
+        Layout.topMargin: 0
+        title: "Output"
 
-        QsmShellComponents.SvgIcon {
-            name: AudioService.outputMuted ? "volume-muted" : "volume"
-            size: QsmShellStyle.Style.iconSm
-            color: Theme.textMuted
+        Repeater {
+            model: AudioService.sinks
+
+            PopoutRow {
+                required property var modelData
+                Layout.fillWidth: true
+                icon: "volume"
+                label: modelData.nickname || modelData.description || modelData.name
+                active: modelData.id === root.activeSinkId
+                onClicked: { root.interacted("output-device", { id: modelData.id }); AudioService.setDefaultSink(modelData); }
+            }
         }
 
-        QsmShellComponents.Slider {
-            id: outputSlider
-            Layout.fillWidth: true
-            value: AudioService.outputValue
-            enabled: AudioService.outputAvailable
-            Accessible.name: "Output volume"
-            // Matches the OSD pill's nudge, so the wheel means the same amount
-            // wherever you turn it at a volume.
-            wheelUnits: Math.round(Theme.osdWheelStep / stepSize)
-            onMoved: AudioService.setOutput(outputSlider.value)
-            onCommitted: root.interacted("output-level", { value: outputSlider.value })
-        }
-
-        // Reserved for the widest reading, right-aligned, so 9% becoming 10%
-        // never moves the slider's track.
         QsmShellComponents.Prose {
-            id: outputReading
             role: "metadata"
-            technical: true
-            Layout.preferredWidth: widest.advanceWidth
-            horizontalAlignment: Text.AlignRight
-            text: `${Math.round(AudioService.outputValue * 100)}%`
+            visible: AudioService.sinks.length === 0
+            text: "No output devices"
+        }
 
-            TextMetrics {
-                id: widest
-                font: outputReading.font
-                text: "100%"
+        RowLayout {
+            Layout.topMargin: QsmShellStyle.Style.space1
+            Layout.fillWidth: true
+            spacing: QsmShellStyle.Style.space2
+
+            QsmShellComponents.SvgIcon {
+                name: AudioService.outputMuted ? "volume-muted" : "volume"
+                size: QsmShellStyle.Style.iconSm
+                color: Theme.textMuted
+            }
+
+            QsmShellComponents.Slider {
+                id: outputSlider
+                Layout.fillWidth: true
+                value: AudioService.outputValue
+                enabled: AudioService.outputAvailable
+                Accessible.name: "Output volume"
+                // Matches the OSD pill's nudge, so the wheel means the same amount
+                // wherever you turn it at a volume.
+                wheelUnits: Math.round(Theme.osdWheelStep / stepSize)
+                onMoved: AudioService.setOutput(outputSlider.value)
+                onCommitted: root.interacted("output-level", { value: outputSlider.value })
+            }
+
+            // Reserved for the widest reading, right-aligned, so 9% becoming 10%
+            // never moves the slider's track.
+            QsmShellComponents.Prose {
+                id: outputReading
+                role: "metadata"
+                technical: true
+                Layout.preferredWidth: widest.advanceWidth
+                horizontalAlignment: Text.AlignRight
+                text: `${Math.round(AudioService.outputValue * 100)}%`
+
+                TextMetrics {
+                    id: widest
+                    font: outputReading.font
+                    text: "100%"
+                }
             }
         }
     }
 
-    QsmShellComponents.Prose { role: "section"; Layout.topMargin: QsmShellStyle.Style.space3; text: "Input" }
+    QsmShellComponents.Section {
+        Layout.fillWidth: true
+        title: "Input"
 
-    Repeater {
-        model: AudioService.sources
+        Repeater {
+            model: AudioService.sources
 
-        PopoutRow {
-            required property var modelData
-            Layout.fillWidth: true
-            icon: "microphone"
-            label: modelData.nickname || modelData.description || modelData.name
-            active: modelData.id === root.activeSourceId
-            onClicked: { root.interacted("input-device", { id: modelData.id }); AudioService.setDefaultSource(modelData); }
+            PopoutRow {
+                required property var modelData
+                Layout.fillWidth: true
+                icon: "microphone"
+                label: modelData.nickname || modelData.description || modelData.name
+                active: modelData.id === root.activeSourceId
+                onClicked: { root.interacted("input-device", { id: modelData.id }); AudioService.setDefaultSource(modelData); }
+            }
         }
-    }
 
-    QsmShellComponents.Prose {
-        role: "metadata"
-        visible: AudioService.sources.length === 0
-        text: "No input devices"
+        QsmShellComponents.Prose {
+            role: "metadata"
+            visible: AudioService.sources.length === 0
+            text: "No input devices"
+        }
     }
 
     // Deeper mixer controls stay with the real app (delegation law).

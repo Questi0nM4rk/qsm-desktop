@@ -21,11 +21,13 @@ import qs.state
 // handles `keyPressed` itself and accepts what it takes; everything it leaves
 // alone falls through to the field.
 QsmShellComponents.TextField {
+    id: root
+
     onSelectionClaimed: ShellState.claimKeyboardSelection()
 
     leading: QsmShellComponents.SvgIcon {
         name: "search"
-        size: QsmShellStyle.Style.iconMd
+        size: QsmShellStyle.Style.glyphBeside(root.fieldHeight)
         color: QsmShellStyle.Style.textMuted
     }
 }

@@ -7,7 +7,7 @@ import qs.theme
 // wallpaper thumbnail + name, scaled/dimmed off-center so the centered card
 // reads as the selection.
 //
-// UX-3 (07 RATIFIED 2026-08-25): hover SELECTS, like every other result
+// UX-3 (07 RATIFIED): hover SELECTS, like every other result
 // surface. The hovered card becomes the centered one — one cursor shared by
 // pointer and keyboard — so Enter always applies the card that is visibly
 // marked. Hover adds no growth of its own: selection IS the response, and a
@@ -23,6 +23,9 @@ QsmShellComponents.Card {
     // { kind: "theme", label, sub, thumb, data } — see LauncherSurface.results.
     required property var item
     required property bool centered
+    // How far the caption's ground fades toward the shadow colour: enough to
+    // keep the name legible over any wallpaper.
+    readonly property real captionScrim: 0.65
     signal activated
     signal hoveredEntered
 
@@ -52,10 +55,10 @@ QsmShellComponents.Card {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        height: parent.height * 0.4
+        height: caption.implicitHeight + QsmShellStyle.Style.space3 * 3
         gradient: Gradient {
             GradientStop { position: 0; color: "transparent" }
-            GradientStop { position: 1; color: Qt.rgba(0, 0, 0, 0.65) }
+            GradientStop { position: 1; color: Qt.alpha(QsmShellStyle.Style.shadow, root.captionScrim) }
         }
     }
 
@@ -72,6 +75,7 @@ QsmShellComponents.Card {
     }
 
     Column {
+        id: caption
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom

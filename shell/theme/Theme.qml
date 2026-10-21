@@ -194,7 +194,7 @@ QtObject {
     // The panel's column width: the panel less the column's two margins. The
     // media tab fills it and never grows past it, so a long title or a player
     // picker cannot widen the panel.
-    readonly property int mediaContentWidth: panelWidth - QsmShellStyle.Style.space4 * 2
+    readonly property int mediaContentWidth: panelWidth - QsmShellStyle.Style.rolloutPadding * 2
     // Performance tab.
     readonly property int performanceThermalAlertC: 90 // icon and bar flip to danger above this
     readonly property real performanceThermalScaleC: 100 // bar fraction = temp / this
@@ -242,9 +242,14 @@ QtObject {
     // The bell corner: a bulge that retracts when everything is read, the glyph
     // resting on the band's corner; its menu is a top-right modal the height of
     // the clipboard.
-    readonly property int notificationBellWidth: 40
-    readonly property int notificationBellHeight: 32
+    readonly property int notificationBellWidth: QsmShellStyle.Style.size("Control", "md")
+    readonly property int notificationBellHeight: QsmShellStyle.Style.size("Control", "sm")
     readonly property int notificationMenuHeight: 520
+
+    // The mechanism demonstrations EdgeScene.testToggleRollout opens over IPC:
+    // one body per tier.
+    readonly property size testRolloutLarge: Qt.size(340, 220)
+    readonly property size testRolloutSmall: Qt.size(220, 260)
 
     // ── Handles ────────────────────────────────────────────────────────
     // The OSD circle nub and the top dot pair.
@@ -263,6 +268,8 @@ QtObject {
 
     // ── Popouts and OSD ────────────────────────────────────────────────
     readonly property int popoutWidth: 280
+    // What a popout's content is given: its width less the rollout's padding.
+    readonly property int popoutContentWidth: popoutWidth - QsmShellStyle.Style.rolloutPadding * 2
     // The Bluetooth popout caps its device rows, connected first.
     readonly property int popoutDeviceListMax: 5
     // The OSD is a narrow surface with a fat track: the value rides a circle

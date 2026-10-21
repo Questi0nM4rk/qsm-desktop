@@ -32,7 +32,7 @@ Item {
     readonly property bool animating: rollout.animating
     readonly property real bodyWidth: Math.max(0, Math.min(Theme.panelWidth,
         Math.floor(2 * Math.min(root.scene.panelCenterX - root.host.leftEdge,
-            root.width - QsmShellStyle.Style.frameThickness - root.scene.panelCenterX) - QsmShellStyle.Style.space4 * 2)))
+            root.width - QsmShellStyle.Style.frameThickness - root.scene.panelCenterX) - QsmShellStyle.Style.rolloutPadding * 2)))
     readonly property real bodyHeight: Math.max(0, Math.min(Theme.panelHeight,
         Math.floor(root.height - QsmShellStyle.Style.frameThickness * 2 - QsmShellStyle.Style.space4
             - Theme.panelHandleHeight / 2 - Theme.panelHandleProud)))
@@ -103,7 +103,7 @@ Item {
             ColumnLayout {
                 id: panelColumn
                 anchors.fill: parent
-                anchors.margins: QsmShellStyle.Style.space4
+                anchors.margins: QsmShellStyle.Style.rolloutPadding
                 spacing: QsmShellStyle.Style.space3
 
                 QsmShellComponents.ScrollArea {

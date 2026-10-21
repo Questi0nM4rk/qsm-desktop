@@ -6,17 +6,11 @@ import qs.theme
 // One row in a rail popout list: the library's row, plus the trailing
 // composition every one of these lists uses.
 //
-// THE ROW IS THE CONTROL. These lists used to hang a filled capsule off every
-// row — measured: 9 in the network popout, 11 in the bluetooth one, all inside
-// a 248px-wide surface. Three things went wrong at once. Nothing was primary,
-// because everything was a button. The capsules are filled boxes stacked
-// inside a surface the design keeps deliberately boxless. And the chrome left
-// the DEVICE NAME 58px out of 224, which is why every name truncated at about
-// eleven characters.
-//
-// So clicking the row does the row's obvious thing — connect, select, join —
-// and the current one is marked with the accent tick rather than with a button
-// whose label states what it already is. "Default" was never a control.
+// THE ROW IS THE CONTROL. Clicking it does the row's obvious thing — connect,
+// select, join — and the current one is marked with the accent tick, not with
+// a button whose label states what it already is. A button per row would make
+// nothing primary, stack filled boxes in a surface the design keeps boxless,
+// and leave the device name too little width to read.
 //
 // It does NOT recede its neighbours. A launcher list dims everything that is
 // not current because you want one thing from it; this is a list you READ, and
@@ -42,8 +36,8 @@ QsmShellComponents.ListRow {
     signal clicked
     signal actionTriggered
 
-    // 32, not 40: a device list is a scan target, and at a 44px pitch four
-    // networks filled the popout with air.
+    // The compact row: a device list is a scan target, and a roomier pitch
+    // fills the popout with air.
     size: "sm"
     recede: false
     primary: root.label
@@ -83,12 +77,12 @@ QsmShellComponents.ListRow {
         // destructive action gets tertiary treatment and only takes the danger
         // colour once the pointer is on its row — three red bins down the side
         // of a device list shout louder than anything the list is for.
-        color: root.hovered && root.actionDanger ? Theme.danger : Theme.textMuted
-        opacity: root.hovered ? 1 : QsmShellStyle.Style.opacityDisabled
+        color: !root.hovered ? QsmShellStyle.Style.disabled(Theme.textMuted)
+            : root.actionDanger ? Theme.danger : Theme.textMuted
         onClicked: root.actionTriggered()
 
-        Behavior on opacity {
-            NumberAnimation { duration: Motion.micro }
+        Behavior on color {
+            ColorAnimation { duration: Motion.micro; easing.type: Motion.standardEasing }
         }
     }
 }

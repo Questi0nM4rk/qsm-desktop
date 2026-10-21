@@ -403,49 +403,47 @@ ColumnLayout {
         font.pixelSize: QsmShellStyle.Style.textXs
     }
 
-    QsmShellComponents.Prose {
-        role: "section"
+    QsmShellComponents.Section {
+        Layout.fillWidth: true
         visible: root.devices.length > 0
-        Layout.topMargin: QsmShellStyle.Style.space3
-        text: "Wired"
-    }
+        title: "Wired"
 
-    Repeater {
-        model: root.devices
+        Repeater {
+            model: root.devices
 
-        PopoutRow {
-            required property var modelData
-            Layout.fillWidth: true
-            icon: "cable"
-            label: modelData.connection || modelData.device
-            value: modelData.state
-            active: modelData.state === "connected"
-            // Nothing to click: nmcli owns wired profiles and this popout is
-            // not going to rebuild that. A cursor and a press bounce on a row
-            // that does nothing is a promise the row cannot keep.
-            interactive: false
+            PopoutRow {
+                required property var modelData
+                Layout.fillWidth: true
+                icon: "cable"
+                label: modelData.connection || modelData.device
+                value: modelData.state
+                active: modelData.state === "connected"
+                // Nothing to click: nmcli owns wired profiles and this popout is
+                // not going to rebuild that. A cursor and a press bounce on a row
+                // that does nothing is a promise the row cannot keep.
+                interactive: false
+            }
         }
     }
 
-    QsmShellComponents.Prose {
-        role: "section"
+    QsmShellComponents.Section {
+        Layout.fillWidth: true
         visible: root.vpns.length > 0
-        Layout.topMargin: QsmShellStyle.Style.space3
-        text: "VPN"
-    }
+        title: "VPN"
 
-    Repeater {
-        model: root.vpns
+        Repeater {
+            model: root.vpns
 
-        PopoutRow {
-            required property var modelData
-            Layout.fillWidth: true
-            icon: "lock"
-            label: modelData.name
-            value: modelData.active ? "up" : "down"
-            active: modelData.active
-            disabled: NetworkService.busy
-            onClicked: root.operate("vpn", modelData.name)
+            PopoutRow {
+                required property var modelData
+                Layout.fillWidth: true
+                icon: "lock"
+                label: modelData.name
+                value: modelData.active ? "up" : "down"
+                active: modelData.active
+                disabled: NetworkService.busy
+                onClicked: root.operate("vpn", modelData.name)
+            }
         }
     }
 

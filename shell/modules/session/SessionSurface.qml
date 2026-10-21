@@ -110,8 +110,8 @@ Item {
         suppressed: root.fullscreen || root.scene.focusMode
         // One token for spec-08's 96, shared with the button itself (was the
         // literal duplicated across both files — S5-F14).
-        bodyWidth: QsmShellStyle.Style.tileWidth + QsmShellStyle.Style.space4 * 2
-        bodyHeight: column.implicitHeight + QsmShellStyle.Style.space4 * 2
+        bodyWidth: QsmShellStyle.Style.tileWidth + QsmShellStyle.Style.rolloutPadding * 2
+        bodyHeight: column.implicitHeight + QsmShellStyle.Style.rolloutPadding * 2
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
 
@@ -163,8 +163,8 @@ Item {
                         // happens next matters more than what is picked.
                         accent: Theme.primary
                         // 08: shutdown, the one destructive action, is set
-                        // apart by 16px (the column's own gap is space2) and
-                        // draws in danger.
+                        // apart by a full step (space4 including the column's
+                        // own gap) and draws in danger.
                         danger: modelData.role === "shutdown"
                         Layout.topMargin: modelData.role === "shutdown" ? QsmShellStyle.Style.space4 - QsmShellStyle.Style.space2 : 0
                         buttonWidth: QsmShellStyle.Style.tileWidth

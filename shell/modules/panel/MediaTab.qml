@@ -28,11 +28,11 @@ Item {
     implicitWidth: Theme.mediaContentWidth
     // The panel body less its own margins, the tab bar and the gap under it
     // (PanelSurface's column); the viewport scrolls when a screen is shorter.
-    implicitHeight: Theme.panelHeight - QsmShellStyle.Style.space4 * 2 - Theme.panelTabBarHeight - QsmShellStyle.Style.space3
+    implicitHeight: Theme.panelHeight - QsmShellStyle.Style.rolloutPadding * 2 - Theme.panelTabBarHeight - QsmShellStyle.Style.space3
 
     // The artwork grows to the body, up to a third of the column so the text
     // keeps the rest.
-    readonly property real artBox: Math.min(implicitHeight - QsmShellStyle.Style.space4 * 2, Theme.mediaContentWidth / 3)
+    readonly property real artBox: Math.min(implicitHeight - QsmShellStyle.Style.rolloutPadding * 2, Theme.mediaContentWidth / 3)
     // How far an arrow key moves the playhead.
     readonly property real seekStepSeconds: 5
 
@@ -54,7 +54,7 @@ Item {
     RowLayout {
         id: mediaRow
         anchors.fill: parent
-        anchors.margins: QsmShellStyle.Style.space4
+        anchors.margins: QsmShellStyle.Style.rolloutPadding
         visible: root.player !== null
         spacing: QsmShellStyle.Style.space5
 
@@ -108,7 +108,7 @@ Item {
                 clickable: false
                 target: null
                 focused: artwork.activeFocus
-                focusRadius: width / 2
+                focusRadius: QsmShellStyle.Style.radiusPill
             }
 
             // Seek by clicking the ring's angle (12 o'clock = 0). A tap on the

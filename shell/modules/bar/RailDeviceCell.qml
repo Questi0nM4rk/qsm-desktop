@@ -53,10 +53,10 @@ RailEntry {
     // exists from the third device onward.
     readonly property int columns: shown > 1 ? 2 : 1
     readonly property int rows: shown > 2 ? 2 : 1
-    // Any split at all drops to the smallest glyph: a subdivided 40px cell
-    // gives each device a 20px box, and a 16px glyph in it touched the cross.
-    // 12px leaves 4px of clearance on every side of the line. Undivided, the
-    // cell matches RailEntry's own glyph so the cluster reads as one column.
+    // Any split at all drops to the smallest glyph: a subdivided cell gives
+    // each device a box a regular glyph would fill to the cross. The smallest
+    // one leaves clearance on every side of the line. Undivided, the cell
+    // matches RailEntry's own glyph so the cluster reads as one column.
     readonly property int glyphSize: shown > 1 ? QsmShellStyle.Style.iconXs : QsmShellStyle.Style.iconSm
 
     Item {
@@ -91,7 +91,7 @@ RailEntry {
 
         // The cross: vertical bar with the second device, horizontal with the
         // third. Each arm is a stub sized to the glyphs it separates — a rule
-        // spanning the whole cell dwarfed the 12px glyphs on either side of it.
+        // spanning the whole cell dwarfed the glyphs on either side of it.
         readonly property real armLength: Math.round(root.glyphSize * 1.2)
 
         // The rail's own rule, so weight and strength stay the divider's.

@@ -2,15 +2,16 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
+import qs.QsmShell.Style as QsmShellStyle
 import qs.services
 import qs.state
 import qs.theme
 
-// The session backdrop (08 RATIFIED): 35% dim overlay, genuinely blurred by
-// the compositor — the ONE sanctioned second surface besides the scene
-// window (09), because compositor blur needs its own layer surface. Always
-// mapped (transparent + input-transparent when idle) so it stays stacked
-// BELOW the later-mapped EdgeScene in the same layer.
+// The session backdrop (08 RATIFIED): the library's scrim strength over a
+// background the compositor genuinely blurs — the ONE sanctioned second
+// surface besides the scene window (09), because compositor blur needs its own
+// layer surface. Always mapped (transparent + input-transparent when idle) so
+// it stays stacked BELOW the later-mapped EdgeScene in the same layer.
 PanelWindow {
     id: root
 
@@ -93,7 +94,7 @@ PanelWindow {
     Rectangle {
         anchors.fill: parent
         color: Theme.band
-        opacity: root.active && !root.fullscreen ? 0.35 : 0
+        opacity: root.active && !root.fullscreen ? QsmShellStyle.Style.scrimOpacity : 0
 
         Behavior on opacity {
             NumberAnimation { duration: Motion.fast; easing.type: Motion.standardEasing }

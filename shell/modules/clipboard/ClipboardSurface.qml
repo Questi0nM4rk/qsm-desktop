@@ -38,7 +38,7 @@ Item {
     // reads it and computes nothing.
     readonly property real preferredBodyHeight: Theme.clipboardMaxRows * Theme.clipboardRowHeight
         + (Theme.clipboardMaxRows - 1) * QsmShellStyle.Style.space1
-        + search.implicitHeight + footer.implicitHeight + QsmShellStyle.Style.space3 * 2 + QsmShellStyle.Style.space4 * 2
+        + search.implicitHeight + footer.implicitHeight + QsmShellStyle.Style.space3 * 2 + QsmShellStyle.Style.rolloutPadding * 2
 
     // Deterministic thumbnail path: cache dir plus the cliphist id, so nothing
     // has to be parsed back out of the decoder. The only unknown is whether
@@ -183,7 +183,7 @@ exit 0`, "_", ...images.map(image => image.file)];
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: QsmShellStyle.Style.space4
+        anchors.margins: QsmShellStyle.Style.rolloutPadding
         spacing: QsmShellStyle.Style.space3
 
         SearchField {

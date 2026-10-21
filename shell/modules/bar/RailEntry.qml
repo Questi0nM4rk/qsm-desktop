@@ -17,16 +17,16 @@ Item {
     property string icon
     property color iconColor: Theme.text
     property bool active
-    // Compact rows are reserved for controls within a rail group. Their 16px
-    // glyphs stay legible while the group reads as a unit rather than five
-    // isolated 40px buttons.
+    // Compact rows are reserved for controls within a rail group. Their
+    // glyphs stay legible while the group reads as a unit rather than a
+    // column of isolated buttons.
     property bool compact
     // Destructive-flavored entry (power): slight danger-tinted base.
     property bool danger
     property bool interactive
     property bool clickable: true
-    // The narrow rail uses the compact 16px glyph step. The Arch logo is the
-    // one deliberate 20px exception at the top of the band.
+    // A rail cell carries no label, so its glyph takes the small icon step.
+    // The Arch logo is the one deliberate larger glyph, at the top of the band.
     property int iconSize: QsmShellStyle.Style.iconSm
     property var popouts: null
     property string popoutKind

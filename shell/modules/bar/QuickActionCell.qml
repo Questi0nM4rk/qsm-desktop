@@ -5,7 +5,7 @@ import qs.theme
 
 // One cell in the quick-actions column. A RailEntry by construction, not by
 // resemblance — the column is a second rail, so its cells must BE rail cells:
-// same 40px box, same growth response, same selected pill plugging into the
+// same box, same growth response, same selected pill plugging into the
 // column it belongs to.
 //
 // There is no label. What the glyph means lives in the level-2 rollout to the

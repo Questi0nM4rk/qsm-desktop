@@ -97,7 +97,7 @@ GridLayout {
                     // Separation by VALUE, not a stroke — 11-theme ratifies
                     // flat fills with no outlines anywhere (audit S5-F1): the
                     // avatar disc is overlay, so the badge takes band.
-                    radius: width / 2
+                    radius: QsmShellStyle.Style.radiusPill
                     color: Theme.band
 
                     QsmShellComponents.SvgIcon {

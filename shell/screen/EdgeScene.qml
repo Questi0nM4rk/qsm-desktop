@@ -33,7 +33,7 @@ PanelWindow {
     required property var modelData
     readonly property bool fullscreen: FullscreenService.fullscreenFor(modelData)
     readonly property bool focusMode: FocusModeService.focusFor(modelData)
-    // Focus mode always reduces its own left edge to the 16px frame. The
+    // Focus mode always reduces its own left edge to the frame. The
     // persisted rail snapshot still decides what returns after focus exits.
     readonly property bool railCollapsed: root.focusMode || ShellState.isRailCollapsed(modelData.name)
     // The "panel" and "session" modals, scoped to whichever monitor is focused.
@@ -341,7 +341,8 @@ PanelWindow {
     // band OVER the windows below — the exclusion zone (FrameExclusions)
     // tracks only the pin state, never the peek.
     property int leftEdge: railRevealed ? Theme.reservedLeft : QsmShellStyle.Style.frameThickness
-    // The asymmetric 60/16px bands make the physical midpoint the wrong viewport center.
+    // The left band is wider than the others, so the physical midpoint is the
+    // wrong viewport center.
     readonly property real panelCenterX: (leftEdge + width - QsmShellStyle.Style.frameThickness) / 2
 
     Behavior on leftEdge {
@@ -553,9 +554,9 @@ PanelWindow {
             anchors.top: parent.top
             anchors.bottom: parent.bottom
             anchors.left: parent.left
-            // Center the rail column in the 60px left band (01-frame): the
-            // band is thicker than frameThickness, so the old
-            // frameThickness margin pushed the column toward screen center.
+            // Center the rail column in the left band (01-frame): the band is
+            // thicker than frameThickness, so a frameThickness margin would push
+            // the column toward screen center.
             anchors.leftMargin: (Theme.reservedLeft - Theme.railWidth) / 2
             width: Theme.railWidth
             screen: root.modelData
@@ -647,7 +648,7 @@ PanelWindow {
         host: border
         name: "notifications"
         edges: ["top", "right"]
-        bodyWidth: QsmShellStyle.Style.notificationWidth + QsmShellStyle.Style.space4 * 2
+        bodyWidth: QsmShellStyle.Style.notificationWidth + QsmShellStyle.Style.rolloutPadding * 2
         bodyHeight: Math.min(
             Theme.notificationMenuHeight,
             root.height - QsmShellStyle.Style.space6 * 2)
@@ -656,7 +657,7 @@ PanelWindow {
         NotificationCenterSurface {
             id: notificationCenter
             anchors.fill: parent
-            anchors.margins: QsmShellStyle.Style.space4
+            anchors.margins: QsmShellStyle.Style.rolloutPadding
         }
     }
 
@@ -782,8 +783,8 @@ PanelWindow {
     // LAST so the full-scene catch wins z-order over the rail.
     //
     // Launcher: bottom-center; the body keeps one height whatever the result
-    // count (owner 2026-10-19). 07 RATIFIED numbers: width 600, 7 rows of
-    // 57px + the search field.
+    // count (owner 2026-10-19). 07 RATIFIED: Theme.launcherWidth, and
+    // Theme.launcherMaxRows rows plus the search field.
     ModalHost {
         scene: root
         host: border
@@ -913,7 +914,8 @@ PanelWindow {
         tier: "large"
         shouldBeActive: root.testRollouts["top"] ?? false
         suppressed: root.fullscreen
-        bodyWidth: 340; bodyHeight: 220
+        bodyWidth: Theme.testRolloutLarge.width
+        bodyHeight: Theme.testRolloutLarge.height
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
 
@@ -938,12 +940,13 @@ PanelWindow {
         tier: "large"
         shouldBeActive: root.testRollouts["bottom"] ?? false
         suppressed: root.fullscreen
-        bodyWidth: 300; bodyHeight: 200
+        bodyWidth: Theme.testRolloutLarge.width
+        bodyHeight: Theme.testRolloutLarge.height
         anchors.bottom: parent.bottom
         anchors.left: parent.left
-        // 10px off the left band's inner wall — inside melt reach, so the
+        // One step off the left band's inner wall: inside melt reach, so the
         // corner auto-join arc to the second band segment must appear.
-        anchors.leftMargin: 70
+        anchors.leftMargin: Theme.reservedLeft + QsmShellStyle.Style.space2
 
         // Centred in the whole shape, band included -- these surfaces exist
         // to show the mechanism, so they must not display the defect it fixes.
@@ -966,7 +969,8 @@ PanelWindow {
         tier: "small"
         shouldBeActive: root.testRollouts["right"] ?? false
         suppressed: root.fullscreen
-        bodyWidth: 220; bodyHeight: 300
+        bodyWidth: Theme.testRolloutSmall.width
+        bodyHeight: Theme.testRolloutSmall.height
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
 
@@ -991,7 +995,8 @@ PanelWindow {
         tier: "small"
         shouldBeActive: root.testRollouts["left"] ?? false
         suppressed: root.fullscreen
-        bodyWidth: 220; bodyHeight: 260
+        bodyWidth: Theme.testRolloutSmall.width
+        bodyHeight: Theme.testRolloutSmall.height
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
 

@@ -31,7 +31,7 @@ Item {
     // The tab is as tall as the panel's body (PanelSurface's column), always,
     // so the row of tiles does not jump with the number of workspaces.
     implicitWidth: Theme.mediaContentWidth
-    implicitHeight: Theme.panelHeight - QsmShellStyle.Style.space4 * 2 - Theme.panelTabBarHeight - QsmShellStyle.Style.space3
+    implicitHeight: Theme.panelHeight - QsmShellStyle.Style.rolloutPadding * 2 - Theme.panelTabBarHeight - QsmShellStyle.Style.space3
 
     // Tiles grow to the body: three share the column width (a tile and its
     // hover growth are w * (2 + hoverScale) across, with two gaps), or the
@@ -210,11 +210,8 @@ Item {
                             height: Math.min(root.areaHeight - y, modelData.size[1] * scaleY)
                             // Concentric with the tile: its radius less the inset the area keeps.
                             radius: Math.max(0, tile.radius - root.areaInset)
+                            // One ladder step above the tile separates it; no outline.
                             color: Theme.overlay
-                            // Ratified (06, 2026-08-21): the tiles are a diagram, so the
-                            // rects keep their 1px outline, in the shell's edge tint.
-                            border.width: 1
-                            border.color: Theme.edgeColor
                             opacity: windowDrag.active ? Theme.opacityDrag : 1
 
                             AppIcon {

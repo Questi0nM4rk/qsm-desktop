@@ -86,7 +86,7 @@ Item {
     // works. A harmony set off a grey is meaningless either way.
     readonly property real baseHue: root.base.hslHue < 0 ? 0 : root.base.hslHue
 
-    implicitWidth: Theme.popoutWidth - QsmShellStyle.Style.space4 * 2
+    implicitWidth: Theme.popoutContentWidth
     // NOT derived from `column`: column fills this item, so reading its
     // implicitHeight back into this one is the childrenRect binding loop the
     // PRIMER warns about. The host hands the span down; the token is the floor
@@ -295,7 +295,7 @@ Item {
                     anchors.left: parent.left
                     anchors.top: parent.top
                     text: "Picks are kept here"
-                    opacity: QsmShellStyle.Style.opacityDisabled
+                    color: QsmShellStyle.Style.recede(QsmShellStyle.Style.textMuted)
                     visible: ColorPickService.history.length === 0
                 }
 

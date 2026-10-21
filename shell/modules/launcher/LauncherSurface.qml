@@ -10,8 +10,8 @@ import qs.state
 import qs.theme
 import "../../QsmShell/Components/fuzzy.js" as Fuzzy
 
-// Launcher content (07-launcher, amended 2026-08-17 — caelestia numbers):
-// search field at the BOTTOM, results above (max 7 rows of 57px),
+// Launcher content (07-launcher): search field at the BOTTOM, results above
+// (at most Theme.launcherMaxRows rows),
 // keyboard-first. '>' enters command mode: >calc (live math via qalc, Enter
 // copies), >kill (windows + processes, Enter kills — deliberate, no confirm),
 // >theme (a horizontal carousel instead of the row list — Left/Right
@@ -192,7 +192,7 @@ Item {
     // resizes the body.
     readonly property real preferredBodyHeight: Theme.launcherMaxRows * Theme.launcherRowHeight
         + (Theme.launcherMaxRows - 1) * QsmShellStyle.Style.space1
-        + QsmShellStyle.Style.size("TextField", "lg") + QsmShellStyle.Style.space3 + QsmShellStyle.Style.space4 * 2
+        + QsmShellStyle.Style.size("TextField", "lg") + QsmShellStyle.Style.space3 + QsmShellStyle.Style.rolloutPadding * 2
 
     onModeChanged: {
         if (mode === "kill")
@@ -1119,7 +1119,7 @@ ps -eo pid,pcpu,comm --no-headers --sort=-pcpu | head -25 | awk '{printf "P|%s|%
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: QsmShellStyle.Style.space4
+        anchors.margins: QsmShellStyle.Style.rolloutPadding
         spacing: QsmShellStyle.Style.space3
 
         // Results ABOVE the search field (07 RATIFIED): bottom-up so the

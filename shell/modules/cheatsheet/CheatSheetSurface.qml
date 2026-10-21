@@ -134,7 +134,7 @@ Item {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: QsmShellStyle.Style.space4
+        anchors.margins: QsmShellStyle.Style.rolloutPadding
         // Almost to the silhouette's bottom edge: the roll-away fade owns
         // that boundary and lands on the band, so the fade reads as running
         // into the ground.

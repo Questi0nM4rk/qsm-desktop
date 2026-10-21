@@ -67,7 +67,7 @@ Item {
                 // and its peak fell to 2.4:1; the text role clears 3:1.
                 width: Theme.dotGlyphSize
                 height: width
-                radius: width / 2
+                radius: QsmShellStyle.Style.radiusPill
                 // Hover is the grip about to act: the dots take the accent.
                 color: root.dotsLit ? Theme.accent : Theme.text
 
@@ -86,7 +86,7 @@ Item {
         hoverScale: root.open ? 1 : QsmShellStyle.Motion.hoverScale
         interactive: root.visible && root.enabled
         focused: root.activeFocus
-        focusRadius: root.height / 2
+        focusRadius: QsmShellStyle.Style.radiusPill
         onClicked: root.activate()
     }
 }

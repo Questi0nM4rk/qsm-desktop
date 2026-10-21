@@ -135,9 +135,8 @@ Item {
         // band (squared corner + rim burial).
         edges: ["top", "right"]
         tier: "large"
-        // Cards have 8px of inner rollout padding. An 8px wall inset therefore
-        // lands their right content edge 16px from the screen border instead
-        // of the old 24px, close to the separator endpoint without crowding it.
+        // The cards carry their own inset, so the wall inset is one step: their
+        // content edge lands close to the separator endpoint without crowding it.
         edgeInsetH: QsmShellStyle.Style.space2
         shouldBeActive: root.popupActive
         // Fullscreen keeps its allowlist (09) through the capsule, which paints
