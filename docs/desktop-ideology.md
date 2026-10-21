@@ -44,7 +44,8 @@ without interrupting the focused application.
 - A rollout is one object with different content and dimensions, not a family
   of locally animated lookalikes. New rollout behavior belongs in
   `components/Rollout.qml`.
-- Shared motion values belong in `theme/Motion.qml`. Local hard-coded entrance
+- Shared motion values belong in the library's `Motion`; a value this desktop needs that
+  `Motion` lacks is added there, never typed in a second table. Local hard-coded entrance
   values are regressions.
 - Motion is slight, eased, and functional: it confirms selection, reveals
   hierarchy, or explains spatial change. If it flickers, competes with reading,

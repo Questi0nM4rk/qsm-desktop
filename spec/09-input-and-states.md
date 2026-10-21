@@ -189,9 +189,10 @@ Every interactive element speaks these states and no others; they sit under the 
   fill.
 - **Focus** (keyboard): a 2 px `focus` ring outside the control, 2 px offset, visible on every
   focusable element, always, because the keyboard owns selection.
-- **Disabled**: every colour of the control blended toward the band at `opacityDisabled`
-  (0.35), never opacity on the composite. Non-current rows of a pick list recede by the same
-  blend at `opacityRecede` (0.70), the lowest strength that keeps muted text above 4.5:1.
+- **Disabled**: every colour of the control blended toward the band at `opacityDisabled`,
+  never opacity on the composite. Non-current rows of a pick list recede by the same blend at
+  `opacityRecede`, which the library derives per theme as the weakest strength that keeps muted
+  text at the text floor on the band; `derive-theme.ts` stops on a theme where it does not.
 - **Status glyphs change shape** for state, not only colour (wifi, cable, wifi-off; bluetooth
   mark, the connected device's glyph; volume, volume-muted). Colour alone never carries
   meaning: a number or a glyph is the word, colour repeats it.

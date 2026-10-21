@@ -62,8 +62,8 @@ shader per monitor. Nothing floats; nothing draws its own chrome.
 - **Services** (`shell/services/`): audio (PipeWire), brightness, notifications, fullscreen
   tracking, awake/idle-inhibit. Delegation law: shell is UI only — Hyprlock, Hypridle,
   NetworkManager, BlueZ, PipeWire stay untouched.
-- **State/theme**: `shell/state/` (ShellState, OsdState), `shell/theme/` (Theme, Motion
-  tokens). Persistence: `~/.local/state/qsm/state.json`. Themes are per-theme JSON + wallpaper
+- **State/theme**: `shell/state/` (ShellState, OsdState), `shell/theme/` (Theme: the colour
+  roles, fonts and this desktop's layout; motion is the library's). Persistence: `~/.local/state/qsm/state.json`. Themes are per-theme JSON + wallpaper
   (N-theme law: adding one = zero code).
 
 Implementation boundaries and the owner-led workflow are in `spec/13-implementation.md`.
