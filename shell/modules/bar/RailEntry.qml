@@ -68,8 +68,8 @@ Item {
     // A cell the pointer can act on is a keyboard stop too, and a screen
     // reader names it by what its popout names.
     activeFocusOnTab: interactive
-    Accessible.role: Accessible.Button
-    Accessible.name: popoutTitle
+    Accessible.role: interactive ? Accessible.Button : Accessible.Graphic
+    Accessible.name: interactive ? popoutTitle : ""
     Accessible.description: popoutDetail
     Accessible.onPressAction: root.activateByKey()
 

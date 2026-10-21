@@ -22,6 +22,11 @@ Item {
     readonly property var monitor: Hyprland.monitorFor(screen)
     readonly property var toplevels: monitor?.activeWorkspace?.toplevels?.values ?? []
 
+    // The rail's wheel router asks whether the list itself can scroll under
+    // the pointer, so the wheel scrolls it instead of changing a level.
+    readonly property alias view: appList
+    readonly property bool scrollable: appList.visible && appList.contentHeight > appList.height
+
     implicitWidth: Theme.railWidth
 
     QsmShellComponents.SvgIcon {

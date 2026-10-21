@@ -192,6 +192,7 @@ Item {
     // The middle section: the current workspace's apps, icon only, top-aligned
     // under the workspace group; names and live titles are in the hover popout.
     RailAppList {
+        id: appList
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: topStack.bottom
@@ -356,6 +357,14 @@ Item {
             if (point.x >= 0 && point.x <= workspaces.width
                     && point.y >= 0 && point.y <= workspaces.height) {
                 workspaces.moveRelative(event.angleDelta.y > 0 ? -1 : 1);
+                return;
+            }
+            // A list that overflows owns the wheel over its rows.
+            const listPoint = root.mapToItem(appList.view, event.x, event.y);
+            if (appList.scrollable
+                    && listPoint.x >= 0 && listPoint.x <= appList.view.width
+                    && listPoint.y >= 0 && listPoint.y <= appList.view.height) {
+                event.accepted = false;
                 return;
             }
             const delta = event.angleDelta.y > 0

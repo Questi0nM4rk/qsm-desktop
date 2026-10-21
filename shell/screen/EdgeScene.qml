@@ -501,11 +501,37 @@ PanelWindow {
             ? Theme.reservedLeft + popout.width + actionPopout.width
             : root.railRevealed ? Theme.reservedLeft : Theme.frameThickness
 
+        // Escape closes the rail's popouts from whichever rail or popout item
+        // holds keyboard focus; a field that handles Escape itself (the Wi-Fi
+        // password) takes it first.
+        Keys.onEscapePressed: event => {
+            if (!popoutController.active) {
+                event.accepted = false;
+                return;
+            }
+            popoutStack.childController.dismiss();
+            popoutStack.parentController.dismiss();
+        }
+
+        // 03-rail: the peek opens instantly and clears railPeekGraceMs after
+        // the pointer leaves, so a re-entry within it keeps the band.
+        Timer {
+            id: peekGraceTimer
+            interval: Theme.railPeekGraceMs
+            onTriggered: root.railPeeking = false
+        }
+
         HoverHandler {
             id: contentHover
             onHoveredChanged: {
-                if (!root.fullscreen && !root.focusMode && root.railCollapsed)
-                    root.railPeeking = contentHover.hovered;
+                if (root.fullscreen || root.focusMode || !root.railCollapsed)
+                    return;
+                if (contentHover.hovered) {
+                    peekGraceTimer.stop();
+                    root.railPeeking = true;
+                } else {
+                    peekGraceTimer.restart();
+                }
             }
         }
 
@@ -723,6 +749,7 @@ PanelWindow {
         height: implicitHeight
         x: root.panelCenterX - width / 2
         y: panelSurface.leadingEdgeY - height / 2 + Theme.panelHandleProud
+        open: ShellState.modal === "panel"
         // Hover already opened it; a click only opens, never toggles it shut.
         onActivated: if (ShellState.modal !== "panel") ShellState.togglePanel("dashboard")
         readonly property rect hitRect: visible ? Qt.rect(x, y, width, height) : Qt.rect(0, 0, 0, 0)
@@ -741,6 +768,10 @@ PanelWindow {
     // `handlesArmed` is that rule, shared with the OSD handle.
     readonly property bool panelHandleHovered: panelHandleZone.width > 0
         && scenePointer.contains(panelHandleZone)
+    // The grip riding the open panel's rim sits above the rollout and takes
+    // the pointer from the panel's own hover reader, so its hover holds the
+    // panel open too (06: the union of trigger and panel).
+    readonly property bool panelGripHovered: panelHandle.visible && panelHandle.pointerOver
     onPanelHandleHoveredChanged: {
         if (panelHandleHovered && root.handlesArmed)
             ShellState.togglePanel("dashboard");

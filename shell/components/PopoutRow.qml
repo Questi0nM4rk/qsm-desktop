@@ -48,7 +48,14 @@ QsmShellComponents.ListRow {
     recede: false
     primary: root.label
     selected: root.active
+    // Tab reaches the row; a click on a plain Item does not take focus, so the
+    // ring shows for the keyboard only.
+    activeFocusOnTab: root.selectable
+    focused: root.activeFocus
     onActivated: root.clicked()
+    Keys.onReturnPressed: root.activate()
+    Keys.onEnterPressed: root.activate()
+    Keys.onSpacePressed: root.activate()
 
     QsmShellComponents.SvgIcon {
         visible: root.badgeIcon.length > 0

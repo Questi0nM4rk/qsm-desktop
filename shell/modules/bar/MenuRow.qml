@@ -31,9 +31,10 @@ ColumnLayout {
         strength: Theme.menuSeparatorStrength
     }
 
-    // The row, its dimming when disabled, its focus and its press are the
-    // library's. A row with a submenu toggles it instead of firing.
+    // The row, its dimming when disabled and its press are the library's;
+    // its focus ring is bound below. A row with a submenu toggles it instead of firing.
     QsmShellComponents.ListRow {
+        id: row
         visible: !root.entry.isSeparator
         // A separator keeps its row so the menu's document order is the
         // entry's, but it is not a target.
@@ -42,6 +43,9 @@ ColumnLayout {
         Layout.leftMargin: root.depth * Theme.space3
         size: "sm"
         recede: false
+        // The library's focused default is false; Menu grants real focus to
+        // the row, so the keyboard ring follows it.
+        focused: row.activeFocus
         primary: root.entry.text || "…"
         disabled: root.entry.enabled === false
         // Checkable state via icon swap, never a glow.

@@ -114,6 +114,9 @@ QtObject {
     // How long the OSD slider thumb keeps showing its value after the last
     // change (05-osd, Sliders).
     readonly property int osdValueHoldMs: 1000
+    // 03-rail "Pin / collapse / peek": a peeked band clears this long after the
+    // pointer leaves it.
+    readonly property int railPeekGraceMs: 150
 
     // Every role fades: a swap that fades some and snaps others reads as a
     // glitch in the ones that snapped.
@@ -169,8 +172,25 @@ QtObject {
     readonly property int floatingShadowExtent: 24
     // The ceiling of a bodied notification's preview: the card takes its real
     // lines up to this height and never more.
-    readonly property int notificationPreviewHeight: 80
+    readonly property int notificationPreviewHeight: 88
     readonly property int notificationBodyViewportHeight: 96
+    // Quiet echoes and decoration the library reads through Style: a divider's
+    // line, a tinted badge or callout, a modal's dim, a sparkline's area, a
+    // spinner's unlit ring and a raised thumb's shadow.
+    readonly property real dividerOpacity: 0.35
+    readonly property real badgeTintOpacity: 0.12
+    readonly property real badgeInkMix: 0.5
+    readonly property real calloutTintOpacity: 0.1
+    readonly property real scrimOpacity: 0.55
+    readonly property real areaFillOpacity: 0.18
+    readonly property real ringTrackOpacity: 0.18
+    readonly property real thumbShadowOpacity: 0.45
+    readonly property real spinnerStrokeRatio: 0.16
+    readonly property int badgeDot: 8
+    readonly property int statWidth: 140
+    // A transparency checker under a colour swatch is two greys.
+    readonly property color checkerLight: "#ffffff"
+    readonly property color checkerDark: "#c0c0c0"
     readonly property var sizes: ({
         Switch: { sm: 12, md: 16, lg: 24 },
         Checkbox: { sm: 12, md: 16, lg: 24 },

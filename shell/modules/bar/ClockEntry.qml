@@ -13,15 +13,36 @@ Item {
     width: Theme.railWidth
     implicitHeight: content.implicitHeight + Theme.space2 * 2
 
+    function openCalendar(): void {
+        root.popouts?.show("calendar", root, Qt.formatDate(root.now, "MMMM yyyy"), "", null);
+    }
+
+    // Hover, click and keys open the same calendar.
+    activeFocusOnTab: true
+    Accessible.role: Accessible.Button
+    Accessible.name: "Calendar"
+    Accessible.onPressAction: root.openCalendar()
+    Keys.onReturnPressed: root.openCalendar()
+    Keys.onEnterPressed: root.openCalendar()
+    Keys.onSpacePressed: root.openCalendar()
+
     // Hover-enter opens the calendar; whether it STAYS open is EdgeScene's
     // geometric region test, not a leave-time close call here (03-rail
     // "Popouts", RATIFIED 2026-09-07).
     HoverHandler {
         onHoveredChanged: {
             if (hovered)
-                root.popouts?.show("calendar", root,
-                    Qt.formatDate(root.now, "MMMM yyyy"), "", null);
+                root.openCalendar();
         }
+    }
+
+    // Click and the keyboard ring only: the reading does not grow or recolour.
+    QsmShellComponents.StateLayer {
+        anchors.fill: parent
+        target: null
+        focused: root.activeFocus
+        focusRadius: Theme.radiusMd
+        onClicked: root.openCalendar()
     }
 
     // One shared system clock at minute precision — the display shows no

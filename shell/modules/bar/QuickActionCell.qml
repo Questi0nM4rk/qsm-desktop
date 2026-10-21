@@ -37,6 +37,15 @@ RailEntry {
 
     onClicked: confirm.trigger()
 
+    // Escape abandons an armed confirmation first; with nothing armed it
+    // passes up so the popout closes.
+    Keys.onEscapePressed: event => {
+        if (root.armed)
+            confirm.disarm();
+        else
+            event.accepted = false;
+    }
+
     // Leaving the cell abandons the intent: an "armed" that outlives the
     // gesture is a trap laid for the next click.
     onHoveredChanged: {
