@@ -127,7 +127,7 @@ Item {
             id: cacheCell
             width: parent.width
             popouts: root.controller
-            icon: "trash-2"
+            icon: "brush-cleaning"
             destructive: true
             popoutKind: "clearcache"
             popoutTitle: "Clean caches"

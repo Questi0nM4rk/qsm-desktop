@@ -37,12 +37,13 @@ Item {
             width: parent.width
             spacing: Theme.railItemGap
 
-            // The mark: decorative, in the accent, the one larger glyph of the
-            // band (03 DEFAULT: no click, no popout).
+            // The mark: identity and decoration, so it stays muted (accent
+            // means current), the one larger glyph of the band (03 DEFAULT:
+            // no click, no popout).
             RailEntry {
                 icon: "arch"
                 iconSize: Theme.railMark
-                iconColor: Theme.accent
+                iconColor: Theme.textMuted
             }
 
             // System updates (HyDE parity): directly under
@@ -68,13 +69,14 @@ Item {
                 // hover card does the telling.
                 QsmShellComponents.Badge {
                     visible: UpdateService.available
-                    // On the glyph's own top-right corner, one rhythm step
-                    // in from the capsule's centre lines, so the chip rides
-                    // the corner diagonally and leaves the glyph's body
-                    // readable; both of its edges sit on whole device pixels.
-                    anchors.left: parent.horizontalCenter
+                    // On the glyph's own top-right corner and no further than
+                    // the capsule: the chip's right edge is the capsule's, so
+                    // no pixel of it reaches the band's wall, and one rhythm
+                    // step above the cell's centre line it leaves the glyph's
+                    // body readable. All of its edges sit on whole device
+                    // pixels.
+                    anchors.right: parent.right
                     anchors.bottom: parent.verticalCenter
-                    anchors.leftMargin: QsmShellStyle.Style.space1
                     anchors.bottomMargin: QsmShellStyle.Style.space1
                     tone: "accent"
                     filled: true
@@ -109,17 +111,18 @@ Item {
                     height: implicitHeight // plain Items do not self-adopt implicit size
                 }
 
-                // Pin/retract, per monitor: icon-swap, click only. Stays
-                // visually secondary through its muted colour.
+                // Pin/retract, per monitor: the glyph's SHAPE is the state
+                // (a filled pin is pinned, an outline is not), click only.
+                // Stays visually secondary through its muted colour.
                 RailEntry {
                     readonly property bool retracted: ShellState.isRailCollapsed(root.screen.name)
 
-                    icon: retracted ? "pin" : "pin-off"
+                    icon: retracted ? "pin" : "pin-filled"
                     iconColor: Theme.textMuted
                     interactive: true
                     popouts: root.popouts
                     popoutKind: "railpin"
-                    popoutTitle: "Rail pin"
+                    popoutTitle: retracted ? "Rail collapsed" : "Rail pinned"
                     popoutDetail: retracted
                         ? "Collapsed to the edge · click to pin the band open"
                         : "Pinned open, windows reserve around it · click to collapse"
@@ -261,9 +264,17 @@ Item {
 
             QsmShellComponents.Prose {
                 role: "reading"
-                anchors.centerIn: parent
+                // The cell less one rhythm step above and below, so the box
+                // sits on whole pixels and the digits centre inside it.
+                anchors.fill: parent
+                anchors.topMargin: QsmShellStyle.Style.space1
+                anchors.bottomMargin: QsmShellStyle.Style.space1
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
                 visible: batteryCell.laptop
                 text: Math.round(batteryCell.charge * 100) + "%"
+                font.pixelSize: QsmShellStyle.Style.textMd
+                font.weight: QsmShellStyle.Style.weightMedium
                 // Charging is the one state the number cannot state, so
                 // it says it in the accent rather than by growing a
                 // second glyph beside itself.
@@ -277,8 +288,9 @@ Item {
             }
         }
 
-        // Glyph cell above, glyph cell below: alike, so a line parts them.
-        RailBreak { line: true }
+        // Text above, glyph cells below: unlike kinds, so space alone parts
+        // them.
+        RailBreak {}
 
         // Controls. Quick actions: active or connected
         // draws the glyph in text, off in textMuted; state changes the
@@ -295,10 +307,6 @@ Item {
             popoutTitle: "Quick actions"
             popoutDetail: ""
         }
-
-        // Text above, glyph cells below: unlike kinds, so space alone parts
-        // them.
-        RailBreak {}
 
         // Connectivity and audio devices.
         RailEntry {
@@ -332,11 +340,17 @@ Item {
             onClicked: AudioService.toggleOutputMuted()
         }
 
-        // Session: opens the session surface (08), the glyph in danger.
-        // Click, no hover card beyond its name.
+        // Glyph cell above, glyph cell below: alike, so a line parts them.
+        RailBreak { line: true }
+
+        // Session: opens the session surface (08). Muted at rest; danger is
+        // for what is about to happen, so it shows under the pointer. Click,
+        // no hover card beyond its name.
         RailEntry {
+            id: powerCell
+
             icon: "power"
-            iconColor: Theme.danger
+            iconColor: powerCell.hovered || powerCell.selected ? Theme.danger : Theme.textMuted
             interactive: true
             popouts: root.popouts
             popoutKind: "session"

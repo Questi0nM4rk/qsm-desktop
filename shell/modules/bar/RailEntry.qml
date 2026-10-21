@@ -72,14 +72,20 @@ Item {
     Accessible.description: popoutDetail
     Accessible.onPressAction: root.activateByKey()
 
+    // Shows this cell's popout: what hovering does, and what any other way of
+    // arriving at the cell does to name it.
+    function reveal(): void {
+        if (root.popouts && root.popoutKind.length > 0)
+            root.popouts.show(root.popoutKind, root, root.popoutTitle,
+                root.popoutDetail, root.popoutData);
+    }
+
     // Return and Space do what the pointer's click does; a cell that only
     // reports hover (clickable false) opens its popout instead.
     function activateByKey(): void {
         if (layer.activate())
             return;
-        if (root.popouts && root.popoutKind.length > 0)
-            root.popouts.show(root.popoutKind, root, root.popoutTitle,
-                root.popoutDetail, root.popoutData);
+        root.reveal();
     }
     Keys.onReturnPressed: root.activateByKey()
     Keys.onEnterPressed: root.activateByKey()
@@ -103,7 +109,10 @@ Item {
         base: "transparent"
         accent: root.danger && !root.selected ? Theme.danger : Theme.accent
         selected: root.selected || root.danger || root.active
-        hovered: layer.hovered
+        // Selected is identity, not a lift: an open cell's pill is the accent
+        // tint and nothing stacked on it, though the layer holds it hovered
+        // to keep its growth.
+        hovered: layer.hovered && !root.selected
         pressed: layer.pressed
 
         Behavior on anchors.rightMargin {
@@ -157,12 +166,7 @@ Item {
         }
         // Only genuine pointer entry opens; held visual hover is not input.
         // Rollout.keepOpen reports whether the surface should remain open.
-        onHoveredEntered: {
-            if (root.popouts && root.popoutKind.length > 0) {
-                root.popouts.show(root.popoutKind, root, root.popoutTitle,
-                    root.popoutDetail, root.popoutData);
-            }
-        }
+        onHoveredEntered: root.reveal()
     }
 
     // One arrival and one departure per gesture. `pointerHovered` rather than

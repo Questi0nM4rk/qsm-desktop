@@ -75,7 +75,7 @@ intent separately from the backend result, with no password in event payloads.
   popout on hover; back in the rail 2026-10-17, owner), BATTERY (the charge reading alone),
   then QUICK ACTIONS (the actions cell is the most reached-for and takes the most reachable
   slot, RATIFIED 2026-08-22, owner), then the connectivity and audio devices (network,
-  bluetooth, sound), then power (danger-tinted) at the very bottom. CPU and RAM are NOT in the rail (owner 2026-10-17):
+  bluetooth, sound), then power at the very bottom, muted at rest and danger under the pointer. CPU and RAM are NOT in the rail (owner 2026-10-17):
   they live in the Dashboard only.
 - **RATIFIED (2026-10-16, owner, amended the same evening; one 4px rhythm 2026-10-17)**: groups are
   separated by space, and by the rail's line (`RailBreak` with `line`: the library's hairline at
@@ -85,14 +85,15 @@ intent separately from the backend result, with no password in event payloads.
   line 8px from the item on each side. Tray icons sit in the workspace/pin
   group (owner, 2026-08-24) so an app's tray icon never reads as one more app row, and a
   machine with no tray icons shows nothing there. Rail glyphs use the compact 16px step, with
-  the top Arch logo and the app list's application glyphs as the deliberate 20px mark step.
+  the top Arch logo (muted: it is identity, not a state) and the app list's application glyphs
+  as the deliberate 24px mark step.
 - **RATIFIED (2026-10-16, owner)**: edge handles (the OSD handle and any edge tab) are 12x40
   tabs protruding 11px into the picture, `band` fill, 12px glyph (the icon scale's smallest step), hit area 24px minimum.
 - **DEFAULT (2026-08-16)**: logo entry is decorative — no click action, no popout.
 - **RATIFIED (2026-08-25, owner — HyDE parity; amended same day)**: a SYSTEM UPDATES cell lives
   in the logo's group, directly under the arch mark: a Pacman-and-pellet glyph with the
   pending-package count as a
-  small accent badge on the cell's corner (same pill language as the workspace number; badge
+  small accent badge on the cell's top-right corner, inside the capsule (same pill language as the workspace number; badge
   absent at zero and while unknown — an absent badge never claims "up to date", the hover
   card does the telling). Count via `checkupdates` (read-only, local DB, 30min cadence).
   Click opens the FULL upgrade (repo + AUR) in a terminal and is the cell's one action; the
@@ -172,7 +173,7 @@ intent separately from the backend result, with no password in event payloads.
   the round trip meant a press with no answer (09: every input gets a visible response, and
   the acknowledgement is the shell's, not the tool's).
 - **DEFAULT (2026-08-16)**: awake = idle-inhibitor toggle (inhibits Hypridle via the standard
-  inhibit protocol); icons full-cup = on, empty-cup = off. Pin entry icons: pin / pin-off.
+  inhibit protocol); icons full-cup = on, empty-cup = off. Pin entry icons: pin-filled (pinned) / pin (collapsed).
 - **DEFAULT (2026-08-16, contradiction resolved 2026-08-17 owner)**: which entries popout
   on hover: battery, media when present (`references/media-popout-over-app.png`). Tray icons
   open their menus on click; workspace slots have no popout (wheel/click only). The rail CLOCK

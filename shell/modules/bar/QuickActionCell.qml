@@ -41,6 +41,13 @@ RailEntry {
 
     onClicked: confirm.trigger()
 
+    // Arriving by keyboard names the cell the way hovering does: the glyph
+    // carries no label, so the card is where its name and state are read.
+    onActiveFocusChanged: {
+        if (activeFocus)
+            root.reveal();
+    }
+
     // Escape abandons an armed confirmation first; with nothing armed it
     // passes up so the popout closes.
     Keys.onEscapePressed: event => {

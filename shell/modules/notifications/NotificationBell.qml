@@ -122,11 +122,11 @@ Item {
             - height / 2
 
         // The count is centred on the glyph's top-right corner and pulled in
-        // by a hairline so it stays on screen: a 28px chip flush INSIDE a 16px
+        // by one rhythm step so it stays on screen: a chip flush INSIDE a 16px
         // glyph covered the whole bell.
         QsmShellComponents.Badge {
             anchors.horizontalCenter: parent.right
-            anchors.horizontalCenterOffset: -QsmShellStyle.Style.spaceTight
+            anchors.horizontalCenterOffset: -QsmShellStyle.Style.space1
             anchors.verticalCenter: parent.top
             z: 1
             visible: root.unread > 0

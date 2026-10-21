@@ -44,9 +44,10 @@ RailEntry {
             text: "00"
         }
 
-        // The glyph bounds can be narrower than the text's layout advance.
-        implicitWidth: Math.ceil(Math.max(metrics.advanceWidth, metrics.width))
-        implicitHeight: Math.ceil(metrics.height)
+        // The rail's width and the next step of the 4 rhythm above the line,
+        // so every box of the clock sits on whole device pixels.
+        implicitWidth: Theme.railWidth
+        implicitHeight: Math.ceil(metrics.height / QsmShellStyle.Style.space1) * QsmShellStyle.Style.space1
         clip: true
 
         onValueChanged: {
@@ -71,10 +72,11 @@ RailEntry {
         QsmShellComponents.Prose {
             role: "hero"
             technical: true
-            anchors.horizontalCenter: parent.horizontalCenter
             y: -digits.progress * height
             width: parent.width
+            height: parent.height
             horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
             text: digits.previous
             opacity: 1 - digits.progress
             font.pixelSize: Theme.railClockDigitSize
@@ -86,10 +88,11 @@ RailEntry {
             id: currentReading
             role: "hero"
             technical: true
-            anchors.horizontalCenter: parent.horizontalCenter
             y: parent.height - digits.progress * height
             width: parent.width
+            height: parent.height
             horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
             text: digits.current
             opacity: digits.progress
             font.pixelSize: Theme.railClockDigitSize
@@ -101,20 +104,19 @@ RailEntry {
     Column {
         id: stack
         anchors.centerIn: parent
+        width: parent.width
         spacing: 0
 
-        Column {
-            anchors.horizontalCenter: parent.horizontalCenter
-            RollingDigits { value: Qt.formatTime(root.now, "HH") }
-            RollingDigits { value: Qt.formatTime(root.now, "mm") }
-        }
+        RollingDigits { value: Qt.formatTime(root.now, "HH") }
+        RollingDigits { value: Qt.formatTime(root.now, "mm") }
         QsmShellComponents.Prose {
-            anchors.horizontalCenter: parent.horizontalCenter
             role: "reading"
             technical: true
             topPadding: QsmShellStyle.Style.space1
-            width: Theme.railWidth - QsmShellStyle.Style.space1
+            width: parent.width
+            height: Math.ceil(implicitHeight / QsmShellStyle.Style.space1) * QsmShellStyle.Style.space1
             horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
             text: Qt.formatDate(root.now, "dd.MM")
             font.pixelSize: Theme.railClockDateSize
             font.weight: QsmShellStyle.Style.weightMedium
