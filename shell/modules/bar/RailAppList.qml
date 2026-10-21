@@ -8,8 +8,8 @@ import qs.services
 import qs.theme
 
 // The rail's MIDDLE section (03 RATIFIED 2026-10-16): the CURRENT
-// workspace's apps, per monitor, ICON ONLY. Each row is a 32px slot with a
-// 20px glyph, the rail's own gap; no caption. The window title lives in the hover
+// workspace's apps, per monitor, ICON ONLY. Each row is a rail slot with an
+// app glyph, the rail's own gap; no caption. The window title lives in the hover
 // popout as "app · live-title". The focused row carries accent at
 // opacitySelected behind it. Click focuses; more rows than fit scroll
 // (wheel), never spill out of the band. An empty workspace shows the
