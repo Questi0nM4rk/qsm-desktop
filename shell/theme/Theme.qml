@@ -201,14 +201,11 @@ QtObject {
     // ── Frame, rail, notifications ─────────────────────────────────────
     // The left band is wider than the others: the rail lives inside it.
     readonly property int reservedLeft: 60
-    // THE capsule of the band: every item (a glyph, the battery reading, the
-    // clock, an app row, a tray icon) is this square and answers on one hit
-    // area, the capsule plus the band's left gutter. It is the smallest Control
-    // size in which the clock's three lines fit with their text one step down
-    // (digits textMd, date textXs: line boxes 17 + 17 + 12 = 46, which 40 cannot
-    // hold). Only what is inside a capsule scales.
-    readonly property int railCapsule: QsmShellStyle.Style.size("Control", "lg")
-    readonly property int railWidth: railCapsule
+    // THE width of the band: every item (a glyph, the battery reading, the
+    // clock, an app row, a tray icon) is this wide and answers on one hit
+    // area, the capsule plus the band's left gutter. Height is the item's own:
+    // a cell, an app row and the clock each take what their content needs.
+    readonly property int railWidth: QsmShellStyle.Style.size("Control", "lg")
     // The capsule sits one space2 in from the screen edge, which leaves the rest
     // of the band between it and the rollout's wall. Both gaps are whole device
     // pixels at 1.25, 1.5 and 2 (multiples of 4), which a centred 6 and 6 is
@@ -216,22 +213,20 @@ QtObject {
     // pill reaches the wall across the second.
     readonly property int railGutter: QsmShellStyle.Style.space2
     readonly property int railReach: reservedLeft - railGutter - railWidth
-    // Every item in the band is one capsule with different content, one gap
-    // apart, with the same hover rollout.
+    // One gap inside a group; groups are told apart by the divider.
     readonly property int railItemGap: QsmShellStyle.Style.space1
-    // What sits inside a capsule scales on its own: the logo and an app's icon
-    // take the mark step, the battery reading the body step. Plain glyphs stay
-    // at the small icon step.
-    readonly property int railMark: QsmShellStyle.Style.iconLg
-    readonly property int railReading: QsmShellStyle.Style.textMd
+    // The height of a glyph cell, a tray icon and an app row.
+    readonly property int railCellHeight: QsmShellStyle.Style.size("Control", "sm")
+    // The logo and an app's icon take the mark step in a cell; plain glyphs
+    // stay at the small icon step.
+    readonly property int railMark: QsmShellStyle.Style.iconMd
     // A tray icon is recoloured to textMuted and lifted by this much, so a
     // coloured third-party glyph sits in the same tone as the rail's outline
     // glyphs.
     readonly property real trayGlyphBrightness: 0.5
-    // The rail clock: time above a smaller numeric date, one type step under
-    // what a lone reading would take, so three lines fit one capsule.
-    readonly property int railClockDigitSize: QsmShellStyle.Style.textMd
-    readonly property int railClockDateSize: QsmShellStyle.Style.textXs
+    // The rail clock: time above a smaller numeric date.
+    readonly property int railClockDigitSize: QsmShellStyle.Style.textLg
+    readonly property int railClockDateSize: QsmShellStyle.Style.textSm
     // A group separator in the rail is the library's line at the band's
     // strength, inset from both walls.
     readonly property real railDividerInset: QsmShellStyle.Style.space2

@@ -97,12 +97,10 @@ collect() {
       + (if $n.growth != null and $clipNow != null
          then
            ($n.growth) as $g
-           | (($g.w * ($g.scale - 1)) / 2) as $padX
-           | (($g.h * ($g.scale - 1)) / 2) as $padY
-           | [ ($clipNow.x - ($g.x - $padX)),
-               ($clipNow.y - ($g.y - $padY)),
-               (($g.x + $g.w + $padX) - ($clipNow.x + $clipNow.w)),
-               (($g.y + $g.h + $padY) - ($clipNow.y + $clipNow.h)) ] as $over
+           | [ ($clipNow.x - ($g.x - $g.pad)),
+               ($clipNow.y - ($g.y - $g.pad)),
+               (($g.x + $g.w + $g.pad) - ($clipNow.x + $clipNow.w)),
+               (($g.y + $g.h + $g.pad) - ($clipNow.y + $clipNow.h)) ] as $over
            | [ ($clipNow.x - $g.x),
                ($clipNow.y - $g.y),
                (($g.x + $g.w) - ($clipNow.x + $clipNow.w)),
@@ -112,7 +110,7 @@ collect() {
            # the list working, not the hover losing. Only the affordance that
            # FITS at rest and stops fitting once it grows is a finding.
            | if ($restOver | max) <= 0.5 and $worst > 0.5
-             then ["clip-growth|\($n.type)|\($g.w)x\($g.h) grown x\($g.scale)\ta clipping ancestor shaves \(($worst * 10 | round) / 10)px, at \($g.x),\($g.y)"]
+             then ["clip-growth|\($n.type)|\($g.w)x\($g.h) grows \($g.pad)px\ta clipping ancestor shaves \(($worst * 10 | round) / 10)px, at \($g.x),\($g.y)"]
              else [] end
          else [] end)
       + (($n.children // []) | map(scan($n; $clipNow)) | flatten)

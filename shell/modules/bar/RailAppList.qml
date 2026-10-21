@@ -99,7 +99,7 @@ Item {
             }
 
             width: appList.width
-            height: Theme.railCapsule
+            height: Theme.railCellHeight
 
             activeFocusOnTab: true
             Accessible.role: Accessible.Button
@@ -123,8 +123,8 @@ Item {
             QsmShellComponents.Surface {
                 id: capsule
                 anchors.right: parent.right
-                width: Theme.railCapsule
-                height: Theme.railCapsule
+                width: Theme.railWidth
+                height: Theme.railCellHeight
                 radius: QsmShellStyle.Style.radiusMd
                 base: "transparent"
                 selected: appRow.current
@@ -159,10 +159,8 @@ Item {
                 id: rowLayer
                 anchors.fill: parent
                 // The row sits in a clipping ListView, so growing its capsule
-                // would shave the response, and an app's bitmap is not scaled:
-                // the capsule above recolours on hover and press and the row
-                // does not grow.
-                target: null
+                // would shave the response: the capsule above recolours on hover
+                // and press and the row does not grow.
                 growthCap: 0
                 focused: appRow.activeFocus
                 focusRadius: QsmShellStyle.Style.radiusMd

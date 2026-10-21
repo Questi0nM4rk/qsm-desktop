@@ -138,7 +138,7 @@ Item {
         QsmShellComponents.SvgIcon {
             anchors.centerIn: parent
             name: "bell"
-            size: QsmShellStyle.Style.iconSm
+            size: QsmShellStyle.Style.iconSm + 2 * bellLayer.growth
             color: QsmShellStyle.Style.tone(root.unread > 0 ? Theme.text : Theme.textMuted,
                 bellLayer.hovered, bellLayer.pressed, false, root.shown, Theme.accent)
         }
@@ -158,7 +158,7 @@ Item {
         y: (root.sticky ? root.bulgeZone : root.cornerZone).y
         width: (root.sticky ? root.bulgeZone : root.cornerZone).width
         height: (root.sticky ? root.bulgeZone : root.cornerZone).height
-        target: glyph
+        extent: QsmShellStyle.Style.iconSm
         pressScale: QsmShellStyle.Motion.pressScale
         focused: root.activeFocus
         focusRadius: QsmShellStyle.Style.radiusMd

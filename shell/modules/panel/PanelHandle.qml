@@ -65,7 +65,7 @@ Item {
             Rectangle {
                 // A 2px circle rasterises soft and its peak fell to 2.4:1; at
                 // this size the text role clears 3:1.
-                width: Theme.dotGlyphSize
+                width: Theme.dotGlyphSize + 2 * interaction.growth
                 height: width
                 radius: QsmShellStyle.Style.radiusPill
                 // Hover is the grip about to act: the dots take the accent.
@@ -81,8 +81,9 @@ Item {
     QsmShellComponents.StateLayer {
         id: interaction
         anchors.fill: parent
-        // The dots grow under the pointer; the bulge is the shader's.
-        target: grip
+        // The dots grow under the pointer, a whole device pixel at least, though
+        // they are 2.5px across; the bulge is the shader's.
+        extent: Theme.dotGlyphSize
         hoverScale: root.open ? 1 : QsmShellStyle.Motion.hoverScale
         interactive: root.visible && root.enabled
         focused: root.activeFocus

@@ -12,9 +12,9 @@ import qs.theme
 // The rail (03-rail lineup): the mark and the updates
 // cell, then workspace slots with the PIN and the TRAY icons, then the
 // current workspace's apps spread across the middle, and at the bottom the
-// CLOCK, the battery number, the QUICK MENU (actions, network, bluetooth,
-// sound) and power. CPU and RAM live in the Dashboard only (06). Groups
-// are separated by the rail's divider lines. The popout
+// CLOCK, the battery number, the quick actions, network, bluetooth and sound,
+// and power, each group behind its own divider. CPU and RAM live in the
+// Dashboard only (06). Groups are separated by the rail's divider lines. The popout
 // interaction lives in the PopoutController.
 Item {
     id: root
@@ -94,7 +94,7 @@ Item {
             // instead of pushing the clock off the band.
             maximumHeight: Math.max(0, root.height - bottomStack.height
                 - QsmShellStyle.Style.space4 * 2 - markGroup.height - topDivider.height * 2
-                - Theme.railItemGap * 4 - Theme.railCapsule)
+                - Theme.railItemGap * 4 - Theme.railCellHeight)
 
             Column {
                 width: parent.width
@@ -133,7 +133,7 @@ Item {
                         required property var modelData
 
                         width: parent.width
-                        height: Theme.railCapsule
+                        height: Theme.railCellHeight
 
                         function open(): void {
                             root.popouts.show("tray", trayEntry,
@@ -181,7 +181,6 @@ Item {
                             id: trayLayer
                             anchors.fill: parent
                             anchors.leftMargin: -Theme.railGutter
-                            target: null
                             growthCap: QsmShellStyle.Motion.hoverGrowthWithin(Theme.railItemGap)
                             focused: trayEntry.activeFocus
                             focusRadius: QsmShellStyle.Style.radiusMd
@@ -217,120 +216,120 @@ Item {
         anchors.bottomMargin: QsmShellStyle.Style.space4
         spacing: Theme.railItemGap
 
+        // Five groups, told apart by the divider and nothing else; inside a
+        // group the items sit one gap apart. What the item is decides the
+        // group: the time, the power reading, the quick actions, the
+        // connectivity and audio devices, the session.
         RailDivider {}
 
-        // ONE bottom cluster in one rhythm: the clock, the
-        // battery reading and the quick menu. CPU and RAM live in the
-        // Dashboard only.
-        Column {
-            width: parent.width
-            spacing: Theme.railItemGap
+        // Time.
+        ClockEntry {
+            popouts: root.popouts
+        }
 
-            ClockEntry {
-                popouts: root.popouts
-            }
+        RailDivider {}
 
-            // The clock reads time, the rest are controls: a divider between
-            // them.
-            RailDivider {}
+        // Power: the battery reading.
+        RailEntry {
+            id: batteryCell
 
-            RailEntry {
-                id: batteryCell
+            readonly property var battery: UPower.displayDevice
+            readonly property bool laptop: battery?.isLaptopBattery ?? false
+            readonly property bool charging: battery?.state === UPowerDeviceState.Charging
+            readonly property real charge: battery?.percentage ?? 0
+            readonly property bool low: laptop && !charging && charge <= Theme.railLowBatteryFraction
 
-                readonly property var battery: UPower.displayDevice
-                readonly property bool laptop: battery?.isLaptopBattery ?? false
-                readonly property bool charging: battery?.state === UPowerDeviceState.Charging
-                readonly property real charge: battery?.percentage ?? 0
-                readonly property bool low: laptop && !charging && charge <= Theme.railLowBatteryFraction
+            // The battery popout's profile switch reads this singleton,
+            // and a laptop's cell never does: touching it here loads the
+            // profile at startup, so the switch row is there when the card
+            // opens instead of arriving a moment after it.
+            Component.onCompleted: PowerProfileService.refresh()
 
-                // The battery popout's profile switch reads this singleton,
-                // and a laptop's cell never does: touching it here loads the
-                // profile at startup, so the switch row is there when the card
-                // opens instead of arriving a moment after it.
-                Component.onCompleted: PowerProfileService.refresh()
+            // The NUMBER, not a glyph. A machine with
+            // no battery still shows its power profile, because there is
+            // no percentage to show there.
+            icon: laptop ? "" : PowerProfileService.glyph
+            iconColor: low ? Theme.danger : Theme.text
+            interactive: true
+            popouts: root.popouts
+            popoutKind: "battery"
+            clickable: false
+            popoutTitle: "Power"
+            popoutDetail: ""
 
-                // The NUMBER, not a glyph. A machine with
-                // no battery still shows its power profile, because there is
-                // no percentage to show there.
-                icon: laptop ? "" : PowerProfileService.glyph
-                iconColor: low ? Theme.danger : Theme.text
-                interactive: true
-                popouts: root.popouts
-                popoutKind: "battery"
-                clickable: false
-                popoutTitle: "Power"
-                popoutDetail: ""
+            QsmShellComponents.Prose {
+                role: "reading"
+                anchors.centerIn: parent
+                visible: batteryCell.laptop
+                text: Math.round(batteryCell.charge * 100) + "%"
+                // Charging is the one state the number cannot state, so
+                // it says it in the accent rather than by growing a
+                // second glyph beside itself.
+                color: batteryCell.low ? Theme.danger
+                    : batteryCell.charging ? Theme.accent
+                    : Theme.text
 
-                QsmShellComponents.Prose {
-                    role: "reading"
-                    anchors.centerIn: parent
-                    visible: batteryCell.laptop
-                    text: Math.round(batteryCell.charge * 100) + "%"
-                    font.pixelSize: Theme.railReading
-                    // Charging is the one state the number cannot state, so
-                    // it says it in the accent rather than by growing a
-                    // second glyph beside itself.
-                    color: batteryCell.low ? Theme.danger
-                        : batteryCell.charging ? Theme.accent
-                        : Theme.text
-
-                    Behavior on color {
-                        ColorAnimation { duration: QsmShellStyle.Motion.micro; easing.type: QsmShellStyle.Motion.standardEasing }
-                    }
+                Behavior on color {
+                    ColorAnimation { duration: QsmShellStyle.Motion.micro; easing.type: QsmShellStyle.Motion.standardEasing }
                 }
-            }
-
-            // The quick menu: active or connected
-            // draws the glyph in text, off in textMuted; state changes the
-            // glyph's SHAPE, never colour alone. Hover rolls out, click does
-            // the cell's one cheap toggle, the rollout owns any escape to a
-            // real app.
-            RailEntry {
-                icon: "zap"
-                iconColor: Theme.textMuted
-                interactive: true
-                popouts: root.popouts
-                popoutKind: "actions"
-                clickable: false
-                popoutTitle: "Quick actions"
-                popoutDetail: ""
-            }
-
-            RailEntry {
-                icon: NetworkService.glyph
-                iconColor: NetworkService.ethernetActive || NetworkService.wifiConnected
-                    ? Theme.text : Theme.textMuted
-                interactive: true
-                popouts: root.popouts
-                popoutKind: "network"
-                clickable: false
-                popoutTitle: "Network"
-                popoutDetail: ""
-            }
-
-            // Bluetooth: ONE cell that becomes what is connected, and
-            // subdivides up to four ways.
-            RailDeviceCell {
-                popouts: root.popouts
-            }
-
-            // Sound: hover pops out quick controls, click MUTES. pavucontrol
-            // is reachable from exactly one place, the row inside the rollout.
-            RailEntry {
-                icon: AudioService.outputMuted ? "volume-muted" : "volume"
-                iconColor: AudioService.outputMuted ? Theme.textMuted : Theme.text
-                interactive: true
-                popouts: root.popouts
-                popoutKind: "sound"
-                popoutTitle: "Sound"
-                popoutDetail: ""
-                onClicked: AudioService.toggleOutputMuted()
             }
         }
 
         RailDivider {}
 
-        // Opens the session surface (08): a cell with the glyph in danger.
+        // Quick actions: active or connected
+        // draws the glyph in text, off in textMuted; state changes the
+        // glyph's SHAPE, never colour alone. Hover rolls out, click does
+        // the cell's one cheap toggle, the rollout owns any escape to a
+        // real app.
+        RailEntry {
+            icon: "zap"
+            iconColor: Theme.textMuted
+            interactive: true
+            popouts: root.popouts
+            popoutKind: "actions"
+            clickable: false
+            popoutTitle: "Quick actions"
+            popoutDetail: ""
+        }
+
+        RailDivider {}
+
+        // Connectivity and audio devices.
+        RailEntry {
+            icon: NetworkService.glyph
+            iconColor: NetworkService.ethernetActive || NetworkService.wifiConnected
+                ? Theme.text : Theme.textMuted
+            interactive: true
+            popouts: root.popouts
+            popoutKind: "network"
+            clickable: false
+            popoutTitle: "Network"
+            popoutDetail: ""
+        }
+
+        // Bluetooth: ONE cell that becomes what is connected, and
+        // subdivides up to four ways.
+        RailDeviceCell {
+            popouts: root.popouts
+        }
+
+        // Sound: hover pops out quick controls, click MUTES. pavucontrol
+        // is reachable from exactly one place, the row inside the rollout.
+        RailEntry {
+            icon: AudioService.outputMuted ? "volume-muted" : "volume"
+            iconColor: AudioService.outputMuted ? Theme.textMuted : Theme.text
+            interactive: true
+            popouts: root.popouts
+            popoutKind: "sound"
+            popoutTitle: "Sound"
+            popoutDetail: ""
+            onClicked: AudioService.toggleOutputMuted()
+        }
+
+        RailDivider {}
+
+        // Session: opens the session surface (08), the glyph in danger.
         // Click, no hover card beyond its name.
         RailEntry {
             icon: "power"

@@ -92,24 +92,23 @@ ShellRoot {
             entry.radius = item.radius;
         if (item.spacing !== undefined)
             entry.spacing = item.spacing;
-        // What a StateLayer actually GROWS, and by how much. Without this the
-        // clip question ("does the hover response survive its container?") can
-        // only be guessed at from the layer's own rect, which is the padded
-        // hit area and not the thing that moves.
-        // The device pixels per side a layer grows by right now, whether it
-        // drives a target or its host applies the number to its own body.
-        if (item.hoverScale !== undefined && item.growth !== undefined && item.growth !== 0)
+        // What a StateLayer reports its host grows by: whole device pixels per
+        // side, which the host applies to the body it paints, now and at full
+        // hover. Without this the clip question ("does the hover response
+        // survive its container?") cannot be asked of the live tree, and the
+        // layer's own rect is the padded hit area, a bound on the body.
+        if (item.hoverScale !== undefined && item.growth !== undefined) {
             entry.growthPx = Math.round(item.growth * 1000) / 1000;
-        if (item.hoverScale !== undefined && item.target !== undefined && item.target !== null
-            && item.target.mapToItem !== undefined) {
-            const grown = item.target.mapToItem(null, 0, 0);
-            entry.growth = {
-                "x": Math.round(grown.x * 10) / 10,
-                "y": Math.round(grown.y * 10) / 10,
-                "w": Math.round(item.target.width * 10) / 10,
-                "h": Math.round(item.target.height * 10) / 10,
-                "scale": item.hoverScale
-            };
+            if (item.maxGrowth > 0) {
+                const rect = item.mapToItem(null, 0, 0);
+                entry.growth = {
+                    "x": Math.round(rect.x * 10) / 10,
+                    "y": Math.round(rect.y * 10) / 10,
+                    "w": Math.round(item.width * 10) / 10,
+                    "h": Math.round(item.height * 10) / 10,
+                    "pad": Math.round(item.maxGrowth * 1000) / 1000
+                };
+            }
         }
         if (item.text !== undefined) {
             entry.text = String(item.text);

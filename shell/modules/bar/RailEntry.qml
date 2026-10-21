@@ -61,8 +61,8 @@ Item {
     // rollout move.
     signal interaction(string action)
 
-    implicitWidth: Theme.railCapsule
-    implicitHeight: Theme.railCapsule
+    implicitWidth: Theme.railWidth
+    implicitHeight: Theme.railCellHeight
 
     // A cell the pointer can act on is a keyboard stop too, and a screen
     // reader names it by what its popout names.
@@ -142,11 +142,9 @@ Item {
         // the tint is band-colored so the overhang never reads.
         anchors.leftMargin: -Theme.railGutter
         // The cell's Surface recolours on hover and press and grows by
-        // `growth`, applied above, so the layer drives no target and a press
-        // never resizes a body. Growth is capped by the rail's gap, because the
-        // open cell stays grown while the next one is entered, so two
-        // neighbours can be grown at once.
-        target: null
+        // `growth`, applied above, so a press never resizes a body. Growth is
+        // capped by the rail's gap, because the open cell stays grown while the
+        // next one is entered, so two neighbours can be grown at once.
         growthCap: QsmShellStyle.Motion.hoverGrowthWithin(Theme.railItemGap)
         focused: root.activeFocus
         focusRadius: QsmShellStyle.Style.radiusMd

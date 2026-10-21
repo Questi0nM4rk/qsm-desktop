@@ -7,7 +7,7 @@ Open items only, one line each; what is fixed or historical is in git.
 - Rail popout travel triangle is a geometric no-op at level 1 (the band already spans the rail's height): delete it, or narrow the band to the visible column so it bridges a gutter.
 - F5: popup Enter for the default action; spec/04 requires keyboard Enter only for the centre, and a second route may break 09's one-path law.
 - Notification group ordering: two apps tied on "has a live entry" compare equal, so a third group can split a section header; pick the tiebreak.
-- `ui-guard` clip-growth finding key embeds a live `scale`, so findings depend on shell state: quantise the key, or drive the grown states with `scripts/hover-probe`.
+- `ui-guard` clip-growth finding key embeds a layer's live hit rect and its full-hover growth in pixels, so findings depend on shell state: quantise the key, or drive the grown states with `scripts/hover-probe`.
 - `PopoutRow` trailing `IconButton` is 24x24 in a ~30px row, so a 44px target does not fit without changing the row height (a spec question).
 - Hit targets under 44x44 remain on the compact rail rows, the workspace dots and the colour swatches; one question about the rail's raster.
 - `Theme.dark` is `current !== "mountain-dusk"` and `themeToggle` applies those two ids; make `themeToggle` cycle `Theme.themes` and derive `dark` from a theme JSON field, which changes the `dark` status contract.

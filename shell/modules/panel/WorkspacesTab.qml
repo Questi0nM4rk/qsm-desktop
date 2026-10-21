@@ -33,15 +33,19 @@ Item {
     implicitWidth: Theme.mediaContentWidth
     implicitHeight: Theme.panelHeight - QsmShellStyle.Style.rolloutPadding * 2 - Theme.panelTabBarHeight - QsmShellStyle.Style.space3
 
-    // Tiles grow to the body: three share the column width (a tile and its
-    // hover growth are w * (2 + hoverScale) across, with two gaps), or the
-    // body's height when the monitor is tall, whichever is smaller; the rest
-    // scroll. The schematic keeps the monitor's aspect.
+    // A hovered tile's body grows by whole device pixels (StateLayer), never
+    // more than this a side. The strip clips, so it reserves that much around
+    // the row rather than cutting the grown edge off.
+    readonly property real growthReserve: QsmShellStyle.Style.space1
+
+    // Tiles grow to the body: three share the column width with the reserve at
+    // both ends, or the body's height when the monitor is tall, whichever is
+    // smaller; the rest scroll. The schematic keeps the monitor's aspect.
     readonly property int tilesAcross: 3
     readonly property real aspect: monitor ? monitor.height / Math.max(1, monitor.width) : 0.5625
     readonly property real tileWidth: Math.min(
-        (width - tileGap * (tilesAcross - 1)) / (tilesAcross - 1 + hoverScale),
-        ((implicitHeight - QsmShellStyle.Style.space2) / hoverScale - labelBand - areaInset) / aspect + areaInset * 2)
+        (width - tileGap * (tilesAcross - 1) - growthReserve * 2) / tilesAcross,
+        (implicitHeight - QsmShellStyle.Style.space2 - growthReserve * 2 - labelBand - areaInset) / aspect + areaInset * 2)
 
     // Window rects live in their own area, inset from the tile's rounded
     // corners, below a band that belongs to the workspace number: a number
@@ -52,13 +56,6 @@ Item {
     readonly property real areaHeight: areaWidth * aspect
     readonly property real labelBand: areaInset + labelMetrics.height
     readonly property real tileHeight: labelBand + areaHeight + areaInset
-
-    // A hovered tile grows by this much (StateLayer, handed the same number
-    // below); the strip clips, so it reserves the growth around the row
-    // rather than cutting the tile's edge off.
-    readonly property real hoverScale: QsmShellStyle.Motion.capsuleHoverScale
-    readonly property real growthX: Math.ceil(tileWidth * (hoverScale - 1) / 2)
-    readonly property real growthY: Math.ceil(tileHeight * (hoverScale - 1) / 2)
 
     TextMetrics {
         id: labelMetrics
@@ -81,8 +78,8 @@ Item {
 
     // Keyboard focus moves along the strip, so the strip follows it.
     function revealTile(tile: Item): void {
-        const left = row.x + tile.x - growthX;
-        const right = row.x + tile.x + tile.width + growthX;
+        const left = row.x + tile.x - growthReserve;
+        const right = row.x + tile.x + tile.width + growthReserve;
         strip.contentX = Math.max(0, Math.min(strip.contentWidth - strip.width,
             left < strip.contentX ? left
             : right > strip.contentX + strip.width ? right - strip.width : strip.contentX));
@@ -105,23 +102,23 @@ Item {
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
         width: parent.width
-        height: root.tileHeight + root.growthY * 2
-        contentWidth: row.implicitWidth + root.growthX * 2
+        height: root.tileHeight + root.growthReserve * 2
+        contentWidth: row.implicitWidth + root.growthReserve * 2
         clip: true
         boundsBehavior: Flickable.StopAtBounds
         flickableDirection: Flickable.HorizontalFlick
 
         Row {
             id: row
-            x: root.growthX
-            y: root.growthY
+            x: root.growthReserve
+            y: root.growthReserve
             spacing: root.tileGap
 
             Repeater {
                 id: tiles
                 model: root.workspaces
 
-                QsmShellComponents.Surface {
+                Item {
                     id: tile
                     required property var modelData
                     required property int index
@@ -131,7 +128,7 @@ Item {
 
                     width: root.tileWidth
                     height: root.tileHeight
-                    radius: QsmShellStyle.Style.radiusBody
+                    readonly property real radius: QsmShellStyle.Style.radiusBody
                     activeFocusOnTab: true
                     Accessible.role: Accessible.Button
                     Accessible.name: `Workspace ${modelData.id}`
@@ -161,13 +158,20 @@ Item {
                         event.accepted = true;
                         tile.step(1, (event.modifiers & Qt.ShiftModifier) !== 0);
                     }
-                    base: Theme.surface
-                    // Hover and press recolour the body (Style.tone); the layer
-                    // below grows it.
-                    hovered: tileLayer.hovered
-                    pressed: tileLayer.pressed
-                    // Current is a state, not a border: the ladder's selected tint.
-                    selected: current
+
+                    // The body: hover and press recolour it (Style.tone) and the
+                    // layer below grows it, while what is drawn on it keeps its
+                    // size.
+                    QsmShellComponents.Surface {
+                        anchors.fill: parent
+                        anchors.margins: -tileLayer.growth
+                        radius: tile.radius
+                        base: Theme.surface
+                        hovered: tileLayer.hovered
+                        pressed: tileLayer.pressed
+                        // Current is a state, not a border: the ladder's selected tint.
+                        selected: tile.current
+                    }
 
                     QsmShellComponents.Prose {
                         role: "reading"
@@ -179,12 +183,13 @@ Item {
                         text: tile.modelData.id
                     }
 
-                    // Hover grows the tile slightly; keyboard focus rings it.
+                    // Hover grows the tile's body slightly; keyboard focus rings it.
                     QsmShellComponents.StateLayer {
                         id: tileLayer
                         anchors.fill: parent
                         focusRadius: tile.radius
-                        hoverScale: root.hoverScale
+                        hoverScale: QsmShellStyle.Motion.capsuleHoverScale
+                        growthCap: root.growthReserve
                         onClicked: tile.modelData.activate()
                     }
 

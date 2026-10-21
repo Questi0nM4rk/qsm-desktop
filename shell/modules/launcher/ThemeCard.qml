@@ -15,8 +15,8 @@ import qs.theme
 // hover and press response is a colour veil over the photo, never a resize.
 //
 // One owner for scale and opacity: the card's own centred/receded binding.
-// The StateLayer is told `target: null`, otherwise it would write `scale` over
-// the same property.
+// The StateLayer moves nothing, so it cannot write `scale` over the same
+// property.
 QsmShellComponents.Card {
     id: root
 
@@ -100,7 +100,6 @@ QsmShellComponents.Card {
     QsmShellComponents.StateLayer {
         id: interaction
         anchors.fill: parent
-        target: null
         focusRadius: root.radius
         onClicked: root.activated()
         onHoveredEntered: root.hoveredEntered()

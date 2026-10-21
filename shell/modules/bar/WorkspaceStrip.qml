@@ -89,7 +89,7 @@ Item {
                 Rectangle {
                     id: dot
                     anchors.centerIn: parent
-                    width: Theme.railWorkspaceDot
+                    width: Theme.railWorkspaceDot + 2 * dotLayer.growth
                     height: width
                     radius: QsmShellStyle.Style.radiusPill
                     // Hover and press recolour the dot through the one state
@@ -113,7 +113,7 @@ Item {
                 QsmShellComponents.StateLayer {
                     id: dotLayer
                     anchors.fill: parent
-                    target: dot
+                    extent: Theme.railWorkspaceDot
                     hoverScale: Theme.railWorkspaceDotHoverScale
                     focused: slot.activeFocus
                     focusRadius: QsmShellStyle.Style.radiusPill

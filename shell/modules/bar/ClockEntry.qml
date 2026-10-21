@@ -12,6 +12,9 @@ RailEntry {
 
     readonly property date now: clock.date
 
+    // Tall enough for its three lines at their reading sizes.
+    implicitHeight: stack.implicitHeight + QsmShellStyle.Style.space2 * 2
+
     interactive: true
     // Hover and the keys open the calendar; a click would only repeat it.
     clickable: false
@@ -109,7 +112,8 @@ RailEntry {
             anchors.horizontalCenter: parent.horizontalCenter
             role: "reading"
             technical: true
-            width: Theme.railCapsule - QsmShellStyle.Style.space1
+            topPadding: QsmShellStyle.Style.space1
+            width: Theme.railWidth - QsmShellStyle.Style.space1
             horizontalAlignment: Text.AlignHCenter
             text: Qt.formatDate(root.now, "dd.MM")
             font.pixelSize: Theme.railClockDateSize

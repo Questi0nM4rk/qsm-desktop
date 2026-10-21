@@ -104,7 +104,6 @@ Item {
                 anchors.fill: parent
                 interactive: artwork.canSeek
                 clickable: false
-                target: null
                 focused: artwork.activeFocus
                 focusRadius: QsmShellStyle.Style.radiusPill
             }
