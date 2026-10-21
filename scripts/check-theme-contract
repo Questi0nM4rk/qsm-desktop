@@ -23,18 +23,21 @@
 # any QML reads a Style or Motion name the library does not expose.
 set -euo pipefail
 cd "$(dirname "$0")/.."
-python3 -I - "$@" <<'PY'
+
+public="$(QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software QT_FORCE_STDERR_LOGGING=1 \
+  /usr/lib/qt6/bin/qml -I vendor/qsm-shell/qml scripts/public-names.qml 2>&1 | sed -n 's/^qml: PUBLIC //p')"
+[[ -n "$public" ]] || { printf 'theme contract: the library did not report its public names\n' >&2; exit 1; }
+
+python3 -I - "$public" <<'PY'
 import json, pathlib, re, subprocess, sys
 
-lib = pathlib.Path('vendor/qsm-shell')
-style = (lib / 'qml/QsmShell/Style/Style.qml').read_text()
-tokens = json.loads((lib / 'tokens/deep-night.json').read_text())
+public = json.loads(sys.argv[1])
+tokens = json.loads(pathlib.Path('vendor/qsm-shell/tokens/deep-night.json').read_text())
 theme = pathlib.Path('shell/theme/Theme.qml').read_text()
 
 def code(text):
     return re.sub(r'//.*', '', text)
 
-asked = set(re.findall(r'backend\?\.(\w+)', style))
 declared = set(re.findall(r'^    (?:readonly )?property\s+\w+\s+(\w+)\b', code(theme), re.M))
 declared |= set(re.findall(r'^    function\s+(\w+)', code(theme), re.M))
 
@@ -44,7 +47,7 @@ owned = roles | {'fontFamily', 'technicalFontFamily', 'reducedMotion', 'reducedE
 
 problems = []
 
-for name in sorted((asked & declared) - owned):
+for name in sorted((set(public['Style']) & declared) - owned):
     problems.append(f'Theme re-types the library value "{name}": delete it and read Style.{name}')
 
 for file, found in role_sets.items():
@@ -65,6 +68,9 @@ for path in tracked:
     text = code(pathlib.Path(path).read_text())
     if re.search(r'\bTokens\b', text):
         problems.append(f'{path} reads Tokens: read Style')
+    for kind in ('Style', 'Motion'):
+        for name in sorted(set(re.findall(rf'QsmShellStyle\.{kind}\.(\w+)', text)) - set(public[kind])):
+            problems.append(f'{path} reads {kind}.{name}, which the library does not expose')
     if path == 'shell/theme/Theme.qml':
         continue
     for name in sorted(set(re.findall(r'(?<![\w.])Theme\.(\w+)', text)) - declared - {'qml'}):
@@ -75,5 +81,5 @@ if problems:
     for problem in problems:
         print(f'  {problem}')
     sys.exit(1)
-print(f'theme contract: Theme answers {len(declared & owned)} owned names and re-types none of the {len(asked)} the library asks for')
+print(f'theme contract: Theme answers {len(declared & owned)} owned names and re-types none of the {len(public["Style"])} the library exposes')
 PY

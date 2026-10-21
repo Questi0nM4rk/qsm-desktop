@@ -13,74 +13,20 @@
 import { $ } from "bun";
 import { dirname, join, relative, resolve } from "node:path";
 import tokens from "../vendor/qsm-shell/tokens/deep-night.json";
-import { ladder as neutralSteps } from "../vendor/qsm-shell/scripts/ladder.mjs";
+import { contrast, fromLch, hex, ladder, maxChroma, parseHex, stepAbove, toLch } from "../vendor/qsm-shell/scripts/ladder.mjs";
 
+// The colour maths is the library's. It speaks radians for hue and lower-case
+// hex; this script speaks degrees, which is how a hue is named, so every hue
+// crosses the boundary here and nowhere else.
 type Rgb = [number, number, number]; // 0..1 sRGB
-type Lch = { L: number; C: number; h: number };
-
-const srgbToLinear = (c: number) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
-const linearToSrgb = (c: number) => (c <= 0.0031308 ? 12.92 * c : 1.055 * c ** (1 / 2.4) - 0.055);
-
-function rgbToOklab([r, g, b]: Rgb) {
-  const [lr, lg, lb] = [r, g, b].map(srgbToLinear);
-  const l = Math.cbrt(0.4122214708 * lr + 0.5363325363 * lg + 0.0514459929 * lb);
-  const m = Math.cbrt(0.2119034982 * lr + 0.6806995451 * lg + 0.1073969566 * lb);
-  const s = Math.cbrt(0.0883024619 * lr + 0.2817188376 * lg + 0.6299787005 * lb);
-  return {
-    L: 0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s,
-    a: 1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s,
-    b: 0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s,
-  };
-}
-function oklabToRgb(L: number, a: number, b: number): Rgb {
-  const l = (L + 0.3963377774 * a + 0.2158037573 * b) ** 3;
-  const m = (L - 0.1055613458 * a - 0.0638541728 * b) ** 3;
-  const s = (L - 0.0894841775 * a - 1.291485548 * b) ** 3;
-  return [
-    linearToSrgb(4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s),
-    linearToSrgb(-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s),
-    linearToSrgb(-0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s),
-  ];
-}
-function toLch(rgb: Rgb): Lch {
-  const { L, a, b } = rgbToOklab(rgb);
-  return { L, C: Math.hypot(a, b), h: ((Math.atan2(b, a) * 180) / Math.PI + 360) % 360 };
-}
-function fromLch({ L, C, h }: Lch): Rgb {
-  const r = (h * Math.PI) / 180;
-  return oklabToRgb(L, C * Math.cos(r), C * Math.sin(r));
-}
-const inGamut = (rgb: Rgb) => rgb.every((c) => c >= -1e-6 && c <= 1 + 1e-6);
-const hex = (rgb: Rgb) =>
-  "#" + rgb.map((c) => Math.round(Math.min(1, Math.max(0, c)) * 255).toString(16).padStart(2, "0")).join("").toUpperCase();
-const parseHex = (s: string): Rgb => [1, 3, 5].map((i) => parseInt(s.slice(i, i + 2), 16) / 255) as Rgb;
-/** The colour as it ships: 8-bit sRGB. Every contrast is measured on this, never on the float. */
-const shipped = (lch: Lch) => parseHex(hex(fromLch(lch)));
-
-function luminance([r, g, b]: Rgb) {
-  const [lr, lg, lb] = [r, g, b].map(srgbToLinear);
-  return 0.2126 * lr + 0.7152 * lg + 0.0722 * lb;
-}
-function contrast(a: Rgb, b: Rgb) {
-  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
-  return (hi + 0.05) / (lo + 0.05);
-}
-/** Largest chroma at (L, h) that sRGB still holds. */
-function maxChroma(L: number, h: number) {
-  let lo = 0, hi = 0.4;
-  for (let i = 0; i < 40; i++) {
-    const mid = (lo + hi) / 2;
-    if (inGamut(fromLch({ L, C: mid, h }))) lo = mid; else hi = mid;
-  }
-  return lo;
-}
-/** Smallest L above `from` whose shipped colour at (C, h) reaches `ratio` against `against`. */
-function nextStep(against: Rgb, from: number, C: number, h: number, ratio: number) {
-  for (let L = from + 0.001; L < 1; L += 0.001) {
-    if (contrast(shipped({ L, C: Math.min(C, maxChroma(L, h)), h }), against) >= ratio) return L;
-  }
-  throw new Error(`no step reaches ${ratio}:1 from L ${from}`);
-}
+type Lch = { L: number; C: number; h: number }; // h in degrees
+const toRad = (degrees: number) => (degrees * Math.PI) / 180;
+const toDeg = (radians: number) => ((radians * 180) / Math.PI + 360) % 360;
+const lchOf = (rgb: Rgb): Lch => {
+  const { L, C, h } = toLch(rgb);
+  return { L, C, h: toDeg(h) };
+};
+const rgbOf = ({ L, C, h }: Lch): Rgb => fromLch({ L, C, h: toRad(h) });
 const hueDist = (a: number, b: number) => Math.min(Math.abs(a - b), 360 - Math.abs(a - b));
 
 // ---- arguments ----------------------------------------------------------------------------
@@ -98,7 +44,7 @@ const txt = await $`magick ${wallpaper} -resize 192x -depth 8 -colorspace sRGB t
 const pixels: Lch[] = [];
 for (const line of txt.split("\n")) {
   const m = /#([0-9A-Fa-f]{6})/.exec(line);
-  if (m) pixels.push(toLch(parseHex("#" + m[1])));
+  if (m) pixels.push(lchOf(parseHex("#" + m[1])));
 }
 if (pixels.length < 1000) throw new Error(`only ${pixels.length} pixels read from ${wallpaper}`);
 
@@ -117,10 +63,9 @@ const meanHue = (ps: Lch[]) => {
 };
 const grey = share < 0.1;
 const tintHue = grey ? 0 : meanHue(chromatic);
-// Tuned for the notebook display (eDP-1), owner 2026-10-19: its narrow gamut
-// greys a low-chroma purple that the external monitor still shows as lilac,
-// so the neutrals carry much more of the wallpaper's hue (0.035 of 2026-10-16 still
-// read grey there, and so did 0.05).
+// Tuned for the notebook display (eDP-1): its narrow gamut greys a low-chroma
+// purple that the external monitor still shows as lilac, so the neutrals carry
+// much more of the wallpaper's hue (0.035 and 0.05 both still read grey there).
 const TINT_C = grey ? 0 : 0.08;
 
 const BIN = 30;
@@ -134,13 +79,12 @@ const accentHue = grey ? 275 : meanHue(best);
 // The band is the one colour typed here, lighter than the wallpaper's median: a
 // frame, not a hole. The surface and overlay above it are the library's.
 const STEP: number = tokens.ladder.step;
+const TEXT: number = tokens.contrast.text;
 const band: Lch = { L: 0.255, C: TINT_C, h: tintHue };
-const neutrals: Record<string, string> = { band: hex(fromLch(band)) };
-for (const [stepName, value] of Object.entries(neutralSteps(neutrals.band, STEP))) neutrals[stepName] = (value as string).toUpperCase();
-const overlay = parseHex(neutrals.overlay);
-const ink: Record<string, Lch> = {
-  text: { L: 0.95, C: grey ? 0 : 0.012, h: tintHue },
-  textMuted: { L: nextStep(overlay, toLch(overlay).L, TINT_C, tintHue, 4.5), C: TINT_C, h: tintHue },
+const neutrals: Record<string, string> = { band: hex(rgbOf(band)), ...ladder(hex(rgbOf(band)), STEP) };
+const ink: Record<string, string> = {
+  text: hex(rgbOf({ L: 0.95, C: grey ? 0 : 0.012, h: tintHue })),
+  textMuted: stepAbove(neutrals.overlay, { C: TINT_C, h: toRad(tintHue) }, TEXT),
 };
 
 // ---- the pastels: fixed hues, one lightness, one chroma ------------------------------------
@@ -152,17 +96,17 @@ const STATUS: Record<string, string> = { danger: "rose", warning: "yellow", succ
 for (const [role, pastel] of Object.entries(STATUS)) {
   if (hueDist(PASTELS[pastel], PASTELS[accentName]) < 30) throw new Error(`${role} (${pastel}) within 30 deg of the accent ${accentName}`);
 }
-const chroma = Math.min(0.1, ...Object.values(PASTELS).map((h) => maxChroma(HUE_L, h)));
+const chroma = Math.min(0.1, ...Object.values(PASTELS).map((h) => maxChroma(HUE_L, toRad(h))));
 
 const palette: Record<string, string> = { ...neutrals };
-for (const [n, lch] of Object.entries(ink)) palette[n] = hex(fromLch(lch));
-for (const [n, h] of Object.entries(PASTELS)) palette[n] = hex(fromLch({ L: HUE_L, C: chroma, h }));
+Object.assign(palette, ink);
+for (const [n, h] of Object.entries(PASTELS)) palette[n] = hex(rgbOf({ L: HUE_L, C: chroma, h }));
 
 // ---- roles --------------------------------------------------------------------------------
 // The edge colour (01-frame): the band a step lighter and a touch more purple,
 // a slight line at the silhouette's edge fading inward. On the notebook panel
 // the edge needs more chroma than lightness to read purple rather than grey.
-palette.edgeColor = hex(fromLch({ L: band.L + 0.16, C: Math.min(TINT_C + 0.11, maxChroma(band.L + 0.16, tintHue)), h: tintHue }));
+palette.edgeColor = hex(rgbOf({ L: band.L + 0.16, C: Math.min(TINT_C + 0.11, maxChroma(band.L + 0.16, toRad(tintHue))), h: tintHue }));
 
 const roles: Record<string, string> = {
   band: palette.band,
@@ -182,19 +126,34 @@ const roles: Record<string, string> = {
 };
 
 // ---- pairs: every floor, measured on the shipped 8-bit values -----------------------------
-const rgb = (n: string) => parseHex(roles[n]);
+const colours: Record<string, Rgb> = Object.fromEntries(Object.entries(roles).map(([n, value]) => [n, parseHex(value)]));
+// A row that recedes blends its muted text toward the band. The library derives
+// the share (Style.opacityRecede) as the weakest at which the shipped colour
+// still reads TEXT on the band; the receded colour is a pair like any other, so
+// a theme whose muted text leaves nothing to recede stops the run here too.
+const blendShipped = (c: Rgb, ground: Rgb, share: number): Rgb =>
+  c.map((v, i) => Math.round((ground[i] + (v - ground[i]) * share) * 255) / 255) as Rgb;
+let [lo, hi] = [0, 1];
+for (let i = 0; i < 20; i++) {
+  const mid = (lo + hi) / 2;
+  if (contrast(blendShipped(colours.textMuted, colours.band, mid), colours.band) < TEXT) lo = mid; else hi = mid;
+}
+const recedeShare = hi;
+colours.textMutedReceded = blendShipped(colours.textMuted, colours.band, recedeShare);
+
 const floors: [string, string, number][] = [
   ["surface", "band", STEP], ["overlay", "surface", STEP],
-  ["textOnPrimary", "primary", 4.5], ["textOnPrimary", "accent", 4.5], ["textOnPrimary", "info", 4.5],
-  ["textOnPrimary", "success", 4.5], ["textOnPrimary", "warning", 4.5], ["textOnPrimary", "danger", 4.5],
+  ["textOnPrimary", "primary", TEXT], ["textOnPrimary", "accent", TEXT], ["textOnPrimary", "info", TEXT],
+  ["textOnPrimary", "success", TEXT], ["textOnPrimary", "warning", TEXT], ["textOnPrimary", "danger", TEXT],
+  ["textMutedReceded", "band", TEXT],
 ];
 for (const bg of ["band", "surface", "overlay"]) {
-  for (const fg of ["text", "textMuted", "accent", "info", "success", "warning", "danger"]) floors.push([fg, bg, 4.5]);
+  for (const fg of ["text", "textMuted", "accent", "info", "success", "warning", "danger"]) floors.push([fg, bg, TEXT]);
 }
-const failed = floors.filter(([fg, bg, need]) => contrast(rgb(fg), rgb(bg)) + 1e-9 < need);
+const failed = floors.filter(([fg, bg, need]) => contrast(colours[fg], colours[bg]) + 1e-9 < need);
 if (failed.length) {
-  throw new Error("pairs under their floor: " + failed.map(([fg, bg, need]) => `${fg} on ${bg} ${contrast(rgb(fg), rgb(bg)).toFixed(2)} < ${need}`).join(", "));
+  throw new Error("pairs under their floor: " + failed.map(([fg, bg, need]) => `${fg} on ${bg} ${contrast(colours[fg], colours[bg]).toFixed(2)} < ${need}`).join(", "));
 }
 
 await Bun.write(outFile, JSON.stringify({ name, wallpaper: wallpaperRel, roles }, null, 2) + "\n");
-console.log(`${relative(root, outFile)}: median L ${medianL.toFixed(3)}, chromatic ${(share * 100).toFixed(0)}%, trace hue ${tintHue.toFixed(0)}, accent ${accentName} (hue ${accentHue.toFixed(0)}), ${floors.length} pairs ok`);
+console.log(`${relative(root, outFile)}: median L ${medianL.toFixed(3)}, chromatic ${(share * 100).toFixed(0)}%, trace hue ${tintHue.toFixed(0)}, accent ${accentName} (hue ${accentHue.toFixed(0)}), ${floors.length} pairs ok, recede share ${recedeShare.toFixed(3)}`);
