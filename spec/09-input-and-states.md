@@ -54,7 +54,7 @@ and discovery handles remain independent. The global modal policy is unchanged.
 ## Click-through
 
 - The scene is click-through everywhere except: the band/rail (peeked band included, full
-  60px while peeked), open rollouts (their live revealed rect), and the invisible handle
+  64px while peeked), open rollouts (their live revealed rect), and the invisible handle
   hover-areas (OSD handle, top-panel dots) — handle zones and the peek strip enter the input
   mask alongside the rollout registry (12-mechanism).
 - **RATIFIED (2026-10-18, owner)**: one law for every hover-opened surface. "vsechno on hover

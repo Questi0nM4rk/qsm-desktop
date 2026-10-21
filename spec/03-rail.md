@@ -1,15 +1,15 @@
 # 03 — Rail (left band)
 
-The 60px left band hosting entries top-to-bottom; the only always-visible surface.
+The 64px left band hosting entries top-to-bottom; the only always-visible surface.
 
 ## Pin / collapse / peek
 
-- **RATIFIED (2026-08-16)**: pin/unpin stays, **per monitor**. Pinned = band at 60px, windows
+- **RATIFIED (2026-08-16)**: pin/unpin stays, **per monitor**. Pinned = band at 64px, windows
   reserve around it. Unpinned = band collapses to the plain 12px edge, windows take the space;
   hovering the collapsed edge peeks the full band OVER the windows (no re-tiling); leaving or
   retracting always clears the peek (explicit state, never a raw hover binding).
 - **DEFAULT (2026-08-16)**: the peeked band renders through the same silhouette shader
-  (elevated over windows) and its full 60px is mask-active while peeked; peek and an open
+  (elevated over windows) and its full 64px is mask-active while peeked; peek and an open
   popout may coexist (leaving both retracts both).
 - **RATIFIED (2026-08-16)**: peek zone = the whole collapsed 12px strip, full height; opens
   instantly, clears **150ms** after the cursor leaves the revealed band.
@@ -45,16 +45,17 @@ intent separately from the backend result, with no password in event payloads.
     the band's 8px gutter to the true screen edge: **56** wide. The logo, the updates cell, the
     pin, tray icons, app rows, the clock, the battery reading, the quick menu and power all use
     exactly these two widths, so measured straight from left to right a capsule is the same
-    distance from the screen edge (8px), from the band wall (4px) and from its rollout's content
-    (20px) wherever it sits.
+    distance from the screen edge (8px), from the band wall (8px) and from its rollout's content
+    (24px) wherever it sits. The band is 64 wide because the capsule and its axis then leave a
+    multiple of 8 over: every item centred on the band lands on whole device pixels at 1.25.
   - Height follows the content: a glyph cell, a tray icon and an app row are
     `Theme.railCellHeight`, Control sm, **32** (hit area 56x32). The clock is as tall as its three
     lines need at their reading sizes (digits textLg bold, date textSm, 8px above and below), so
     the time reads; it is not squeezed to a cell.
   - What is inside a capsule is centred there at its own step: glyphs 16, the logo and an app's
-    icon 20, the battery reading at the reading role's size, the clock digits and date at the
-    sizes above. The workspace slots are not capsules: they are a strip of 16px aims with one
-    moving chip.
+    icon 24, the battery reading at the title step (14, medium), the clock digits and date at the
+    sizes above, every box on the 4 rhythm. The workspace slots are not capsules: they are a
+    strip of rail-wide, 24px-high aims.
   - Hover is a whole-device-pixel size change of the capsule's body and never a fractional
     scale (qsm-shell AGENTS.md, growth): the glyph keeps its size, the pixel edges stay on the
     device grid, and the side of an open item's pill that joins its rollout does not grow, it

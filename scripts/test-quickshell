@@ -385,13 +385,13 @@ overlay_scene_layers="$(hyprctl layers -j | jq '[.[] | .levels["3"][]? | select(
 # Mask rect math (design.md decision 2) is exposed over IPC because hyprctl
 # reports surface geometry, not the wlr input region the mask actually sets.
 # Pinned (rail not collapsed): mask width is the full reserved-left strip.
-qs ipc --path "$config" call qsm status | jq -e '.sceneRailMaskWidth == 60' >/dev/null
+qs ipc --path "$config" call qsm status | jq -e '.sceneRailMaskWidth == 64' >/dev/null
 # Unpinned (rail collapsed, not peeking): mask narrows to the frame strip
 # (01-frame band thickness, 16).
 qs ipc --path "$config" call qsm railToggle | grep -q '^true$'
 qs ipc --path "$config" call qsm status | jq -e '.sceneRailMaskWidth == 16' >/dev/null
 qs ipc --path "$config" call qsm railToggle | grep -q '^false$'
-qs ipc --path "$config" call qsm status | jq -e '.sceneRailMaskWidth == 60' >/dev/null
+qs ipc --path "$config" call qsm status | jq -e '.sceneRailMaskWidth == 64' >/dev/null
 
 # Rollout mask merge:
 # the bar popout is the first real registerRolloutRegion caller. Opening it
@@ -582,7 +582,7 @@ if [[ "$(hyprctl activewindow -j | jq -r '.fullscreen // 0')" == 0 ]]; then
       "modal $modal was not closed at fullscreen"
     hyprctl dispatch "$fullscreen_dispatch" >/dev/null
     fullscreen_toggled=false
-    wait_status '.modal == "none" and .sceneRailMaskWidth == 60' \
+    wait_status '.modal == "none" and .sceneRailMaskWidth == 64' \
       "modal $modal resurrected after fullscreen"
   done
 
@@ -647,7 +647,7 @@ if [[ "$(hyprctl activewindow -j | jq -r '.fullscreen // 0')" == 0 ]]; then
   fullscreen_toggled=false
   restored=false
   for _ in {1..30}; do
-    if qs ipc --path "$config" call qsm status | jq -e '.sceneRailMaskWidth == 60' >/dev/null; then
+    if qs ipc --path "$config" call qsm status | jq -e '.sceneRailMaskWidth == 64' >/dev/null; then
       restored=true
       break
     fi

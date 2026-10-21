@@ -199,8 +199,10 @@ QtObject {
     readonly property int performanceBatteryTankHeight: 220
 
     // ── Frame, rail, notifications ─────────────────────────────────────
-    // The left band is wider than the others: the rail lives inside it.
-    readonly property int reservedLeft: 60
+    // The left band is wider than the others: the rail lives inside it. Its
+    // width and the capsule's leave a multiple of 8 over, so everything
+    // centred on the band's axis lands on whole device pixels at 1.25.
+    readonly property int reservedLeft: 64
     // THE width of the band: every item (a glyph, the battery reading, the
     // clock, an app row, a tray icon) is this wide and answers on one hit
     // area, the capsule plus the band's left gutter. Height is the item's own:
@@ -219,7 +221,7 @@ QtObject {
     readonly property int railCellHeight: QsmShellStyle.Style.size("Control", "sm")
     // The logo and an app's icon take the mark step in a cell; plain glyphs
     // stay at the small icon step.
-    readonly property int railMark: QsmShellStyle.Style.iconMd
+    readonly property int railMark: QsmShellStyle.Style.iconLg
     // A tray icon is recoloured to textMuted and lifted by this much, so a
     // coloured third-party glyph sits in the same tone as the rail's outline
     // glyphs.

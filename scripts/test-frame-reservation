@@ -23,7 +23,7 @@ wait_for_frame_reservations() {
         | if $fullscreen then
             $monitor.reserved == [0, 0, 0, 0]
           else
-            ($monitor.reserved | sort) == [10, 10, 10, 60]
+            ($monitor.reserved | sort) == [10, 10, 10, 64]
           end)
     ' >/dev/null; then
       return 0
