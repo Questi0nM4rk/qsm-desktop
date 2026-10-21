@@ -6,7 +6,6 @@ import qs.QsmShell.Style as QsmShellStyle
 import qs.components
 import qs.state
 import qs.theme
-import "../../QsmShell/Components/fuzzy.js" as Fuzzy
 
 // Keybind cheat sheet (decision-table row 9, built 2026-08-20, owner round
 // 2026-08-21). The clipboard rollout is reachable ONLY by its keybind, which
@@ -69,7 +68,7 @@ Item {
             combo: bind.combo,
             description: bind.description,
             group: bind.group,
-            score: Fuzzy.score(root.query, bind.group + " " + bind.combo + " " + bind.description)
+            score: QsmShellComponents.Fuzzy.score(root.query, bind.group + " " + bind.combo + " " + bind.description)
         }))
         .filter(item => item.score >= 0)
 

@@ -8,7 +8,6 @@ import qs.components
 import qs.services
 import qs.state
 import qs.theme
-import "../../QsmShell/Components/fuzzy.js" as Fuzzy
 
 // Launcher content (07-launcher): search field at the BOTTOM, results above
 // (at most Theme.launcherMaxRows rows),
@@ -139,7 +138,7 @@ Item {
     function filterDetailRows(rows) {
         const needle = rest.trim();
         return needle.length === 0 ? rows
-            : rows.filter(row => Fuzzy.score(needle, `${row.label} ${row.sub}`) >= 0);
+            : rows.filter(row => QsmShellComponents.Fuzzy.score(needle, `${row.label} ${row.sub}`) >= 0);
     }
 
     // --- apps (frecency-boosted fuzzy) -------------------------------------
@@ -313,7 +312,7 @@ Item {
         case "commands": {
             const word = query.slice(1).split(" ")[0];
             return commandDefs
-                .filter(def => word.length === 0 || Fuzzy.score(word, def.cmd) >= 0)
+                .filter(def => word.length === 0 || QsmShellComponents.Fuzzy.score(word, def.cmd) >= 0)
                 .map(def => ({ kind: "command", icon: def.icon, label: `>${def.cmd}`, sub: def.desc, data: def.cmd }));
         }
         case "calc":
@@ -326,7 +325,7 @@ Item {
                 : [{ kind: "calc", icon: "sparkle", label: calcResult || "…", sub: rest }];
         case "kill":
             return killTargets
-                .map(target => ({ target: target, score: Fuzzy.score(rest, target.label) }))
+                .map(target => ({ target: target, score: QsmShellComponents.Fuzzy.score(rest, target.label) }))
                 .filter(item => item.score >= 0)
                 .sort((left, right) => right.score - left.score)
                 .slice(0, 8)
@@ -338,7 +337,7 @@ Item {
             // One row per installed theme (N-theme law) with its wallpaper
             // as the thumbnail; applies instantly on Enter/click.
             return Theme.themes
-                .filter(theme => Fuzzy.score(rest, theme.name) >= 0)
+                .filter(theme => QsmShellComponents.Fuzzy.score(rest, theme.name) >= 0)
                 .map(theme => ({
                     kind: "theme", icon: "mountain", label: theme.name,
                     sub: Theme.current === theme.id ? "current" : "",
@@ -355,7 +354,7 @@ Item {
             // vanishes whole, headers included.
             const scored = actionDefs
                 .filter(action => root.actionIds === null || root.actionIds.includes(action.id))
-                .map((action, defIndex) => ({ action: action, score: Fuzzy.score(rest, `${action.label} ${action.sub}`), defIndex: defIndex }))
+                .map((action, defIndex) => ({ action: action, score: QsmShellComponents.Fuzzy.score(rest, `${action.label} ${action.sub}`), defIndex: defIndex }))
                 .filter(item => item.score >= 0)
                 .sort((left, right) => right.score - left.score
                     || left.action.label.length - right.action.label.length
@@ -380,7 +379,7 @@ Item {
                 .map((item, index) => ({
                     item: item,
                     index: index,
-                    score: Fuzzy.score(needle, item.text)
+                    score: QsmShellComponents.Fuzzy.score(needle, item.text)
                 }))
                 .filter(scored => scored.score >= 0)
                 .map(scored => ({

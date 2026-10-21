@@ -293,7 +293,7 @@ ColumnLayout {
                     readonly property var rx: PerformanceService.netRxHistory
                     readonly property var tx: PerformanceService.netTxHistory
                     readonly property real peak: Math.max(1, ...rx, ...tx)
-                    readonly property real lineThickness: QsmShellStyle.Style.stroke(1, Screen.devicePixelRatio)
+                    readonly property real lineThickness: QsmShellStyle.Style.stroke(QsmShellStyle.Style.hairline, netGraph)
 
                     // The zero line, always drawn: with no traffic both
                     // series sit on it, so idle reads as quiet rather than as

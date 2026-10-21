@@ -30,7 +30,6 @@ ColumnLayout {
 
     QsmShellComponents.Section {
         Layout.fillWidth: true
-        Layout.topMargin: 0
         title: "Output"
 
         Repeater {
@@ -97,6 +96,7 @@ ColumnLayout {
 
     QsmShellComponents.Section {
         Layout.fillWidth: true
+        Layout.topMargin: QsmShellStyle.Style.space4
         title: "Input"
 
         Repeater {

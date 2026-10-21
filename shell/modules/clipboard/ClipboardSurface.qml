@@ -8,7 +8,6 @@ import qs.components
 import qs.services
 import qs.state
 import qs.theme
-import "../../QsmShell/Components/fuzzy.js" as Fuzzy
 
 // Clipboard history, its own surface (owner 2026-08-20).
 //
@@ -81,7 +80,7 @@ Item {
 
     readonly property var results: clipLines
         .map((line, index) => ({ line: line, index: index,
-            score: Fuzzy.score(root.query, line, root.matchSpan) }))
+            score: QsmShellComponents.Fuzzy.score(root.query, line, root.matchSpan) }))
         .filter(item => item.score >= 0)
         .sort((left, right) => right.score - left.score || left.index - right.index)
         .slice(0, Theme.clipboardMaxRows)
