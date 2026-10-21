@@ -2,8 +2,9 @@
 
 - The owner leads the implementation loop: choose one item, think/design/build/prepare it, then report readiness with its purpose and supported states. The owner reviews it and directs revisions to that same item until acceptance. Never self-approve or advance automatically.
 - **Work lands on main.** One agent, one local tree: the next item is implemented directly on the main branch and committed there. A worktree is for genuinely parallel or throwaway work only; whatever comes out of one is reviewed by the agent and merged into main before the owner ever sees it. Never hand over work that exists only in a scratch directory.
-- Do not run tests, validation, captures, skill evaluations or desktop input unless the owner explicitly asks. The owner tests and judges the result.
-- Use `openai/gpt-6-luna` at medium effort for small tasks; high effort for complex research. Keep read-only research and implementation agents narrowly scoped; never delegate testing without the owner's request.
+- Every UI or UX change is validated on the live composed desktop with the qsm-compuse instruments (`drive`: capture, real-frame recording, item-tree geometry equations, rendered contrast) before the owner sees it; a change no instrument can show is blocked and the instrument comes first (marketplace epic `qsm-j480`). The measurement is evidence, never acceptance: the owner judges the result. Desktop input runs on workspace 10 only.
+- A fix ships visible behaviour with before/after numbers, not a record.
+- Use `openai/gpt-6-luna` at medium effort for small tasks; high effort for complex research. Keep read-only research and implementation agents narrowly scoped; the validation of a UI change is part of that change, not a separate request.
 - Operate on workspace 10 only when the owner asks the agent to operate. Do not drive the pointer while the owner reviews. After review finishes, clean up only windows the agent opened; never close the owner's review window prematurely.
 - Keep useful findings in the relevant spec or `docs/BACKLOG.md`. Specs describe current truth; edit existing sections in place rather than keeping decision history.
 - A finding left unfixed needs a `docs/BACKLOG.md` entry with the reason it was left; a finding fixed needs none.
