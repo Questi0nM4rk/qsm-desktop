@@ -63,8 +63,9 @@ Item {
             model: 4
 
             Rectangle {
-                // A 2px circle rasterises soft and its peak fell to 2.4:1; at
-                // this size the text role clears 3:1.
+                // Four whole device pixels each, pitch two steps: a smaller dot
+                // rasterises soft and its peak falls under 3:1, which the text
+                // role keeps clear of.
                 width: Theme.dotGlyphSize + 2 * interaction.growth
                 height: width
                 radius: QsmShellStyle.Style.radiusPill

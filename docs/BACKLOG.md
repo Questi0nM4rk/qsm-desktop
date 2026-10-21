@@ -33,7 +33,6 @@ Open items only, one line each; what is fixed or historical is in git.
 - `BatteryPopoutContent`'s profile switch glides and the library `Segmented` does not; `RailDeviceCell`'s cross divider has no library type.
 - Raw numbers remain in the bar popouts (letter spacing on the vertical app labels, margins, opacities, border widths, one `SvgIcon size: 58`) with no `Theme` token.
 - Dimming by `opacity` remains on the rail while the session surface is open, inactive rail apps, off-centre theme cards and the bell; an icon, photo or scene fade cannot blend toward the band.
-- `Theme.dotSpacing` and `dotGlyphSize` sit off the 4 px rhythm: a 2 px dot rasterised soft and fell under 3:1.
 - `Theme.artworkRingStroke`: the library avatar ring is a share of the picture and reads heavy around a large cover.
 - `ScrollCue.fadeColor` is hand-matched to each list's ground; no gate catches a wrong colour.
 - Receded muted text on `surface` and `overlay` is about 3.4 and 2.6 against the 4.5 floor; only the band is enforced.

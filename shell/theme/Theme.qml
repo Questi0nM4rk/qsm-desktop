@@ -257,14 +257,14 @@ QtObject {
     // ── Handles ────────────────────────────────────────────────────────
     // The OSD circle nub and the top dot pair.
     readonly property real handleRadius: 7
-    // The dots handle sits mostly inside the band: a negative proud pulls it
-    // up, so only its lower part shows.
-    readonly property real panelHandleProud: -1
+    // The dots handle straddles the band's inner edge: half of it in the band,
+    // half proud of it, so its edges stay on the 4 px grid.
+    readonly property real panelHandleProud: 0
     // The OSD nub sinks into the right band the same way: its centre sits two
     // pixels inside it.
     readonly property real osdHandleProud: handleRadius + 2
-    readonly property real dotSpacing: 3
-    readonly property real dotGlyphSize: 2.5
+    readonly property real dotSpacing: QsmShellStyle.Style.space1
+    readonly property real dotGlyphSize: QsmShellStyle.Style.space1
     readonly property int panelHandleHeight: 8
 
     // ── Popouts and OSD ────────────────────────────────────────────────
