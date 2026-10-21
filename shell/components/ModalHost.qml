@@ -34,6 +34,10 @@ Item {
     property var edges: ["top"]
     property real bodyWidth
     property real bodyHeight
+    // Rollout semantics: the gap the body keeps from the frame band (negative
+    // is the band's thickness) and the inset its content keeps from the body.
+    property real edgeInset: -1
+    property real padding: 0
 
     default property alias content: drawer.content
 
@@ -76,6 +80,8 @@ Item {
         suppressed: root.scene.fullscreen || root.scene.focusMode
         bodyWidth: root.bodyWidth
         bodyHeight: root.bodyHeight
+        edgeInset: root.edgeInset
+        padding: root.padding
 
         // Anchors are assigned imperatively: the declarative ternary form
         // (left/right/horizontalCenter all declared, resolving to undefined)

@@ -64,7 +64,9 @@ and discovery handles remain independent. The global modal policy is unchanged.
   trigger, its panel and the path between, and closes 180ms (`Motion.hoverGrace`) after it
   leaves. The trigger is never the painted shape: it is the shape grown by `Style.hoverReach`
   (20) on every side, clipped to the screen, and it sits in the input mask so the pointer is
-  seen there at all (top-panel dots, OSD nub, notification bell corner). A rail cell is already
+  seen there at all (top-panel dots, OSD nub). The notification bell is the exception: its zone is the control
+  itself raised to the 24px target floor, because a reach around it caught pointers headed
+  for other things. A rail cell is already
   a full tile and is its own trigger. The scene pointer reads the zones, never a HoverHandler a
   surface above would shadow.
 - **DEFAULT (2026-08-16)**: opening a global modal REPLACES the currently open one and closes

@@ -32,7 +32,7 @@ QsmShellComponents.NotificationCenter {
         query = "";
         beginVisit();
         view = unreadCount > 0 ? "unread" : "all";
-        focusField();
+        focusField(ShellState.modalByPointer);
     }
 
     onActivated: entry => NotificationService.markRead(entry)

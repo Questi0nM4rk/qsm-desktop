@@ -255,7 +255,18 @@ QtObject {
     // the clipboard.
     readonly property int notificationBellWidth: QsmShellStyle.Style.size("Control", "md")
     readonly property int notificationBellHeight: QsmShellStyle.Style.size("Control", "sm")
+    // With unread the bulge carries the count beside the glyph: a pad, the 16
+    // glyph, a step, the library's count chip and a pad, so the chip clears
+    // the glyph and keeps a pad from the screen edge.
+    readonly property int notificationBellPad: QsmShellStyle.Style.space2
+    readonly property int notificationBellCountedWidth: notificationBellPad * 2
+        + QsmShellStyle.Style.iconSm + QsmShellStyle.Style.space1 + QsmShellStyle.Style.badgeWidth
     readonly property int notificationMenuHeight: 520
+    // The gap between a notification card and the screen edge it rolls out of,
+    // and between it and the silhouette's other edge: measured from the
+    // monitor, never from the frame that runs along it. One gap, so cards sit
+    // as far from the edges as they do from each other.
+    readonly property int notificationGutter: QsmShellStyle.Style.space2
 
     // ── Handles ────────────────────────────────────────────────────────
     // The OSD circle nub and the top dot pair.

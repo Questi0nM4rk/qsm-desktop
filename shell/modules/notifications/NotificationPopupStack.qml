@@ -1,6 +1,7 @@
 import QtQuick
 import qs.QsmShell.Components as QsmShellComponents
 import qs.QsmShell.Style as QsmShellStyle
+import qs.theme
 
 // Popup presentation (04-notifications): ONE notification window with two
 // genuine shell hosts, the same way OsdSurface carries one channel column.
@@ -134,10 +135,12 @@ Item {
         // Expands DOWN; right edge is a flush contact merged into the right
         // band (squared corner + rim burial).
         edges: ["top", "right"]
-        tier: "large"
-        // The cards carry their own inset, so the wall inset is one step: their
-        // content edge lands close to the separator endpoint without crowding it.
-        edgeInsetH: QsmShellStyle.Style.space2
+        // An unbidden, occasional arrival (spec 1.7): the small tier, which
+        // its short travel allows.
+        tier: "small"
+        // The body runs to the monitor's top and right edges and the cards sit
+        // one gutter inside it, so their distance to the monitor is the gutter.
+        edgeInset: 0
         shouldBeActive: root.popupActive
         // Fullscreen keeps its allowlist (09) through the capsule, which paints
         // that body. There is no frame to melt into there, so no detach.
@@ -147,8 +150,7 @@ Item {
         settleContent: false
         // Card heights and eviction already animate the column's actual extent.
         animateBodySize: false
-        // The cards carry their own inner margins.
-        padding: QsmShellStyle.Style.space2
+        padding: Theme.notificationGutter
         bodyWidth: notificationStack.implicitWidth + padding * 2
         bodyHeight: notificationStack.implicitHeight + padding * 2
         anchors.top: parent.top
@@ -167,7 +169,7 @@ Item {
         orientation: Qt.Vertical
         // The rollout's own inner padding, so both bodies inset the column
         // identically.
-        padding: QsmShellStyle.Style.space2
+        padding: Theme.notificationGutter
         bodySize: notificationStack.implicitWidth + padding * 2
         preferredLength: notificationStack.height + padding * 2
         anchors.top: parent.top

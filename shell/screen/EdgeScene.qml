@@ -649,7 +649,11 @@ PanelWindow {
         host: border
         name: "notifications"
         edges: ["top", "right"]
-        bodyWidth: QsmShellStyle.Style.notificationWidth + QsmShellStyle.Style.rolloutPadding * 2
+        // The body runs to the monitor's top and right edges, so its content
+        // is a gutter from the monitor, not from the frame beside it.
+        edgeInset: 0
+        padding: Theme.notificationGutter
+        bodyWidth: QsmShellStyle.Style.notificationWidth + Theme.notificationGutter * 2
         bodyHeight: Math.min(
             Theme.notificationMenuHeight,
             root.height - QsmShellStyle.Style.space6 * 2)
@@ -658,7 +662,6 @@ PanelWindow {
         NotificationCenterSurface {
             id: notificationCenter
             anchors.fill: parent
-            anchors.margins: QsmShellStyle.Style.rolloutPadding
         }
     }
 

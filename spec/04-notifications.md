@@ -16,10 +16,12 @@ require review.
 
 ## Popup rollout
 
-- Anchored top-right: flush under the top band, with the right content edge 16px from the
-  screen border (8px rollout wall inset + 8px inner padding). Cards are 380px wide so short
-  notifications sit close to the right edge and expanded body text wraps below. Large-surface
-  reveal tier (500ms). Over a fullscreen client there is no band to flush into, so the popup
+- Anchored top-right. Placement is measured from the monitor, never from the frame band: the
+  body runs to the monitor's top and right edges and carries an 8px gutter
+  (`Theme.notificationGutter`), so the cards sit 8px from both edges, 8px from each other and
+  8px from the body's free edges. Cards are 380px wide so short notifications sit close to the
+  right edge and expanded body text wraps below. Small reveal tier (250ms), as an unbidden,
+  occasional arrival. Over a fullscreen client there is no band to flush into, so the popup
   is the real shell `DataCapsule` inset 8px from the same corner instead (see Presentation
   boundary below).
 - Popup entries are `surface` cards of radius 12 on the rollout's `band`, separated by a
@@ -31,7 +33,8 @@ require review.
   a row must not introduce an extra extent jump or leave an input hole behind.
 - **RATIFIED (2026-08-16)**: each entry carries an appropriate SVG icon (app/type).
 - **RATIFIED (2026-10-16, owner)**: urgency has no tick bar; the app glyph carries it by
-  colour: critical `danger`, normal `info`, low `textMuted`. Action buttons are quiet, drawn
+  shape first (bell, alert triangle, moon) and colour second: critical `danger`, normal
+  `text`, low `textMuted`. Action buttons are quiet, drawn
   on `overlay`; the card's one primary action alone uses `primary` with `textOnPrimary` text.
 - **RATIFIED (2026-08-16, clarified 2026-08-27)**: hover expands content and pauses expiry,
   but useful message content is visible at rest: app identity, summary and a bounded readable
@@ -199,7 +202,8 @@ transition before wiring this call. Link loss must not be labelled Internet loss
 - **RATIFIED (2026-10-17, owner; replaces the top-panel tab of 2026-08-16)**: everything
   about notifications lives TOP RIGHT. A BELL BULGE sits in the corner where the top band
   meets the right frame: 40x32, `band` fill, a 16px bell glyph (`text` with unread, else
-  `textMuted`) and the UNREAD count as an `accent` badge. With everything read (owner
+  `textMuted`; the moon while do-not-disturb is on) and, with unread, the count as an `accent`
+  badge beside the glyph, never over it (the bulge widens to 68 to hold both). With everything read (owner
   2026-10-18: "notifications, when they are all read, should be on top of the border, and moved
   into the right corner diagonally not just vertically") the bulge RETRACTS and the bell glyph
   travels DIAGONALLY, up and to the right, into the top-right corner of the frame and sits on
@@ -209,18 +213,21 @@ transition before wiring this call. Link loss must not be labelled Internet loss
   opaque, jakoze little invisible"). The glyph rides the
   bulge's own reveal (`Rollout.revealProgress`), so both move as one on the `revealSmall` tier
   and shorten under reduced motion with it. Unread above 0, the menu open, or the pointer on the
-  corner brings the bulge back with the glyph riding into it. The hover zone is generous at
-  the corner (the glyph grown by `Style.hoverReach`, 20, clipped to the screen; with the bulge up
-  it covers glyph and bulge together), never the 16px glyph. Entering it, in either state, opens
+  corner brings the bulge back with the glyph riding into it. The hover zone is the
+  control itself, never a reach grown around it (owner 2026-10-22: "hitboxes pro notification
+  jsou upe obrovske pro triger open notification menu"): at rest the 16px glyph raised to the
+  24px target floor in the screen's corner (24x24); with the bulge up the bulge plus the strip
+  of band between it and the monitor edge (40x44, 68x44 with the count). Entering it, in either state, opens
   the NOTIFICATION MENU AT ONCE: a top-right modal rollout
-  (`notifications`, 412 wide, up to 520 tall) in the clipboard's shape, search field at the
-  top, then two views, **Unread** (with its count) and **All**, picked on a track with one gliding
+  (`notifications`, 396 wide, up to 520 tall, the same 8px gutter from the monitor as the popups) in the clipboard's shape, search field at the
+  top over the whole width (the pointer that opened the menu rests under that corner, and a
+  text field is the one control a click there cannot harm), then two views, **Unread** (with its count) and **All**, picked on a track with one gliding
   thumb that fills its segment to the track's edge and wears the track's own corner (owner
   2026-10-19: the per-segment highlight did not fill the track's rounded ends; the thumb is the
   accent at 12 % over the track with the card shadow, the label group centred in each segment), then the history grouped by
   app with FUZZY SEARCH across title AND body. The menu opens on Unread while anything is
   unread, else on All (owner 2026-10-18: unread "more separated than just dots, its own menu
-  tab"). An unread row also carries a 6px `accent` dot by its app name; a plain click on it
+  tab"). An unread row also carries an 8px `accent` dot (`badgeDot`, whole device pixels) by its app name; a plain click on it
   marks it READ, so it leaves the bell's count and the Unread view and stays in All.
 - **RATIFIED (2026-10-18, owner)**: every menu entry is its own body, a `surface` card of the
   large radius with a slight shadow, `space2` apart (the shadow falls into that gap and is not
@@ -242,7 +249,7 @@ transition before wiring this call. Link loss must not be labelled Internet loss
   the route for explicitly choosing named actions; popup body activation is limited to the
   live protocol action whose identifier is exactly `default`.
 - **DEFAULT (2026-08-16, widened 2026-08-19)**: DND toggle lives in the notification menu's
-  header, beside Clear, both icon-only (moon, trash) so the search placeholder keeps its width; while the TOP PANEL (any tab), the SESSION surface or the notification
+  header, on the view row beside Clear, both icon-only (moon, trash); while the TOP PANEL (any tab), the SESSION surface or the notification
   menu itself is open, popups are suppressed — the panel rolls out of the SAME top band and is wide enough to sit under this
   stack, and two surfaces cannot share one wall (the menu and the popups both roll out of the top-right corner); the session surface owns the screen by 08's
   fade-back law. Entries still arrive, expire and land in history; only the popup waits.
