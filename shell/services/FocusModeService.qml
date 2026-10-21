@@ -5,9 +5,9 @@ import QtQuick
 import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Io
+import qs.QsmShell.Style as QsmShellStyle
 import qs.services
 import qs.state
-import qs.theme
 // qmllint disable missing-property
 
 // QSM focus is a reversible compositor transformation, not client fullscreen.
@@ -121,10 +121,10 @@ QtObject {
 
     function floatingViewport(screen: var): var {
         return {
-            x: Math.round(screen.x + Theme.frameThickness),
-            y: Math.round(screen.y + Theme.frameThickness),
-            width: Math.max(1, Math.round(screen.width - Theme.frameThickness * 2)),
-            height: Math.max(1, Math.round(screen.height - Theme.frameThickness * 2))
+            x: Math.round(screen.x + QsmShellStyle.Style.frameThickness),
+            y: Math.round(screen.y + QsmShellStyle.Style.frameThickness),
+            width: Math.max(1, Math.round(screen.width - QsmShellStyle.Style.frameThickness * 2)),
+            height: Math.max(1, Math.round(screen.height - QsmShellStyle.Style.frameThickness * 2))
         };
     }
 

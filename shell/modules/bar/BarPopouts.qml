@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import qs.QsmShell.Components as QsmShellComponents
+import qs.QsmShell.Style as QsmShellStyle
 import qs.services
 import qs.theme
 
@@ -36,8 +37,8 @@ QsmShellComponents.Rollout {
     // asked for and the retained picture is never read as an open one.
     shouldBeActive: hasCurrent
     anchorItem: controller.anchor
-    placementBounds: Qt.rect(0, Theme.frameThickness, host.width,
-        host.height - Theme.frameThickness * 2)
+    placementBounds: Qt.rect(0, QsmShellStyle.Style.frameThickness, host.width,
+        host.height - QsmShellStyle.Style.frameThickness * 2)
     triggerAreas: anchorItem ? [anchorRect] : []
     hoverAreas: {
         const anchor = anchorRect;
@@ -69,12 +70,12 @@ QsmShellComponents.Rollout {
         const body = root.currentBody;
         return body && typeof body.readout === "function" ? body.readout(name) : null;
     }
-    readonly property real nonAnimWidth: (currentPopout?.implicitWidth ?? 0) + Theme.space4 * 2
+    readonly property real nonAnimWidth: (currentPopout?.implicitWidth ?? 0) + QsmShellStyle.Style.space4 * 2
     // "match" copies the parent rollout's height so the seam between them is a
     // straight line with no step; anything else hugs its content.
     readonly property real nonAnimHeight: currentPopout?.sizing === "match" && root.matchHeight > 0
         ? root.matchHeight
-        : (currentPopout?.implicitHeight ?? 0) + Theme.space4 * 2
+        : (currentPopout?.implicitHeight ?? 0) + QsmShellStyle.Style.space4 * 2
 
     function syncRenderKind(): void {
         if (suppressed) {
@@ -129,7 +130,7 @@ QsmShellComponents.Rollout {
         Item {
             id: contentColumn
             anchors.fill: parent
-            anchors.margins: Theme.space4
+            anchors.margins: QsmShellStyle.Style.space4
 
             Popout {
                 name: "network"
@@ -200,7 +201,7 @@ QsmShellComponents.Rollout {
                 name: "colorpick"
                 sizing: "match"
                 sourceComponent: ColorPickContent {
-                    spanHeight: root.matchHeight - Theme.space4 * 2
+                    spanHeight: root.matchHeight - QsmShellStyle.Style.space4 * 2
                 }
             }
 
@@ -230,7 +231,7 @@ QsmShellComponents.Rollout {
                         role: "body"
                         muted: true
                         visible: text.length > 0
-                        width: Theme.popoutWidth - Theme.space4 * 2
+                        width: Theme.popoutWidth - QsmShellStyle.Style.space4 * 2
                         text: root.controller.detail
                         // Prose leaves a wrapping role's elide at None
                         // ("somewhere to go"); this one is capped at two
@@ -259,7 +260,7 @@ QsmShellComponents.Rollout {
             Popout {
                 name: "calendar"
                 sourceComponent: QsmShellComponents.MonthCalendar {
-                    width: Theme.popoutWidth - Theme.space4 * 2
+                    width: Theme.popoutWidth - QsmShellStyle.Style.space4 * 2
                 }
             }
 
@@ -307,7 +308,7 @@ QsmShellComponents.Rollout {
             QsmShellComponents.Prose {
                 role: "body"
                 muted: true
-                width: Theme.popoutWidth - Theme.space4 * 2
+                width: Theme.popoutWidth - QsmShellStyle.Style.space4 * 2
                 text: root.controller.detail
             }
         }
@@ -320,8 +321,8 @@ QsmShellComponents.Rollout {
         default property alias content: inner.data
         property string title
 
-        width: Theme.popoutWidth - Theme.space4 * 2
-        spacing: Theme.space2
+        width: Theme.popoutWidth - QsmShellStyle.Style.space4 * 2
+        spacing: QsmShellStyle.Style.space2
 
         QsmShellComponents.Prose {
             role: "title"
@@ -336,7 +337,7 @@ QsmShellComponents.Rollout {
         Column {
             id: inner
             width: parent.width
-            spacing: Theme.space2
+            spacing: QsmShellStyle.Style.space2
 
             // Content components are ColumnLayouts — pin their width to the
             // card so fillWidth rows actually fill.
@@ -366,16 +367,16 @@ QsmShellComponents.Rollout {
         }
 
         ColumnLayout {
-            width: Theme.popoutWidth - Theme.space4 * 2
-            spacing: Theme.space2
+            width: Theme.popoutWidth - QsmShellStyle.Style.space4 * 2
+            spacing: QsmShellStyle.Style.space2
 
             RowLayout {
                 Layout.fillWidth: true
-                spacing: Theme.space2
+                spacing: QsmShellStyle.Style.space2
 
                 QsmShellComponents.SvgIcon {
                     name: "brightness"
-                    size: Theme.iconSm
+                    size: QsmShellStyle.Style.iconSm
                     color: Theme.textMuted
                 }
 
@@ -391,7 +392,7 @@ QsmShellComponents.Rollout {
 
                 QsmShellComponents.SvgIcon {
                     name: "moon"
-                    size: Theme.iconSm
+                    size: QsmShellStyle.Style.iconSm
                     color: Theme.textMuted
                 }
             }

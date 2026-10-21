@@ -32,9 +32,9 @@ Item {
     readonly property bool animating: rollout.animating
     readonly property real bodyWidth: Math.max(0, Math.min(Theme.panelWidth,
         Math.floor(2 * Math.min(root.scene.panelCenterX - root.host.leftEdge,
-            root.width - Theme.frameThickness - root.scene.panelCenterX) - Theme.space4 * 2)))
+            root.width - QsmShellStyle.Style.frameThickness - root.scene.panelCenterX) - QsmShellStyle.Style.space4 * 2)))
     readonly property real bodyHeight: Math.max(0, Math.min(Theme.panelHeight,
-        Math.floor(root.height - Theme.frameThickness * 2 - Theme.space4
+        Math.floor(root.height - QsmShellStyle.Style.frameThickness * 2 - QsmShellStyle.Style.space4
             - Theme.panelHandleHeight / 2 - Theme.panelHandleProud)))
     readonly property bool staticContent: ShellState.panelTab !== "workspaces"
     readonly property bool detailedSampling: root.loadContent && root.active
@@ -103,8 +103,8 @@ Item {
             ColumnLayout {
                 id: panelColumn
                 anchors.fill: parent
-                anchors.margins: Theme.space4
-                spacing: Theme.space3
+                anchors.margins: QsmShellStyle.Style.space4
+                spacing: QsmShellStyle.Style.space3
 
                 QsmShellComponents.ScrollArea {
                     id: navigation
@@ -127,7 +127,7 @@ Item {
                         id: tabBar
                         objectName: "panelNavigation"
                         width: Math.max(navigation.width, Theme.panelNavigationWidth)
-                        barHeight: Theme.panelTabBarHeight
+                        size: "lg"
                         options: root.tabs
                         currentIndex: Math.max(0, root.tabs.findIndex(tab => tab.key === ShellState.panelTab))
                         tabNavigation: true

@@ -23,7 +23,7 @@ Item {
     signal activated
     readonly property var actions: [({ name: "open-panel", invoke: () => root.activate() })]
 
-    implicitWidth: grip.implicitWidth + Theme.space1 * 2
+    implicitWidth: grip.implicitWidth + QsmShellStyle.Style.space1 * 2
     implicitHeight: Theme.panelHandleHeight
     Accessible.role: Accessible.Button
     Accessible.name: "Open panel"

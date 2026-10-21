@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import qs.QsmShell.Components as QsmShellComponents
+import qs.QsmShell.Style as QsmShellStyle
 import qs.theme
 
 // One DBusMenu row (03 DEFAULT tray-menu rendering). Submenus expand
@@ -21,14 +22,13 @@ ColumnLayout {
     onExpandedChanged: root.structureChanged()
 
     Layout.fillWidth: true
-    spacing: Theme.spaceTight
+    spacing: QsmShellStyle.Style.spaceTight
 
     // Separator: a SHORT faded line (03).
     QsmShellComponents.Divider {
         visible: root.entry.isSeparator
         Layout.alignment: Qt.AlignHCenter
         Layout.preferredWidth: Theme.menuSeparatorWidth
-        strength: Theme.menuSeparatorStrength
     }
 
     // The row, its dimming when disabled and its press are the library's;
@@ -40,7 +40,7 @@ ColumnLayout {
         // entry's, but it is not a target.
         interactive: !root.entry.isSeparator
         Layout.fillWidth: true
-        Layout.leftMargin: root.depth * Theme.space3
+        Layout.leftMargin: root.depth * QsmShellStyle.Style.space3
         size: "sm"
         recede: false
         // The library's focused default is false; Menu grants real focus to
@@ -61,7 +61,7 @@ ColumnLayout {
         QsmShellComponents.SvgIcon {
             visible: root.hasSubmenu
             name: root.expanded ? "chevron-down" : "chevron-right"
-            size: Theme.iconXs
+            size: QsmShellStyle.Style.iconXs
             color: Theme.textMuted
         }
     }

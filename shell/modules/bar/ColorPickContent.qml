@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import qs.QsmShell.Components as QsmShellComponents
+import qs.QsmShell.Style as QsmShellStyle
 import qs.components
 import qs.services
 import qs.theme
@@ -85,7 +86,7 @@ Item {
     // works. A harmony set off a grey is meaningless either way.
     readonly property real baseHue: root.base.hslHue < 0 ? 0 : root.base.hslHue
 
-    implicitWidth: Theme.popoutWidth - Theme.space4 * 2
+    implicitWidth: Theme.popoutWidth - QsmShellStyle.Style.space4 * 2
     // NOT derived from `column`: column fills this item, so reading its
     // implicitHeight back into this one is the childrenRect binding loop the
     // PRIMER warns about. The host hands the span down; the token is the floor
@@ -132,13 +133,13 @@ Item {
         property bool filled: true
 
         readonly property string text: root.hex(line.value)
-        readonly property real box: line.large ? Theme.space6 : Theme.space5
+        readonly property real box: line.large ? QsmShellStyle.Style.space6 : QsmShellStyle.Style.space5
         readonly property Item swatch: swatchControl
         // What the copy button is acknowledging right now, read off the glyph
         // it is actually painting.
         readonly property string copyFeedback: copyButton.icon
 
-        spacing: Theme.space2
+        spacing: QsmShellStyle.Style.space2
 
         // The row the derived tokens are about carries the mark, so "which
         // colour is this menu working on" is answerable from the picture. An
@@ -175,10 +176,10 @@ Item {
             Layout.fillWidth: true
             visible: line.filled
             text: line.text
-            font.pixelSize: line.large ? Theme.textMd : Theme.textSm
+            font.pixelSize: line.large ? QsmShellStyle.Style.textMd : QsmShellStyle.Style.textSm
             // The small (history) row keeps its original regular weight;
             // the large row already matches reading's bold default.
-            font.weight: line.large ? Theme.weightBold : Theme.weightRegular
+            font.weight: line.large ? QsmShellStyle.Style.weightBold : QsmShellStyle.Style.weightRegular
         }
 
         // Holds the row's shape while empty, so the swatch does not slide
@@ -210,7 +211,7 @@ Item {
         id: column
 
         anchors.fill: parent
-        spacing: Theme.space2
+        spacing: QsmShellStyle.Style.space2
 
         // --- the current colour ---------------------------------------------
         QsmShellComponents.Prose {
@@ -245,7 +246,7 @@ Item {
             text: ColorPickService.busy ? "Picking…" : "Click the square to pick"
         }
 
-        Item { Layout.preferredHeight: Theme.space3 }
+        Item { Layout.preferredHeight: QsmShellStyle.Style.space3 }
 
         // --- history ---------------------------------------------------------
         QsmShellComponents.Prose {
@@ -283,7 +284,7 @@ Item {
                 // hover growth — measured at 1.7px off every edge row
                 // (scripts/ui-guard), which is the response the pointer came for.
                 clip: contentHeight > height
-                spacing: Theme.space1
+                spacing: QsmShellStyle.Style.space1
                 boundsBehavior: Flickable.StopAtBounds
                 model: ColorPickService.history
 
@@ -294,7 +295,7 @@ Item {
                     anchors.left: parent.left
                     anchors.top: parent.top
                     text: "Picks are kept here"
-                    opacity: Theme.opacityDisabled
+                    opacity: QsmShellStyle.Style.opacityDisabled
                     visible: ColorPickService.history.length === 0
                 }
 
@@ -315,7 +316,7 @@ Item {
             }
         }
 
-        Item { Layout.preferredHeight: Theme.space3 }
+        Item { Layout.preferredHeight: QsmShellStyle.Style.space3 }
 
         // --- accent generation ------------------------------------------------
         // "Auto accent colour generation for the picked colour" (owner). The
@@ -339,9 +340,9 @@ Item {
         // that does it.
         RowLayout {
             Layout.fillWidth: true
-            Layout.bottomMargin: Theme.space1
+            Layout.bottomMargin: QsmShellStyle.Style.space1
             visible: root.has
-            spacing: Theme.space1
+            spacing: QsmShellStyle.Style.space1
 
             Repeater {
                 model: [root.base, root.rotated(1 / 3), root.rotated(0.5),
@@ -355,7 +356,7 @@ Item {
                     readonly property string hex: root.hex(token.modelData)
                     readonly property bool justCopied: ColorPickService.copied === token.hex
 
-                    size: Theme.space5
+                    size: QsmShellStyle.Style.space5
                     sample: token.modelData
                     onClicked: {
                         root.interacted("copy", { "target": "accent", "value": token.hex });
@@ -366,7 +367,7 @@ Item {
                         anchors.centerIn: parent
                         visible: token.justCopied
                         name: "check"
-                        size: Theme.iconXs
+                        size: QsmShellStyle.Style.iconXs
                         // The swatch already worked out which ink reads on its
                         // own sample, by WCAG contrast against the composited
                         // colour. This used to answer the same question with

@@ -1,6 +1,6 @@
 import QtQuick
 import qs.QsmShell.Components as QsmShellComponents
-import qs.theme
+import qs.QsmShell.Style as QsmShellStyle
 
 // Popup presentation (04-notifications): ONE notification window with two
 // genuine shell hosts, the same way OsdSurface carries one channel column.
@@ -103,7 +103,7 @@ Item {
                     && row.rect.width > 0 && row.rect.height > 0) {
                 const p = notificationStack.mapToItem(root.scene.contentItem, row.rect.x, row.rect.y);
                 root.host.registerFullscreenCapsule(id,
-                    Qt.rect(p.x, p.y, row.rect.width, row.rect.height), Theme.radiusPill, false);
+                    Qt.rect(p.x, p.y, row.rect.width, row.rect.height), QsmShellStyle.Style.radiusPill, false);
             } else {
                 root.host.unregisterFullscreenCapsule(id);
             }
@@ -138,7 +138,7 @@ Item {
         // Cards have 8px of inner rollout padding. An 8px wall inset therefore
         // lands their right content edge 16px from the screen border instead
         // of the old 24px, close to the separator endpoint without crowding it.
-        edgeInsetH: Theme.space2
+        edgeInsetH: QsmShellStyle.Style.space2
         shouldBeActive: root.popupActive
         // Fullscreen keeps its allowlist (09) through the capsule, which paints
         // that body. There is no frame to melt into there, so no detach.
@@ -149,7 +149,7 @@ Item {
         // Card heights and eviction already animate the column's actual extent.
         animateBodySize: false
         // The cards carry their own inner margins.
-        padding: Theme.space2
+        padding: QsmShellStyle.Style.space2
         bodyWidth: notificationStack.implicitWidth + padding * 2
         bodyHeight: notificationStack.implicitHeight + padding * 2
         anchors.top: parent.top
@@ -168,13 +168,13 @@ Item {
         orientation: Qt.Vertical
         // The rollout's own inner padding, so both bodies inset the column
         // identically.
-        padding: Theme.space2
+        padding: QsmShellStyle.Style.space2
         bodySize: notificationStack.implicitWidth + padding * 2
         preferredLength: notificationStack.height + padding * 2
         anchors.top: parent.top
         anchors.right: parent.right
-        anchors.topMargin: Theme.space2
-        anchors.rightMargin: Theme.space2
+        anchors.topMargin: QsmShellStyle.Style.space2
+        anchors.rightMargin: QsmShellStyle.Style.space2
     }
 
     QsmShellComponents.NotificationStack {
@@ -192,8 +192,8 @@ Item {
         stack: root.stack
         // Surface cards of the medium radius, a token gap apart (spec 04).
         bodied: true
-        bodyRadius: Theme.radiusMd
-        rowSpacing: Theme.space2
+        bodyRadius: QsmShellStyle.Style.radiusMd
+        rowSpacing: QsmShellStyle.Style.space2
         isAlive: id => root.notificationService.live.some(entry => entry.notificationId === id)
         // Retention follows the selected host, including the capsule's fade —
         // DataCapsule still reports `present` after `shown` has gone.

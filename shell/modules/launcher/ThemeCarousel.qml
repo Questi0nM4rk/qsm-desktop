@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 import QtQuick
 import qs.QsmShell.Components as QsmShellComponents
+import qs.QsmShell.Style as QsmShellStyle
 import qs.theme
 
 // >theme carousel (07 RATIFIED N-theme picker, caelestia WallpaperList idea
@@ -40,7 +41,7 @@ Item {
         interactive: false // index is keyboard-driven from the host, not dragged
         model: root.items
         currentIndex: root.currentIndex
-        spacing: Theme.space4
+        spacing: QsmShellStyle.Style.space4
         highlightRangeMode: ListView.StrictlyEnforceRange
         preferredHighlightBegin: width / 2 - Theme.launcherThemeCardWidth / 2
         preferredHighlightEnd: width / 2 + Theme.launcherThemeCardWidth / 2

@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import qs.QsmShell.Style as QsmShellStyle
 import qs.services
 import qs.state
 import qs.theme
@@ -32,7 +33,7 @@ FocusScope {
         y: 0
         width: root.implicitWidth
         height: root.implicitHeight
-        spacing: Theme.space3
+        spacing: QsmShellStyle.Style.space3
 
         OsdChannel {
             id: outputChannel
@@ -42,7 +43,7 @@ FocusScope {
             Layout.alignment: Qt.AlignHCenter
             Layout.preferredHeight: Theme.osdTrackHeight
                 + outputChannel.topPadding + outputChannel.bottomPadding
-            Layout.preferredWidth: Theme.osdWidth - Theme.space2 * 2
+            Layout.preferredWidth: Theme.osdWidth - QsmShellStyle.Style.space2 * 2
             icon: AudioService.outputMuted ? "volume-muted" : "volume"
             value: AudioService.outputValue
             muted: AudioService.outputMuted
@@ -65,7 +66,7 @@ FocusScope {
             Layout.alignment: Qt.AlignHCenter
             Layout.preferredHeight: Theme.osdTrackHeight
                 + microphoneChannel.topPadding + microphoneChannel.bottomPadding
-            Layout.preferredWidth: Theme.osdWidth - Theme.space2 * 2
+            Layout.preferredWidth: Theme.osdWidth - QsmShellStyle.Style.space2 * 2
             icon: AudioService.microphoneMuted ? "microphone-muted" : "microphone"
             value: AudioService.microphoneValue
             muted: AudioService.microphoneMuted
@@ -88,7 +89,7 @@ FocusScope {
             Layout.alignment: Qt.AlignHCenter
             Layout.preferredHeight: Theme.osdTrackHeight
                 + brightnessChannel.topPadding + brightnessChannel.bottomPadding
-            Layout.preferredWidth: Theme.osdWidth - Theme.space2 * 2
+            Layout.preferredWidth: Theme.osdWidth - QsmShellStyle.Style.space2 * 2
             visible: BrightnessService.available
             icon: "brightness"
             mutable: false

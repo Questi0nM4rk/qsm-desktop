@@ -1,5 +1,6 @@
 import QtQuick
 import qs.QsmShell.Components as QsmShellComponents
+import qs.QsmShell.Style as QsmShellStyle
 import qs.modules.osd as Osd
 import qs.services as WorkbenchServices
 import qs.state as WorkbenchState
@@ -335,11 +336,11 @@ Item {
     }
 
     Rectangle {
-        x: Theme.frameThickness
-        y: Theme.frameThickness
-        width: Math.max(0, root.width - Theme.frameThickness * 2)
-        height: Math.max(0, root.height - Theme.frameThickness * 2)
-        radius: Theme.frameRadius
+        x: QsmShellStyle.Style.frameThickness
+        y: QsmShellStyle.Style.frameThickness
+        width: Math.max(0, root.width - QsmShellStyle.Style.frameThickness * 2)
+        height: Math.max(0, root.height - QsmShellStyle.Style.frameThickness * 2)
+        radius: QsmShellStyle.Style.rolloutRadius
         color: Theme.surface
 
         Text {
@@ -347,7 +348,7 @@ Item {
             text: "Application preview"
             color: Theme.textMuted
             font.family: Theme.fontFamily
-            font.pixelSize: Theme.textMd
+            font.pixelSize: QsmShellStyle.Style.textMd
         }
     }
 
@@ -360,7 +361,7 @@ Item {
         anchors.fill: parent
         pointer: scenePointer
         fullscreen: root.fullscreen
-        leftEdge: Theme.frameThickness
+        leftEdge: QsmShellStyle.Style.frameThickness
         entryFilter: id => id === "osd"
         handle0: osdHandle.shaderHandle
     }

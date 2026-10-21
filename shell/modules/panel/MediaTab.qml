@@ -28,11 +28,11 @@ Item {
     implicitWidth: Theme.mediaContentWidth
     // The panel body less its own margins, the tab bar and the gap under it
     // (PanelSurface's column); the viewport scrolls when a screen is shorter.
-    implicitHeight: Theme.panelHeight - Theme.space4 * 2 - Theme.panelTabBarHeight - Theme.space3
+    implicitHeight: Theme.panelHeight - QsmShellStyle.Style.space4 * 2 - Theme.panelTabBarHeight - QsmShellStyle.Style.space3
 
     // The artwork grows to the body, up to a third of the column so the text
     // keeps the rest.
-    readonly property real artBox: Math.min(implicitHeight - Theme.space4 * 2, Theme.mediaContentWidth / 3)
+    readonly property real artBox: Math.min(implicitHeight - QsmShellStyle.Style.space4 * 2, Theme.mediaContentWidth / 3)
     // How far an arrow key moves the playhead.
     readonly property real seekStepSeconds: 5
 
@@ -54,9 +54,9 @@ Item {
     RowLayout {
         id: mediaRow
         anchors.fill: parent
-        anchors.margins: Theme.space4
+        anchors.margins: QsmShellStyle.Style.space4
         visible: root.player !== null
-        spacing: Theme.space5
+        spacing: QsmShellStyle.Style.space5
 
         // LEFT: artwork circle + progress ring; clicking the ring seeks, and so
         // do the arrow keys while it holds keyboard focus.
@@ -85,18 +85,18 @@ Item {
             QsmShellComponents.Avatar {
                 id: avatar
                 anchors.centerIn: parent
-                size: artwork.width - 2 * (Theme.dashboardRingStroke + QsmShellStyle.Style.spaceTight)
+                size: artwork.width - 2 * (Theme.artworkRingStroke + QsmShellStyle.Style.spaceTight)
                 background: Theme.surface
                 source: root.player?.trackArtUrl ?? ""
                 icon: "music"
                 // The size this fallback had before the migration; Avatar's
                 // two-fifths default is the rule for initials, not for a glyph.
-                glyphSize: Theme.iconXl
+                glyphSize: QsmShellStyle.Style.iconXl
                 progress: root.progress
                 // The ring is the seek affordance: accent while it can be
                 // sought, dimmed into the band when the player cannot.
                 progressColor: artwork.canSeek ? Theme.accent : QsmShellStyle.Style.disabled(Theme.accent)
-                ringWidth: Theme.dashboardRingStroke
+                ringWidth: Theme.artworkRingStroke
             }
 
             // Only the focus ring: the seek target is the ring band, not the
@@ -139,7 +139,7 @@ Item {
             // column's, the row's remainder does, so ElideRight fires.
             Layout.preferredWidth: 0
             Layout.alignment: Qt.AlignVCenter
-            spacing: Theme.space2
+            spacing: QsmShellStyle.Style.space2
 
             QsmShellComponents.Prose {
                 role: "heading"
@@ -171,13 +171,13 @@ Item {
             // track never nudge the slider ends or truncate.
             RowLayout {
                 Layout.fillWidth: true
-                Layout.topMargin: Theme.space2
-                spacing: Theme.space2
+                Layout.topMargin: QsmShellStyle.Style.space2
+                spacing: QsmShellStyle.Style.space2
 
                 TextMetrics {
                     id: timeTemplate
                     font.family: Theme.technicalFontFamily
-                    font.pixelSize: Theme.textSm
+                    font.pixelSize: QsmShellStyle.Style.textSm
                     text: "000:00"
                 }
 
@@ -194,8 +194,7 @@ Item {
                 QsmShellComponents.Slider {
                     id: seekSlider
                     Layout.fillWidth: true
-                    thickness: Theme.sliderTrackThickness
-                    thumbSize: Theme.sliderThumbSize
+                    size: "sm"
                     accessibleName: "Seek"
                     enabled: MediaService.canSeek && MediaService.lengthSupported && MediaService.length > 0
                     value: root.progress
@@ -215,9 +214,9 @@ Item {
             // one is an IconButton — a real target with the shell's one
             // hover/press response, not a bare glyph with a MouseArea.
             RowLayout {
-                Layout.topMargin: Theme.space2
+                Layout.topMargin: QsmShellStyle.Style.space2
                 Layout.alignment: Qt.AlignHCenter
-                spacing: Theme.space2
+                spacing: QsmShellStyle.Style.space2
 
                 QsmShellComponents.IconButton {
                     id: shuffleButton
@@ -264,8 +263,8 @@ Item {
             // above never moves when a second player appears.
             Flow {
                 Layout.fillWidth: true
-                Layout.topMargin: Theme.space2
-                spacing: Theme.space2
+                Layout.topMargin: QsmShellStyle.Style.space2
+                spacing: QsmShellStyle.Style.space2
 
                 Repeater {
                     model: MediaService.players

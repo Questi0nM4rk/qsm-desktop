@@ -1,4 +1,5 @@
 import QtQuick
+import qs.QsmShell.Style as QsmShellStyle
 import qs.services
 import qs.theme
 
@@ -39,7 +40,7 @@ Item {
     // The alternative — stretching the card to the column's full height so the
     // seam becomes one straight line — was built and rejected: the cards should
     // stay small.
-    readonly property int clearance: Theme.space6 + Theme.space2
+    readonly property int clearance: QsmShellStyle.Style.space6 + QsmShellStyle.Style.space2
 
     implicitWidth: Theme.railWidth
     implicitHeight: cells.implicitHeight + clearance * 2

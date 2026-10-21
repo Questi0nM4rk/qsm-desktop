@@ -7,25 +7,11 @@ import qs.QsmShell.Style as QsmShellStyle
 Window {
     id: root
     visible: false
+    // Only what the check reads: a backend answers the names it declares and
+    // the library answers the rest.
     QtObject {
         id: fakeBackend
-        property bool reducedMotion: false
-        property color accent: "#aa5500"
-        property color primary: "#aa5500"
-        property color textOnPrimary: "#110a05"
-        property color focus: "#aa5500"
-        property color success: "#00aa55"
-        property color warning: "#ddaa00"
-        property color info: "#3388dd"
-        property color band: "#110a05"
         property color surface: "#22140a"
-        property color overlay: "#442a14"
-        property color text: "#fff4e8"
-        property color textMuted: "#d8b899"
-        property color danger: "#dd3344"
-        property string fontFamily: "Sans"
-        property string technicalFontFamily: "Monospace"
-        property real opacityDisabled: 0.35
     }
 
     Binding {

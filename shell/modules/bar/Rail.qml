@@ -25,7 +25,7 @@ Item {
     Column {
         id: topStack
         anchors.top: parent.top
-        anchors.topMargin: Theme.space4
+        anchors.topMargin: QsmShellStyle.Style.space4
         anchors.left: parent.left
         anchors.right: parent.right
         spacing: Theme.railItemGap
@@ -40,7 +40,7 @@ Item {
             // band (03 DEFAULT: no click, no popout).
             RailEntry {
                 icon: "arch"
-                iconSize: Theme.iconMd
+                iconSize: QsmShellStyle.Style.iconMd
                 iconColor: Theme.accent
                 compact: true
             }
@@ -74,8 +74,8 @@ Item {
                     // leaves the glyph's body readable.
                     anchors.left: parent.horizontalCenter
                     anchors.bottom: parent.verticalCenter
-                    anchors.leftMargin: Theme.iconSm / 2 - Theme.spaceTight
-                    anchors.bottomMargin: Theme.iconSm / 2 - Theme.spaceTight
+                    anchors.leftMargin: QsmShellStyle.Style.iconSm / 2 - QsmShellStyle.Style.spaceTight
+                    anchors.bottomMargin: QsmShellStyle.Style.iconSm / 2 - QsmShellStyle.Style.spaceTight
                     tone: "accent"
                     filled: true
                     text: UpdateService.count > 99 ? "99+" : String(UpdateService.count)
@@ -94,7 +94,7 @@ Item {
             // the group wants more than that, it scales down as one block
             // instead of pushing the clock off the band.
             maximumHeight: Math.max(0, root.height - bottomStack.height
-                - Theme.space4 * 2 - markGroup.height - topDivider.height * 2
+                - QsmShellStyle.Style.space4 * 2 - markGroup.height - topDivider.height * 2
                 - Theme.railItemGap * 4 - Theme.railAppSlot)
 
             Column {
@@ -135,7 +135,7 @@ Item {
                         required property var modelData
 
                         width: parent.width
-                        height: Theme.space6
+                        height: QsmShellStyle.Style.space6
 
                         function open(): void {
                             root.popouts.show("tray", trayEntry,
@@ -156,8 +156,8 @@ Item {
                         Image {
                             id: trayImage
                             anchors.centerIn: parent
-                            width: Theme.iconSm
-                            height: Theme.iconSm
+                            width: QsmShellStyle.Style.iconSm
+                            height: QsmShellStyle.Style.iconSm
                             source: trayEntry.modelData.icon
                             asynchronous: true
                             layer.enabled: true
@@ -178,7 +178,7 @@ Item {
                             hoverScale: QsmShellStyle.Motion.rowHoverScale
                             pressScale: QsmShellStyle.Motion.pressScale
                             focused: trayEntry.activeFocus
-                            focusRadius: Theme.radiusMd
+                            focusRadius: QsmShellStyle.Style.radiusMd
                             onClicked: trayEntry.open()
                         }
                     }
@@ -208,7 +208,7 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: Theme.space4
+        anchors.bottomMargin: QsmShellStyle.Style.space4
         spacing: Theme.railItemGap
 
         RailDivider {}

@@ -27,7 +27,7 @@ Item {
     property bool clickable: true
     // The narrow rail uses the compact 16px glyph step. The Arch logo is the
     // one deliberate 20px exception at the top of the band.
-    property int iconSize: Theme.iconSm
+    property int iconSize: QsmShellStyle.Style.iconSm
     property var popouts: null
     property string popoutKind
     property string popoutTitle
@@ -63,7 +63,7 @@ Item {
     signal interaction(string action)
 
     implicitWidth: Theme.railWidth
-    implicitHeight: compact ? Theme.space6 : Theme.railWidth
+    implicitHeight: compact ? QsmShellStyle.Style.space6 : Theme.railWidth
 
     // A cell the pointer can act on is a keyboard stop too, and a screen
     // reader names it by what its popout names.
@@ -93,7 +93,7 @@ Item {
         anchors.fill: parent
         // Selected: reach the band's inner wall — connected to the column.
         anchors.rightMargin: root.selected ? -(Theme.reservedLeft - Theme.railWidth) / 2 : 0
-        radius: Theme.radiusMd
+        radius: QsmShellStyle.Style.radiusMd
         // Plugged into the wall it reaches: square on that side, so the pill
         // joins the column instead of ending in two rounded notches.
         snapEdge: root.selected ? "right" : ""
@@ -144,7 +144,7 @@ Item {
         // entered, so two neighbours can be grown at once.
         hoverScale: QsmShellStyle.Motion.hoverScaleWithin(root.height, Theme.railItemGap)
         focused: root.activeFocus
-        focusRadius: Theme.radiusMd
+        focusRadius: QsmShellStyle.Style.radiusMd
         interactive: root.interactive
         clickable: root.clickable
         manualHoverOverride: root.selected

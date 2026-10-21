@@ -75,7 +75,7 @@ QsmShellComponents.Card {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        anchors.margins: Theme.space3
+        anchors.margins: QsmShellStyle.Style.space3
         spacing: 0
 
         QsmShellComponents.Prose {

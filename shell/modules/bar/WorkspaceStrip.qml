@@ -49,7 +49,7 @@ Item {
 
     readonly property int activeIndex:
         Math.max(0, allWorkspaces.findIndex(workspace => workspace.id === activeWorkspaceId))
-    readonly property real slotStride: Theme.railWorkspaceSlot + Theme.space1
+    readonly property real slotStride: Theme.railWorkspaceSlot + QsmShellStyle.Style.space1
 
     implicitWidth: Theme.railWidth
     implicitHeight: slots.implicitHeight
@@ -60,7 +60,7 @@ Item {
         anchors.top: parent.top
         // The 4px step between slots; slotStride above must move with it,
         // because the travelling pill walks slotStride.
-        spacing: Theme.space1
+        spacing: QsmShellStyle.Style.space1
 
         Repeater {
             model: root.allWorkspaces
@@ -92,7 +92,7 @@ Item {
                     anchors.centerIn: parent
                     width: Theme.railWorkspaceDot
                     height: width
-                    radius: Theme.radiusPill
+                    radius: QsmShellStyle.Style.radiusPill
                     // Hover and press recolour the dot through the one state
                     // matrix, so it answers like every other target.
                     color: QsmShellStyle.Style.tone(
@@ -117,7 +117,7 @@ Item {
                     target: dot
                     hoverScale: Motion.dotHoverScale
                     focused: slot.activeFocus
-                    focusRadius: Theme.radiusPill
+                    focusRadius: QsmShellStyle.Style.radiusPill
                     onClicked: root.activate(slot.workspaceId)
                 }
             }

@@ -91,7 +91,7 @@ PanelWindow {
     // so tests can assert the numbers without inspecting Quickshell internals.
     readonly property rect railMaskRect: fullscreen
         ? Qt.rect(0, 0, 0, 0)
-        : Qt.rect(0, 0, railRevealed ? Theme.reservedLeft : Theme.frameThickness, root.height)
+        : Qt.rect(0, 0, railRevealed ? Theme.reservedLeft : QsmShellStyle.Style.frameThickness, root.height)
 
     // Fullscreen keeps only the explicit popup/OSD allowlist in the mask;
     // every other rollout is filtered out even if its closing transition has
@@ -340,9 +340,9 @@ PanelWindow {
     // revealed rail (pinned or peeking) = the full rail band. Peek widens the
     // band OVER the windows below — the exclusion zone (FrameExclusions)
     // tracks only the pin state, never the peek.
-    property int leftEdge: railRevealed ? Theme.reservedLeft : Theme.frameThickness
+    property int leftEdge: railRevealed ? Theme.reservedLeft : QsmShellStyle.Style.frameThickness
     // The asymmetric 60/16px bands make the physical midpoint the wrong viewport center.
-    readonly property real panelCenterX: (leftEdge + width - Theme.frameThickness) / 2
+    readonly property real panelCenterX: (leftEdge + width - QsmShellStyle.Style.frameThickness) / 2
 
     Behavior on leftEdge {
         NumberAnimation { duration: Motion.normal; easing.type: Motion.emphasizedEasing }
@@ -499,7 +499,7 @@ PanelWindow {
         // entered it.
         width: popoutController.active
             ? Theme.reservedLeft + popout.width + actionPopout.width
-            : root.railRevealed ? Theme.reservedLeft : Theme.frameThickness
+            : root.railRevealed ? Theme.reservedLeft : QsmShellStyle.Style.frameThickness
 
         // Escape closes the rail's popouts from whichever rail or popout item
         // holds keyboard focus; a field that handles Escape itself (the Wi-Fi
@@ -647,16 +647,16 @@ PanelWindow {
         host: border
         name: "notifications"
         edges: ["top", "right"]
-        bodyWidth: Theme.notificationWidth + Theme.space4 * 2
+        bodyWidth: QsmShellStyle.Style.notificationWidth + QsmShellStyle.Style.space4 * 2
         bodyHeight: Math.min(
             Theme.notificationMenuHeight,
-            root.height - Theme.space6 * 2)
+            root.height - QsmShellStyle.Style.space6 * 2)
         onOpened: notificationCenter.open()
 
         NotificationCenterSurface {
             id: notificationCenter
             anchors.fill: parent
-            anchors.margins: Theme.space4
+            anchors.margins: QsmShellStyle.Style.space4
         }
     }
 
@@ -738,7 +738,7 @@ PanelWindow {
     readonly property rect panelHandleZone: fullscreen || focusMode
         ? Qt.rect(0, 0, 0, 0)
         : QsmShellStyle.Style.hoverZone(Qt.rect(panelHandle.x,
-            Theme.frameThickness - panelHandle.height / 2 + Theme.panelHandleProud,
+            QsmShellStyle.Style.frameThickness - panelHandle.height / 2 + Theme.panelHandleProud,
             panelHandle.width, panelHandle.height), Qt.rect(0, 0, root.width, root.height))
 
     PanelHandle {
@@ -792,7 +792,7 @@ PanelWindow {
         bodyWidth: Theme.launcherWidth
         bodyHeight: Math.min(
             launcherSurface.preferredBodyHeight,
-            root.height - Theme.space6 * 2)
+            root.height - QsmShellStyle.Style.space6 * 2)
         onOpened: launcherSurface.open()
 
         LauncherSurface {
@@ -814,7 +814,7 @@ PanelWindow {
         bodyWidth: Theme.clipboardWidth
         bodyHeight: Math.min(
             clipboardSurface.preferredBodyHeight,
-            root.height - Theme.space6 * 2)
+            root.height - QsmShellStyle.Style.space6 * 2)
         onOpened: clipboardSurface.open()
 
         ClipboardSurface {
@@ -831,7 +831,7 @@ PanelWindow {
         name: "cheatsheet"
         edges: ["top"]
         bodyWidth: Theme.cheatSheetWidth
-        bodyHeight: root.height - Theme.space6 * 4
+        bodyHeight: root.height - QsmShellStyle.Style.space6 * 4
         onOpened: cheatSheetSurface.open()
 
         CheatSheetSurface {

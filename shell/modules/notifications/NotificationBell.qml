@@ -32,12 +32,12 @@ Item {
     // Where the glyph lives: on the band's rounded corner fill, one frame
     // thickness in from each edge (the owner accepted this placement), or
     // centred in the bulge. Half a thickness would clip the 16px glyph.
-    readonly property point cornerCenter: Qt.point(root.width - Theme.frameThickness,
-        Theme.frameThickness)
-    readonly property rect cornerRect: Qt.rect(cornerCenter.x - Theme.iconSm / 2,
-        cornerCenter.y - Theme.iconSm / 2, Theme.iconSm, Theme.iconSm)
+    readonly property point cornerCenter: Qt.point(root.width - QsmShellStyle.Style.frameThickness,
+        QsmShellStyle.Style.frameThickness)
+    readonly property rect cornerRect: Qt.rect(cornerCenter.x - QsmShellStyle.Style.iconSm / 2,
+        cornerCenter.y - QsmShellStyle.Style.iconSm / 2, QsmShellStyle.Style.iconSm, QsmShellStyle.Style.iconSm)
     readonly property rect bulgeRect: Qt.rect(root.width - Theme.notificationBellWidth,
-        Theme.frameThickness, Theme.notificationBellWidth, Theme.notificationBellHeight)
+        QsmShellStyle.Style.frameThickness, Theme.notificationBellWidth, Theme.notificationBellHeight)
     readonly property point bulgeCenter: Qt.point(bulgeRect.x + bulgeRect.width / 2,
         bulgeRect.y + bulgeRect.height / 2)
 
@@ -114,8 +114,8 @@ Item {
     // moment it retracts, and it has to stay on the band.
     Item {
         id: glyph
-        width: Theme.iconSm
-        height: Theme.iconSm
+        width: QsmShellStyle.Style.iconSm
+        height: QsmShellStyle.Style.iconSm
         visible: root.shown
         x: root.cornerCenter.x + (root.bulgeCenter.x - root.cornerCenter.x) * bulge.revealProgress
             - width / 2
@@ -127,7 +127,7 @@ Item {
         // glyph covered the whole bell.
         QsmShellComponents.Badge {
             anchors.horizontalCenter: parent.right
-            anchors.horizontalCenterOffset: -Theme.spaceTight
+            anchors.horizontalCenterOffset: -QsmShellStyle.Style.spaceTight
             anchors.verticalCenter: parent.top
             z: 1
             visible: root.unread > 0
@@ -139,7 +139,7 @@ Item {
         QsmShellComponents.SvgIcon {
             anchors.centerIn: parent
             name: "bell"
-            size: Theme.iconSm
+            size: QsmShellStyle.Style.iconSm
             color: QsmShellStyle.Style.tone(root.unread > 0 ? Theme.text : Theme.textMuted,
                 bellLayer.hovered, bellLayer.pressed, false, root.shown, Theme.accent)
         }
@@ -148,7 +148,7 @@ Item {
         // not a control asking to be read: it recedes as the bulge retracts
         // and comes back to full strength as the bulge returns (owner
         // 2026-10-19: "vic opaque, jakoze little invisible").
-        opacity: Theme.opacityRecede + (1 - Theme.opacityRecede) * bulge.revealProgress
+        opacity: QsmShellStyle.Style.opacityRecede + (1 - QsmShellStyle.Style.opacityRecede) * bulge.revealProgress
     }
 
     // The one click target is the whole live zone, like its hover: the
@@ -163,7 +163,7 @@ Item {
         target: glyph
         pressScale: QsmShellStyle.Motion.pressScale
         focused: root.activeFocus
-        focusRadius: Theme.radiusMd
+        focusRadius: QsmShellStyle.Style.radiusMd
         interactive: root.shown
         onClicked: root.open()
     }

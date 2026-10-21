@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import qs.QsmShell.Components as QsmShellComponents
+import qs.QsmShell.Style as QsmShellStyle
 import qs.theme
 
 // The larger time sits above one smaller numeric date, all in the technical face.
@@ -11,7 +12,7 @@ Item {
     readonly property date now: clock.date
 
     width: Theme.railWidth
-    implicitHeight: content.implicitHeight + Theme.space2 * 2
+    implicitHeight: content.implicitHeight + QsmShellStyle.Style.space2 * 2
 
     function openCalendar(): void {
         root.popouts?.show("calendar", root, Qt.formatDate(root.now, "MMMM yyyy"), "", null);
@@ -41,7 +42,7 @@ Item {
         anchors.fill: parent
         target: null
         focused: root.activeFocus
-        focusRadius: Theme.radiusMd
+        focusRadius: QsmShellStyle.Style.radiusMd
         onClicked: root.openCalendar()
     }
 
@@ -101,7 +102,7 @@ Item {
             text: digits.previous
             opacity: 1 - digits.progress
             font.pixelSize: Theme.railClockDigitSize
-            font.weight: Theme.weightBold
+            font.weight: QsmShellStyle.Style.weightBold
             elide: Text.ElideNone
         }
 
@@ -116,7 +117,7 @@ Item {
             text: digits.current
             opacity: digits.progress
             font.pixelSize: Theme.railClockDigitSize
-            font.weight: Theme.weightBold
+            font.weight: QsmShellStyle.Style.weightBold
             elide: Text.ElideNone
         }
     }
@@ -135,12 +136,12 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             role: "reading"
             technical: true
-            topPadding: Theme.space1
-            width: Theme.railWidth - Theme.space1
+            topPadding: QsmShellStyle.Style.space1
+            width: Theme.railWidth - QsmShellStyle.Style.space1
             horizontalAlignment: Text.AlignHCenter
             text: Qt.formatDate(root.now, "dd.MM")
             font.pixelSize: Theme.railClockDateSize
-            font.weight: Theme.weightMedium
+            font.weight: QsmShellStyle.Style.weightMedium
             elide: Text.ElideNone
         }
     }

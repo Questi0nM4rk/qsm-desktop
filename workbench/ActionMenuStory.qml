@@ -1,5 +1,6 @@
 import QtQuick
 import qs.QsmShell.Components as QsmShellComponents
+import qs.QsmShell.Style as QsmShellStyle
 import qs.components
 import qs.modules.launcher as Launcher
 import qs.services
@@ -346,7 +347,7 @@ Item {
     QsmShellComponents.ShellBorder {
         id: border
         anchors.fill: parent
-        leftEdge: Theme.frameThickness
+        leftEdge: QsmShellStyle.Style.frameThickness
         pointer: pointer
         entryFilter: id => id === "launcher" || id === "launcher-catch"
     }
@@ -363,8 +364,8 @@ Item {
         host: border
         name: "launcher"
         edges: ["bottom"]
-        bodyWidth: Math.min(Theme.launcherWidth, root.width - Theme.space6 * 2)
-        bodyHeight: Math.min(launcher.preferredBodyHeight, root.height - Theme.space6 * 2)
+        bodyWidth: Math.min(Theme.launcherWidth, root.width - QsmShellStyle.Style.space6 * 2)
+        bodyHeight: Math.min(launcher.preferredBodyHeight, root.height - QsmShellStyle.Style.space6 * 2)
         onOpened: launcher.open()
 
         Launcher.LauncherSurface {

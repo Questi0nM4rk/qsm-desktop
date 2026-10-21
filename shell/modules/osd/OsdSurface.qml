@@ -200,7 +200,7 @@ Item {
         fullscreenDetached: false
         fullscreenCapsule: false
         bodyWidth: Theme.osdWidth
-        bodyHeight: osdContent.implicitHeight + Theme.space4 * 2
+        bodyHeight: osdContent.implicitHeight + QsmShellStyle.Style.space4 * 2
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
         triggerAreas: [root._closedCorridor]
@@ -216,11 +216,11 @@ Item {
         enabled: root.active && root.fullscreen
         bodySize: Theme.osdWidth
         orientation: Qt.Vertical
-        preferredLength: osdContent.implicitHeight + Theme.space4 * 2
+        preferredLength: osdContent.implicitHeight + QsmShellStyle.Style.space4 * 2
         padding: 0
         elevated: false
         anchors.right: parent.right
-        anchors.rightMargin: Theme.space4
+        anchors.rightMargin: QsmShellStyle.Style.space4
         anchors.verticalCenter: parent.verticalCenter
     }
 

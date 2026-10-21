@@ -191,8 +191,8 @@ Item {
     // gap is the standard one: a kill list's wider gap scrolls, it never
     // resizes the body.
     readonly property real preferredBodyHeight: Theme.launcherMaxRows * Theme.launcherRowHeight
-        + (Theme.launcherMaxRows - 1) * Theme.space1
-        + QsmShellStyle.Style.size("TextField", "lg") + Theme.space3 + Theme.space4 * 2
+        + (Theme.launcherMaxRows - 1) * QsmShellStyle.Style.space1
+        + QsmShellStyle.Style.size("TextField", "lg") + QsmShellStyle.Style.space3 + QsmShellStyle.Style.space4 * 2
 
     onModeChanged: {
         if (mode === "kill")
@@ -1119,8 +1119,8 @@ ps -eo pid,pcpu,comm --no-headers --sort=-pcpu | head -25 | awk '{printf "P|%s|%
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: Theme.space4
-        spacing: Theme.space3
+        anchors.margins: QsmShellStyle.Style.space4
+        spacing: QsmShellStyle.Style.space3
 
         // Results ABOVE the search field (07 RATIFIED): bottom-up so the
         // first result sits adjacent to the input. Hidden (not destroyed) in
@@ -1147,7 +1147,7 @@ ps -eo pid,pcpu,comm --no-headers --sort=-pcpu | head -25 | awk '{printf "P|%s|%
                 // space3 gives the pointer room without a confirm, which 07
                 // deliberately rejects. The body height is fixed, so the taller
                 // rhythm scrolls rather than resizing it.
-                spacing: root.mode === "kill" ? Theme.space3 : Theme.space1
+                spacing: root.mode === "kill" ? QsmShellStyle.Style.space3 : QsmShellStyle.Style.space1
                 currentIndex: 0
                 verticalLayoutDirection: ListView.BottomToTop
                 boundsBehavior: Flickable.StopAtBounds

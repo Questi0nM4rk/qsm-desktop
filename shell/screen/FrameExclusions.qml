@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Wayland
+import qs.QsmShell.Style as QsmShellStyle
 import qs.services
 import qs.state
 import qs.theme
@@ -23,11 +24,11 @@ Scope {
             {
                 side: "left",
                 zone: (root.focusMode || ShellState.isRailCollapsed(root.modelData.name))
-                    ? Theme.frameThickness : Theme.reservedLeft
+                    ? QsmShellStyle.Style.frameThickness : Theme.reservedLeft
             },
-            { side: "top", zone: Theme.frameThickness },
-            { side: "right", zone: Theme.frameThickness },
-            { side: "bottom", zone: Theme.frameThickness }
+            { side: "top", zone: QsmShellStyle.Style.frameThickness },
+            { side: "right", zone: QsmShellStyle.Style.frameThickness },
+            { side: "bottom", zone: QsmShellStyle.Style.frameThickness }
         ]
 
         delegate: Component {

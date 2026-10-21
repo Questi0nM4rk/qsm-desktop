@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
 import qs.QsmShell.Components as QsmShellComponents
+import qs.QsmShell.Style as QsmShellStyle
 import qs.services
 import qs.theme
 
@@ -12,8 +13,8 @@ import qs.theme
 GridLayout {
     id: root
     columns: 3
-    rowSpacing: Theme.space3
-    columnSpacing: Theme.space3
+    rowSpacing: QsmShellStyle.Style.space3
+    columnSpacing: QsmShellStyle.Style.space3
 
     Component.onCompleted: {
         WeatherService.refresh();
@@ -48,20 +49,19 @@ GridLayout {
     // row 0 and row 1 meet.
     // 1. User card: avatar + distro badge, WM pill, uptime.
     QsmShellComponents.Card {
-        radius: Theme.panelCardRadius
         id: userCard
         Layout.row: 0
         Layout.column: 0
         Layout.fillWidth: true
         Layout.preferredWidth: Theme.dashboardUserCardWidth
-        Layout.preferredHeight: userContent.implicitHeight + Theme.space4 * 2
+        Layout.preferredHeight: userContent.implicitHeight + QsmShellStyle.Style.space4 * 2
         Layout.fillHeight: true
 
         RowLayout {
             id: userContent
             anchors.fill: parent
-            anchors.margins: Theme.space4
-            spacing: Theme.space4
+            anchors.margins: QsmShellStyle.Style.space4
+            spacing: QsmShellStyle.Style.space4
 
             Item {
                 id: avatarWrap
@@ -83,15 +83,15 @@ GridLayout {
                     background: Theme.overlay
                     source: root.faceFound ? "file://" + Quickshell.env("HOME") + "/.face" : ""
                     icon: "monitor"
-                    glyphSize: Theme.iconLg
+                    glyphSize: QsmShellStyle.Style.iconLg
                 }
 
                 // Distro logo badge, proud of the avatar's top-left corner.
                 Rectangle {
                     anchors.left: parent.left
                     anchors.top: parent.top
-                    anchors.leftMargin: -Theme.space1
-                    anchors.topMargin: -Theme.space1
+                    anchors.leftMargin: -QsmShellStyle.Style.space1
+                    anchors.topMargin: -QsmShellStyle.Style.space1
                     width: Theme.dashboardBadgeSize
                     height: Theme.dashboardBadgeSize
                     // Separation by VALUE, not a stroke — 11-theme ratifies
@@ -103,7 +103,7 @@ GridLayout {
                     QsmShellComponents.SvgIcon {
                         anchors.centerIn: parent
                         name: "arch"
-                        size: Theme.iconSm
+                        size: QsmShellStyle.Style.iconSm
                         color: Theme.accent
                     }
                 }
@@ -112,7 +112,7 @@ GridLayout {
             ColumnLayout {
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignVCenter
-                spacing: Theme.space2
+                spacing: QsmShellStyle.Style.space2
 
                 // Whose session this is, and on what. An identity card that
                 // named neither was mostly empty ground.
@@ -135,13 +135,13 @@ GridLayout {
                 }
 
                 RowLayout {
-                    Layout.topMargin: Theme.space1
-                    spacing: Theme.space2
+                    Layout.topMargin: QsmShellStyle.Style.space1
+                    spacing: QsmShellStyle.Style.space2
                     visible: SystemInfoService.wm.length > 0
 
                     QsmShellComponents.SvgIcon {
                         name: "window"
-                        size: Theme.iconSm
+                        size: QsmShellStyle.Style.iconSm
                         color: Theme.textMuted
                     }
 
@@ -153,11 +153,11 @@ GridLayout {
                 }
 
                 RowLayout {
-                    spacing: Theme.space2
+                    spacing: QsmShellStyle.Style.space2
 
                     QsmShellComponents.SvgIcon {
                         name: "clock"
-                        size: Theme.iconSm
+                        size: QsmShellStyle.Style.iconSm
                         color: Theme.textMuted
                     }
 
@@ -174,27 +174,26 @@ GridLayout {
     // Hides its content while offline (06 DEFAULT); card frame stays put so
     // the grid doesn't reflow.
     QsmShellComponents.Card {
-        radius: Theme.panelCardRadius
         Layout.row: 0
         Layout.column: 1
         Layout.fillWidth: true
         Layout.preferredWidth: Theme.dashboardWeatherCardWidth
-        Layout.preferredHeight: weatherContent.implicitHeight + Theme.space4 * 2
+        Layout.preferredHeight: weatherContent.implicitHeight + QsmShellStyle.Style.space4 * 2
         Layout.fillHeight: true
 
         ColumnLayout {
             id: weatherContent
             anchors.centerIn: parent
             visible: WeatherService.available
-            spacing: Theme.space1
+            spacing: QsmShellStyle.Style.space1
 
             RowLayout {
                 Layout.alignment: Qt.AlignHCenter
-                spacing: Theme.space3
+                spacing: QsmShellStyle.Style.space3
 
                 QsmShellComponents.SvgIcon {
                     name: "sunset"
-                    size: Theme.iconXxl
+                    size: QsmShellStyle.Style.iconXxl
                     // The weather card's pastel: sky (info), a notice, not a status.
                     color: Theme.info
                 }
@@ -215,7 +214,6 @@ GridLayout {
 
     // 6. Media mini-card: square art + half-ring position arc, transport.
     QsmShellComponents.Card {
-        radius: Theme.panelCardRadius
         id: mediaCard
         Layout.row: 0
         Layout.column: 2
@@ -223,7 +221,7 @@ GridLayout {
         Layout.preferredWidth: Theme.dashboardMediaCardWidth
         // One height for playing and idle, so the row does not jump when
         // playback starts or stops; the idle state centres inside it.
-        Layout.preferredHeight: playingContent.implicitHeight + Theme.space3 * 2
+        Layout.preferredHeight: playingContent.implicitHeight + QsmShellStyle.Style.space3 * 2
         Layout.fillHeight: true
 
         readonly property var player: MediaService.active
@@ -233,8 +231,8 @@ GridLayout {
         ColumnLayout {
             id: emptyContent
             anchors.fill: parent
-            anchors.margins: Theme.space3
-            spacing: Theme.space2
+            anchors.margins: QsmShellStyle.Style.space3
+            spacing: QsmShellStyle.Style.space2
             visible: mediaCard.player === null
 
             Item { Layout.fillHeight: true }
@@ -253,15 +251,15 @@ GridLayout {
         ColumnLayout {
             id: playingContent
             anchors.fill: parent
-            anchors.margins: Theme.space3
-            spacing: Theme.space2
+            anchors.margins: QsmShellStyle.Style.space3
+            spacing: QsmShellStyle.Style.space2
             visible: mediaCard.player !== null
 
             Item {
                 id: artWrap
                 Layout.alignment: Qt.AlignHCenter
-                Layout.preferredWidth: Theme.dashboardMediaArtSize + Theme.dashboardRingStroke * 2
-                Layout.preferredHeight: Theme.dashboardMediaArtSize + Theme.dashboardRingStroke * 2
+                Layout.preferredWidth: Theme.dashboardMediaArtSize + Theme.artworkRingStroke * 2
+                Layout.preferredHeight: Theme.dashboardMediaArtSize + Theme.artworkRingStroke * 2
 
                 // The SAME type the media tab uses, so the two cannot drift
                 // apart again. It used to be a square sleeve with a half ring
@@ -274,10 +272,10 @@ GridLayout {
                     background: Theme.overlay
                     source: mediaCard.player?.trackArtUrl ?? ""
                     icon: "music"
-                    glyphSize: Theme.iconMd
+                    glyphSize: QsmShellStyle.Style.iconMd
                     progress: mediaCard.progress
                     progressColor: Theme.accent
-                    ringWidth: Theme.dashboardRingStroke
+                    ringWidth: Theme.artworkRingStroke
                 }
             }
 
@@ -306,7 +304,7 @@ GridLayout {
 
             RowLayout {
                 Layout.alignment: Qt.AlignHCenter
-                spacing: Theme.space4
+                spacing: QsmShellStyle.Style.space4
 
                 // IconButton, not a bare glyph + MouseArea: growing the hit
                 // rect with a negative margin still left a 28px target under
@@ -345,13 +343,12 @@ GridLayout {
 
     // 3. DateTime card: stacked big hours/minutes, 24h, live.
     QsmShellComponents.Card {
-        radius: Theme.panelCardRadius
         id: dateTimeCard
         Layout.row: 1
         Layout.column: 0
         Layout.fillWidth: true
         Layout.fillHeight: true
-        Layout.preferredHeight: dateTimeContent.implicitHeight + Theme.space4 * 2
+        Layout.preferredHeight: dateTimeContent.implicitHeight + QsmShellStyle.Style.space4 * 2
 
         property date now: new Date()
 
@@ -386,39 +383,36 @@ GridLayout {
     // 4. Calendar card: fills whatever width row 1 leaves between the
     // datetime and resources cards.
     QsmShellComponents.Card {
-        radius: Theme.panelCardRadius
         Layout.row: 1
         Layout.column: 1
         Layout.fillWidth: true
         Layout.fillHeight: true
-        Layout.preferredHeight: calendarContent.implicitHeight + Theme.space4 * 2
+        Layout.preferredHeight: calendarContent.implicitHeight + QsmShellStyle.Style.space4 * 2
 
         QsmShellComponents.MonthCalendar {
             id: calendarContent
             anchors.fill: parent
-            anchors.margins: Theme.space4
+            anchors.margins: QsmShellStyle.Style.space4
         }
     }
 
     // 5. Resources card: three vertical usage-% rings (CPU, memory, storage).
     QsmShellComponents.Card {
-        radius: Theme.panelCardRadius
         Layout.row: 1
         Layout.column: 2
         Layout.fillWidth: true
         Layout.fillHeight: true
-        Layout.preferredHeight: resourcesContent.implicitHeight + Theme.space4 * 2
+        Layout.preferredHeight: resourcesContent.implicitHeight + QsmShellStyle.Style.space4 * 2
 
         ColumnLayout {
             id: resourcesContent
             anchors.centerIn: parent
-            spacing: Theme.space2
+            spacing: QsmShellStyle.Style.space2
 
             QsmShellComponents.StatRing {
                 Layout.alignment: Qt.AlignHCenter
                 diameter: Theme.dashboardRingDiameter
-                strokeWidth: Theme.dashboardRingStroke
-                readingSize: Theme.textSm
+                readingSize: QsmShellStyle.Style.textSm
                 value: Math.max(0, PerformanceService.cpuUsage)
                 reading: PerformanceService.cpuUsage < 0
                     ? "—" : `${Math.round(PerformanceService.cpuUsage * 100)}%`
@@ -429,8 +423,7 @@ GridLayout {
             QsmShellComponents.StatRing {
                 Layout.alignment: Qt.AlignHCenter
                 diameter: Theme.dashboardRingDiameter
-                strokeWidth: Theme.dashboardRingStroke
-                readingSize: Theme.textSm
+                readingSize: QsmShellStyle.Style.textSm
                 value: Math.max(0, PerformanceService.memUsed)
                 reading: PerformanceService.memUsed < 0
                     ? "—" : `${Math.round(PerformanceService.memUsed * 100)}%`
@@ -441,8 +434,7 @@ GridLayout {
             QsmShellComponents.StatRing {
                 Layout.alignment: Qt.AlignHCenter
                 diameter: Theme.dashboardRingDiameter
-                strokeWidth: Theme.dashboardRingStroke
-                readingSize: Theme.textSm
+                readingSize: QsmShellStyle.Style.textSm
                 value: Math.max(0, PerformanceService.storageUsed)
                 reading: PerformanceService.storageUsed < 0
                     ? "—" : `${Math.round(PerformanceService.storageUsed * 100)}%`

@@ -9,6 +9,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import qs.QsmShell.Components as QsmShellComponents
+import qs.QsmShell.Style as QsmShellStyle
 import qs.services
 import qs.state
 import qs.theme
@@ -109,8 +110,8 @@ Item {
         suppressed: root.fullscreen || root.scene.focusMode
         // One token for spec-08's 96, shared with the button itself (was the
         // literal duplicated across both files — S5-F14).
-        bodyWidth: Theme.sessionButtonWidth + Theme.space4 * 2
-        bodyHeight: column.implicitHeight + Theme.space4 * 2
+        bodyWidth: QsmShellStyle.Style.tileWidth + QsmShellStyle.Style.space4 * 2
+        bodyHeight: column.implicitHeight + QsmShellStyle.Style.space4 * 2
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
 
@@ -134,7 +135,7 @@ Item {
                 // middle of the shape a person actually sees.
                 anchors.horizontalCenterOffset: rollout.contentCenterOffsetX
                 anchors.verticalCenter: parent.verticalCenter
-                spacing: Theme.space2
+                spacing: QsmShellStyle.Style.space2
 
                 Repeater {
                     id: tiles
@@ -165,9 +166,9 @@ Item {
                         // apart by 16px (the column's own gap is space2) and
                         // draws in danger.
                         danger: modelData.role === "shutdown"
-                        Layout.topMargin: modelData.role === "shutdown" ? Theme.space4 - Theme.space2 : 0
-                        buttonWidth: Theme.sessionButtonWidth
-                        buttonHeight: Theme.sessionButtonHeight
+                        Layout.topMargin: modelData.role === "shutdown" ? QsmShellStyle.Style.space4 - QsmShellStyle.Style.space2 : 0
+                        buttonWidth: QsmShellStyle.Style.tileWidth
+                        buttonHeight: QsmShellStyle.Style.tileHeight
                         selected: root.selectedIndex === index
                         focused: selected && sessionFocus.activeFocus
                         armed: arm.armed

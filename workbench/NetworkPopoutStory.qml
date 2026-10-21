@@ -1,4 +1,5 @@
 import QtQuick
+import qs.QsmShell.Style as QsmShellStyle
 import qs.modules.bar as Bar
 import qs.services
 import qs.state
@@ -73,14 +74,14 @@ Item {
     Rectangle { anchors.fill: parent; color: Theme.band }
     Rectangle {
         anchors.centerIn: content
-        width: content.width + Theme.space4 * 2
-        height: content.height + Theme.space4 * 2
-        radius: Theme.rolloutRadius
+        width: content.width + QsmShellStyle.Style.space4 * 2
+        height: content.height + QsmShellStyle.Style.space4 * 2
+        radius: QsmShellStyle.Style.rolloutRadius
         color: Theme.band
     }
     Bar.NetworkPopoutContent {
         id: content
-        width: Theme.popoutWidth - Theme.space4 * 2
+        width: Theme.popoutWidth - QsmShellStyle.Style.space4 * 2
         anchors.centerIn: parent
         onInteracted: (action, payload) => root.eventRecorded({ origin: "component", kind: "network",
             name: "interacted", payload: Object.assign({ action: action }, payload) })

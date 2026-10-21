@@ -19,9 +19,7 @@ QsmShellComponents.ListRow {
 
     // { kind, label, sub, icon (svg name) | appIcon (desktop icon name) | thumb }
     required property var item
-    // Compact rows (clipboard, owner live-tune 2026-08-20): tighter height,
-    // one text step down, one icon step down. The launcher keeps the RATIFIED
-    // 57px default.
+    // Compact rows (the clipboard): one ListRow size down, one icon step down.
     property bool compact: false
 
     readonly property string _appIcon: root.item?.appIcon ?? ""
@@ -34,13 +32,6 @@ QsmShellComponents.ListRow {
     size: root.compact ? "md" : "lg"
     primary: root.item?.label ?? ""
     supporting: root.item?.sub ?? ""
-
-    // Spec 07 RATIFIED heights, which sit a pixel off the library's control
-    // scale. The library's row states the scale; a call site with a ratified
-    // number states the number.
-    headingHeight: root.header
-        ? Theme.space4 + Theme.space2
-        : (root.compact ? Theme.clipboardRowHeight : Theme.launcherRowHeight)
 
     // The leading slot: a wallpaper thumbnail, an application icon, or a
     // command glyph. All three sit in the row's own leading box, so the label

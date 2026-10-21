@@ -1,6 +1,6 @@
 import QtQuick
 import qs.QsmShell.Components as QsmShellComponents
-import qs.theme
+import qs.QsmShell.Style as QsmShellStyle
 
 Item {
     id: root
@@ -38,7 +38,7 @@ Item {
         id: glyph
         visible: !root.scene.fullscreen && !root.scene.focusMode
         name: "chevron-left"
-        size: Theme.iconXs
+        size: QsmShellStyle.Style.iconXs
         x: root.surface.handleCenter.x - width / 2
         y: root.surface.handleCenter.y - height / 2
         rotation: root.surface.openFraction * 180

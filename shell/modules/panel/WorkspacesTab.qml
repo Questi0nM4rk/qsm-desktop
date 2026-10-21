@@ -26,12 +26,12 @@ Item {
     // clients -j snapshots); Quickshell toplevels carry no window rects.
     readonly property var clients: HyprClientsService.clients
 
-    readonly property real tileGap: Theme.space3
+    readonly property real tileGap: QsmShellStyle.Style.space3
 
     // The tab is as tall as the panel's body (PanelSurface's column), always,
     // so the row of tiles does not jump with the number of workspaces.
     implicitWidth: Theme.mediaContentWidth
-    implicitHeight: Theme.panelHeight - Theme.space4 * 2 - Theme.panelTabBarHeight - Theme.space3
+    implicitHeight: Theme.panelHeight - QsmShellStyle.Style.space4 * 2 - Theme.panelTabBarHeight - QsmShellStyle.Style.space3
 
     // Tiles grow to the body: three share the column width (a tile and its
     // hover growth are w * (2 + hoverScale) across, with two gaps), or the
@@ -41,13 +41,13 @@ Item {
     readonly property real aspect: monitor ? monitor.height / Math.max(1, monitor.width) : 0.5625
     readonly property real tileWidth: Math.min(
         (width - tileGap * (tilesAcross - 1)) / (tilesAcross - 1 + hoverScale),
-        ((implicitHeight - Theme.space2) / hoverScale - labelBand - areaInset) / aspect + areaInset * 2)
+        ((implicitHeight - QsmShellStyle.Style.space2) / hoverScale - labelBand - areaInset) / aspect + areaInset * 2)
 
     // Window rects live in their own area, inset from the tile's rounded
     // corners, below a band that belongs to the workspace number: a number
     // painted on the tile was painted under any window that reached the
     // corner (the schematic keeps the monitor's aspect, so one often does).
-    readonly property real areaInset: Theme.space2
+    readonly property real areaInset: QsmShellStyle.Style.space2
     readonly property real areaWidth: tileWidth - areaInset * 2
     readonly property real areaHeight: areaWidth * aspect
     readonly property real labelBand: areaInset + labelMetrics.height
@@ -63,7 +63,7 @@ Item {
     TextMetrics {
         id: labelMetrics
         font.family: Theme.technicalFontFamily
-        font.pixelSize: Theme.textSm
+        font.pixelSize: QsmShellStyle.Style.textSm
         font.weight: Font.Bold
         text: "0"
     }
@@ -131,7 +131,7 @@ Item {
 
                     width: root.tileWidth
                     height: root.tileHeight
-                    radius: Theme.panelCardRadius
+                    radius: QsmShellStyle.Style.radiusBody
                     activeFocusOnTab: true
                     Accessible.role: Accessible.Button
                     Accessible.name: `Workspace ${modelData.id}`
@@ -220,7 +220,7 @@ Item {
                             AppIcon {
                                 anchors.centerIn: parent
                                 icon: windowRect.modelData.class ?? ""
-                                implicitSize: Math.min(Theme.iconSm, parent.height - Theme.spaceTight)
+                                implicitSize: Math.min(QsmShellStyle.Style.iconSm, parent.height - QsmShellStyle.Style.spaceTight)
                             }
 
                             transform: Translate {
@@ -265,6 +265,6 @@ Item {
         view: strip
         orientation: Qt.Horizontal
         fadeColor: Theme.band
-        fadeDepth: Theme.space5
+        fadeDepth: QsmShellStyle.Style.space5
     }
 }

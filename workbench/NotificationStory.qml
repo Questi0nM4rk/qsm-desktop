@@ -1,5 +1,6 @@
 import QtQuick
 import qs.QsmShell.Components as QsmShellComponents
+import qs.QsmShell.Style as QsmShellStyle
 import qs.modules.notifications as Notifications
 import qs.services as Services
 import qs.state as State
@@ -553,30 +554,30 @@ Item {
     }
 
     Rectangle {
-        x: Theme.frameThickness
-        y: Theme.frameThickness
-        width: Math.max(0, root.width - Theme.frameThickness * 2)
-        height: Math.max(0, root.height - Theme.frameThickness * 2)
-        radius: Theme.frameRadius
+        x: QsmShellStyle.Style.frameThickness
+        y: QsmShellStyle.Style.frameThickness
+        width: Math.max(0, root.width - QsmShellStyle.Style.frameThickness * 2)
+        height: Math.max(0, root.height - QsmShellStyle.Style.frameThickness * 2)
+        radius: QsmShellStyle.Style.rolloutRadius
         color: Theme.surface
 
         Column {
             anchors.left: parent.left
-            anchors.leftMargin: Theme.space6 * 2
+            anchors.leftMargin: QsmShellStyle.Style.space6 * 2
             anchors.verticalCenter: parent.verticalCenter
-            width: Math.max(0, parent.width - Theme.space6 * 4)
-            spacing: Theme.space2
+            width: Math.max(0, parent.width - QsmShellStyle.Style.space6 * 4)
+            spacing: QsmShellStyle.Style.space2
             Text {
                 text: "Archive drive"
                 color: Theme.text
                 font.family: Theme.fontFamily
-                font.pixelSize: Theme.textLg
+                font.pixelSize: QsmShellStyle.Style.textLg
             }
             Text {
                 text: "annual-report.pdf  ·  Copying"
                 color: Theme.textMuted
                 font.family: Theme.fontFamily
-                font.pixelSize: Theme.textMd
+                font.pixelSize: QsmShellStyle.Style.textMd
             }
             Text {
                 width: parent.width
@@ -588,7 +589,7 @@ Item {
                     : "Urgency and timeout apply to the next notification."
                 color: Theme.textMuted
                 font.family: Theme.fontFamily
-                font.pixelSize: Theme.textMd
+                font.pixelSize: QsmShellStyle.Style.textMd
                 wrapMode: Text.WordWrap
             }
         }
@@ -601,7 +602,7 @@ Item {
         anchors.fill: parent
         pointer: scenePointer
         fullscreen: root.fullscreen
-        leftEdge: Theme.frameThickness
+        leftEdge: QsmShellStyle.Style.frameThickness
         entryFilter: id => id === "notify-popups" || id.startsWith("notify-row-")
     }
 
@@ -673,8 +674,8 @@ Item {
         id: outsideTarget
         x: root.width * 0.72
         y: root.height * 0.8
-        width: Theme.iconLg
-        height: Theme.iconLg
+        width: QsmShellStyle.Style.iconLg
+        height: QsmShellStyle.Style.iconLg
     }
 
     Connections {

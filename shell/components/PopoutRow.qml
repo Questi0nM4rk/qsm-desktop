@@ -84,7 +84,7 @@ QsmShellComponents.ListRow {
         // colour once the pointer is on its row — three red bins down the side
         // of a device list shout louder than anything the list is for.
         color: root.hovered && root.actionDanger ? Theme.danger : Theme.textMuted
-        opacity: root.hovered ? 1 : Theme.opacityDisabled
+        opacity: root.hovered ? 1 : QsmShellStyle.Style.opacityDisabled
         onClicked: root.actionTriggered()
 
         Behavior on opacity {

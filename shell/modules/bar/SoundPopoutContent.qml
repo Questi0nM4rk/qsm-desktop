@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import qs.QsmShell.Components as QsmShellComponents
+import qs.QsmShell.Style as QsmShellStyle
 import qs.components
 import qs.services
 import qs.theme
@@ -26,7 +27,7 @@ ColumnLayout {
     // around the group than within it (visual-craft). The section labels below
     // carry the group gap; a uniform 8 made three kinds of thing read as one
     // undifferentiated list.
-    spacing: Theme.space1
+    spacing: QsmShellStyle.Style.space1
 
     QsmShellComponents.Prose { role: "section"; text: "Output" }
 
@@ -50,13 +51,13 @@ ColumnLayout {
     }
 
     RowLayout {
-        Layout.topMargin: Theme.space1
+        Layout.topMargin: QsmShellStyle.Style.space1
         Layout.fillWidth: true
-        spacing: Theme.space2
+        spacing: QsmShellStyle.Style.space2
 
         QsmShellComponents.SvgIcon {
             name: AudioService.outputMuted ? "volume-muted" : "volume"
-            size: Theme.iconSm
+            size: QsmShellStyle.Style.iconSm
             color: Theme.textMuted
         }
 
@@ -91,7 +92,7 @@ ColumnLayout {
         }
     }
 
-    QsmShellComponents.Prose { role: "section"; Layout.topMargin: Theme.space3; text: "Input" }
+    QsmShellComponents.Prose { role: "section"; Layout.topMargin: QsmShellStyle.Style.space3; text: "Input" }
 
     Repeater {
         model: AudioService.sources
@@ -115,7 +116,7 @@ ColumnLayout {
     // Deeper mixer controls stay with the real app (delegation law).
     QsmShellComponents.Capsule {
         size: "sm"
-        Layout.topMargin: Theme.space1
+        Layout.topMargin: QsmShellStyle.Style.space1
         icon: "volume"
         label: "Sound settings"
         onClicked: { root.interacted("delegate", { target: "mixer" }); Delegate.open("mixer"); }

@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell.Services.UPower
 import qs.QsmShell.Components as QsmShellComponents
+import qs.QsmShell.Style as QsmShellStyle
 import qs.services
 import qs.theme
 
@@ -17,11 +18,11 @@ ColumnLayout {
     id: root
 
     property var batteryDevice: UPower.displayDevice
-    spacing: Theme.space3
+    spacing: QsmShellStyle.Style.space3
 
     // Every ring card is one width: its readout elides inside the ring's
     // diameter, so a ticking number never resizes the card or its neighbours.
-    readonly property real ringCardWidth: Theme.ringDiameterDefault + Theme.space4 * 2
+    readonly property real ringCardWidth: QsmShellStyle.Style.ringDiameter + QsmShellStyle.Style.space4 * 2
 
     // Icon + °C readout + thin thermal bar, shared by the CPU/GPU hero
     // cards. Flips to the danger color (icon swaps to alert-triangle) past
@@ -34,21 +35,21 @@ ColumnLayout {
         readonly property bool alert: tempC > Theme.performanceThermalAlertC
 
         visible: tempC >= 0
-        spacing: Theme.space1
+        spacing: QsmShellStyle.Style.space1
 
         RowLayout {
             Layout.alignment: Qt.AlignHCenter
-            spacing: Theme.space1
+            spacing: QsmShellStyle.Style.space1
 
             QsmShellComponents.SvgIcon {
                 name: tempRow.alert ? "alert-triangle" : "thermometer"
-                size: Theme.iconSm
+                size: QsmShellStyle.Style.iconSm
                 color: tempRow.alert ? Theme.danger : Theme.textMuted
             }
 
             QsmShellComponents.Prose {
                 role: "reading"
-                font.pixelSize: Theme.textXs
+                font.pixelSize: QsmShellStyle.Style.textXs
                 color: tempRow.alert ? Theme.danger : Theme.textMuted
                 text: `${tempRow.tempC}°`
             }
@@ -60,8 +61,7 @@ ColumnLayout {
         // means through `fill`.
         QsmShellComponents.Meter {
             Layout.alignment: Qt.AlignHCenter
-            Layout.preferredWidth: Theme.ringDiameterDefault
-            thickness: Theme.performanceThermalBarHeight
+            Layout.preferredWidth: QsmShellStyle.Style.ringDiameter
             value: tempRow.tempC / Theme.performanceThermalScaleC
             fill: Theme.loadTone(value)
         }
@@ -79,19 +79,19 @@ ColumnLayout {
         property real fraction: 0
         property string timeText: ""
 
-        spacing: Theme.space1
+        spacing: QsmShellStyle.Style.space1
 
         QsmShellComponents.SvgIcon {
             anchors.horizontalCenter: parent.horizontalCenter
             name: readout.charging ? "battery-charging" : "battery"
-            size: Theme.iconLg
+            size: QsmShellStyle.Style.iconLg
             color: readout.fg
         }
 
         QsmShellComponents.Prose {
             anchors.horizontalCenter: parent.horizontalCenter
             role: "reading"
-            font.pixelSize: Theme.textLg
+            font.pixelSize: QsmShellStyle.Style.textLg
             color: readout.fg
             text: `${Math.round(readout.fraction * 100)}%`
         }
@@ -116,20 +116,19 @@ ColumnLayout {
 
     RowLayout {
         Layout.alignment: Qt.AlignHCenter
-        spacing: Theme.space3
+        spacing: QsmShellStyle.Style.space3
 
         // CPU hero card.
         QsmShellComponents.Card {
-            radius: Theme.panelCardRadius
             Layout.preferredWidth: root.ringCardWidth
-            Layout.preferredHeight: cpuContent.implicitHeight + Theme.space4 * 2
+            Layout.preferredHeight: cpuContent.implicitHeight + QsmShellStyle.Style.space4 * 2
             Layout.fillHeight: true
 
             ColumnLayout {
                 id: cpuContent
                 anchors.centerIn: parent
-                width: Theme.ringDiameterDefault
-                spacing: Theme.space2
+                width: QsmShellStyle.Style.ringDiameter
+                spacing: QsmShellStyle.Style.space2
 
                 // Every ring on this tab reads the same way: glyph, the
                 // NUMBER, then what it is. CPU and GPU used to show a glyph
@@ -156,16 +155,15 @@ ColumnLayout {
         // GPU hero card — hides entirely with no GPU sensor at all.
         QsmShellComponents.Card {
             visible: PerformanceService.gpuUsage >= 0 || PerformanceService.gpuTemp >= 0
-            radius: Theme.panelCardRadius
             Layout.preferredWidth: root.ringCardWidth
-            Layout.preferredHeight: gpuContent.implicitHeight + Theme.space4 * 2
+            Layout.preferredHeight: gpuContent.implicitHeight + QsmShellStyle.Style.space4 * 2
             Layout.fillHeight: true
 
             ColumnLayout {
                 id: gpuContent
                 anchors.centerIn: parent
-                width: Theme.ringDiameterDefault
-                spacing: Theme.space2
+                width: QsmShellStyle.Style.ringDiameter
+                spacing: QsmShellStyle.Style.space2
 
                 QsmShellComponents.StatRing {
                     Layout.alignment: Qt.AlignHCenter
@@ -183,16 +181,15 @@ ColumnLayout {
 
         // Memory ring.
         QsmShellComponents.Card {
-            radius: Theme.panelCardRadius
             Layout.preferredWidth: root.ringCardWidth
-            Layout.preferredHeight: memContent.implicitHeight + Theme.space4 * 2
+            Layout.preferredHeight: memContent.implicitHeight + QsmShellStyle.Style.space4 * 2
             Layout.fillHeight: true
 
             ColumnLayout {
                 id: memContent
                 anchors.centerIn: parent
-                width: Theme.ringDiameterDefault
-                spacing: Theme.space2
+                width: QsmShellStyle.Style.ringDiameter
+                spacing: QsmShellStyle.Style.space2
 
                 QsmShellComponents.StatRing {
                     Layout.alignment: Qt.AlignHCenter
@@ -218,20 +215,19 @@ ColumnLayout {
 
     RowLayout {
         Layout.alignment: Qt.AlignHCenter
-        spacing: Theme.space3
+        spacing: QsmShellStyle.Style.space3
 
         // Storage ring.
         QsmShellComponents.Card {
-            radius: Theme.panelCardRadius
             Layout.preferredWidth: root.ringCardWidth
-            Layout.preferredHeight: storageContent.implicitHeight + Theme.space4 * 2
+            Layout.preferredHeight: storageContent.implicitHeight + QsmShellStyle.Style.space4 * 2
             Layout.fillHeight: true
 
             ColumnLayout {
                 id: storageContent
                 anchors.centerIn: parent
-                width: Theme.ringDiameterDefault
-                spacing: Theme.space2
+                width: QsmShellStyle.Style.ringDiameter
+                spacing: QsmShellStyle.Style.space2
 
                 QsmShellComponents.StatRing {
                     Layout.alignment: Qt.AlignHCenter
@@ -261,22 +257,21 @@ ColumnLayout {
         // of content left about 68px of card reserved and never used, which is
         // the tell of a box drawn before its contents were known.
         QsmShellComponents.Card {
-            radius: Theme.panelCardRadius
             Layout.preferredWidth: Theme.performanceNetworkCardWidth
-            Layout.minimumHeight: networkContent.implicitHeight + Theme.space4 * 2
+            Layout.minimumHeight: networkContent.implicitHeight + QsmShellStyle.Style.space4 * 2
             Layout.fillHeight: true
 
             ColumnLayout {
                 id: networkContent
                 anchors.fill: parent
-                anchors.margins: Theme.space4
-                spacing: Theme.space2
+                anchors.margins: QsmShellStyle.Style.space4
+                spacing: QsmShellStyle.Style.space2
 
                 RowLayout {
                     Layout.fillWidth: true
-                    spacing: Theme.space2
+                    spacing: QsmShellStyle.Style.space2
 
-                    QsmShellComponents.SvgIcon { name: "activity"; size: Theme.iconSm; color: Theme.textMuted }
+                    QsmShellComponents.SvgIcon { name: "activity"; size: QsmShellStyle.Style.iconSm; color: Theme.textMuted }
 
                     QsmShellComponents.Prose {
                         role: "title"
@@ -298,18 +293,15 @@ ColumnLayout {
                     readonly property var rx: PerformanceService.netRxHistory
                     readonly property var tx: PerformanceService.netTxHistory
                     readonly property real peak: Math.max(1, ...rx, ...tx)
-                    readonly property real lineThickness: Theme.sparklineThickness
+                    readonly property real lineThickness: QsmShellStyle.Style.stroke(1, Screen.devicePixelRatio)
 
                     // The zero line, always drawn: with no traffic both
                     // series sit on it, so idle reads as quiet rather than as
                     // a graph that failed to load.
-                    Rectangle {
+                    QsmShellComponents.Divider {
                         anchors.left: parent.left
                         anchors.right: parent.right
                         anchors.bottom: parent.bottom
-                        height: netGraph.lineThickness
-                        radius: height / 2
-                        color: Theme.overlay
                     }
 
                     QsmShellComponents.Sparkline {
@@ -336,9 +328,9 @@ ColumnLayout {
 
                 RowLayout {
                     Layout.fillWidth: true
-                    spacing: Theme.space2
+                    spacing: QsmShellStyle.Style.space2
 
-                    QsmShellComponents.SvgIcon { name: "download"; size: Theme.iconSm; color: Theme.accent }
+                    QsmShellComponents.SvgIcon { name: "download"; size: QsmShellStyle.Style.iconSm; color: Theme.accent }
 
                     QsmShellComponents.Prose {
                         role: "metadata"
@@ -357,7 +349,7 @@ ColumnLayout {
                             // size it read as one of three equal numbers next to
                             // its own label and its session total; size carries
                             // the hierarchy here, not colour alone.
-                            font.pixelSize: Theme.textMd
+                            font.pixelSize: QsmShellStyle.Style.textMd
                             text: PerformanceService.netRxRateText
                         }
 
@@ -372,9 +364,9 @@ ColumnLayout {
 
                 RowLayout {
                     Layout.fillWidth: true
-                    spacing: Theme.space2
+                    spacing: QsmShellStyle.Style.space2
 
-                    QsmShellComponents.SvgIcon { name: "upload"; size: Theme.iconSm; color: Theme.info }
+                    QsmShellComponents.SvgIcon { name: "upload"; size: QsmShellStyle.Style.iconSm; color: Theme.info }
 
                     QsmShellComponents.Prose {
                         role: "metadata"
@@ -393,7 +385,7 @@ ColumnLayout {
                             // size it read as one of three equal numbers next to
                             // its own label and its session total; size carries
                             // the hierarchy here, not colour alone.
-                            font.pixelSize: Theme.textMd
+                            font.pixelSize: QsmShellStyle.Style.textMd
                             text: PerformanceService.netTxRateText
                         }
 
@@ -413,7 +405,6 @@ ColumnLayout {
         QsmShellComponents.Card {
             id: batteryCard
             visible: root.batteryDevice?.isLaptopBattery ?? false
-            radius: Theme.panelCardRadius
             Layout.preferredWidth: Theme.performanceBatteryTankWidth
             Layout.preferredHeight: Theme.performanceBatteryTankHeight
 
@@ -435,7 +426,7 @@ ColumnLayout {
             // caption under 3:1. The text stays on the plain card.
             ColumnLayout {
                 anchors.centerIn: parent
-                spacing: Theme.space3
+                spacing: QsmShellStyle.Style.space3
 
                 BatteryReadout {
                     Layout.alignment: Qt.AlignHCenter
@@ -448,8 +439,7 @@ ColumnLayout {
 
                 QsmShellComponents.Meter {
                     Layout.alignment: Qt.AlignHCenter
-                    Layout.preferredWidth: Theme.ringDiameterDefault
-                    thickness: Theme.performanceThermalBarHeight
+                    Layout.preferredWidth: QsmShellStyle.Style.ringDiameter
                     value: batteryCard.fraction
                     // The popout's own rule: danger only when low and not charging.
                     fill: batteryCard.fraction < Theme.lowBatteryFraction && !batteryCard.charging ? Theme.danger : Theme.success

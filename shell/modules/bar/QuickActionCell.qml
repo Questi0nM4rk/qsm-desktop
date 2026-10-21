@@ -1,5 +1,6 @@
 import QtQuick
 import qs.QsmShell.Components as QsmShellComponents
+import qs.QsmShell.Style as QsmShellStyle
 import qs.theme
 
 // One cell in the quick-actions column. A RailEntry by construction, not by
@@ -30,7 +31,7 @@ RailEntry {
     readonly property bool armed: confirm.armed
 
     interactive: true
-    iconSize: Theme.iconSm
+    iconSize: QsmShellStyle.Style.iconSm
     required popoutKind
     popoutDetail: root.armed ? "Click again to confirm — this cannot be undone" : detail
     iconColor: root.armed ? Theme.danger : Theme.text

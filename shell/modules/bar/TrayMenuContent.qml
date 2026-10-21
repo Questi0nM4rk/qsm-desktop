@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import qs.QsmShell.Components as QsmShellComponents
-import qs.theme
+import qs.QsmShell.Style as QsmShellStyle
 
 // A tray item's DBusMenu tree as popout rows (03 DEFAULT): separators as
 // faded short lines, submenus expand INLINE (indented) on click, checkable
@@ -19,7 +19,7 @@ ColumnLayout {
     // asynchronous, and "No menu" is only true when there is none to wait for.
     readonly property bool _loading: root.trayItem?.menu != null && (opener.children?.values?.length ?? 0) === 0
 
-    spacing: Theme.spaceTight
+    spacing: QsmShellStyle.Style.spaceTight
 
     QsMenuOpener {
         id: opener
@@ -30,7 +30,7 @@ ColumnLayout {
         id: menu
         Layout.fillWidth: true
         Layout.preferredHeight: implicitHeight
-        spacing: Theme.spaceTight
+        spacing: QsmShellStyle.Style.spaceTight
         visible: !root._loading && (opener.children?.values?.length ?? 0) > 0
         model: opener.children
         delegate: MenuRow {
@@ -42,9 +42,9 @@ ColumnLayout {
 
     RowLayout {
         visible: root._loading
-        spacing: Theme.space2
+        spacing: QsmShellStyle.Style.space2
 
-        QsmShellComponents.Spinner { size: Theme.iconSm }
+        QsmShellComponents.Spinner { size: QsmShellStyle.Style.iconSm }
         QsmShellComponents.Prose {
             role: "metadata"
             text: "Loading…"

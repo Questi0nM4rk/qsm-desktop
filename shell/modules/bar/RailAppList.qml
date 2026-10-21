@@ -122,7 +122,7 @@ Item {
                 anchors.centerIn: parent
                 width: Theme.railAppSlot
                 height: Theme.railAppSlot
-                radius: Theme.radiusMd
+                radius: QsmShellStyle.Style.radiusMd
                 base: "transparent"
                 selected: appRow.current
                 hovered: rowLayer.hovered
@@ -149,7 +149,7 @@ Item {
                 // The app's own colours, receded when not focused (owner
                 // 2026-10-19: a one-tone tint looked washed out). De-emphasis
                 // by contrast, never by shrinking the target.
-                opacity: appRow.current ? 1 : Theme.railInactiveAppOpacity
+                opacity: appRow.current ? 1 : QsmShellStyle.Style.opacityRecede
             }
 
             QsmShellComponents.StateLayer {
@@ -162,7 +162,7 @@ Item {
                 hoverScale: QsmShellStyle.Motion.hoverScale
                 pressScale: QsmShellStyle.Motion.pressScale
                 focused: appRow.activeFocus
-                focusRadius: Theme.radiusMd
+                focusRadius: QsmShellStyle.Style.radiusMd
                 onClicked: appRow.focusWindow()
             }
         }

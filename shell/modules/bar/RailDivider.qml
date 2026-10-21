@@ -1,4 +1,5 @@
 import qs.QsmShell.Components as QsmShellComponents
+import qs.QsmShell.Style as QsmShellStyle
 import qs.theme
 
 // The rail's group separator: the library's line, in the band's own weight and
@@ -10,6 +11,6 @@ import qs.theme
 QsmShellComponents.Divider {
     inset: Theme.railDividerInset
     implicitWidth: Theme.railWidth
-    implicitHeight: Theme.space2
-    strength: Theme.railDividerOpacity
+    implicitHeight: QsmShellStyle.Style.space2
+    strength: QsmShellStyle.Style.dividerBandOpacity
 }

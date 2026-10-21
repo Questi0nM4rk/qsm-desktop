@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell.Bluetooth
 import qs.QsmShell.Components as QsmShellComponents
+import qs.QsmShell.Style as QsmShellStyle
 import qs.theme
 
 // ONE cell for bluetooth, whatever is connected (owner 2026-08-18).
@@ -56,7 +57,7 @@ RailEntry {
     // gives each device a 20px box, and a 16px glyph in it touched the cross.
     // 12px leaves 4px of clearance on every side of the line. Undivided, the
     // cell matches RailEntry's own glyph so the cluster reads as one column.
-    readonly property int glyphSize: shown > 1 ? Theme.iconXs : Theme.iconSm
+    readonly property int glyphSize: shown > 1 ? QsmShellStyle.Style.iconXs : QsmShellStyle.Style.iconSm
 
     Item {
         id: grid

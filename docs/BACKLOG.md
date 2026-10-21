@@ -1224,10 +1224,27 @@ one is reviewed and merged before the owner ever sees it.
 
 `Theme.dark` is `current !== "mountain-dusk"`, and the `themeToggle` IPC applies
 `"mountain-dusk"` or `"deep-night"` by that flag. Not made data-driven in the
-2026-10-18 pass: `dark` also drives `surfaceOpacity` and the `dark` status key, and
+2026-10-18 pass: `dark` also drives the `dark` status key, and
 `themeToggle` answers `false` in `scripts/test-quickshell`, so a theme-cycling toggle
 changes an IPC contract the owner has not ruled on. Also left: the dead tokens
-`dotGlyphSize`, `frameRadius`, `handleProud`, `radius3xl`, `radius4xl`, `ringStrokeDefault`,
+`handleProud`, `ringQuarterStartAngle` and `ringQuarterSweepAngle`,
 and the unreferenced wallpapers `deep-night.png` and `mountain-dusk.png`. Next step: the
 owner decides whether `themeToggle` cycles `Theme.themes`, then `dark` derives from a
 theme JSON field.
+
+## The desktop still re-types library values outside `Theme`
+
+`Theme` and `scripts/check-theme-contract` now hold the line for what the library asks of
+`Style.backend`. Left, with the reason:
+
+- `shell/theme/Motion.qml` types press, micro, fast, normal, reveal and glide durations and
+  two easings the library's `Motion` already owns. Moving them changes reduced-motion
+  timings, which the owner has not ruled on.
+- Dimming by `opacity` on a composite: the rail while the session surface is open
+  (`opacitySessionDim`), `PopoutRow`, `ColorPickContent`, inactive rail apps and the bell.
+  The library's way is `Style.disabled` / `Style.recede` by colour, but an app icon or a
+  scene-wide fade cannot be blended toward the band.
+- `Theme.artworkRingStroke`: the library's own avatar ring is a share of the picture and
+  reads heavy around a large cover.
+- Receded muted text measures 4.48:1 on this desktop's band (the library's `opacityRecede`
+  was chosen against the library's own band and muted ink).

@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import qs.QsmShell.Components as QsmShellComponents
+import qs.QsmShell.Style as QsmShellStyle
 import qs.components
 import qs.services
 import qs.state
@@ -65,7 +66,7 @@ ColumnLayout {
     // around the group than within it (visual-craft). The section labels below
     // carry the group gap; a uniform 8 made three kinds of thing read as one
     // undifferentiated list.
-    spacing: Theme.space1
+    spacing: QsmShellStyle.Style.space1
 
     function refresh(): void {
         NetworkService.refresh();
@@ -206,7 +207,7 @@ ColumnLayout {
 
     RowLayout {
         Layout.fillWidth: true
-        spacing: Theme.space2
+        spacing: QsmShellStyle.Style.space2
 
         QsmShellComponents.Capsule {
             size: "sm"
@@ -310,15 +311,15 @@ ColumnLayout {
                 ColumnLayout {
                     id: promptBody
                     width: parent.width
-                    spacing: Theme.space1
+                    spacing: QsmShellStyle.Style.space1
 
                     QsmShellComponents.TextField {
                         id: passwordInput
                         Layout.fillWidth: true
-                        Layout.topMargin: Theme.space1
+                        Layout.topMargin: QsmShellStyle.Style.space1
                         // Indented under the row's text column: the field
                         // reads as the row's own detail, not a new sibling.
-                        Layout.leftMargin: Theme.space5
+                        Layout.leftMargin: QsmShellStyle.Style.space5
                         size: "sm"
                         inputType: "password"
                         passwordVisible: root.passwordVisible
@@ -336,7 +337,7 @@ ColumnLayout {
                         }
                         leading: QsmShellComponents.SvgIcon {
                             name: root.promptState === "ok" ? "check" : "lock"
-                            size: Theme.iconSm
+                            size: QsmShellStyle.Style.iconSm
                             color: root.promptState === "ok" ? Theme.accent : Theme.textMuted
                         }
                         trailing: QsmShellComponents.ControlLabel {
@@ -354,7 +355,7 @@ ColumnLayout {
                         role: "supporting"
                         visible: text.length > 0
                         Layout.fillWidth: true
-                        Layout.leftMargin: Theme.space5
+                        Layout.leftMargin: QsmShellStyle.Style.space5
                         text: root.promptState === "failed" ? root.connectError
                             : root.promptState === "joining" ? "Joining…"
                             : root.promptState === "ok" ? "Connected"
@@ -362,7 +363,7 @@ ColumnLayout {
                         // Original size (textXs); supporting's role default is
                         // body-sized (textSm) — kept here so the status line
                         // stays subordinate to the field it sits under.
-                        font.pixelSize: Theme.textXs
+                        font.pixelSize: QsmShellStyle.Style.textXs
                         color: root.promptState === "failed" ? Theme.danger
                             : root.promptState === "ok" ? Theme.accent
                             : Theme.textMuted
@@ -381,7 +382,7 @@ ColumnLayout {
         text: "Wi-Fi radio is off — nothing can be seen until it is back on"
         color: Theme.danger
         // Original size (textXs); body's role default is textSm — recorded.
-        font.pixelSize: Theme.textXs
+        font.pixelSize: QsmShellStyle.Style.textXs
     }
 
     QsmShellComponents.Prose {
@@ -399,13 +400,13 @@ ColumnLayout {
         text: root.connectError
         color: Theme.warning
         // Original size (textXs); body's role default is textSm — recorded.
-        font.pixelSize: Theme.textXs
+        font.pixelSize: QsmShellStyle.Style.textXs
     }
 
     QsmShellComponents.Prose {
         role: "section"
         visible: root.devices.length > 0
-        Layout.topMargin: Theme.space3
+        Layout.topMargin: QsmShellStyle.Style.space3
         text: "Wired"
     }
 
@@ -429,7 +430,7 @@ ColumnLayout {
     QsmShellComponents.Prose {
         role: "section"
         visible: root.vpns.length > 0
-        Layout.topMargin: Theme.space3
+        Layout.topMargin: QsmShellStyle.Style.space3
         text: "VPN"
     }
 
@@ -450,7 +451,7 @@ ColumnLayout {
 
     QsmShellComponents.Capsule {
         size: "sm"
-        Layout.topMargin: Theme.space1
+        Layout.topMargin: QsmShellStyle.Style.space1
         icon: "wifi"
         label: "Network settings"
         onClicked: { root.interacted("delegate", { target: "network" }); Delegate.open("network"); }

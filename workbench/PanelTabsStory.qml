@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell.Services.UPower
 import qs.QsmShell.Components as QsmShellComponents
+import qs.QsmShell.Style as QsmShellStyle
 import qs.components
 import qs.modules.panel as Panel
 import qs.services
@@ -169,7 +170,7 @@ Item {
         id: sceneFacts
         readonly property var modelData: screenFacts
         readonly property bool focusMode: root.focusSuppressed
-        readonly property real panelCenterX: (Theme.reservedLeft + root.width - Theme.frameThickness) / 2
+        readonly property real panelCenterX: (Theme.reservedLeft + root.width - QsmShellStyle.Style.frameThickness) / 2
         readonly property real width: root.width
         // The preview has no trigger zone; the grip is the one handle that exists.
         readonly property bool panelHandleHovered: false

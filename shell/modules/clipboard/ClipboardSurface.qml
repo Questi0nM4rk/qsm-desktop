@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
 import qs.QsmShell.Components as QsmShellComponents
+import qs.QsmShell.Style as QsmShellStyle
 import qs.components
 import qs.services
 import qs.state
@@ -36,8 +37,8 @@ Item {
     // hint footer, with the gaps the column below puts between them. The host
     // reads it and computes nothing.
     readonly property real preferredBodyHeight: Theme.clipboardMaxRows * Theme.clipboardRowHeight
-        + (Theme.clipboardMaxRows - 1) * Theme.space1
-        + search.implicitHeight + footer.implicitHeight + Theme.space3 * 2 + Theme.space4 * 2
+        + (Theme.clipboardMaxRows - 1) * QsmShellStyle.Style.space1
+        + search.implicitHeight + footer.implicitHeight + QsmShellStyle.Style.space3 * 2 + QsmShellStyle.Style.space4 * 2
 
     // Deterministic thumbnail path: cache dir plus the cliphist id, so nothing
     // has to be parsed back out of the decoder. The only unknown is whether
@@ -182,8 +183,8 @@ exit 0`, "_", ...images.map(image => image.file)];
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: Theme.space4
-        spacing: Theme.space3
+        anchors.margins: QsmShellStyle.Style.space4
+        spacing: QsmShellStyle.Style.space3
 
         SearchField {
             id: search
@@ -232,7 +233,7 @@ exit 0`, "_", ...images.map(image => image.file)];
 
                 anchors.fill: parent
                 clip: true
-                spacing: Theme.space1
+                spacing: QsmShellStyle.Style.space1
                 currentIndex: 0
                 boundsBehavior: Flickable.StopAtBounds
                 model: root.results

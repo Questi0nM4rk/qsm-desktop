@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell.Io
 import qs.QsmShell.Components as QsmShellComponents
+import qs.QsmShell.Style as QsmShellStyle
 import qs.components
 import qs.state
 import qs.theme
@@ -133,12 +134,12 @@ Item {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: Theme.space4
+        anchors.margins: QsmShellStyle.Style.space4
         // Almost to the silhouette's bottom edge: the roll-away fade owns
         // that boundary and lands on the band, so the fade reads as running
         // into the ground.
-        anchors.bottomMargin: Theme.space2
-        spacing: Theme.space3
+        anchors.bottomMargin: QsmShellStyle.Style.space2
+        spacing: QsmShellStyle.Style.space3
 
         // Field at the TOP: the surface descends from the top band, and the
         // shell-wide rule puts the input nearest the attached edge. Compact,
@@ -213,8 +214,8 @@ Item {
 
                     RowLayout {
                         anchors.fill: parent
-                        anchors.leftMargin: Theme.space3
-                        spacing: Theme.space3
+                        anchors.leftMargin: QsmShellStyle.Style.space3
+                        spacing: QsmShellStyle.Style.space3
 
                         // The combo is what you came to read, in its own fixed
                         // column so the keys form a scannable spine. Each key

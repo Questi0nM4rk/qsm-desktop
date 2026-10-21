@@ -549,9 +549,9 @@ Item {
         visible: !root._isDelegatedStory
         enabled: !root._isDelegatedStory
         x: (Theme.reservedLeft - Theme.railWidth) / 2
-        y: Theme.space6 * 2
+        y: QsmShellStyle.Style.space6 * 2
         width: Theme.railWidth
-        spacing: Theme.space1
+        spacing: QsmShellStyle.Style.space1
 
         Bar.RailEntry {
             id: railEntry
@@ -575,8 +575,8 @@ Item {
         enabled: !root._isDelegatedStory
         x: root.width * 0.72
         y: root.height * 0.78
-        width: Theme.space6 * 4
-        height: Theme.space6 * 4
+        width: QsmShellStyle.Style.space6 * 4
+        height: QsmShellStyle.Style.space6 * 4
     }
 
     Bar.RailPopoutStack {

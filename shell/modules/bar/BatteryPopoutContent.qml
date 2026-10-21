@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import Quickshell.Io
 import Quickshell.Services.UPower
 import qs.QsmShell.Components as QsmShellComponents
+import qs.QsmShell.Style as QsmShellStyle
 import qs.services
 import qs.theme
 
@@ -120,7 +121,7 @@ ColumnLayout {
 
     onProfileChanged: drawFile.reload()
 
-    spacing: Theme.space2
+    spacing: QsmShellStyle.Style.space2
 
     Component.onCompleted: PowerProfileService.refresh()
 
@@ -143,11 +144,11 @@ ColumnLayout {
     RowLayout {
         visible: root.present
         Layout.fillWidth: true
-        spacing: Theme.space2
+        spacing: QsmShellStyle.Style.space2
 
         QsmShellComponents.SvgIcon {
             name: root.charging ? "battery-charging" : "battery"
-            size: Theme.iconMd
+            size: QsmShellStyle.Style.iconMd
             color: root.charging ? Theme.success : Theme.text
         }
 
@@ -183,7 +184,6 @@ ColumnLayout {
     QsmShellComponents.Meter {
         visible: root.present
         Layout.fillWidth: true
-        thickness: Theme.sliderTrackThickness
         value: root.device?.percentage ?? 0
         // Charging is not a threshold breach and low is not a warning here, so
         // the colour is stated rather than derived: Meter's own `low` would
@@ -214,7 +214,7 @@ ColumnLayout {
 
         visible: root.profile.length > 0
         Layout.fillWidth: true
-        barHeight: Theme.controlHeightSm
+        size: "sm"
         options: profiles.map(name => ({ icon: PowerProfileService.iconFor(name), name: name.replace("-", " ") }))
         currentIndex: profiles.indexOf(root.profile)
         Accessible.name: "Power profile"

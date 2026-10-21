@@ -1,4 +1,5 @@
 import QtQuick
+import qs.QsmShell.Style as QsmShellStyle
 import qs.modules.notifications as Notifications
 import qs.services
 import qs.state
@@ -74,9 +75,9 @@ Item {
     Rectangle { anchors.fill: parent; color: Theme.band }
     Notifications.NotificationCenterSurface {
         id: center
-        width: Theme.notificationWidth + Theme.space6 * 2
+        width: QsmShellStyle.Style.notificationWidth + QsmShellStyle.Style.space6 * 2
         anchors.centerIn: parent
-        maxListHeight: root.height - Theme.space6 * 4
+        maxListHeight: root.height - QsmShellStyle.Style.space6 * 4
     }
     Connections {
         target: center
