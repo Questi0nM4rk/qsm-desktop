@@ -12,6 +12,12 @@
 - **One definition, the library's.** `Theme` answers only the colour roles, fonts, mode flags, size-table presets it adds by name, and this desktop's own layout and policy. Every other number is read from `QsmShellStyle.Style`, never typed again and never read from `Tokens`; `scripts/check-theme-contract` fails when one is.
 - For requested recordings, capture actual frames at 25–60 fps according to motion complexity: roughly 25 fps is enough for simple content/fades; deep, difficult animation requires genuine 60 fps. A 60-fps CFR encode with duplicated frames does not prove 60-fps capture.
 
+## Measured platform facts
+
+- A defaulted function parameter takes no type annotation: `function f(n: int = 0)` passes `scripts/qml-lint` but the Quickshell runtime rejects it with `Type annotations are not supported (yet)` and the shell loops on reload. Annotate only parameters without a default.
+- A `ShaderEffect` renders nothing under `QT_QPA_PLATFORM=offscreen`; silhouette questions are answered from `qsm status`'s `sceneBulgeDump` and the live window.
+- Hyprland's `cursor.hide_on_key_press` stays disabled (its global hide leaves the pointer visible on the external monitor and then warps it), and Hyprland has no general cursor-warp IPC.
+
 ## Essential links
 
 - End-to-end contract + defect review: `spec/13-implementation.md`

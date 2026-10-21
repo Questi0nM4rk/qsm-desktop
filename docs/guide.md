@@ -26,8 +26,8 @@ do not establish that those production tools are installed or working.
 
 Checks run only when requested. `scripts/validate` invokes a suite that stops and
 starts the production shell, changes audio, manipulates windows and cleans caches;
-never run it as a harmless install or pre-commit check. Current release evidence
-and the remaining owner/hardware gates are in [docs/BACKLOG.md](BACKLOG.md#release-handoff).
+never run it as a harmless install or pre-commit check. The remaining owner and
+hardware gates are in [docs/BACKLOG.md](BACKLOG.md#unverified-at-runtime).
 
 ### Main keyboard command
 
