@@ -104,6 +104,8 @@ Item {
         rolloutId: "session"
         edges: ["right"]
         tier: "large"
+        instantReveal: !ShellState.modalByPointer
+        instantRetract: !ShellState.modalByPointer
         registerHitRect: false // the host's full-scene catch region is the hit area
         shouldBeActive: root.active
         suppressed: root.fullscreen || root.scene.focusMode

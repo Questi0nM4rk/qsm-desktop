@@ -356,7 +356,7 @@ Item {
             popoutKind: "session"
             popoutTitle: "Session"
             popoutDetail: "Lock, log out, hibernate, restart, shut down"
-            onClicked: ShellState.toggleModal("session")
+            onClicked: ShellState.toggleModalByPointer("session")
         }
     }
 

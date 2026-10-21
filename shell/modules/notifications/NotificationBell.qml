@@ -87,7 +87,7 @@ Item {
 
     onHoveredChanged: {
         if (hovered && root.shown && ShellState.modal === "none")
-            ShellState.toggleModal("notifications");
+            ShellState.toggleModalByPointer("notifications");
     }
 
     QsmShellComponents.Rollout {

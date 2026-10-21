@@ -8,7 +8,10 @@ Reference: `references/session-panel-right.png`.
   poweroff. Hibernate REPLACED suspend (owner 2026-08-21): this machine hibernates rather
   than sleeps, and one path to one feature means suspend is gone, not kept beside it.
 - **RATIFIED (2026-08-16)**: while open, everything else FADES BACK — desktop and windows dim
-  and blur; only the rolled-out buttons stay in focus. Closing restores instantly.
+  and blur; only the rolled-out buttons stay in focus. Closing restores instantly. Opened by a
+  key or the IPC, the column, the dim and the rail's fade are all at full depth in one frame (the
+  compositor's blur follows a frame later); opened from the power cell they take the rollout's
+  motion (10-motion).
 - **RATIFIED (2026-08-16)**: destructive actions (shutdown/reboot/logout) CONFIRM: first
   click arms the button (visual shift), second click fires.
 - **RATIFIED (2026-08-16)**: backdrop = the library's scrim (`scrimOpacity`) over a background

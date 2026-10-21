@@ -546,6 +546,7 @@ PanelWindow {
             opacity: root.sessionActive ? Theme.opacitySessionDim : 1
 
             Behavior on opacity {
+                enabled: ShellState.modalByPointer
                 NumberAnimation { duration: QsmShellStyle.Motion.medium; easing.type: QsmShellStyle.Motion.standardEasing }
             }
             anchors.top: parent.top

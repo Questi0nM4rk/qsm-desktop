@@ -95,6 +95,7 @@ PanelWindow {
         opacity: root.active && !root.fullscreen ? QsmShellStyle.Style.scrimOpacity : 0
 
         Behavior on opacity {
+            enabled: ShellState.modalByPointer
             NumberAnimation { duration: QsmShellStyle.Motion.fast; easing.type: QsmShellStyle.Motion.standardEasing }
         }
     }

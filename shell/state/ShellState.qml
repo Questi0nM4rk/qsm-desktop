@@ -95,7 +95,21 @@ QtObject {
             closeModal();
     }
 
+    // How the open modal was reached. A key, the IPC and a launcher command
+    // open it in one frame, and it leaves the same way: they are repeated a
+    // hundred times a day and a person is waiting on the result. The pointer's
+    // routes (the power cell, the bell) keep the rollout's motion in and out.
+    property bool modalByPointer: false
+
     function toggleModal(name: string): bool {
+        return changeModal(name, false);
+    }
+
+    function toggleModalByPointer(name: string): bool {
+        return changeModal(name, true);
+    }
+
+    function changeModal(name: string, byPointer: bool): bool {
         if (panelTabs.includes(name))
             return togglePanel(name);
         if (!modalNames.includes(name))
@@ -108,6 +122,8 @@ QtObject {
         if (modalBlocked)
             return false;
 
+        // Before `modal` moves, so the surface that reveals reads the way in.
+        modalByPointer = byPointer;
         modal = name;
         return true;
     }
@@ -120,6 +136,7 @@ QtObject {
         // synchronously on the modal transition and must see this invocation's
         // command mode instead of its ordinary app-search default.
         launcherSeed = seed;
+        modalByPointer = false;
         modal = "launcher";
         return true;
     }

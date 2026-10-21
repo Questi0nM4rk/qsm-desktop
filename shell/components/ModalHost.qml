@@ -67,6 +67,8 @@ Item {
         rolloutId: root.name
         edges: root.edges
         tier: "large"
+        instantReveal: !ShellState.modalByPointer
+        instantRetract: !ShellState.modalByPointer
         // The catch region below is the hit area; the Rollout registers only
         // its silhouette bulge.
         registerHitRect: false

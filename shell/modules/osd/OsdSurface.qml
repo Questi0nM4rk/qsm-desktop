@@ -182,7 +182,14 @@ Item {
         };
     }
 
-    onActiveChanged: syncRetention()
+    // Set by the pointer reaching the handle, cleared once the OSD has left.
+    property bool openedByHandle: false
+
+    onActiveChanged: {
+        if (!active)
+            openedByHandle = false;
+        syncRetention();
+    }
     onTargetScreenChanged: syncRetention()
     onFullscreenChanged: syncRetention()
     onRetentionHeldChanged: syncRetention()
@@ -195,6 +202,10 @@ Item {
         rolloutId: "osd"
         edges: ["right"]
         tier: "small"
+        // A key, the wheel or an IPC call that changes a level shows the OSD in
+        // one frame; only the pointer on its handle makes it roll out. It
+        // leaves at the exit pace once its timer ends.
+        instantReveal: !root.openedByHandle
         shouldBeActive: root.active
         suppressed: root.fullscreen
         fullscreenDetached: false
@@ -236,8 +247,10 @@ Item {
     Connections {
         target: rollout
         function onTriggeredChanged(): void {
-            if (rollout.triggered && root.scene.handlesArmed)
+            if (rollout.triggered && root.scene.handlesArmed) {
+                root.openedByHandle = !root.active;
                 OsdState.show("output", root.targetScreen);
+            }
         }
     }
 }
