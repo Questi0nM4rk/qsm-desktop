@@ -336,6 +336,10 @@ QsmShellComponents.Rollout {
             // The card's inner width, so a long title elides instead of
             // running past the card's edge.
             width: parent.width
+            // A line box of font metrics falls between device pixels and would
+            // carry every row below it off the grid; the rhythm step does not.
+            height: QsmShellStyle.Style.rhythm(implicitHeight)
+            verticalAlignment: Text.AlignVCenter
             elide: Text.ElideRight
             text: body.title
             textFormat: Text.PlainText
