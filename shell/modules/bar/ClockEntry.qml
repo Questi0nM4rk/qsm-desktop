@@ -4,7 +4,8 @@ import qs.QsmShell.Components as QsmShellComponents
 import qs.QsmShell.Style as QsmShellStyle
 import qs.theme
 
-// The larger time sits above one smaller numeric date, all in the technical
+// The larger time sits above the smaller numeric date, every line a pair of
+// digits so the capsule's width holds the widest of them, all in the technical
 // face, inside the rail's one capsule: hover, click and keys open the calendar
 // like every other cell's rollout, with its pill, its growth and its hit area.
 RailEntry {
@@ -12,7 +13,7 @@ RailEntry {
 
     readonly property date now: clock.date
 
-    // Tall enough for its three lines at their reading sizes.
+    // Tall enough for its four lines at their reading sizes.
     implicitHeight: stack.implicitHeight + QsmShellStyle.Style.space2 * 2
 
     interactive: true
@@ -53,20 +54,30 @@ RailEntry {
 
         Digits { text: Qt.formatTime(root.now, "HH") }
         Digits { text: Qt.formatTime(root.now, "mm") }
-        QsmShellComponents.Prose {
-            role: "reading"
-            technical: true
-            topPadding: QsmShellStyle.Style.space1
-            width: parent.width
-            // The cell is a multiple of 8 high, so its centre is a multiple of
-            // 4 and the calendar centred on it lands on whole device pixels.
-            height: QsmShellStyle.Style.space5
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            text: Qt.formatDate(root.now, "dd.MM")
-            font.pixelSize: Theme.railClockDateSize
-            font.weight: QsmShellStyle.Style.weightMedium
-            elide: Text.ElideNone
+
+        // The date in the Czech form, a pair and a dot to a line, quieter than
+        // the time so the four numbers never read as one run.
+        Repeater {
+            model: [Qt.formatDate(root.now, "dd") + ".", Qt.formatDate(root.now, "MM") + "."]
+
+            QsmShellComponents.Prose {
+                required property string modelData
+
+                role: "reading"
+                technical: true
+                muted: true
+                width: Theme.railWidth
+                // The cell is a multiple of 8 high, so its centre is a multiple
+                // of 4 and the calendar centred on it lands on whole device
+                // pixels.
+                height: QsmShellStyle.Style.space4
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                text: modelData
+                font.pixelSize: Theme.railClockDateSize
+                font.weight: QsmShellStyle.Style.weightMedium
+                elide: Text.ElideNone
+            }
         }
     }
 }

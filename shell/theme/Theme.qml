@@ -161,7 +161,7 @@ QtObject {
     readonly property int cheatSheetComboWidth: 192
     // The floor for a colour menu that normally takes the height of the column
     // it hangs off; the host hands the real span down.
-    readonly property int colorMenuMinHeight: 240
+    readonly property int colorMenuMinHeight: 224
     // The theme carousel's card, sized so two neighbours peek beside the
     // centred one at launcherWidth.
     readonly property int launcherThemeCardWidth: 220
@@ -203,23 +203,27 @@ QtObject {
     readonly property int performanceSparklineHeight: 56
 
     // ── Frame, rail, notifications ─────────────────────────────────────
-    // The left band is wider than the others: the rail lives inside it. Its
-    // width and the capsule's leave a multiple of 8 over, so everything
-    // centred on the band's axis lands on whole device pixels at 1.25.
-    readonly property int reservedLeft: 64
+    // The left band is wider than the others: the rail lives inside it. A
+    // glyph is centred between the screen edge and the band's wall, so the
+    // gap from its edge to a rollout is half of what the band leaves over
+    // after the glyph; the band, the capsule and the glyph leave a multiple
+    // of 8 over, so everything centred on the axis lands on whole device
+    // pixels at 1.25.
+    readonly property int reservedLeft: 40
     // THE width of the band: every item (a glyph, the battery reading, the
     // clock, an app row, a tray icon) is this wide and answers on one hit
     // area, the capsule plus the band's left gutter. Height is the item's own:
     // a cell, an app row and the clock each take what their content needs.
-    readonly property int railWidth: QsmShellStyle.Style.size("Control", "lg")
-    // The capsule sits one space2 in from the screen edge, which leaves the rest
-    // of the band between it and the rollout's wall. Both gaps are whole device
-    // pixels at 1.25, 1.5 and 2 (multiples of 4), which a centred 6 and 6 is
-    // not: the hit area crosses the first to the true edge, and a selected
-    // pill reaches the wall across the second.
-    readonly property int railGutter: QsmShellStyle.Style.space2
+    readonly property int railWidth: QsmShellStyle.Style.size("Control", "sm")
+    // The capsule sits one space1 in from the screen edge, which leaves the
+    // rest of the band between it and the rollout's wall. Both gaps are whole
+    // device pixels at 1.25, 1.5 and 2 (multiples of 4): the hit area crosses
+    // the first to the true edge, and a selected pill reaches the wall across
+    // the second.
+    readonly property int railGutter: QsmShellStyle.Style.space1
     readonly property int railReach: reservedLeft - railGutter - railWidth
-    // One gap inside a group; groups are told apart by the divider.
+    // One gap inside a group; groups are told apart by space, and by a line
+    // where the groups either side look alike.
     readonly property int railItemGap: QsmShellStyle.Style.space1
     // The height of a glyph cell, a tray icon and an app row.
     readonly property int railCellHeight: QsmShellStyle.Style.size("Control", "sm")
@@ -230,22 +234,25 @@ QtObject {
     // coloured third-party glyph sits in the same tone as the rail's outline
     // glyphs.
     readonly property real trayGlyphBrightness: 0.5
-    // The rail clock: time above a smaller numeric date.
+    // The rail clock: the time over a smaller numeric date, each in digit
+    // pairs, so the widest line is two characters of the capsule's width.
     readonly property int railClockDigitSize: QsmShellStyle.Style.textLg
     readonly property int railClockDateSize: QsmShellStyle.Style.textSm
-    // A rail group rule is the library's line, inset from both walls.
-    readonly property real railDividerInset: QsmShellStyle.Style.space2
+    // A rail group rule is the library's line, nearly as wide as the capsule.
+    readonly property real railDividerInset: QsmShellStyle.Style.space1
     // A tray menu's separators are short lines.
     readonly property int menuSeparatorWidth: 96
     // How many connected devices the one BLE cell splits into before it stops
     // subdividing.
     readonly property int railDeviceMax: 4
-    // Workspace slots: the pointer floor high and the whole rail wide, tiled
-    // with no gap between them; at most this many show, the six nearest the
-    // active one, and the accent chip carries the real number.
+    // The workspace strip: one capsule of the rail's width holding every
+    // workspace, one slot each at the pointer floor, tiled with no gap. A slot
+    // shows an empty ring or a filled dot; the selected one wears the accent
+    // chip with the number, which slides between slots.
     readonly property int railWorkspaceSlot: QsmShellStyle.Style.size("Control", "xs")
-    readonly property int railWorkspaceSlots: 6
+    readonly property int railWorkspaceSlots: 10
     readonly property int railWorkspaceDot: QsmShellStyle.Style.space2
+    readonly property int railWorkspaceChipWidth: QsmShellStyle.Style.space5
     // The ring around an urgent workspace's dot.
     readonly property int railWorkspaceRing: QsmShellStyle.Style.iconSm
     // The dot is so small that the library's hover growth would be under half
@@ -285,13 +292,18 @@ QtObject {
     readonly property int panelHandleHeight: 8
 
     // ── Popouts and OSD ────────────────────────────────────────────────
-    readonly property int popoutWidth: 280
+    // A rail rollout is a compact card: it leaves half of the shell's rollout
+    // padding around its content, and its corner radius is the body radius
+    // plus that padding, so every body inside it stays concentric.
+    readonly property int railPopoutPadding: QsmShellStyle.Style.space2
+    readonly property int railPopoutRadius: QsmShellStyle.Style.radiusBody + railPopoutPadding
+    // What a popout's content is given: the calendar's seven cells and six gaps.
+    readonly property int popoutContentWidth: 248
+    readonly property int popoutWidth: popoutContentWidth + railPopoutPadding * 2
     // A rollout body grows in this step. A body is centred on its rail cell,
     // whose centre is a multiple of 4, so half the body must be one too for
     // both of its edges to land on whole device pixels at 1.25.
     readonly property int popoutBodyStep: QsmShellStyle.Style.space2
-    // What a popout's content is given: its width less the rollout's padding.
-    readonly property int popoutContentWidth: popoutWidth - QsmShellStyle.Style.rolloutPadding * 2
     // The Bluetooth popout caps its device rows, connected first.
     readonly property int popoutDeviceListMax: 5
     // The OSD is a narrow surface with a fat track: the value rides a circle

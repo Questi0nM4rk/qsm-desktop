@@ -9,19 +9,24 @@ import qs.services
 import qs.state
 import qs.theme
 
-// The rail (03-rail lineup): the mark and the updates
-// cell, then workspace slots with the PIN and the TRAY icons, then the
-// current workspace's apps from the top of the middle, and at the bottom the
-// READOUTS (clock, battery), the CONTROLS (quick actions, network, bluetooth,
-// sound) and the SESSION (power). CPU and RAM live in the Dashboard only (06).
-// Groups are told apart by space; a line is drawn only at the two ends of the
-// app list and before power, where the groups either side look alike. The
-// popout interaction lives in the PopoutController.
+// The rail (03-rail lineup), top to bottom: the glyph cells (the mark, the
+// updates, the pin and the tray), the current workspace's apps from the line
+// under them, the workspace strip as one capsule at the rail's vertical middle,
+// and at the bottom the READOUTS (clock, battery), the CONTROLS (quick actions,
+// network, bluetooth, sound) and the SESSION (power). CPU and RAM live in the
+// Dashboard only (06). Groups are told apart by space; a line is drawn only at
+// the top of the app list and before power, where the groups either side look
+// alike. The popout interaction lives in the PopoutController.
 Item {
     id: root
 
     required property var screen
     required property PopoutController popouts
+
+    // The strip sits at the rail's vertical middle, as near as the groups above
+    // and below allow: it never crosses the bottom stack, and it leaves the app
+    // list its first row. One boundary is 16: the gap, a break and a gap.
+    readonly property real boundary: Theme.railItemGap * 2 + QsmShellStyle.Style.space2
 
     Column {
         id: topStack
@@ -31,84 +36,62 @@ Item {
         anchors.right: parent.right
         spacing: Theme.railItemGap
 
-        // The mark and the updates cell are one group.
-        Column {
-            id: markGroup
-            width: parent.width
-            spacing: Theme.railItemGap
-
-            // The mark: identity and decoration, so it stays muted (accent
-            // means current), the one larger glyph of the band (03 DEFAULT:
-            // no click, no popout).
-            RailEntry {
-                icon: "arch"
-                iconSize: Theme.railMark
-                iconColor: Theme.textMuted
-            }
-
-            // System updates (HyDE parity): directly under
-            // the mark. The badge carries the pending count; click opens the
-            // full upgrade in a terminal — the ONE action. Hover names the
-            // state instead.
-            RailEntry {
-                interactive: true
-                icon: "updates"
-                iconColor: UpdateService.available ? Theme.text : Theme.textMuted
-                popouts: root.popouts
-                popoutKind: "updates"
-                popoutTitle: "System updates"
-                popoutDetail: UpdateService.count > 0
-                    ? `${UpdateService.count} packages can be updated · click to upgrade`
-                    : UpdateService.count === 0
-                        ? "Up to date · click to upgrade anyway"
-                        : "Counting…"
-                onClicked: UpdateService.upgrade()
-
-                // The count riding the cell's corner. Hidden at zero and while
-                // unknown — an absent badge never claims "up to date"; the
-                // hover card does the telling.
-                QsmShellComponents.Badge {
-                    visible: UpdateService.available
-                    // On the glyph's own top-right corner and no further than
-                    // the capsule: the chip's right edge is the capsule's, so
-                    // no pixel of it reaches the band's wall, and one rhythm
-                    // step above the cell's centre line it leaves the glyph's
-                    // body readable. All of its edges sit on whole device
-                    // pixels.
-                    anchors.right: parent.right
-                    anchors.bottom: parent.verticalCenter
-                    anchors.bottomMargin: QsmShellStyle.Style.space1
-                    tone: "accent"
-                    filled: true
-                    text: UpdateService.count > 99 ? "99+" : String(UpdateService.count)
-                }
-            }
-        }
-
-        // Glyph cells above, dots below: unlike kinds, so space alone parts
-        // them.
-        RailBreak { id: topBreak }
-
-        // Workspaces, the pin and the tray are ONE group: the pin acts on the
-        // band the workspaces live in, and a tray icon under the pin never
-        // reads as one more app row.
+        // The glyph cells are ONE group: they are alike, and the pin acts on
+        // the band the rail lives in. What the group cannot afford it scales
+        // down as one block instead of pushing the clock off the band.
         RailGroup {
-            // What is left once the bottom cluster, the mark group, both
-            // breaks, the stack's gaps and one app row are paid for: when
-            // the group wants more than that, it scales down as one block
-            // instead of pushing the clock off the band.
             maximumHeight: Math.max(0, root.height - bottomStack.height
-                - QsmShellStyle.Style.space4 * 2 - markGroup.height - topBreak.height * 2
-                - Theme.railItemGap * 5 - Theme.railCellHeight)
+                - QsmShellStyle.Style.space4 * 2 - topBreak.height - Theme.railItemGap * 3
+                - Theme.railCellHeight - root.boundary - workspaces.height)
 
             Column {
                 width: parent.width
                 spacing: Theme.railItemGap
 
-                WorkspaceStrip {
-                    id: workspaces
-                    width: parent.width
-                    height: implicitHeight // plain Items do not self-adopt implicit size
+                // The mark: identity and decoration, so it stays muted (accent
+                // means current), the one larger glyph of the band (03 DEFAULT:
+                // no click, no popout).
+                RailEntry {
+                    icon: "arch"
+                    iconSize: Theme.railMark
+                    iconColor: Theme.textMuted
+                }
+
+                // System updates (HyDE parity): directly under
+                // the mark. The pending count takes the glyph's place as an
+                // accent chip, because a chip beside a glyph in a capsule this
+                // narrow would cover it; at zero and while unknown the glyph
+                // returns, and an absent count never claims "up to date" (the
+                // hover card does the telling). Click opens the full upgrade
+                // in a terminal, the ONE action.
+                RailEntry {
+                    id: updatesCell
+
+                    interactive: true
+                    icon: UpdateService.available ? "" : "updates"
+                    iconColor: Theme.textMuted
+                    popouts: root.popouts
+                    popoutKind: "updates"
+                    popoutTitle: "System updates"
+                    popoutDetail: UpdateService.count > 0
+                        ? `${UpdateService.count} packages can be updated · click to upgrade`
+                        : UpdateService.count === 0
+                            ? "Up to date · click to upgrade anyway"
+                            : "Counting…"
+                    onClicked: UpdateService.upgrade()
+
+                    QsmShellComponents.Badge {
+                        visible: UpdateService.available
+                        // Centred by arithmetic on the capsule: two digits take
+                        // the workspace chip's width, "99+" the whole capsule,
+                        // so every edge sits on a whole device pixel.
+                        x: (parent.width - width) / 2
+                        y: (parent.height - height) / 2
+                        width: text.length > 2 ? parent.width : Theme.railWorkspaceChipWidth
+                        tone: "accent"
+                        filled: true
+                        text: UpdateService.count > 99 ? "99+" : String(UpdateService.count)
+                    }
                 }
 
                 // Pin/retract, per monitor: the glyph's SHAPE is the state
@@ -198,21 +181,34 @@ Item {
         }
 
         // The app list's length varies, so its top is marked.
-        RailBreak { line: true }
+        RailBreak { id: topBreak; line: true }
     }
 
-    // The middle section: the current workspace's apps, icon only, top-aligned
-    // under the workspace group; names and live titles are in the hover popout.
+    // The middle section: the current workspace's apps, icon only, hanging from
+    // the line above and ending a boundary above the strip; names and live
+    // titles are in the hover popout.
     RailAppList {
         id: appList
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: topStack.bottom
-        anchors.bottom: bottomStack.top
         anchors.topMargin: Theme.railItemGap
-        anchors.bottomMargin: Theme.railItemGap
+        height: Math.max(0, workspaces.y - root.boundary - y)
         screen: root.screen
         popouts: root.popouts
+    }
+
+    // Every workspace in one capsule. Its middle is the rail's middle unless
+    // that would cross the bottom stack, then it sits one gap above it; both
+    // ends land on a multiple of 4, so its edges are whole device pixels.
+    WorkspaceStrip {
+        id: workspaces
+        anchors.left: parent.left
+        anchors.right: parent.right
+        y: Math.floor(Math.min(bottomStack.y - Theme.railItemGap - height,
+            Math.max(appList.y + Theme.railCellHeight + root.boundary,
+                (root.height - height) / 2)) / QsmShellStyle.Style.space1) * QsmShellStyle.Style.space1
+        height: implicitHeight // plain Items do not self-adopt implicit size
     }
 
     Column {
@@ -226,8 +222,8 @@ Item {
         // Three groups; inside a group the items sit one gap apart. What the
         // item is decides the group: the readouts (the time and the battery),
         // the controls (quick actions and the devices) and the session. The
-        // app list's bottom is marked, as its top is.
-        RailBreak { line: true }
+        // strip above is a body of its own, so space alone parts it.
+        RailBreak {}
 
         // Readouts: the time.
         ClockEntry {
@@ -273,8 +269,10 @@ Item {
                 verticalAlignment: Text.AlignVCenter
                 visible: batteryCell.laptop
                 text: Math.round(batteryCell.charge * 100) + "%"
-                font.pixelSize: QsmShellStyle.Style.textMd
+                // Three digits and the sign at the small step fit the capsule.
+                font.pixelSize: QsmShellStyle.Style.textSm
                 font.weight: QsmShellStyle.Style.weightMedium
+                elide: Text.ElideNone
                 // Charging is the one state the number cannot state, so
                 // it says it in the accent rather than by growing a
                 // second glyph beside itself.
