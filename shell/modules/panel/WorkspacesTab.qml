@@ -281,7 +281,13 @@ Item {
             }
             const pitch = root.tileWidth + root.tileGap;
             scroll.stop();
-            scroll.to = Math.max(0, Math.min(room, Math.round((strip.contentX - Math.sign(notch) * pitch) / pitch) * pitch));
+            const target = Math.max(0, Math.min(room, Math.round((strip.contentX - Math.sign(notch) * pitch) / pitch) * pitch));
+            // A position that moves once is removed under reduced motion, not shortened.
+            if (QsmShellStyle.Style.reducedMotion) {
+                strip.contentX = target;
+                return;
+            }
+            scroll.to = target;
             scroll.start();
         }
     }
