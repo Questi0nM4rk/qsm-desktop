@@ -27,7 +27,9 @@ Item {
     readonly property int activeWorkspaceId: Hyprland.focusedMonitor?.activeWorkspace?.id ?? 1
     readonly property int slotCount: Theme.railWorkspaceSlots
     // A workspace past the last slot keeps the chip on the last slot, and the
-    // chip names the real number.
+    // chip names the real number; a special workspace (a negative id) is none
+    // of the slots, so no chip shows.
+    readonly property bool hasActive: activeWorkspaceId > 0
     readonly property int activeIndex: Math.max(0, Math.min(slotCount - 1, activeWorkspaceId - 1))
 
     function workspaceFor(id: int): var {
@@ -81,6 +83,7 @@ Item {
             - root.chipGrowth
         width: Theme.railWorkspaceChipWidth + 2 * root.chipGrowth
         height: QsmShellStyle.Style.badgeHeight + 2 * root.chipGrowth
+        visible: root.hasActive
         tone: "accent"
         filled: true
         text: String(root.activeWorkspaceId)
@@ -103,7 +106,7 @@ Item {
             required property int index
             readonly property int workspaceId: index + 1
             readonly property var workspace: root.workspaceFor(workspaceId)
-            readonly property bool active: index === root.activeIndex
+            readonly property bool active: root.hasActive && index === root.activeIndex
             readonly property bool occupied: (workspace?.toplevels.values.length ?? 0) > 0
             readonly property bool urgent: workspace?.urgent ?? false
             readonly property real growth: dotLayer.growth
