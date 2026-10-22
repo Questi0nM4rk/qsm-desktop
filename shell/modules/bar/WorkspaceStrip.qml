@@ -107,19 +107,28 @@ Item {
     property int ringTarget: 0
     property real ringPos: 0
 
-    // The strip takes all the room its host gives it. The lens sits in the
-    // middle of it and the ring spreads over the whole height: the dot four
-    // places from the lens (the last that can be seen) has its target flush
-    // against either end, so the pitch follows the room. The lens centre is
-    // fixed, and the rollout hangs over the dots below it without moving them.
+    // The strip takes all the room its host gives it. The lens is the ring's
+    // largest mark, fixed on the axis at the strip's centre; the ring spreads
+    // over the whole height, the dot four places from the lens (the last that
+    // can be seen) with its target flush against either end. The lens is taller
+    // than a dot, so the first dot steps `lensReach` further out: the empty
+    // space between the lens's edge and its neighbour is then the same as
+    // between any two dots, and the hover growth of either never touches the
+    // other. The rollout hangs below the lens over the dots, which never move.
     readonly property real lensCentre: height / 2
+    readonly property real lensReach: (Theme.railWorkspaceChipHeight
+        - Theme.railDrumSize[0]) / 2
     readonly property real pitch: Math.max(Theme.railDrumHit,
-        QsmShellStyle.Style.snap((height - Theme.railDrumHit) / 8, root))
-
-    // The lens with its rollout is one block and the block is centred in the
-    // capsule: the number rises as the icons open below it. The dots stay put.
+        QsmShellStyle.Style.snap((height / 2 - Theme.railDrumHit / 2 - lensReach) / 4, root))
     readonly property real lensTop: QsmShellStyle.Style.snap(
-        lensCentre - (Theme.railWorkspaceChipHeight + rolloutHeight) / 2, root)
+        lensCentre - Theme.railWorkspaceChipHeight / 2, root)
+
+    // The centre of a dot at a signed distance from the lens in dots: the
+    // first step carries the lens's extra reach, the rest are one pitch each.
+    function dotCentre(offset: real): real {
+        const d = Math.abs(offset);
+        return lensCentre + (offset < 0 ? -1 : 1) * (Math.min(1, d) * lensReach + d * pitch);
+    }
 
     implicitWidth: Theme.railWidth
 
@@ -295,7 +304,7 @@ Item {
     }
 
     // The lens: a pill with the number, stretched down into a long capsule
-    // while the workspace has windows. It sits at the strip's centre and under
+    // while the workspace has windows. The number sits at the strip's centre and the lens is under
     // the dots' layers, which paint nothing but their hover tint.
     Rectangle {
         id: chip
@@ -495,7 +504,7 @@ Item {
             readonly property real ringStroke: QsmShellStyle.Style.stroke(markSize >= QsmShellStyle.Style.space2 - QsmShellStyle.Style.spaceTight
                 ? 2 * QsmShellStyle.Style.hairline : QsmShellStyle.Style.hairline, slot)
 
-            y: QsmShellStyle.Style.snap(root.lensCentre + offset * root.pitch - height / 2, slot)
+            y: QsmShellStyle.Style.snap(root.dotCentre(offset) - height / 2, slot)
             z: -distance
             width: parent.width
             // A dot too far round the drum to be a target is only its mark,

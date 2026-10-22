@@ -10,9 +10,9 @@ import qs.state
 import qs.theme
 
 // The rail (03-rail lineup), top to bottom: the glyph cells (the mark, the
-// updates, the pin and the tray), the workspace drum at the rail's vertical
-// middle with the current workspace's apps rolling out of its lens,
-// and at the bottom the READOUTS (clock, battery), the CONTROLS (quick actions,
+// updates, the pin and the tray), the clock, the workspace drum with the
+// current workspace's apps rolling out of its lens below it,
+// and at the bottom the battery reading, the CONTROLS (quick actions,
 // network, bluetooth, sound) and the SESSION (power). CPU and RAM live in the
 // Dashboard only (06). Groups are told apart by space; a line is drawn before power, where the groups either
 // side look alike. The popout interaction lives in the PopoutController.
@@ -171,8 +171,17 @@ Item {
             }
         }
 
-        // The glyph cells are alike and the strip below is a body of its own.
+        // The glyph cells are glyphs and the clock is text: unlike kinds, so
+        // space alone parts them.
         RailBreak { id: topBreak }
+
+        // Readouts: the time and the date, above the drum.
+        ClockEntry {
+            popouts: root.popouts
+        }
+
+        // Text above, the drum's body below: space alone parts them.
+        RailBreak {}
     }
 
     // The drum of workspaces with its window rollout takes the whole room
@@ -197,16 +206,11 @@ Item {
         anchors.bottomMargin: QsmShellStyle.Style.space4
         spacing: Theme.railItemGap
 
-        // Three groups; inside a group the items sit one gap apart. What the
-        // item is decides the group: the readouts (the time and the battery),
-        // the controls (quick actions and the devices) and the session. The
-        // drum above is a capsule of its own, which parts it from the clock.
+        // Groups; inside a group the items sit one gap apart. What the item
+        // is decides the group: the battery reading, the controls (quick
+        // actions and the devices) and the session. The drum above is a
+        // capsule of its own, which parts it from the battery.
         RailBreak {}
-
-        // Readouts: the time.
-        ClockEntry {
-            popouts: root.popouts
-        }
 
         // Readouts: the battery reading.
         RailEntry {
