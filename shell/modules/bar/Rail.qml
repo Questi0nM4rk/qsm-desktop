@@ -10,21 +10,18 @@ import qs.state
 import qs.theme
 
 // The rail (03-rail lineup), top to bottom: the glyph cells (the mark, the
-// updates, the pin and the tray), the workspace strip as one capsule at the
-// rail's vertical middle with the current workspace's apps rolling out of it,
+// updates, the pin and the tray), the workspace drum at the rail's vertical
+// middle with the current workspace's apps rolling out of its lens,
 // and at the bottom the READOUTS (clock, battery), the CONTROLS (quick actions,
 // network, bluetooth, sound) and the SESSION (power). CPU and RAM live in the
-// Dashboard only (06). Groups are told apart by space; a line is drawn only under
-// the glyph cells and before power, where the groups either side look
-// alike. The popout interaction lives in the PopoutController.
+// Dashboard only (06). Groups are told apart by space; a line is drawn under
+// the glyph cells, under the drum and before power, where the groups either
+// side look alike. The popout interaction lives in the PopoutController.
 Item {
     id: root
 
     required property var screen
     required property PopoutController popouts
-
-    // One boundary is 16: the gap, a break and a gap.
-    readonly property real boundary: Theme.railItemGap * 2 + QsmShellStyle.Style.space2
 
     Column {
         id: topStack
@@ -35,13 +32,9 @@ Item {
         spacing: Theme.railItemGap
 
         // The glyph cells are ONE group: they are alike, and the pin acts on
-        // the band the rail lives in. What the group cannot afford it scales
-        // down as one block instead of pushing the clock off the band.
+        // the band the rail lives in. The group keeps its natural height; the
+        // strip fits in what is left under it.
         RailGroup {
-            maximumHeight: Math.max(0, root.height - bottomStack.height
-                - QsmShellStyle.Style.space4 * 2 - topBreak.height - Theme.railItemGap * 3
-                - root.boundary - workspaces.fullHeight)
-
             Column {
                 width: parent.width
                 spacing: Theme.railItemGap
@@ -183,21 +176,18 @@ Item {
         RailBreak { id: topBreak; line: true }
     }
 
-    // Every workspace in one capsule, with its window rollout. Its top is fixed
-    // by the capsule at rest and the rollout grows downward into the room left
-    // under it, so a switch moves nothing above the slot that opens. The top
-    // sits at the rail's middle unless the fully grown strip would cross the
-    // bottom stack, then it sits one gap above that; the top lands on a multiple
-    // of 4, so its edges are whole device pixels.
+    // The drum of workspaces with its window rollout takes the whole room
+    // between the top group's line and the line above the bottom stack (the
+    // lines' own steps are the gap to it): the ring of dots spreads over it,
+    // the lens in the middle, and the rollout hangs over the dots below the
+    // lens, so nothing in the strip changes size or moves.
     WorkspaceStrip {
         id: workspaces
         anchors.left: parent.left
         anchors.right: parent.right
+        anchors.top: topStack.bottom
+        anchors.bottom: bottomStack.top
         popouts: root.popouts
-        y: Math.floor(Math.min(bottomStack.y - Theme.railItemGap - fullHeight,
-            Math.max(topStack.y + topStack.height + Theme.railItemGap,
-                (root.height - restHeight) / 2)) / QsmShellStyle.Style.space1) * QsmShellStyle.Style.space1
-        height: implicitHeight // plain Items do not self-adopt implicit size
     }
 
     Column {
@@ -211,8 +201,8 @@ Item {
         // Three groups; inside a group the items sit one gap apart. What the
         // item is decides the group: the readouts (the time and the battery),
         // the controls (quick actions and the devices) and the session. The
-        // strip above is a body of its own, so space alone parts it.
-        RailBreak {}
+        // drum above is a body of its own, and the line closes it.
+        RailBreak { line: true }
 
         // Readouts: the time.
         ClockEntry {

@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 import QtQuick
+import QtQuick.Effects
 import Quickshell.Hyprland
 import qs.components
 import qs.services
@@ -7,20 +8,21 @@ import qs.QsmShell.Components as QsmShellComponents
 import qs.QsmShell.Style as QsmShellStyle
 import qs.theme
 
-// The workspace strip (03): one capsule as wide as the rail holding every
-// workspace, one slot each and all of them always there, so the strip never
-// changes size and nothing under it moves. A slot is as wide as the rail and
-// tall enough for a pointer, with a mark whose SHAPE is the state: an empty
-// workspace a ring, one with windows a filled dot, an urgent one a danger dot
-// in a ring. The selected slot wears the library's accent lens with the real
-// number in textOnPrimary. On a switch the lens slides to the new slot and
-// stretches DOWN into one long capsule: the number at its top, the workspace's
-// window icons fading in below it (the slots under it move down to make room,
-// so nothing jumps under a resting pointer). Three icons show at once; with
-// more windows the list is a ring buffer that follows the focused window (the
-// middle icon) and that the wheel may also turn. An empty workspace is the
-// number only. A switch settles in about 210 ms; under reduced motion it lands at
-// once. Wheel switches, click jumps.
+// The workspace strip (03): a drum of all ten workspaces around one fixed
+// lens. The lens is the library's accent pill with the real number in
+// textOnPrimary; the other workspaces are plain small dots in ring order (10
+// wraps to 1) that shrink, fade and haze toward both ends, the last ones
+// almost gone. A dot's SHAPE is its state: an empty workspace an outline, one
+// with windows a filled dot, an urgent one a danger dot in a ring. On a switch
+// the ring scrolls the shortest way round until the new workspace sits in the
+// lens; the lens never travels. The lens stretches DOWN into one long capsule:
+// the number at its top, the workspace's window icons fading in below it. That
+// capsule hangs over the dots below the lens, which stay where they are, so
+// the strip never changes size. Three icons show at once; with more windows
+// the list is a ring buffer that follows the focused window (the middle icon)
+// and that the wheel may also turn. An empty workspace is the number only. A
+// switch settles in about 210 ms; under reduced motion it lands at once.
+// Wheel switches, click jumps.
 Item {
     id: root
 
@@ -36,9 +38,9 @@ Item {
     // errors and no-ops, which reads exactly like a stale binding — bit us.)
     readonly property int activeWorkspaceId: Hyprland.focusedMonitor?.activeWorkspace?.id ?? 1
     readonly property int slotCount: Theme.railWorkspaceSlots
-    // A workspace past the last slot keeps the chip on the last slot, and the
-    // chip names the real number; a special workspace (a negative id) is none
-    // of the slots, so no chip shows.
+    // A workspace past the last dot keeps the lens on the last dot, and the
+    // lens names the real number; a special workspace (a negative id) is none
+    // of the dots, so no lens shows.
     readonly property bool hasActive: activeWorkspaceId > 0
     readonly property int activeIndex: Math.max(0, Math.min(slotCount - 1, activeWorkspaceId - 1))
 
@@ -67,8 +69,8 @@ Item {
         activate(Math.max(1, Math.min(slotCount, activeWorkspaceId + delta)));
     }
 
-    // The slot the pointer is over, so the chip, which is not inside any slot,
-    // answers hover and press like the dots do.
+    // The dot the pointer is over, so the lens, which is not inside any dot's
+    // layer, answers hover and press like the dots do.
     property int hoveredIndex: -1
     property int pressedIndex: -1
     readonly property var activeSlot: slots.count > root.activeIndex
@@ -76,8 +78,8 @@ Item {
     readonly property real chipGrowth: root.hoveredIndex === root.activeIndex
         ? (root.activeSlot?.growth ?? 0) : 0
 
-    // What the lens holds. It is a snapshot taken when the lens arrives, so the
-    // old capsule empties out under the old slot and not under the new one.
+    // What the lens holds. It is a snapshot taken when the new workspace
+    // arrives, so the old capsule empties out before the number changes.
     readonly property int bodyInset: QsmShellStyle.Style.space1
     property int shownIndex: 0
     property int shownWorkspace: 1
@@ -90,11 +92,12 @@ Item {
             + 2 * bodyInset;
     }
     readonly property real targetHeight: hasActive ? bodyHeight(apps.length) : 0
-    readonly property real maxRolloutHeight: bodyHeight(visibleRows + 1)
 
-    // The two animated quantities: where the lens is (in slots) and how far it
-    // has stretched below its slot.
-    property real lensPos: 0
+    // The two animated quantities: where the ring is (in dots, unbounded, the
+    // index of the dot in the lens) and how far the lens has stretched below
+    // its resting height.
+    property real drumPos: 0
+    property int drumTarget: 0
     property real rolloutHeight: 0
     // The icons fade in as the capsule opens.
     readonly property real revealed: bodyHeight(shownCount) > 0
@@ -104,21 +107,31 @@ Item {
     property int ringTarget: 0
     property real ringPos: 0
 
-    readonly property real restHeight: slotCount * Theme.railWorkspaceSlot
-    readonly property real fullHeight: restHeight + maxRolloutHeight
+    // The strip takes all the room its host gives it. The lens sits in the
+    // middle of it and the ring spreads over the whole height: the dot four
+    // places from the lens (the last that can be seen) has its target flush
+    // against either end, so the pitch follows the room. The lens centre is
+    // fixed, and the rollout hangs over the dots below it without moving them.
+    readonly property real lensCentre: height / 2
+    readonly property real pitch: Math.max(Theme.railDrumHit,
+        QsmShellStyle.Style.snap((height - Theme.railDrumHit) / 8, root))
 
     implicitWidth: Theme.railWidth
-    implicitHeight: restHeight + rolloutHeight
 
-    function slotY(index: int): real {
-        return index * Theme.railWorkspaceSlot + (index > shownIndex ? rolloutHeight : 0);
+    // A table read at a distance in dots, linear between the stops.
+    function atDistance(table: var, distance: real): real {
+        const d = Math.max(0, Math.min(table.length - 1, distance));
+        const i = Math.min(table.length - 2, Math.floor(d));
+        return table[i] + (table[i + 1] - table[i]) * (d - i);
     }
 
-    // The lens rides the slots as they make room: continuous in lensPos, so it
-    // never jumps while the rollout above or below it opens or closes.
-    function lensY(pos: real): real {
-        return pos * Theme.railWorkspaceSlot
-            + rolloutHeight * Math.max(0, Math.min(1, pos - shownIndex));
+    // Where the dot of workspace `index` is on the ring: its signed distance
+    // from the lens in dots, wrapped into [-5, 5) so the dot that leaves at one
+    // end comes back at the other, where it cannot be seen.
+    function ringOffset(index: int): real {
+        const half = slotCount / 2;
+        const shifted = index - drumPos + half;
+        return shifted - slotCount * Math.floor(shifted / slotCount) - half;
     }
 
     function land(): void {
@@ -148,13 +161,21 @@ Item {
             turnRing(followTarget() - ringTarget);
     }
 
+    // The ring turns the shortest way round: a distance of five either way is
+    // the same, and turns down.
+    function shortestWay(delta: int): int {
+        const wrapped = ((delta % slotCount) + slotCount) % slotCount;
+        return wrapped > slotCount / 2 ? wrapped - slotCount : wrapped;
+    }
+
     // The active workspace changed: the three phases of a switch.
     function retarget(): void {
         switchAnim.stop();
         resizeAnim.stop();
+        drumTarget += shortestWay(activeIndex - drumTarget);
         if (QsmShellStyle.Style.reducedMotion) {
             land();
-            lensPos = activeIndex;
+            drumPos = drumTarget;
             rolloutHeight = targetHeight;
         } else {
             switchAnim.start();
@@ -183,7 +204,8 @@ Item {
     onActiveWorkspaceIdChanged: Qt.callLater(refit)
     Component.onCompleted: {
         land();
-        lensPos = activeIndex;
+        drumTarget = activeIndex;
+        drumPos = activeIndex;
         rolloutHeight = targetHeight;
     }
 
@@ -191,8 +213,14 @@ Item {
         id: switchAnim
 
         NumberAnimation {
-            target: root; property: "lensPos"; to: root.activeIndex
+            target: root; property: "drumPos"; to: root.drumTarget
             duration: QsmShellStyle.Motion.micro; easing.type: QsmShellStyle.Motion.standardEasing
+            // The ring has no ends: bring both numbers back into one turn once at rest.
+            onFinished: {
+                const wrapped = ((root.drumTarget % root.slotCount) + root.slotCount) % root.slotCount;
+                root.drumPos = wrapped;
+                root.drumTarget = wrapped;
+            }
         }
         SequentialAnimation {
             NumberAnimation {
@@ -246,17 +274,9 @@ Item {
             moveRelative(deltaY > 0 ? -1 : 1);
     }
 
-    // The capsule: a body one step above the band, so the strip reads as one
-    // object and not as dots scattered along the edge.
-    Rectangle {
-        anchors.fill: parent
-        radius: QsmShellStyle.Style.radiusMd
-        color: Theme.surface
-    }
-
-    // The selected slot's lens: a pill with the number, stretched down into a
-    // long capsule while the workspace has windows. It sits under the slots'
-    // layers, which paint nothing but their hover tint.
+    // The lens: a pill with the number, stretched down into a long capsule
+    // while the workspace has windows. It sits at the strip's centre and under
+    // the dots' layers, which paint nothing but their hover tint.
     Rectangle {
         id: chip
 
@@ -264,7 +284,7 @@ Item {
         width: Theme.railWorkspaceChipWidth + 2 * grown
         height: Theme.railWorkspaceChipHeight + root.rolloutHeight + 2 * grown
         x: QsmShellStyle.Style.snap((parent.width - width) / 2, chip)
-        y: root.lensY(root.lensPos) + (Theme.railWorkspaceSlot - Theme.railWorkspaceChipHeight) / 2 - grown
+        y: QsmShellStyle.Style.snap(root.lensCentre - Theme.railWorkspaceChipHeight / 2, chip) - grown
         radius: QsmShellStyle.Style.radiusPill
         visible: root.hasActive
         color: QsmShellStyle.Style.tone(Theme.accent, root.hoveredIndex === root.activeIndex,
@@ -284,13 +304,26 @@ Item {
     }
 
 
+    // The stretched part of the lens hangs over the dots below it, so it also
+    // keeps the pointer from reaching them through the gaps between its rows.
+    MouseArea {
+        x: chip.x
+        y: chip.y + chip.grown + Theme.railWorkspaceChipHeight
+        width: chip.width
+        height: root.rolloutHeight
+        hoverEnabled: true
+        acceptedButtons: Qt.AllButtons
+        visible: height > 0
+    }
+
     // The icons hang below the number inside the lens, clipped to the lens's
     // stretched height.
     Item {
         id: bodyBox
 
         x: QsmShellStyle.Style.snap((parent.width - width) / 2, bodyBox)
-        y: root.lensY(root.lensPos) + Theme.railWorkspaceSlot
+        y: QsmShellStyle.Style.snap(root.lensCentre - Theme.railWorkspaceChipHeight / 2, bodyBox)
+            + (Theme.railWorkspaceSlot + Theme.railWorkspaceChipHeight) / 2
         width: Theme.railWorkspaceChipWidth
         height: Math.max(0, root.rolloutHeight - root.bodyInset)
         clip: true
@@ -410,6 +443,9 @@ Item {
         }
     }
 
+    // The ring of dots, nearest drawn on top. Each is one pointer target as
+    // wide as the rail (and across the band's gutter to the true screen edge)
+    // and one hit tall; its mark sits in the middle of it.
     Repeater {
         id: slots
         model: root.slotCount
@@ -425,12 +461,27 @@ Item {
             readonly property bool urgent: workspace?.urgent ?? false
             readonly property real growth: dotLayer.growth
 
-            // Two device pixels, whatever the scale.
-            readonly property real ringStroke: 2 * QsmShellStyle.Style.stroke(QsmShellStyle.Style.hairline, slot)
+            readonly property real offset: root.ringOffset(index)
+            readonly property real distance: Math.abs(offset)
+            // The lens covers its own dot; the dot steps aside instead of
+            // doubling under it, and comes back the moment the lens leaves.
+            readonly property real cover: root.hasActive && index === root.activeIndex
+                ? Math.max(0, Math.min(1, (distance - 0.35) / 0.4)) : 1
+            readonly property real fade: root.atDistance(Theme.railDrumOpacity, distance) * cover
+            readonly property real haze: root.atDistance(Theme.railDrumHaze, distance)
+            readonly property real markSize: QsmShellStyle.Style.snap(root.atDistance(Theme.railDrumSize, distance), slot)
+            // Two device pixels on a near dot, one on a far one, so a small
+            // outline stays a ring and does not fill in.
+            readonly property real ringStroke: QsmShellStyle.Style.stroke(markSize >= QsmShellStyle.Style.space2 - QsmShellStyle.Style.spaceTight
+                ? 2 * QsmShellStyle.Style.hairline : QsmShellStyle.Style.hairline, slot)
 
-            y: root.slotY(index)
+            y: QsmShellStyle.Style.snap(root.lensCentre + offset * root.pitch - height / 2, slot)
+            z: -distance
             width: parent.width
-            height: Theme.railWorkspaceSlot
+            // A dot too far round the drum to be a target is only its mark,
+            // so its faint tail does not lie over the next group.
+            height: distance <= Theme.railDrumReachable ? Theme.railDrumHit : markSize
+            visible: fade > 0.005
 
             activeFocusOnTab: true
             Accessible.role: Accessible.Button
@@ -443,59 +494,74 @@ Item {
             Keys.onEnterPressed: root.activate(slot.workspaceId)
             Keys.onSpacePressed: root.activate(slot.workspaceId)
 
-            // Centred by arithmetic, never by `anchors.centerIn`: that
-            // rounds to a whole LOGICAL pixel, which is between two device
-            // pixels at 1.25 once hover has grown the body.
-            Rectangle {
-                id: dotMark
+            // The mark and the urgent ring are one fading, hazing layer. Centred
+            // by arithmetic, never by `anchors.centerIn`: that rounds to a
+            // whole LOGICAL pixel, which is between two device pixels at 1.25
+            // once hover has grown the body.
+            Item {
+                id: mark
 
-                x: QsmShellStyle.Style.snap((parent.width - width) / 2, dotMark)
-                y: QsmShellStyle.Style.snap((parent.height - height) / 2, dotMark)
-                width: Theme.railWorkspaceDot + 2 * dotLayer.growth
-                height: width
-                radius: QsmShellStyle.Style.radiusPill
-                // Shape carries the state and colour repeats it: occupied
-                // is a filled dot, empty a ring, urgent a filled dot with
-                // a ring around it (below). Hover and press recolour it
-                // through the one state matrix, so it answers like every
-                // other target.
-                readonly property color ink: QsmShellStyle.Style.tone(
-                    slot.urgent ? Theme.danger : Theme.textMuted,
-                    dotLayer.hovered, dotLayer.pressed, false, true, Theme.accent)
-                readonly property bool filled: slot.occupied || slot.urgent
-                color: filled ? ink : "transparent"
-                border.width: filled ? 0 : slot.ringStroke
-                border.color: ink
-                // The lens covers its slot; the dot steps aside instead of
-                // doubling under it, and comes back the moment the lens leaves.
-                visible: !(root.hasActive && Math.abs(root.lensPos - slot.index) < 0.5)
-            }
+                width: parent.width
+                height: Theme.railDrumHit
+                y: (slot.height - height) / 2
+                opacity: slot.fade
+                layer.enabled: slot.haze > 0
+                layer.effect: MultiEffect {
+                    blurEnabled: true
+                    blurMax: QsmShellStyle.Style.space1
+                    blur: slot.haze
+                }
 
-            // An urgent workspace asks for attention, so its dot wears a
-            // ring as well as the danger colour.
-            Rectangle {
-                id: ringMark
+                Rectangle {
+                    id: dotMark
 
-                x: QsmShellStyle.Style.snap((parent.width - width) / 2, ringMark)
-                y: QsmShellStyle.Style.snap((parent.height - height) / 2, ringMark)
-                width: Theme.railWorkspaceRing + 2 * dotLayer.growth
-                height: width
-                radius: QsmShellStyle.Style.radiusPill
-                visible: slot.urgent && !(root.hasActive && Math.abs(root.lensPos - slot.index) < 0.5)
-                color: "transparent"
-                border.width: slot.ringStroke
-                border.color: Theme.danger
+                    x: QsmShellStyle.Style.snap((parent.width - width) / 2, dotMark)
+                    y: QsmShellStyle.Style.snap((parent.height - height) / 2, dotMark)
+                    width: slot.markSize + 2 * dotLayer.growth
+                    height: width
+                    radius: QsmShellStyle.Style.radiusPill
+                    // Shape carries the state and colour repeats it: occupied
+                    // is a filled dot, empty an outline, urgent a filled dot
+                    // with a ring around it (below). Hover and press recolour
+                    // it through the one state matrix, so it answers like
+                    // every other target.
+                    readonly property color ink: QsmShellStyle.Style.tone(
+                        slot.urgent ? Theme.danger : Theme.textMuted,
+                        dotLayer.hovered, dotLayer.pressed, false, true, Theme.accent)
+                    readonly property bool filled: slot.occupied || slot.urgent
+                    color: filled ? ink : "transparent"
+                    border.width: filled ? 0 : slot.ringStroke
+                    border.color: ink
+                }
+
+                // An urgent workspace asks for attention, so its dot wears a
+                // ring as well as the danger colour.
+                Rectangle {
+                    id: ringMark
+
+                    x: QsmShellStyle.Style.snap((parent.width - width) / 2, ringMark)
+                    y: QsmShellStyle.Style.snap((parent.height - height) / 2, ringMark)
+                    width: QsmShellStyle.Style.snap(2 * slot.markSize, ringMark) + 2 * dotLayer.growth
+                    height: width
+                    radius: QsmShellStyle.Style.radiusPill
+                    visible: slot.urgent
+                    color: "transparent"
+                    border.width: slot.ringStroke
+                    border.color: Theme.danger
+                }
             }
 
             // The slot is the hit area, as wide as the rail and across the
             // band's gutter to the true screen edge like every rail cell.
             // Hover grows and recolours what is in it (09): the dot, or the
-            // chip on the active slot; a press recolours without resizing.
+            // lens on the active dot; a press recolours without resizing. A
+            // dot too far round the drum to see is no target.
             QsmShellComponents.StateLayer {
                 id: dotLayer
                 anchors.fill: parent
                 anchors.leftMargin: -Theme.railGutter
-                extent: slot.active ? Theme.railWorkspaceChipHeight : Theme.railWorkspaceDot
+                interactive: slot.distance <= Theme.railDrumReachable
+                extent: slot.active ? Theme.railWorkspaceChipHeight : slot.markSize
                 hoverScale: slot.active ? QsmShellStyle.Motion.hoverScale
                     : Theme.railWorkspaceDotHoverScale
                 focused: slot.activeFocus

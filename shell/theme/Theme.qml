@@ -241,20 +241,19 @@ QtObject {
     // The rail clock: time above a smaller numeric date.
     readonly property int railClockDigitSize: QsmShellStyle.Style.textLg
     readonly property int railClockDateSize: QsmShellStyle.Style.textSm
+    // A rail separator: half the capsule long, two device pixels thick.
+    readonly property int railSeparatorWidth: railWidth / 2
     // A tray menu's separators are short lines.
     readonly property int menuSeparatorWidth: 96
     // How many connected devices the one BLE cell splits into before it stops
     // subdividing.
     readonly property int railDeviceMax: 4
-    // The workspace strip: one capsule of the rail's width holding every
-    // workspace, one slot each, tiled with no gap. The marks scale with the
-    // rail's Control size from the md they were drawn at and round UP to a
-    // multiple of 8: centred in the 48 capsule an odd-pixel mark (12 or 20) would
-    // sit half a device pixel off the axis at 1.25, and a mark never reads small.
-    // A slot shows an empty
-    // ring or a filled dot; the selected one wears the accent chip with the
-    // number, which slides between slots. A slot is one cell high (32), over
-    // the 24 pointer floor, so the chip and the hover growth stay inside it.
+    // The workspace strip: a drum of all ten workspaces as plain dots around
+    // one fixed lens. The lens (the accent chip with the number, and the window
+    // rollout hanging from it) never moves; the dots scroll past it as a ring.
+    // The marks scale with the rail's Control size from the md they were drawn
+    // at and round UP to a multiple of 8, so a mark centred in the 48 capsule
+    // never sits half a device pixel off the axis at 1.25.
     readonly property real railScale: QsmShellStyle.Style.size("Control", "lg")
         / QsmShellStyle.Style.size("Control", "md")
     function railMarkSize(px: real): int {
@@ -262,13 +261,22 @@ QtObject {
     }
     readonly property int railWorkspaceSlot: railCellHeight
     readonly property int railWorkspaceSlots: 10
-    readonly property int railWorkspaceDot: railMarkSize(QsmShellStyle.Style.space2)
     readonly property int railWorkspaceChipWidth: railMarkSize(QsmShellStyle.Style.space5)
     readonly property int railWorkspaceChipHeight: railMarkSize(QsmShellStyle.Style.badgeHeight)
-    // The ring around an urgent workspace's dot.
-    readonly property int railWorkspaceRing: railMarkSize(QsmShellStyle.Style.iconSm)
-    // The dot is so small that the library's hover growth would be under half
-    // a pixel, so it grows by half again to be seen at all.
+    // A dot's pointer target: one step over the 24 floor, centred on the dot.
+    // The ring's pitch is the strip's own, from the room its host gives it.
+    readonly property int railDrumHit: QsmShellStyle.Style.space5
+    // The drum by distance from the lens, in dots (0 the lens, 5 the far side
+    // of the ring): how big a dot is, how opaque and how hazy. The rollout
+    // hangs over the dots below the lens and never moves them.
+    readonly property var railDrumSize: [QsmShellStyle.Style.space2, QsmShellStyle.Style.space2,
+        QsmShellStyle.Style.space1 + QsmShellStyle.Style.spaceTight, QsmShellStyle.Style.space1,
+        QsmShellStyle.Style.space1, QsmShellStyle.Style.space1]
+    readonly property var railDrumOpacity: [1, 0.9, 0.7, 0.45, 0.2, 0]
+    readonly property var railDrumHaze: [0, 0, 0.1, 0.3, 0.6, 1]
+    // Beyond this distance a dot is too faint to be a target.
+    readonly property real railDrumReachable: 4.4
+    // The hover growth of a dot: its few pixels would grow by under one.
     readonly property real railWorkspaceDotHoverScale: QsmShellStyle.Style.reducedMotion ? 1 : 1.5
     // The bell corner: a bulge that retracts when everything is read, the glyph
     // resting on the band's corner; its menu is a top-right modal.
