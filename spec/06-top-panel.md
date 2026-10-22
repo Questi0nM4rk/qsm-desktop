@@ -16,7 +16,8 @@ Shift+Tab, Left/Right and Home/End all run the library's own selection action, s
 the group's keys mean what they mean everywhere else, and navigation stops at the
 visible ends instead of wrapping. The panel opens focused on the group; Down
 enters the selected tab's content, where that content's own keyboard handling
-takes over. Escape closes. This is an explicit owner contract for THIS group,
+takes over. Escape closes. The focus ring marks the picked tab while the group has keyboard focus:
+from a key open, or from the first key after a pointer open; a click hides it. This is an explicit owner contract for THIS group,
 not the library's default.
 
 ## Idle affordance + open
@@ -58,13 +59,12 @@ not the library's default.
   top-right bell (04, owner 2026-10-17).
 - **RATIFIED (2026-10-16, owner)**: the current tab is `accent` text on an `accent` 12 percent
   pill, no underline bar. Panel cards are `surface` with radius 12.
-- **TRIAL (2026-10-17, owner: "try all three")**: dashboard cards carry the library Card's
-  edge separation (the silhouette's own treatment, inside the card's edge), each card's
-  glyph takes its pastel (weather `info`, the resource rings
-  `success`/`warning`/`danger` by load; the distro mark is `textMuted` and the network graph is
-  `text` and `textMuted`, because the accent is for what is current, never a passive reading), and
-  `surface` stands one ladder step off the band (11-theme). The owner judges which of the three
-  stay.
+- **DEFAULT (2026-10-22, owner: rebuild to the research and the skills)**: dashboard cards carry
+  the library Card's edge separation (the silhouette's own treatment, inside the card's edge) and
+  `surface` stands one ladder step off the band (11-theme). A card's glyph is neutral (`textMuted`:
+  weather, distro mark, network graph) and a load ring or meter is `text` until 70 percent, `warning`
+  to 90 and `danger` above (`Theme.loadTone`), because the accent is for what is current and a
+  colour appears only when its state is true.
 
 ## Tabs
 
@@ -98,7 +98,7 @@ center is not a tab (owner 2026-10-17): it is the bell's menu in the top-right c
   columns and the battery over the third.
 - **RULED (2026-10-19, owner: "Pridej trochu shadows, separations. At to nevypada vibecoded")**
   Performance cards take the edge separation like the dashboard's; the battery shows its level
-  as a thin meter (success, or danger below 15 percent and not charging) beside text on the
+  as a thin meter (`text`, or `danger` below 15 percent and not charging) beside text on the
   plain card, not as a tinted tank. Every load ring and meter reads `Theme.loadTone`.
 - **DEFAULT (2026-08-16)** performance sources: CPU temp from hwmon (k10temp/coretemp
   autodetect), GPU from nvml or amdgpu hwmon (autodetect), usage from /proc/stat and the GPU
@@ -123,17 +123,20 @@ center is not a tab (owner 2026-10-17): it is the bell's menu in the top-right c
 
 ## Numbers (RATIFIED 2026-08-16)
 
-- Panel preferred outer footprint **864x556 logical px**, clamped to the scene's
-  available viewport. The width is a multiple of 8, so both edges land on whole device pixels
-  when the panel is centred between the rail band and the monitor's right edge, and its content
-  (the width less the padding, 832) splits into three equal card columns of 272; the tab bar's
-  four segments are whole device pixels wide (the library's `Segmented`), and the height leaves
-  two card rows of 228.
+- Panel preferred outer footprint **848x536 logical px**, clamped to the scene's
+  available viewport. The panel is a compact rollout like the rail's (owner: "vsechny rollouts
+  jsou moc daleko a maji moc okoly, zmensil bych to na polovinu"): `Theme.panelPadding` (8, half of
+  the shell's rollout padding) all round, its free corners at `Theme.panelRadius` (20, the body
+  radius plus that padding) so every card inside stays concentric. The width is a multiple of 8,
+  so both edges land on whole device pixels when the panel is centred between the rail band and
+  the monitor's right edge, and its content (the width less the padding, 832) splits into three
+  equal card columns of 272; the tab bar's four segments are whole device pixels wide (the
+  library's `Segmented`), and the height leaves two card rows of 228.
   All four tabs share that footprint, a stable navigation strip and one content box: the tab
-  bar's left and right edge, one `space3` below it. A tab never centres itself in that box;
-  Dashboard and Performance fill it with cards, Media and Workspaces are one card that fills it
-  with their content in its middle. Cards are `Theme.panelGap` (8) apart and share one
-  padding, `rolloutPadding`. Tab choice, empty/missing data and content length never resize the outer
+  bar's left and right edge, one `Theme.panelGap` below it. A tab never centres itself in that
+  box; Dashboard and Performance fill it with cards, Media and Workspaces are one card that fills
+  it with their content in its middle. Cards are `Theme.panelGap` (8) apart, as far from the
+  panel's edge, and share one padding, `rolloutPadding`. Tab choice, empty/missing data and content length never resize the outer
   body. Dashboard and Performance fit the body without scrolling (owner, 2026-10-18:
   "rozsir ho tak, aby dashboard a performance nemuseli scrollovat"); only a screen too short for the clamp scrolls. Model-backed tabs keep their own scrolling route. The tab bar baseline is **48px**.
 - Dots handle: 8 px tall, width = four 2.4 px dots + three 3.2 px gaps + padding 0 4 (27.2 px),

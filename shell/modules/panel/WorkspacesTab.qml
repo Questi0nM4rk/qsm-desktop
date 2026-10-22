@@ -75,7 +75,7 @@ Item {
 
     // Down from the tab bar (06): the first tile.
     function focusFirst(): void {
-        tiles.itemAt(0)?.forceActiveFocus();
+        tiles.itemAt(0)?.forceActiveFocus(Qt.TabFocusReason);
     }
 
     // Keyboard focus moves along the strip, so the strip follows it.
@@ -151,7 +151,7 @@ Item {
                         if (carry && tile.tileClients.length > 0)
                             root.moveWindow(tile.tileClients[0].address, root.workspaces[tile.index + delta].id);
                         else
-                            target.forceActiveFocus();
+                            target.forceActiveFocus(Qt.TabFocusReason);
                     }
                     Keys.onReturnPressed: modelData.activate()
                     Keys.onEnterPressed: modelData.activate()

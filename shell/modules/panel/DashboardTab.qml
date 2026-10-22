@@ -36,7 +36,7 @@ GridLayout {
     function focusFirst(): void {
         for (const button of [previousButton, playButton, nextButton]) {
             if (button.enabled) {
-                button.forceActiveFocus();
+                button.forceActiveFocus(Qt.TabFocusReason);
                 return;
             }
         }
@@ -200,8 +200,7 @@ GridLayout {
                 QsmShellComponents.SvgIcon {
                     name: "sunset"
                     size: QsmShellStyle.Style.iconXxl
-                    // The weather card's pastel: sky (info), a notice, not a status.
-                    color: Theme.info
+                    color: Theme.textMuted
                 }
 
                 QsmShellComponents.Prose {

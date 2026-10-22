@@ -42,7 +42,7 @@ Item {
     function focusFirst(): void {
         const first = artwork.canSeek ? artwork : shuffleButton;
         if (first.enabled)
-            first.forceActiveFocus();
+            first.forceActiveFocus(Qt.TabFocusReason);
     }
 
     QsmShellComponents.Card {

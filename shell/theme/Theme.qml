@@ -81,10 +81,11 @@ QtObject {
     property color success: role("success")
     property color warning: role("warning")
     property color danger: role("danger")
-    // The one load colour for every ring and meter: success until 70 percent,
-    // warning to 90, danger above (the rail's readout thresholds).
+    // The one load colour for every ring and meter: the text role until 70
+    // percent, warning to 90, danger above (the rail's readout thresholds). A
+    // reading at rest is neutral; a colour appears only when the state is true.
     function loadTone(value: real): color {
-        return value >= 0.9 ? danger : value >= 0.7 ? warning : success;
+        return value >= 0.9 ? danger : value >= 0.7 ? warning : text;
     }
 
     // Theme-swap choreography: the library has no theme swap, so the fade is
@@ -169,21 +170,27 @@ QtObject {
 
     // ── Top panel ──────────────────────────────────────────────────────
     // One outer footprint; tab content owns overflow, never the shell body. The
-    // width is a multiple of 8, so the body is centred between the rail band and
-    // the monitor's right edge with both edges on whole device pixels at 1.25;
-    // the height leaves two card rows of one height a multiple of 4.
-    readonly property int panelWidth: 864
-    readonly property int panelHeight: 556
+    // panel is a compact rollout like the rail's: half of the shell's padding all
+    // round, cards and tab bar one gap (8) apart, and the corner radius that keeps
+    // every card concentric. The width is a multiple of 8, so the body is centred
+    // between the rail band and the monitor's right edge with both edges on whole
+    // device pixels at 1.25, and its content splits into three card columns of
+    // 272; the height leaves two card rows of 228.
+    readonly property int panelPadding: railPopoutPadding
+    readonly property int panelRadius: railPopoutRadius
+    readonly property int panelWidth: 848
+    readonly property int panelHeight: 536
     readonly property int panelNavigationWidth: 620
     readonly property string panelTabBarSize: "lg"
     readonly property real panelTabBarHeight: QsmShellStyle.Style.size("Segmented", panelTabBarSize)
-    // Cards of a tab sit this far apart, in both directions.
+    // Cards of a tab, and the tab bar above them, sit this far apart, in both
+    // directions.
     readonly property int panelGap: QsmShellStyle.Style.space2
     // The box every tab fills: the same left and right edge as the tab bar and
-    // one step under it, so choosing a tab never moves where content starts.
-    readonly property int panelContentWidth: panelWidth - QsmShellStyle.Style.rolloutPadding * 2
-    readonly property int panelContentHeight: panelHeight - QsmShellStyle.Style.rolloutPadding * 2
-        - panelTabBarHeight - QsmShellStyle.Style.space3
+    // one gap under it, so choosing a tab never moves where content starts.
+    readonly property int panelContentWidth: panelWidth - panelPadding * 2
+    readonly property int panelContentHeight: panelHeight - panelPadding * 2
+        - panelTabBarHeight - panelGap
     // Dashboard tab: three columns. The middle one is the month calendar's own
     // width plus its card padding; the user card is the first and the media card
     // fills what is left.

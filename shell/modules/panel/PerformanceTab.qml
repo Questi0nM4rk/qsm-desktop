@@ -413,7 +413,7 @@ ColumnLayout {
                     Layout.fillWidth: true
                     value: batteryCard.fraction
                     // The popout's own rule: danger only when low and not charging.
-                    fill: batteryCard.fraction < Theme.lowBatteryFraction && !batteryCard.charging ? Theme.danger : Theme.success
+                    fill: batteryCard.fraction < Theme.lowBatteryFraction && !batteryCard.charging ? Theme.danger : Theme.text
                 }
 
                 Item { Layout.fillHeight: true }

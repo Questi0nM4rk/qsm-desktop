@@ -77,6 +77,7 @@ Item {
         rolloutId: "panel"
         edges: ["top"]
         tier: "large"
+        radius: Theme.panelRadius
         // A key, the IPC and a launcher command show the panel in one frame; the
         // pointer on its handle makes it roll out.
         instantReveal: !ShellState.modalByPointer
@@ -107,8 +108,8 @@ Item {
             ColumnLayout {
                 id: panelColumn
                 anchors.fill: parent
-                anchors.margins: QsmShellStyle.Style.rolloutPadding
-                spacing: QsmShellStyle.Style.space3
+                anchors.margins: Theme.panelPadding
+                spacing: Theme.panelGap
 
                 QsmShellComponents.ScrollArea {
                     id: navigation
@@ -240,9 +241,11 @@ Item {
         }
     }
 
+    // A key, the IPC or a command opened it: focus rings on the tab bar. The
+    // pointer's handle opened it: the pointer already says where the person is.
     onActiveChanged: {
         if (active)
-            tabBar.forceActiveFocus();
+            tabBar.forceActiveFocus(ShellState.modalByPointer ? Qt.OtherFocusReason : Qt.TabFocusReason);
     }
 
     Component { id: dashboardTab; DashboardTab {} }
