@@ -14,15 +14,13 @@ import qs.theme
 // Layout, top to bottom:
 //
 //   [ swatch ][ hex ][ copy ]      the current colour, the LARGE row.
-//   ───────────────────────────    clicking the swatch starts a pick.
-//   [ swatch ][ hex ][ copy ]      history, smaller rows, scrollable.
-//   [ swatch ][ hex ][ copy ]
-//   ───────────────────────────
-//   accent generation             derived tokens from the current colour.
-//
-// The dividers are the LEFT MENU'S line — same three tokens the rail's group
-// separator uses, drawn full width instead of inset into a 40px band. A second
-// surface wanting it should extract a shared component; one does not.
+//                                  clicking the swatch starts a pick.
+//   History                        every pick as a swatch, newest first, in a
+//   [][][][][][][][][]             grid that holds all of them: nothing scrolls,
+//   [][][][][][][][][]             so no edge fade ever covers a colour.
+//   Accent set                     derived tokens from the current colour.
+//   [][][][][]
+//   [ Open colour editor ]
 //
 // The swatch is the ONLY way to start a pick, so the rail cell that opens this
 // menu is hover-only — the same reason the `zap` cell is (03: "nothing for a
@@ -35,8 +33,8 @@ Item {
     id: root
 
     // The height of the rollout this menu hangs off, handed down by the host.
-    // The menu FILLS it rather than hugging its content: a scroll area that
-    // sized itself to its rows would grow the surface instead of scrolling.
+    // The menu FILLS it rather than hugging its content, so its seam with the
+    // column it hangs off is one straight line.
     property real spanHeight: 0
 
     // What a control here did, and which control did it. Every actionable row
@@ -112,16 +110,11 @@ Item {
         }
     }
 
-    // One [swatch][hex][copy] line. The SAME row at two sizes: the current
-    // colour is the large one, history entries are the small one, and making
-    // them one component is what keeps them reading as the same kind of thing.
+    // The current colour: [swatch][hex][copy]. The swatch starts a pick.
     component ColorLine: RowLayout {
         id: line
 
         required property color value
-        property bool large: false
-        // The large row's swatch starts a pick; a history row's selects.
-        property bool picks: false
         // FALSE = there is no colour here yet, so the swatch is an empty frame
         // and there is no hex and no copy. Measured on the live menu: with
         // nothing picked the row printed #21142B -- Theme.surface, the card's
@@ -131,7 +124,6 @@ Item {
         property bool filled: true
 
         readonly property string text: root.hex(line.value)
-        readonly property real box: line.large ? QsmShellStyle.Style.space6 : QsmShellStyle.Style.space5
         readonly property Item swatch: swatchControl
         // What the copy button is acknowledging right now, read off the glyph
         // it is actually painting.
@@ -139,31 +131,21 @@ Item {
 
         spacing: QsmShellStyle.Style.space2
 
-        // The row the derived tokens are about carries the mark, so "which
-        // colour is this menu working on" is answerable from the picture. An
-        // unfilled row is an empty SLOT, not a very dark colour, which is the
-        // distinction ColorSwatch.empty exists for. The ring is drawn in the
-        // ink the swatch measured against its own sample, so it stays visible
-        // on a swatch that happens to be the accent.
+        // An unfilled row is an empty SLOT, not a very dark colour, which is
+        // the distinction ColorSwatch.empty exists for.
         QsmShellComponents.ColorSwatch {
             id: swatchControl
-            size: line.box
+            size: QsmShellStyle.Style.space6
             sample: line.filled ? line.value : "transparent"
             empty: !line.filled
-            selected: line.filled && !line.large && line.text === root.hex(root.base)
             onClicked: {
-                if (line.picks) {
-                    // An empty swatch is a real button with no value to
-                    // report, and it must not invent one from the card's own
-                    // background.
-                    root.interacted("pick", line.filled
-                        ? { "target": "swatch", "value": line.text }
-                        : { "target": "swatch" });
-                    ColorPickService.pick();
-                } else if (line.filled) {
-                    root.chosen = line.text;
-                    root.interacted("select", { "target": "history", "value": line.text });
-                }
+                // An empty swatch is a real button with no value to
+                // report, and it must not invent one from the card's own
+                // background.
+                root.interacted("pick", line.filled
+                    ? { "target": "swatch", "value": line.text }
+                    : { "target": "swatch" });
+                ColorPickService.pick();
             }
         }
 
@@ -174,10 +156,8 @@ Item {
             Layout.fillWidth: true
             visible: line.filled
             text: line.text
-            font.pixelSize: line.large ? QsmShellStyle.Style.textMd : QsmShellStyle.Style.textSm
-            // The small (history) row keeps its original regular weight;
-            // the large row already matches reading's bold default.
-            font.weight: line.large ? QsmShellStyle.Style.weightBold : QsmShellStyle.Style.weightRegular
+            font.pixelSize: QsmShellStyle.Style.textMd
+            font.weight: QsmShellStyle.Style.weightBold
         }
 
         // Holds the row's shape while empty, so the swatch does not slide
@@ -187,9 +167,9 @@ Item {
             visible: !line.filled
         }
 
-        // Copy is its own control on every row. It
-        // ACKNOWLEDGES: the glyph becomes a tick in the success colour for a
-        // beat, because a clipboard write is otherwise invisible.
+        // Copy is its own control. It ACKNOWLEDGES: the glyph becomes a tick in
+        // the success colour for a beat, because a clipboard write is
+        // otherwise invisible.
         QsmShellComponents.IconButton {
             id: copyButton
             readonly property bool justCopied: ColorPickService.copied === line.text
@@ -211,108 +191,83 @@ Item {
         anchors.fill: parent
         spacing: QsmShellStyle.Style.space2
 
-        // --- the current colour ---------------------------------------------
-        QsmShellComponents.Prose {
-            role: "metadata"
-            Layout.fillWidth: true
-            visible: !root.has
-            wrapMode: Text.WordWrap
-            text: ColorPickService.busy
-                ? "Pick a pixel, or Escape to cancel"
-                : "No colour yet — click the square to read any pixel on any monitor"
-        }
-
         // Present even with nothing picked: it is the pick button, and an empty
         // menu with no way to fill it is a dead end.
         ColorLine {
             id: currentLine
             Layout.fillWidth: true
             value: root.base
-            large: true
-            picks: true
             filled: root.has
         }
 
-        // Only while it matters. Measured: the fixed chrome left the history
-        // scroll region about one row, and a line telling you to click the
-        // square you can already see is the cheapest of it to give up.
-        QsmShellComponents.Prose {
-            id: busyLine
-            role: "metadata"
-            Layout.fillWidth: true
-            visible: ColorPickService.busy || !root.has
-            text: ColorPickService.busy ? "Picking…" : "Click the square to pick"
-        }
-
-        Item { Layout.preferredHeight: QsmShellStyle.Style.space3 }
-
         // --- history ---------------------------------------------------------
-        QsmShellComponents.Prose {
-            role: "metadata"
+        RowLayout {
             Layout.fillWidth: true
-            text: ColorPickService.history.length > 0
-                ? `History · ${ColorPickService.history.length}`
-                : "History"
+
+            QsmShellComponents.Prose {
+                role: "metadata"
+                Layout.fillWidth: true
+                text: "History"
+            }
+
+            // Only while it matters, in the label's own row so the menu never
+            // grows for it.
+            QsmShellComponents.Prose {
+                id: busyLine
+                role: "metadata"
+                visible: ColorPickService.busy
+                text: "Picking…"
+            }
         }
 
-        // ALWAYS present, and the ONE item with fillHeight.
-        //
-        // Measured on the live menu: with the list hidden, ColumnLayout spread
-        // the leftover height through the gaps (15/14/16/11/11/11/11/12px) so
-        // the dividers floated mid-gap instead of tightly separating groups,
-        // and the whole layout reflowed the moment a first colour arrived.
-        // Giving the slack to the scroll region keeps every group at its own
-        // size and the dividers where they belong.
-        // Host, because the cue must be a SIBLING of the view: a declared child
-        // of the ListView lands in its contentItem, positioned from visibleArea
-        // AND carried by the scrolling surface, so it would move twice.
-        Item {
+        // Every swatch the service keeps, in the rows they need, so the grid
+        // has one height whatever the history holds and nothing scrolls: a
+        // scroll area this short ate its own content in edge fades.
+        Flow {
+            id: historyGrid
+
+            readonly property real swatch: QsmShellStyle.Style.space5
+            readonly property int columns: Math.max(1, Math.floor(
+                (Theme.popoutContentWidth + spacing) / (swatch + spacing)))
+            readonly property int rows: Math.ceil(ColorPickService.historyLimit / columns)
+
             Layout.fillWidth: true
-            Layout.fillHeight: true
-            Layout.minimumHeight: 0
+            Layout.preferredHeight: rows * swatch + (rows - 1) * spacing
+            spacing: QsmShellStyle.Style.space1
 
-            ListView {
-                id: historyList
-                anchors.fill: parent
+            // The empty state lives INSIDE the region it describes, so the
+            // region holds its shape either way.
+            QsmShellComponents.Prose {
+                role: "metadata"
+                width: historyGrid.width
+                visible: ColorPickService.history.length === 0
+                wrapMode: Text.WordWrap
+                text: ColorPickService.busy
+                    ? "Pick a pixel, or Escape to cancel"
+                    : "No colour yet — click the square to read any pixel on any monitor"
+                color: QsmShellStyle.Style.recede(QsmShellStyle.Style.textMuted)
+            }
 
-                // Clip only while there is something to scroll. A permanent clip
-                // on a list whose rows already fit cuts nothing but the swatch's
-                // hover growth — measured at 1.7px off every edge row
-                // (scripts/ui-guard), which is the response the pointer came for.
-                clip: contentHeight > height
-                spacing: QsmShellStyle.Style.space1
-                boundsBehavior: Flickable.StopAtBounds
-                model: ColorPickService.history
+            Repeater {
+                model: ColorPickService.history.slice(0, ColorPickService.historyLimit)
 
-                // The empty state lives INSIDE the region it describes, so the
-                // region holds its shape either way.
-                QsmShellComponents.Prose {
-                    role: "metadata"
-                    anchors.left: parent.left
-                    anchors.top: parent.top
-                    text: "Picks are kept here"
-                    color: QsmShellStyle.Style.recede(QsmShellStyle.Style.textMuted)
-                    visible: ColorPickService.history.length === 0
-                }
+                QsmShellComponents.ColorSwatch {
+                    id: entry
 
-                delegate: ColorLine {
                     required property string modelData
+                    readonly property string text: root.hex(entry.sample)
 
-                    width: historyList.width
-                    value: modelData
+                    size: historyGrid.swatch
+                    target: historyGrid.swatch
+                    sample: modelData
+                    selected: entry.text === root.hex(root.base)
+                    onClicked: {
+                        root.chosen = entry.text;
+                        root.interacted("select", { "target": "history", "value": entry.text });
+                    }
                 }
             }
-
-            // The same idiom from the library: fade plus a capped mark, read
-            // from visibleArea, fading out at rest instead of sitting at a
-            // permanent 0.4.
-            QsmShellComponents.ScrollCue {
-                view: historyList
-                fadeColor: Theme.band
-            }
         }
-
-        Item { Layout.preferredHeight: QsmShellStyle.Style.space3 }
 
         // --- accent generation ------------------------------------------------
         // Accent generation for the picked colour. The
@@ -323,6 +278,7 @@ Item {
         QsmShellComponents.Prose {
             role: "metadata"
             Layout.fillWidth: true
+            visible: root.has
             text: "Accent set"
         }
 
@@ -334,7 +290,6 @@ Item {
         // the affordance that does the copy.
         RowLayout {
             Layout.fillWidth: true
-            Layout.bottomMargin: QsmShellStyle.Style.space1
             visible: root.has
             spacing: QsmShellStyle.Style.space1
 
@@ -351,6 +306,7 @@ Item {
                     readonly property bool justCopied: ColorPickService.copied === token.hex
 
                     size: QsmShellStyle.Style.space5
+                    target: QsmShellStyle.Style.space5
                     sample: token.modelData
                     onClicked: {
                         root.interacted("copy", { "target": "accent", "value": token.hex });
@@ -370,7 +326,6 @@ Item {
                     }
                 }
             }
-
         }
 
         // --- the editor ------------------------------------------------------
@@ -399,5 +354,7 @@ Item {
             wrapMode: Text.WordWrap
             text: "No colour editor — install oklch-color-picker"
         }
+
+        Item { Layout.fillHeight: true }
     }
 }

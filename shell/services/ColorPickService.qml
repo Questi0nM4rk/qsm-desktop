@@ -30,7 +30,8 @@ QtObject {
     // card and the centre never retype the literal.
     readonly property string notifyAppName: "Colour picker"
 
-    readonly property int historyLimit: 24
+    // What the menu's history grid holds: two rows of nine swatches.
+    readonly property int historyLimit: 18
     readonly property var history: ShellState.colorHistory
 
     // A repeat pick MOVES to the front rather than appearing twice: the same
