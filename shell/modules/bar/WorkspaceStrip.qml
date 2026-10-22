@@ -116,6 +116,11 @@ Item {
     readonly property real pitch: Math.max(Theme.railDrumHit,
         QsmShellStyle.Style.snap((height - Theme.railDrumHit) / 8, root))
 
+    // The lens with its rollout is one block and the block is centred in the
+    // capsule: the number rises as the icons open below it. The dots stay put.
+    readonly property real lensTop: QsmShellStyle.Style.snap(
+        lensCentre - (Theme.railWorkspaceChipHeight + rolloutHeight) / 2, root)
+
     implicitWidth: Theme.railWidth
 
     // A table read at a distance in dots, linear between the stops.
@@ -274,7 +279,7 @@ Item {
             moveRelative(deltaY > 0 ? -1 : 1);
     }
 
-    // The capsule every rail item is, in the surface role, under the dots
+    // The capsule every rail item is, in a body sunk darker than the band, under the dots
     // (they stack at z 0 and below).
     Rectangle {
         id: capsule
@@ -284,7 +289,8 @@ Item {
         height: parent.height
         x: QsmShellStyle.Style.snap((parent.width - width) / 2, capsule)
         radius: QsmShellStyle.Style.radiusPill
-        color: QsmShellStyle.Style.surface
+        // Darker than the band so the body sinks into it instead of lifting off.
+        color: Qt.darker(QsmShellStyle.Style.band, 1.4)
         Accessible.ignored: true
     }
 
@@ -298,7 +304,7 @@ Item {
         width: Theme.railWorkspaceChipWidth + 2 * grown
         height: Theme.railWorkspaceChipHeight + root.rolloutHeight + 2 * grown
         x: QsmShellStyle.Style.snap((parent.width - width) / 2, chip)
-        y: QsmShellStyle.Style.snap(root.lensCentre - Theme.railWorkspaceChipHeight / 2, chip) - grown
+        y: root.lensTop - grown
         radius: QsmShellStyle.Style.radiusPill
         visible: root.hasActive
         color: QsmShellStyle.Style.tone(Theme.accent, root.hoveredIndex === root.activeIndex,
@@ -336,7 +342,7 @@ Item {
         id: bodyBox
 
         x: QsmShellStyle.Style.snap((parent.width - width) / 2, bodyBox)
-        y: QsmShellStyle.Style.snap(root.lensCentre - Theme.railWorkspaceChipHeight / 2, bodyBox)
+        y: root.lensTop
             + (Theme.railWorkspaceSlot + Theme.railWorkspaceChipHeight) / 2
         width: Theme.railWorkspaceChipWidth
         height: Math.max(0, root.rolloutHeight - root.bodyInset)
