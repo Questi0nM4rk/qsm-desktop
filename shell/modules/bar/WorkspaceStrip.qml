@@ -17,9 +17,9 @@ import qs.theme
 // stretches DOWN into one long capsule: the number at its top, the workspace's
 // window icons fading in below it (the slots under it move down to make room,
 // so nothing jumps under a resting pointer). Three icons show at once; with
-// more windows the list is a ring buffer the wheel turns over the capsule, and
-// a "+N" count says how many are out of sight. An empty workspace is the number
-// only. A switch settles in about 210 ms; under reduced motion it lands at
+// more windows the list is a ring buffer that follows the focused window (the
+// middle icon) and that the wheel may also turn. An empty workspace is the
+// number only. A switch settles in about 210 ms; under reduced motion it lands at
 // once. Wheel switches, click jumps.
 Item {
     id: root
@@ -79,7 +79,6 @@ Item {
     // What the lens holds. It is a snapshot taken when the lens arrives, so the
     // old capsule empties out under the old slot and not under the new one.
     readonly property int bodyInset: QsmShellStyle.Style.space1
-    readonly property real cueHeight: QsmShellStyle.Style.space5
     property int shownIndex: 0
     property int shownWorkspace: 1
     property var shownApps: []
@@ -88,7 +87,7 @@ Item {
     readonly property int shownRows: Math.min(visibleRows, shownCount)
     function bodyHeight(count: int): real {
         return count === 0 ? 0 : Math.min(visibleRows, count) * Theme.railCellHeight
-            + 2 * bodyInset + (count > visibleRows ? cueHeight : 0);
+            + 2 * bodyInset;
     }
     readonly property real targetHeight: hasActive ? bodyHeight(apps.length) : 0
     readonly property real maxRolloutHeight: bodyHeight(visibleRows + 1)
@@ -128,6 +127,25 @@ Item {
         shownApps = apps;
         ringTarget = 0;
         ringPos = 0;
+        if (ring && focusedIndex >= 0) {
+            ringTarget = followTarget();
+            ringPos = ringTarget;
+        }
+    }
+
+    // The ring follows the focused window: it is the middle icon, the shortest
+    // way round. The wheel may turn the ring away; focus moving again follows.
+    readonly property int focusedIndex: shownApps.findIndex(app => app.activated)
+    function followTarget(): int {
+        const want = (((focusedIndex - 1) % shownCount) + shownCount) % shownCount;
+        let delta = (((want - ringTarget) % shownCount) + shownCount) % shownCount;
+        if (delta > shownCount / 2)
+            delta -= shownCount;
+        return ringTarget + delta;
+    }
+    onFocusedIndexChanged: {
+        if (ring && focusedIndex >= 0 && shownIndex === activeIndex)
+            turnRing(followTarget() - ringTarget);
     }
 
     // The active workspace changed: the three phases of a switch.
@@ -390,25 +408,7 @@ Item {
                 }
             }
         }
-
-        // Past three windows the list loops, so there is no end to cue: the
-        // count of windows out of sight says there is more, in text a reader
-        // can hear and without a motion of its own.
-        QsmShellComponents.Prose {
-            visible: root.ring
-            y: viewport.height
-            opacity: root.revealed
-            width: parent.width
-            height: root.cueHeight
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            role: "reading"
-            color: QsmShellStyle.Style.textOnPrimary
-            text: `+${root.shownCount - root.visibleRows}`
-            Accessible.name: `${root.shownCount - root.visibleRows} more windows`
-        }
     }
-
 
     Repeater {
         id: slots
