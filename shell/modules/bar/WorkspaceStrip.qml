@@ -81,6 +81,7 @@ Item {
     readonly property int bodyInset: QsmShellStyle.Style.space1
     readonly property real cueHeight: QsmShellStyle.Style.space5
     property int shownIndex: 0
+    property int shownWorkspace: 1
     property var shownApps: []
     readonly property int shownCount: shownApps.length
     readonly property bool ring: shownCount > visibleRows
@@ -122,30 +123,46 @@ Item {
 
     function land(): void {
         shownIndex = activeIndex;
+        shownWorkspace = activeWorkspaceId;
         shownApps = apps;
         ringTarget = 0;
         ringPos = 0;
     }
 
+    // The active workspace changed: the three phases of a switch.
     function retarget(): void {
         switchAnim.stop();
         resizeAnim.stop();
         if (QsmShellStyle.Style.reducedMotion) {
             land();
             lensPos = activeIndex;
-            expand = 1;
+            expand = hasActive ? 1 : 0;
             rolloutHeight = targetHeight;
-        } else if (shownIndex !== activeIndex || !hasActive) {
-            switchAnim.start();
         } else {
-            shownApps = apps;
-            resizeAnim.start();
+            switchAnim.start();
         }
     }
 
-    onActiveIndexChanged: retarget()
-    onHasActiveChanged: retarget()
-    onAppsChanged: retarget()
+    // The windows of the active workspace changed: only the rollout resizes. A
+    // switch still under way takes the windows when its lens lands.
+    function refit(): void {
+        if (shownIndex !== activeIndex)
+            return;
+        shownWorkspace = activeWorkspaceId;
+        shownApps = apps;
+        resizeAnim.stop();
+        if (QsmShellStyle.Style.reducedMotion)
+            rolloutHeight = targetHeight;
+        else
+            resizeAnim.start();
+    }
+
+    // Deferred one turn: the animations' targets are bindings on the same
+    // properties, and read inside the change handler they can still be stale.
+    onActiveIndexChanged: Qt.callLater(retarget)
+    onHasActiveChanged: Qt.callLater(retarget)
+    onAppsChanged: Qt.callLater(refit)
+    onActiveWorkspaceIdChanged: Qt.callLater(refit)
     Component.onCompleted: {
         land();
         lensPos = activeIndex;
@@ -175,10 +192,11 @@ Item {
                 duration: root.rolloutHeight > 0 ? QsmShellStyle.Motion.press : 0
                 easing.type: QsmShellStyle.Motion.standardEasing
             }
-            ScriptAction { script: root.land() }
-            NumberAnimation {
-                target: root; property: "rolloutHeight"; to: root.targetHeight
-                duration: QsmShellStyle.Motion.fast; easing.type: QsmShellStyle.Motion.standardEasing
+            ScriptAction {
+                script: {
+                    root.land();
+                    resizeAnim.restart();
+                }
             }
         }
     }
@@ -406,7 +424,7 @@ Item {
             role: "reading"
             color: QsmShellStyle.Style.textOnPrimary
             opacity: root.expand
-            text: String(root.activeWorkspaceId)
+            text: String(root.shownWorkspace)
         }
     }
 

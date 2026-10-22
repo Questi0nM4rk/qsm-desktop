@@ -12,7 +12,6 @@
 1	shell/modules/bar/MenuRow.qml|unqualified|Unqualified access
 1	shell/modules/bar/NetworkPopoutContent.qml|signal-handler-parameters|Type QProcess::ExitStatus of parameter exitStatus in signal called exited was not found, but is required to compile onExited. Did you add all imports and dependencies?
 1	shell/modules/bar/NetworkPopoutContent.qml|unused-imports|Unused import
-2	shell/modules/bar/RailAppList.qml|unqualified|Unqualified access
 11	shell/modules/bar/RailDeviceCell.qml|unqualified|Unqualified access
 4	shell/modules/bar/RailDeviceCell.qml|unresolved-type|Type "BluetoothAdapter" of property "defaultAdapter" not found. This is likely due to a missing dependency entry or a type not being exposed declaratively.
 1	shell/modules/bar/RailDeviceCell.qml|unresolved-type|Type "UntypedObjectModel" of property "devices" not found. This is likely due to a missing dependency entry or a type not being exposed declaratively.
@@ -20,7 +19,6 @@
 2	shell/modules/bar/SoundPopoutContent.qml|unqualified|Unqualified access
 1	shell/modules/bar/SoundPopoutContent.qml|unused-imports|Unused import
 1	shell/modules/bar/TrayMenuContent.qml|redundant-optional-chaining|Redundant optional chaining for lookup on non-voidable and non-nullable type QObjectList
-2	shell/modules/bar/WorkspaceStrip.qml|unqualified|Unqualified access
 2	shell/modules/clipboard/ClipboardSurface.qml|signal-handler-parameters|Type QProcess::ExitStatus of parameter exitStatus in signal called exited was not found, but is required to compile onExited. Did you add all imports and dependencies?
 1	shell/modules/launcher/LauncherSurface.qml|signal-handler-parameters|Type QProcess::ExitStatus of parameter exitStatus in signal called exited was not found, but is required to compile onExited. Did you add all imports and dependencies?
 1	shell/modules/launcher/LauncherSurface.qml|unresolved-type|Property "adapter" has incomplete type "FileViewAdapter". You may be missing an import.
