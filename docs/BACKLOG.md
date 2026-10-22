@@ -4,6 +4,9 @@ Open items only, one line each; what is fixed or historical is in git.
 
 ## Decisions waiting on the owner
 
+- Rail band 40 wide with a 32 capsule and a 4 gutter (`Theme.reservedLeft`, `railWidth`, `railGutter`): the literal half of the glyph-to-rollout gap (24 to 12) and, with `railPopoutPadding` 8 and `railPopoutRadius` 20, of the rollout padding. To revert, restore 64, `Control lg` and `space2`, and the shell's padding. What the narrow capsule changed: the battery reads at 12 px so "100%" fits, the date is two pairs with a dot (`22.` over `10.`), the updates count takes the glyph's place (a chip beside a glyph covers it at 32), and the two lines span 24 of the 32 (32 would equal the capsule).
+- The workspace strip sits at the rail's middle only when the rail is at least 976 tall; on 864 the bottom stack stops it 56 above the middle (centre 376 of 432) and the app list keeps three rows above it. The alternative is the strip under the app list with one row left, or a shorter bottom stack.
+- The colour history holds 18 picks in two rows of nine (`ColorPickService.historyLimit`, was 24) so nothing scrolls under a fade; more rows would grow the quick-actions column.
 - Top panel defaults that follow the rebuild spec over a ratified or trial line, each one constant to revert: 864 wide (the width that centres on the rail band and the monitor edge with both edges on whole device pixels), label-only tabs, a date block with no time, three Performance rings with the storage as bytes under the memory ring, the distro mark `textMuted`, cards 8 apart.
 - Rail popout travel triangle is a geometric no-op at level 1 (the band already spans the rail's height): delete it, or narrow the band to the visible column so it bridges a gutter.
 - F5: popup Enter for the default action; spec/04 requires keyboard Enter only for the centre, and a second route may break 09's one-path law.
@@ -25,10 +28,12 @@ Open items only, one line each; what is fixed or historical is in git.
 
 ## Defects and gaps
 
+- Rail rollout text boxes keep fractional heights (titles 17, metadata 14), so content inside a body sits on a fractional logical y that is still a whole device pixel; rounding them is a library `Prose` change that moves every surface.
+- A colour swatch equal to the card it sits on (the history's `#2D1540` on a band-coloured card) is invisible: `ColorSwatch` draws no containment border at rest.
+- The rail's app list with rows, its edge fade at three rows and the workspace dots' filled state need a live Hyprland session: the isolated slot has no windows or workspaces.
 - A launcher row's keyboard focus ring is clipped on three sides by the list's clip rect (a detail view with the list focused, one row visible); the ring has to live outside the clip, or the list has to leave room for it.
 - A launcher row's matched letters are not marked (only the ranking changed: a keyword-only match sorts below a visible one); marking them needs a `ListRow` slot and a decision on how a match reads next to the selected accent name.
 - A `ListRow` trailing switch ends 12 px from the row's edge while its leading glyph starts 14 to 16 px from the other (the row inset is one number, the leading box centres its glyph).
-- The colour picker rollout's history is eaten by its edge fades: the list viewport is a few rows tall and the library `ScrollCue` paints a fixed 48 px fade at each end (`modules/bar/ColorPickContent.qml` around line 309), so no swatch is fully visible (owner: "kdy je mala, tak ten fade in, and fade out na ni, proste sezere vsechny items"). Check every desktop scroll area the same way once the library bounds the fade by the viewport (qsm-shell backlog).
 - The rail's keyboard route is source-reviewed only (Tab order, the card a focused quick-action cell opens, the workspace slots' focus ring, accessible names): Quickshell is not on the AT-SPI bus without `QT_LINUX_ACCESSIBILITY_ALWAYS_ON=1` at launch, so no tree was read and no key was driven.
 - Theme artwork (`dark-rain-world.png`, `light-forest-dark-winter.jpg`) is untracked, so a fresh checkout lacks the images the theme JSONs name (`qsd-i63`).
 - `EdgeScene.handlesArmed` disables every monitor for one global modal; `keyboardGrab` has no surface or screen owner and a prompt's closure can release another instance's grab (`qsd-om3`).

@@ -38,7 +38,7 @@ the SDF shader only.
 
 ## Geometry
 
-- Band thickness left **64px** (the rail), top/right/bottom **12px**. The band runs on all
+- Band thickness left **40px** (the rail), top/right/bottom **12px**. The band runs on all
   four edges. Thin-frame paint, rollout origins/insets, masks, hover corridors and
   compositor exclusions share these values.
 - **RATIFIED (2026-10-16, owner)**: the wallpaper sits in the frame like a rounded picture

@@ -1,15 +1,15 @@
 # 03 — Rail (left band)
 
-The 64px left band hosting entries top-to-bottom; the only always-visible surface.
+The 40px left band hosting entries top-to-bottom; the only always-visible surface.
 
 ## Pin / collapse / peek
 
-- **RATIFIED (2026-08-16)**: pin/unpin stays, **per monitor**. Pinned = band at 64px, windows
+- **RATIFIED (2026-08-16)**: pin/unpin stays, **per monitor**. Pinned = band at 40px, windows
   reserve around it. Unpinned = band collapses to the plain 12px edge, windows take the space;
   hovering the collapsed edge peeks the full band OVER the windows (no re-tiling); leaving or
   retracting always clears the peek (explicit state, never a raw hover binding).
 - **DEFAULT (2026-08-16)**: the peeked band renders through the same silhouette shader
-  (elevated over windows) and its full 64px is mask-active while peeked; peek and an open
+  (elevated over windows) and its full 40px is mask-active while peeked; peek and an open
   popout may coexist (leaving both retracts both).
 - **RATIFIED (2026-08-16)**: peek zone = the whole collapsed 12px strip, full height; opens
   instantly, clears **150ms** after the cursor leaves the revealed band.
@@ -41,24 +41,28 @@ intent separately from the backend result, with no password in event payloads.
   scaling." and, after seeing a 48x48 capsule for every item: "Vypadá to lépe, ale já jsem
   zapomněl říct, že to má být same width, ne height. Takhle ty hodiny nejdou přečíst. A spodní
   věci jsou moc daleko od sebe, udělej tomu lepší groupping."
-  - The capsule is `Theme.railWidth` wide, Control lg: **48**. The hit area is the capsule plus
-    the band's 8px gutter to the true screen edge: **56** wide. The logo, the updates cell, the
+  - The capsule is `Theme.railWidth` wide, Control sm: **32**. The hit area is the capsule plus
+    the band's 4px gutter to the true screen edge: **36** wide. The logo, the updates cell, the
     pin, tray icons, app rows, the clock, the battery reading, the quick menu and power all use
     exactly these two widths, so measured straight from left to right a capsule is the same
-    distance from the screen edge (8px), from the band wall (8px) and from its rollout's content
-    (24px) wherever it sits. The band is 64 wide because the capsule and its axis then leave a
+    distance from the screen edge (4px), from the band wall (4px) and from its rollout's content
+    (12px) wherever it sits. A 16px glyph is 12px from the wall, which is half of what the
+    64px band left it (owner: "rollouts celkove jsou strasne daleko od toho glyphu ... zkratit
+    na polovinu"). The band is 40 wide because the capsule and its axis then leave a
     multiple of 8 over: every item centred on the band lands on whole device pixels at 1.25.
   - Height follows the content: a glyph cell, a tray icon and an app row are
-    `Theme.railCellHeight`, Control sm, **32** (hit area 56x32). The clock is as tall as its three
-    lines need at their reading sizes (digits textLg bold, date textSm, 8px above and below), so
-    the time reads; it is not squeezed to a cell. Its three boxes are 24 high, so it is **88**
-    and its centre is a multiple of 4, which lets the calendar centred on it land on whole device
-    pixels. The digits swap in place when the minute changes: the clock changes a thousand times
+    `Theme.railCellHeight`, Control sm, **32** (hit area 36x32). The clock is as tall as its four
+    lines need at their reading sizes: the time as two digit pairs (textLg bold, 24 high each)
+    over the date as two pairs with a dot (`22.` over `10.`, textSm, `textMuted`, 16 high each),
+    8px above and below, so every line is two or three characters of the 32px capsule. It is
+    **96** and its centre is a multiple of 4, which lets the calendar centred on it land on whole
+    device pixels. The digits swap in place when the minute changes: the clock changes a thousand times
     a day and a roll on each is motion nobody asked for.
   - What is inside a capsule is centred there at its own step: glyphs 16, the logo and an app's
     icon 24, the battery reading at the title step (14, medium), the clock digits and date at the
-    sizes above, every box on the 4 rhythm. The workspace slots are not capsules: they are a
-    strip of rail-wide, 24px-high aims.
+    sizes above, every box on the 4 rhythm. The battery reading is textSm so "100%" fits the
+    capsule. The workspace slots are not capsules: they are a strip of rail-wide, 24px-high aims
+    inside one capsule of their own.
   - Hover is a whole-device-pixel size change of the capsule's body and never a fractional
     scale (qsm-shell AGENTS.md, growth): the glyph keeps its size, the pixel edges stay on the
     device grid, and the side of an open item's pill that joins its rollout does not grow, it
@@ -82,7 +86,7 @@ intent separately from the backend result, with no password in event payloads.
   they live in the Dashboard only.
 - **RATIFIED (2026-10-16, owner, amended the same evening; one 4px rhythm 2026-10-17)**: groups are
   separated by space, and by the rail's line (`RailBreak` with `line`: the library's hairline at
-  `dividerOpacity`, inset 8px from both walls, centred in an 8px item) only where space alone
+  `dividerOpacity`, inset 4px from the capsule's edges so it spans 24 of its 32, centred in an 8px item) only where space alone
   would not say where a group ends. The rail runs ONE 4px rhythm (`Theme.railItemGap`): every
   item and the break's item sit 4px from their neighbours, so a group boundary is 16px with its
   line 8px from the item on each side. Tray icons sit in the workspace/pin
@@ -129,19 +133,22 @@ intent separately from the backend result, with no password in event payloads.
 - **RATIFIED (2026-08-16)**: toggle-state entries (awake/coffee, and all future toggles) show
   state by SWAPPING THE ICON (empty cup ↔ full cup), NEVER by a glow/light ring around it.
   The current highlight treatment is abolished.
-- **RATIFIED (2026-10-16, owner)**: workspace indicator = FIXED slots, rail-wide and 24px high
-  (the pointer floor; a wheel and a click are the only aim there), tiled with no gap, + a
-  numbered pill: at most SIX Hyprland workspaces globally (monitor-synced — every rail
-  renders the identical column, active = the globally focused workspace), the six nearest the
-  active one; each shows an 8px mark whose SHAPE is the state — occupied a `textMuted` dot, empty a
-  `textMuted` ring, urgent a `danger` dot inside a 16px `danger` ring (colour alone never
-  carries meaning); the ACTIVE workspace is marked by the library's count chip (the updates badge's own size, 32x16),
-  `accent` over its slot, with the real number in `textOnPrimary`; it hops between slots and
-  never glides (a switch is the most frequent thing the rail does); hovering it grows it and
-  lifts its fill like any body. Its dot fades aside beneath it. NO app icons — app identity lives ONLY in
-  the center app list. Wheel switches; click a slot jumps.
-- **DEFAULT (2026-08-16)**: workspace model = Hyprland's dynamic per-monitor workspaces; one
-  slot per EXISTING workspace of that monitor.
+- **RATIFIED (owner)**: the workspaces are rolling dots in one capsule: "ty workspaces jsou v tom
+  capsule, jako rolling dots. Idealne always all 10, empty dot when not used, full when used,
+  selected with number as now, when selected." The strip is a `surface` capsule as wide as the
+  rail holding all `Theme.railWorkspaceSlots` (10) workspaces, one slot each, rail-wide and 24px
+  high (the pointer floor), tiled with no gap, so it never changes size; it sits at the rail's
+  vertical middle as near as the groups above and below allow (never crossing the bottom stack,
+  always leaving the app list its first row), on a multiple of 4. Each slot shows an 8px mark
+  whose SHAPE is the state — empty a `textMuted` ring, a workspace with windows a filled
+  `textMuted` dot, urgent a `danger` dot inside a 16px `danger` ring (colour alone never carries
+  meaning); the selected workspace is the library's accent chip (24x16) with the real number in
+  `textOnPrimary`, and it slides to the next slot (`Motion.fast`; under reduced motion it jumps).
+  A workspace past the tenth parks the chip on the last slot with the real number. Hovering a
+  slot grows its mark (or the chip) and lifts its fill like any body. NO app icons — app
+  identity lives ONLY in the center app list. Wheel switches (1 to 10); click a slot jumps.
+- **DEFAULT (2026-08-16)**: workspace model = Hyprland's workspaces 1 to 10, one slot each
+  whether or not the workspace exists yet.
 - **DEFAULT (2026-08-16)**: battery popout content per
   `references/battery-popout-corner-join.png`: charge % + time estimate (or "No battery
   detected"), current power profile line, and a power-profile switch row.
@@ -197,7 +204,7 @@ intent separately from the backend result, with no password in event payloads.
 - **RATIFIED (2026-08-16, amended 2026-10-16)**: the rail's MIDDLE section lists the CURRENT
   workspace's apps, per monitor, icon-only. When the workspace is empty it shows the default:
   a monitor icon (as in `references/rail-closeup.png`).
-- **RATIFIED (2026-10-16, owner)** app-list mechanics: each row is the rail capsule (48x32) with a
+- **RATIFIED (2026-10-16, owner)** app-list mechanics: each row is the rail capsule (32x32) with a
   24px glyph and a 4px gap, hanging from the line above it; NO caption, vertical or otherwise. The window title lives in the hover
   popout, reading **"app · live-title"** — identity first so an ellipsis can only eat the
   context tail; leading unread counters ("(2864) …") stripped; brand suffixes after a dash
@@ -209,6 +216,13 @@ intent separately from the backend result, with no password in event payloads.
   the rollout's content width), today marked, wheel/arrows change month, weeks start Monday. Events come later from the same backend as the top panel's
   read/write calendar (06, task `qsd-zss`).
 
+- **DEFAULT (owner: "vsechny rollouts jsou moc daleko a maji moc okoly, zmensil bych to na
+  polovinu")**: a rail rollout leaves `Theme.railPopoutPadding` (8, half of the shell's rollout
+  padding) around its content and its free corners curve at `Theme.railPopoutRadius` (20, the
+  body radius plus that padding), so every body in it stays concentric; the body is 264 wide, the
+  content 248. The colour menu shows its history as a grid of 18 swatches (two rows of nine) that
+  never scrolls, so no edge fade covers a colour; a scroll area that does scroll shows an edge
+  fade and no mark beside it.
 - **DEFAULT (2026-10-21)**: a popout body grows in steps of `Theme.popoutBodyStep` (8) and its
   content sits centred in the padded body on a device pixel. The body is centred on its cell,
   whose centre is a multiple of 4, so half the body must be one too for both edges to land on
@@ -219,7 +233,7 @@ intent separately from the backend result, with no password in event payloads.
 - The coffee/awake cell is REPLACED by a **quick actions** cell (`zap`). Hover only — there is
   nothing for a click to do that the column does not do better.
 - **RATIFIED (2026-10-16, owner)**: quick-menu cells (the rail's own and the second rail's) are
-  the rail capsule (48x32, target-frequent) with a 16px glyph. A connected/active state draws the glyph in
+  the rail capsule (32x32, target-frequent) with a 16px glyph. A connected/active state draws the glyph in
   `text`; an off/inactive state in `textMuted` with the "off" glyph SHAPE. Glyphs change shape
   for state, never colour alone: network = cable / wifi by signal / wifi-off; bluetooth = the
   mark, or the connected device's glyph (the ONE device cell that becomes what is connected,
@@ -345,7 +359,7 @@ intent separately from the backend result, with no password in event payloads.
 | posture/task | Temporarily disable the built-in keyboard, then restore it with pointer or another keyboard. External keyboards are untouched. | The owner's existing shortcuts target `at-translated-set-2-keyboard`, not Hyprland's current `main` device. | Transient quick action; one `main-keyboard` CLI/helper | Disable and recover with an external keyboard or pointer |
 | ia/interaction | One cell directly above Keep awake; click toggles, description names current state, next action and recovery shortcut. The command picker mirrors the same service. | Existing rail description tier; UI Craft laws 3, 7 and 9 | QuickActionCell, DescriptionPopout, LauncherSurface dispatch tables | Repeated click/Enter retains the selected item and shows the outcome |
 | hierarchy/token | Enabled: keyboard in text colour. Disabled: keyboard-off in quiet warning amber on the rail; the picker uses the same crossed-out glyph. Unavailable: muted. No background glow or badge. The picker Switch means **keyboard disabled**, not enabled. | Owner requests first-glance state; shape and colour both carry it. Amber means deliberately suppressed input, not selection or an operation error. Reuse the existing switch pattern. | MainKeyboardService.glyph; Theme.iconSm/text/warning/textMuted; Switch sm, Accessible.name | Distinguish enabled, disabled and unavailable without hover or colour alone |
-| responsive | Rail size stays constant; its column gains one cell; description wraps and picker text elides in existing bounds. Wheel remains owned by the host. | Existing compact shell layout | QuickActionsColumn clearance, Theme.popoutWidth, ResultRow | No clipping at the screen edge or during reveal |
+| responsive | Rail size stays constant; its column gains one cell; description wraps and picker text elides in existing bounds. Wheel remains owned by the host. | Existing compact shell layout | QuickActionsColumn height, Theme.popoutWidth, ResultRow | No clipping at the screen edge or during reveal |
 | state | Pending refuses repeat activation; unknown/missing device/helper refuses toggling; failures stay visible with retry. Poll and hover refresh changes made through shortcuts/CLI. | No optimistic success or invented enabled state | MainKeyboardService.available/busy/error; native control states | Enabled, disabled, pending, unavailable and failed states |
 | input/reach | Preserve Super+Ctrl+D disable and Super+Ctrl+Shift+D enable. Both call the same helper as CLI; keyboard navigation and focus use the existing picker, rail stays pointer-led. | One operation, not synthesized key events | main-keyboard enable/disable/toggle/status; existing menu keys and Accessible naming | Recovery from the disabled state, focus visibility and spoken name |
 | polish | Inherit existing hover/press/focus/disabled and reduced-motion behaviour; no new motion. | Owner-approved component system | RailEntry/StateLayer, Switch, Motion | Existing state feedback remains consistent |
