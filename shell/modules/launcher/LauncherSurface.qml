@@ -12,7 +12,7 @@ import qs.theme
 // Launcher content (07-launcher): search field at the BOTTOM, results above
 // (at most Theme.launcherMaxRows rows),
 // keyboard-first. '>' enters command mode: >calc (live math via qalc, Enter
-// copies), >kill (windows + processes, Enter kills — deliberate, no confirm),
+// copies), >kill (windows + processes, a second Enter kills; Escape or another row disarms),
 // >theme (a horizontal carousel instead of the row list — Left/Right
 // highlight, Enter applies instantly, same as click). A bare '>' lists all
 // commands. `>clip` is not a mode: clipboard history is its own
@@ -39,7 +39,7 @@ Item {
 
     readonly property var commandDefs: [
         { cmd: "calc", icon: "sparkle", desc: "Live math — Enter copies the result" },
-        { cmd: "kill", icon: "power", desc: "Kill a window or process — no confirm" },
+        { cmd: "kill", icon: "power", desc: "Kill a window or process — Enter twice" },
         { cmd: "theme", icon: "mountain", desc: "Switch theme" },
         { cmd: "action", icon: "zap", desc: "Quick controls" }
     ].filter(def => root.commandNames.includes(def.cmd))
@@ -333,7 +333,8 @@ Item {
                 .slice(0, 8)
                 .map(item => ({
                     kind: item.target.kind, icon: "power",
-                    label: item.target.label, sub: item.target.sub, data: item.target.data
+                    label: item.target.label, sub: item.target.sub, data: item.target.data,
+                    confirmId: `kill-${item.target.kind}-${item.target.data}`
                 }));
         case "theme":
             // One row per installed theme (N-theme law) with its wallpaper
@@ -481,6 +482,7 @@ Item {
         if (id === "colorpick") return "Press Enter again: screen-picker input takeover will start";
         if (id === "wifi-off") return "Press Enter again to confirm turning the Wi-Fi radio off";
         if (id === "vpn-off") return "Press Enter again to confirm disconnecting the VPN";
+        if (id.startsWith("kill-")) return "Press Enter again to kill this";
         if (id.startsWith("forget-")) return "Press Enter again to forget this paired device";
         return "Press Enter again to confirm";
     }
@@ -520,8 +522,23 @@ Item {
         },
         "bluetooth": item => root.bluetoothSupport(item, item.identity),
         "bluetooth-device": item => root.bluetoothSupport(item, item.data.address),
-        "bluetooth-forget": item => root.bluetoothSupport(item, item.data.address)
+        "bluetooth-forget": item => root.bluetoothSupport(item, item.data.address),
+        "kill-window": item => root.killSupport(item),
+        "kill-process": item => root.killSupport(item)
     })
+
+    function killSupport(item): string {
+        return root.confirmId === item.confirmId ? root.confirmationText(item.confirmId) : item.sub ?? "";
+    }
+
+    // Escape takes an armed kill back before it closes the surface, as the
+    // session's armed tiles do; says whether there was one to take back.
+    function cancelKill(): bool {
+        if (!root.confirmId.startsWith("kill-"))
+            return false;
+        root.confirmId = "";
+        return true;
+    }
 
     function bluetoothSupport(item, target: string): string {
         if (!root.bluetoothBackend.available) return "No Bluetooth adapter available";
@@ -629,6 +646,8 @@ Item {
     function selectIndex(index: int): void {
         const item = root.results[index];
         root.selectedIdentity = root.resultIdentity(item);
+        if (root.confirmId.startsWith("kill-") && root.confirmId !== item?.confirmId)
+            root.confirmId = "";
         if (root.expandedAudioId && item?.data !== root.expandedAudioId) {
             root.expandedAudioId = "";
             if (root.inputRegion === "editor") root.focusMenu();
@@ -798,6 +817,7 @@ Item {
         else if (key === Qt.Key_Escape) {
             if (!event.isAutoRepeat) {
                 if (root.expandedAudioId || root.expandedNetworkId) root.closeEditor();
+                else if (root.cancelKill()) return;
                 else if (root.inDetail) root.leaveDetail();
                 else root.close();
             }
@@ -930,11 +950,11 @@ Item {
             return false;
         },
         "kill-window": item => {
-            root.run(["hyprctl", "dispatch", "killwindow", `address:${item.data}`], true);
+            root.armed(item, () => root.run(["hyprctl", "dispatch", "killwindow", `address:${item.data}`], true));
             return false;
         },
         "kill-process": item => {
-            root.run(["kill", String(item.data)], true);
+            root.armed(item, () => root.run(["kill", String(item.data)], true));
             return false;
         },
         "theme": item => {
@@ -1419,7 +1439,7 @@ ps -eo pid,pcpu,comm --no-headers --sort=-pcpu | head -25 | awk '{printf "P|%s|%
             }
 
             onAccepted: root.activate(root.selectedIndex)
-            onEscaped: root.inDetail ? root.leaveDetail() : root.close()
+            onEscaped: root.cancelKill() || (root.inDetail ? root.leaveDetail() : root.close())
             onTextChanged: {
                 root.query = text;
                 root.expandedAudioId = "";
