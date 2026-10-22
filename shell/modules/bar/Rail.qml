@@ -14,8 +14,7 @@ import qs.theme
 // middle with the current workspace's apps rolling out of its lens,
 // and at the bottom the READOUTS (clock, battery), the CONTROLS (quick actions,
 // network, bluetooth, sound) and the SESSION (power). CPU and RAM live in the
-// Dashboard only (06). Groups are told apart by space; a line is drawn under
-// the glyph cells, under the drum and before power, where the groups either
+// Dashboard only (06). Groups are told apart by space; a line is drawn before power, where the groups either
 // side look alike. The popout interaction lives in the PopoutController.
 Item {
     id: root
@@ -173,7 +172,7 @@ Item {
         }
 
         // The glyph cells are alike and the strip below is a body of its own.
-        RailBreak { id: topBreak; line: true }
+        RailBreak { id: topBreak }
     }
 
     // The drum of workspaces with its window rollout takes the whole room
@@ -201,8 +200,8 @@ Item {
         // Three groups; inside a group the items sit one gap apart. What the
         // item is decides the group: the readouts (the time and the battery),
         // the controls (quick actions and the devices) and the session. The
-        // drum above is a body of its own, and the line closes it.
-        RailBreak { line: true }
+        // drum above is a capsule of its own, which parts it from the clock.
+        RailBreak {}
 
         // Readouts: the time.
         ClockEntry {

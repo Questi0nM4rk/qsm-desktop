@@ -274,6 +274,20 @@ Item {
             moveRelative(deltaY > 0 ? -1 : 1);
     }
 
+    // The capsule every rail item is, in the surface role, under the dots
+    // (they stack at z 0 and below).
+    Rectangle {
+        id: capsule
+
+        z: -root.slotCount - 1
+        width: Theme.railWidth
+        height: parent.height
+        x: QsmShellStyle.Style.snap((parent.width - width) / 2, capsule)
+        radius: QsmShellStyle.Style.radiusPill
+        color: QsmShellStyle.Style.surface
+        Accessible.ignored: true
+    }
+
     // The lens: a pill with the number, stretched down into a long capsule
     // while the workspace has windows. It sits at the strip's centre and under
     // the dots' layers, which paint nothing but their hover tint.
