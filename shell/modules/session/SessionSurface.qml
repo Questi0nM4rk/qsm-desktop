@@ -162,11 +162,12 @@ Item {
                         // accent is spent on armed, and on this surface what
                         // happens next matters more than what is picked.
                         accent: Theme.primary
-                        // 08: shutdown, the last and least reversible, draws in
-                        // danger at rest. The group that ends the session starts
-                        // a full step (space4 including the column's own gap)
-                        // below the group that keeps it.
-                        danger: modelData.role === "shutdown"
+                        // 08: every tile that is armed to fire (log out,
+                        // restart, shut down) draws in danger at rest, one cue
+                        // rule; lock and hibernate do not. The group that ends
+                        // the session starts a full step (space4 including the
+                        // column's own gap) below the group that keeps it.
+                        danger: modelData.destructive
                         Layout.topMargin: index > 0 && modelData.destructive && !root.actions[index - 1].destructive
                             ? QsmShellStyle.Style.space4 - QsmShellStyle.Style.space2 : 0
                         buttonWidth: QsmShellStyle.Style.tileWidth
