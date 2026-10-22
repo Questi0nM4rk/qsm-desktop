@@ -1,6 +1,7 @@
 import QtQuick
 import qs.QsmShell.Components as QsmShellComponents
 import qs.QsmShell.Style as QsmShellStyle
+import qs.state
 
 Item {
     id: root
@@ -36,7 +37,9 @@ Item {
 
     QsmShellComponents.SvgIcon {
         id: glyph
-        visible: !root.scene.fullscreen && !root.scene.focusMode
+        // The surface body is painted below the items, so a glyph left visible
+        // would show through whichever modal covers the edge.
+        visible: !root.scene.fullscreen && !root.scene.focusMode && ShellState.modal === "none"
         name: "chevron-left"
         size: QsmShellStyle.Style.iconXs
         x: root.surface.handleCenter.x - width / 2
