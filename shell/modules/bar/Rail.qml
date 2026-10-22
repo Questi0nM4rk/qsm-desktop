@@ -10,12 +10,12 @@ import qs.state
 import qs.theme
 
 // The rail (03-rail lineup), top to bottom: the glyph cells (the mark, the
-// updates, the pin and the tray), the current workspace's apps from the line
-// under them, the workspace strip as one capsule at the rail's vertical middle,
+// updates, the pin and the tray), the workspace strip as one capsule at the
+// rail's vertical middle with the current workspace's apps rolling out of it,
 // and at the bottom the READOUTS (clock, battery), the CONTROLS (quick actions,
 // network, bluetooth, sound) and the SESSION (power). CPU and RAM live in the
-// Dashboard only (06). Groups are told apart by space; a line is drawn only at
-// the top of the app list and before power, where the groups either side look
+// Dashboard only (06). Groups are told apart by space; a line is drawn only under
+// the glyph cells and before power, where the groups either side look
 // alike. The popout interaction lives in the PopoutController.
 Item {
     id: root
@@ -23,9 +23,7 @@ Item {
     required property var screen
     required property PopoutController popouts
 
-    // The strip sits at the rail's vertical middle, as near as the groups above
-    // and below allow: it never crosses the bottom stack, and it leaves the app
-    // list its first row. One boundary is 16: the gap, a break and a gap.
+    // One boundary is 16: the gap, a break and a gap.
     readonly property real boundary: Theme.railItemGap * 2 + QsmShellStyle.Style.space2
 
     Column {
@@ -42,7 +40,7 @@ Item {
         RailGroup {
             maximumHeight: Math.max(0, root.height - bottomStack.height
                 - QsmShellStyle.Style.space4 * 2 - topBreak.height - Theme.railItemGap * 3
-                - Theme.railCellHeight - root.boundary - workspaces.height)
+                - root.boundary - workspaces.fullHeight)
 
             Column {
                 width: parent.width
@@ -181,34 +179,24 @@ Item {
             }
         }
 
-        // The app list's length varies, so its top is marked.
+        // The glyph cells are alike and the strip below is a body of its own.
         RailBreak { id: topBreak; line: true }
     }
 
-    // The middle section: the current workspace's apps, icon only, hanging from
-    // the line above and ending a boundary above the strip; names and live
-    // titles are in the hover popout.
-    RailAppList {
-        id: appList
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.top: topStack.bottom
-        anchors.topMargin: Theme.railItemGap
-        height: Math.max(0, workspaces.y - root.boundary - y)
-        screen: root.screen
-        popouts: root.popouts
-    }
-
-    // Every workspace in one capsule. Its middle is the rail's middle unless
-    // that would cross the bottom stack, then it sits one gap above it; both
-    // ends land on a multiple of 4, so its edges are whole device pixels.
+    // Every workspace in one capsule, with its window rollout. Its top is fixed
+    // by the capsule at rest and the rollout grows downward into the room left
+    // under it, so a switch moves nothing above the slot that opens. The top
+    // sits at the rail's middle unless the fully grown strip would cross the
+    // bottom stack, then it sits one gap above that; the top lands on a multiple
+    // of 4, so its edges are whole device pixels.
     WorkspaceStrip {
         id: workspaces
         anchors.left: parent.left
         anchors.right: parent.right
-        y: Math.floor(Math.min(bottomStack.y - Theme.railItemGap - height,
-            Math.max(appList.y + Theme.railCellHeight + root.boundary,
-                (root.height - height) / 2)) / QsmShellStyle.Style.space1) * QsmShellStyle.Style.space1
+        popouts: root.popouts
+        y: Math.floor(Math.min(bottomStack.y - Theme.railItemGap - fullHeight,
+            Math.max(topStack.y + topStack.height + Theme.railItemGap,
+                (root.height - restHeight) / 2)) / QsmShellStyle.Style.space1) * QsmShellStyle.Style.space1
         height: implicitHeight // plain Items do not self-adopt implicit size
     }
 
@@ -370,15 +358,7 @@ Item {
             const point = root.mapToItem(workspaces, event.x, event.y);
             if (point.x >= 0 && point.x <= workspaces.width
                     && point.y >= 0 && point.y <= workspaces.height) {
-                workspaces.moveRelative(event.angleDelta.y > 0 ? -1 : 1);
-                return;
-            }
-            // A list that overflows owns the wheel over its rows.
-            const listPoint = root.mapToItem(appList.view, event.x, event.y);
-            if (appList.scrollable
-                    && listPoint.x >= 0 && listPoint.x <= appList.view.width
-                    && listPoint.y >= 0 && listPoint.y <= appList.view.height) {
-                event.accepted = false;
+                workspaces.wheel(point.y, event.angleDelta.y);
                 return;
             }
             const delta = event.angleDelta.y > 0
