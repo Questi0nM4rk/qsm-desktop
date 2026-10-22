@@ -245,8 +245,6 @@ QtObject {
     // pairs, so the widest line is two characters of the capsule's width.
     readonly property int railClockDigitSize: QsmShellStyle.Style.textLg
     readonly property int railClockDateSize: QsmShellStyle.Style.textSm
-    // A rail group rule is the library's line, nearly as wide as the capsule.
-    readonly property real railDividerInset: QsmShellStyle.Style.space1
     // A tray menu's separators are short lines.
     readonly property int menuSeparatorWidth: 96
     // How many connected devices the one BLE cell splits into before it stops
