@@ -13,6 +13,8 @@ Open items only, one line each; what is fixed or historical is in git.
 - Hit targets under 44x44 remain on the compact rail rows, the workspace dots and the colour swatches; one question about the rail's raster.
 - `Theme.dark` is `current !== "mountain-dusk"` and `themeToggle` applies those two ids; make `themeToggle` cycle `Theme.themes` and derive `dark` from a theme JSON field, which changes the `dark` status contract.
 - Whether the spec stamps keep their dates (`RATIFIED (date, owner)`); the markers stay either way.
+- OSD channels: the rebuild spec wants the channels the change did not touch receded, but the owner ruled on 2026-10-18 that every channel draws the same ("jenom sound sviti, zbytek ne"); equal stays until the owner says otherwise, and the alternative is the spec's section 6 item 3.
+- Session: Log out and Restart are armed-to-fire like Shut down but draw neutral at rest, only Shut down in `danger`; ux-audit wants every destructive tile cued, the rebuild spec reserves danger for the armed tile. Pick one rule for all three.
 - Whether `Rollout.padding` defaults to `Style.rolloutPadding`, and whether `recede` stays band-only (library questions).
 - Notification popup Escape: whether it also dismisses all visible notifications.
 - The colour picker's card: centred on its sparkle cell (centre 736) it would run 44 below its column (bottom 808) and close a pocket of desktop between them, and the library places a nested rollout inside its parent's span; the ratified `match` tier keeps it flush with the column (centre 676). Keep it flush and say so in RR-1, or design the L-shaped union.
