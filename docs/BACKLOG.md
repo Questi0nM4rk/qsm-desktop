@@ -4,10 +4,10 @@ Open items only, one line each; what is fixed or historical is in git.
 
 ## Decisions waiting on the owner
 
-- Rail band 40 wide with a 32 capsule and a 4 gutter (`Theme.reservedLeft`, `railWidth`, `railGutter`): the literal half of the glyph-to-rollout gap (24 to 12) and, with `railPopoutPadding` 8 and `railPopoutRadius` 20, of the rollout padding. To revert, restore 64, `Control lg` and `space2`, and the shell's padding. What the narrow capsule changed: the battery reads at 12 px so "100%" fits, the date is two pairs with a dot (`22.` over `10.`), the updates count takes the glyph's place (a chip beside a glyph covers it at 32), and the two lines span 24 of the 32 (32 would equal the capsule).
+- Rail band 40 wide with a 32 capsule and a 4 gutter (`Theme.reservedLeft`, `railWidth`, `railGutter`): the glyph-to-rollout gap is 12, and every rollout, the launcher, clipboard, cheat sheet and notification centre included, takes `railPopoutPadding` 8 and `railPopoutRadius` 20. On the narrow capsule the battery reads at 12 px so "100%" fits, the date is two pairs with a dot (`22.` over `10.`), the updates count takes the glyph's place (a chip beside a glyph covers it at 32), and the two rail lines span the capsule's 32.
 - The workspace strip sits at the rail's middle only when the rail is at least 976 tall; on 864 the bottom stack stops it 56 above the middle (centre 376 of 432) and the app list keeps three rows above it. The alternative is the strip under the app list with one row left, or a shorter bottom stack.
-- The colour history holds 18 picks in two rows of nine (`ColorPickService.historyLimit`, was 24) so nothing scrolls under a fade; more rows would grow the quick-actions column.
-- Top panel defaults that follow the rebuild spec over a ratified or trial line, each one constant to revert: 848 x 536 with `Theme.panelPadding` 8 (half the shell's padding, as the rail's rollouts; the content box stays 832 x 464, so every card keeps its size), label-only tabs, a date block with no time, three Performance rings with the storage as bytes under the memory ring, neutral glyphs and `Theme.loadTone` neutral below 70 percent (was success green and a sky weather glyph), cards 8 apart, the tab bar filling the content box instead of a centred 624.
+- The colour history holds 18 picks in two rows of nine (`ColorPickService.historyLimit`) so nothing scrolls under a fade; more rows would grow the quick-actions column.
+- Top panel defaults that follow the rebuild spec over a ratified or trial line, each one constant to revert: 848 x 536 with `Theme.panelPadding` 8 (half the shell's padding, as the rail's rollouts; the content box stays 832 x 464, so every card keeps its size), label-only tabs, a date block with no time, three Performance rings with the storage as bytes under the memory ring, neutral glyphs and `Theme.loadTone` neutral below 70 percent, cards 8 apart, the tab bar filling the content box.
 - Rail popout travel triangle is a geometric no-op at level 1 (the band already spans the rail's height): delete it, or narrow the band to the visible column so it bridges a gutter.
 - F5: popup Enter for the default action; spec/04 requires keyboard Enter only for the centre, and a second route may break 09's one-path law.
 - Notification group ordering: two apps tied on "has a live entry" compare equal, so a third group can split a section header; pick the tiebreak.
@@ -16,7 +16,7 @@ Open items only, one line each; what is fixed or historical is in git.
 - Hit targets under 44x44 remain on the compact rail rows, the workspace dots and the colour swatches; one question about the rail's raster.
 - `Theme.dark` is `current !== "mountain-dusk"` and `themeToggle` applies those two ids; make `themeToggle` cycle `Theme.themes` and derive `dark` from a theme JSON field, which changes the `dark` status contract.
 - Whether the spec stamps keep their dates (`RATIFIED (date, owner)`); the markers stay either way.
-- OSD channels: the rebuild spec wants the channels the change did not touch receded, but the owner ruled on 2026-10-18 that every channel draws the same ("jenom sound sviti, zbytek ne"); equal stays until the owner says otherwise, and the alternative is the spec's section 6 item 3.
+- OSD channels: every channel draws the same, as the owner ruled; the rebuild spec's section 6 item 3 would recede the channels the change did not touch. Equal stays until the owner says otherwise.
 - Session: Log out and Restart are armed-to-fire like Shut down but draw neutral at rest, only Shut down in `danger`; ux-audit wants every destructive tile cued, the rebuild spec reserves danger for the armed tile. Pick one rule for all three.
 - Whether `Rollout.padding` defaults to `Style.rolloutPadding`, and whether `recede` stays band-only (library questions).
 - Notification popup Escape: whether it also dismisses all visible notifications.
@@ -28,7 +28,10 @@ Open items only, one line each; what is fixed or historical is in git.
 
 ## Defects and gaps
 
-- Rail rollout text boxes keep fractional heights (titles 17, metadata 14), so content inside a body sits on a fractional logical y that is still a whole device pixel; rounding them is a library `Prose` change that moves every surface.
+- A text box is a whole number of logical pixels (a section header 14, a metadata line 14, the battery row 47), which is not a whole device pixel at 1.25, so rows below one sit 0.25 device px off the grid: 7 Surface, Card and IconButton nodes in the sound, network and battery rollouts. The popout card title takes the 4 px rhythm; the library `Prose` and `Section` need to own a snapped line box.
+- Right-aligned capsules in the network and bluetooth rollouts take their width from text, so their x lands 0.25 device px off the grid; the same library change covers it.
+- The dashboard weather glyph is the sun for clear, the bolt for a storm and the thermometer for every other sky: the library icon set has no cloud, rain, snow or fog glyph (`Glyphs.weatherGlyphs`).
+- Low-urgency notification cards use the moon, which is also do-not-disturb, and the centre's do-not-disturb button shows its on state only by glyph colour: both live in the library `NotificationCard` and `NotificationCenter` (a glyph of its own for low urgency, and `selected` on the button for the accent tint).
 - A colour swatch equal to the card it sits on (the history's `#2D1540` on a band-coloured card) is invisible: `ColorSwatch` draws no containment border at rest.
 - The rail's app list with rows, its edge fade at three rows and the workspace dots' filled state need a live Hyprland session: the isolated slot has no windows or workspaces.
 - The Performance tab's first row is two wide ring cards until the GPU sensor answers and three once it does (a ring hides while its sensor is missing, spec/06), so the row re-flows a second or two after the panel first opens; keeping three columns with an empty slot, or a placeholder reading, is the owner's call.
@@ -46,7 +49,7 @@ Open items only, one line each; what is fixed or historical is in git.
 - `BarPopouts` is not a `Rollout` (it calls the registry directly, hosts a nested stack, lacks the `suppressed` guard), so the keep-open region test lives twice, in `Rollout` and in `EdgeScene.popout1UnionContains`; the library `Rollout` cannot yet parent a nested rollout.
 - The scene shader holds eight simultaneous silhouettes, so unbounded nested rollout chains need a registry redesign in the library.
 - `Rollout.contentCenterOffsetX` costs half a band-depth on the attached side; only the OSD and session column are checked, not the rail popouts, panel, launcher or notification centre.
-- `NotificationCard.qml` threw "Passing incompatible arguments to C++ functions" from `syncFullscreenCapsule` while a scene was fullscreen-transitioning; re-check with the log.
+- `NotificationCard.qml` may throw "Passing incompatible arguments to C++ functions" from `syncFullscreenCapsule` while a scene is fullscreen-transitioning; check the log.
 - `PopoutRow` and `ResultRow` are two wrappers over `ListRow`; fold them if their model shapes allow it.
 - `BatteryPopoutContent`'s profile switch glides and the library `Segmented` does not; `RailDeviceCell`'s cross divider has no library type.
 - Raw numbers remain in the bar popouts (letter spacing on the vertical app labels, margins, opacities, border widths, one `SvgIcon size: 58`) with no `Theme` token.
@@ -54,8 +57,8 @@ Open items only, one line each; what is fixed or historical is in git.
 - `Theme.artworkRingStroke`: the library avatar ring is a share of the picture and reads heavy around a large cover.
 - `ScrollCue.fadeColor` is hand-matched to each list's ground; no gate catches a wrong colour.
 - Receded muted text on `surface` and `overlay` is about 3.4 and 2.6 against the 4.5 floor; only the band is enforced.
-- The sound rollout was reported closing before the pointer reached a target; re-measure with live pointer geometry under the 180 ms hitbox rule.
-- `scripts/test-quickshell` "command-centre parent selection did not restore" failed once and passed on re-run; find the race or delete the check.
+- The sound rollout may close before the pointer reaches a target; re-measure with live pointer geometry under the 180 ms hitbox rule.
+- `scripts/test-quickshell` can fail "command-centre parent selection did not restore" and pass on re-run; find the race or delete the check.
 - The command-centre check in `scripts/test-quickshell` reads the focused monitor, not the one the suite drives.
 - `scripts/validate` stops at `test-quickshell` while a live instance holds the config path, so the shader freshness check after it never runs.
 - Audio: the saved duplex ALC257 profile can accept streams and stay silent until PipeWire, pipewire-pulse and WirePlumber restart; QSM only binds volume and mute.
@@ -79,7 +82,7 @@ Open items only, one line each; what is fixed or historical is in git.
 - The desktop has no test below `scripts/test-quickshell`; `Theme` imports Quickshell (`themesProbe`, `ShellState`), so about 40 UI files cannot load in `qmltestrunner`. Cutting that edge comes first.
 - Split `ShellState` into pure state and a Quickshell adapter when something needs it.
 - 23 UI files import `qs.services` directly; invert them per file (data in as properties) as each surface is touched.
-- `docs/audit-2026-08-20.md` carries a human-trial list that was never driven: bluetooth, battery, sound, media transport, calendar paging.
+- `docs/audit-2026-08-20.md` carries a human-trial list not yet driven: bluetooth, battery, sound, media transport, calendar paging.
 - `~/.cache` holds about 65G of live caches (`uv`, `yay`, `omarchy`, `pre-commit`); reclaim by hand with their own tools.
 
 ## Unverified at runtime
