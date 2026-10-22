@@ -16,8 +16,9 @@ Reference: `references/osd-sliders-right.png`.
 
 - Normal applications use the attached shell `Rollout`; a fullscreen application
   uses the real shell `DataCapsule`, never the OSD's detached-Rollout shader path.
-  Both are centered on the right edge. Fullscreen adds `Theme.space4` inset and
-  has no idle handle. The body stays 56px wide and content-height in both modes.
+  Both are centered on the right edge. Fullscreen insets the capsule by
+  `Theme.edgeGutter` and has no idle handle. The body stays 56px wide and
+  content-height in both modes.
 - `OsdSurface` creates one persistent `OsdContent` FocusScope and reparents it
   between the wrapper slots. Output/microphone/brightness use current shell
   `Slider` controls with the same service bindings, ordering, availability,
@@ -146,26 +147,19 @@ Reference: `references/osd-sliders-right.png`.
 
 ## Numbers (RATIFIED 2026-08-16)
 
-- Surface width **56px**; track **40×140px**; thumb **28px** circle (shrunk from 32 on
-  2026-10-16), inset 6px each side of the track and travelling `trackHeight - thumbSize`;
-  no shadow under the thumb. Inside the thumb: a **16px** glyph at rest, or the value as a
-  two-digit label in caption size while live. Nothing rides at the tracks' ends. Default
-  order top→bottom: output volume, microphone, brightness. The 56px body is the whole
-  APERTURE: the rollout clips at its own edge, so nothing the column draws past that
-  edge is visible.
-- **The column's position inside the body is CLAMPED, not nudged.** A `Rollout` centres
-  content in body PLUS band, so `Rollout.contentCenterOffsetX` asks for half the
-  frame thickness toward the frame. The 12px frame requests 6px; the 56px body's
-  half-span minus that request is 22px. The track is not the full envelope: the
-  focus ring sits OUTSIDE the track by one half-step (`Style.spaceTight`), and a hovered or
-  pressed thumb grows further per side. The ring's outer 2px therefore drew under the frame, where
-  the rollout's own `clip` cut them. `OsdSurface` measures the real envelope from the
-  channels' own geometry — the slider's implicit width, which does NOT reserve the grown
-  thumb (growth overflows into the gap and is capped at the bar's own cross extent), plus the
-  grown thumb's overhang and the ring's gap-plus-stroke — and clamps the requested
-  offset within `±max(0, bodyWidth / 2 - envelope)`, the closest position to the requested one that
-  keeps all three whole. Fullscreen has no band to correct for, sits at offset 0, and the
-  same envelope fits its 56px body unchanged.
+- Surface width **56px** (`osdTrackWidth` + 2 x `Theme.edgeGutter`); track **40×140px**; thumb
+  **28px** circle (shrunk from 32 on 2026-10-16), inset 6px each side of the track and
+  travelling `trackHeight - thumbSize`; no shadow under the thumb. Inside the thumb: a
+  **16px** glyph at rest, or the value as a two-digit label in caption size while live.
+  Nothing rides at the tracks' ends. Default order top→bottom: output volume, microphone,
+  brightness.
+- **RULED (2026-10-22, owner)**: placement is measured from the monitor, never from the frame
+  band beside it ("notifications musi byt blize k prave strane, to stejne OSD"; rollouts "maji
+  moc okoly", halve it). The body runs to the monitor's right edge (`Rollout.edgeInset: 0`), so
+  the track keeps one `Theme.edgeGutter` (8px) from the monitor and 8px from the silhouette's
+  other edge; the channels sit 8px apart and 8px from the silhouette's top and bottom
+  (3 x 140 + 2 x 8 + 2 x 8 = 452). The track is centred in the body, so the focus ring (one
+  half-step outside the track) and a grown thumb stay inside the aperture with no clamp.
 - Handle: the circle nub sunk INTO the right band (owner 2026-10-17): its centre 2px inside
   the band's inner edge (Theme.osdHandleProud), so 5px of it shows, vertically centered; invisible hover zone is one generous
   continuous rectangle from the arrow glyph's left edge (with small padding) through the

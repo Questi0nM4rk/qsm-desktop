@@ -15,9 +15,9 @@ import qs.state
 import qs.theme
 
 // Session surface (08): right-edge rollout, single column of action buttons —
-// lock, logout, hibernate, reboot, shutdown (hyprlock; hyprland exit;
-// systemctl). Destructive actions arm-then-fire. The 35% dim + blur backdrop is
-// SessionBackdrop (the one sanctioned second surface).
+// lock, hibernate, then logout, reboot, shutdown (hyprlock; systemctl;
+// hyprland exit). Destructive actions arm-then-fire. The 35% dim + blur
+// backdrop is SessionBackdrop (the one sanctioned second surface).
 //
 // KEYBOARD-DRIVEN as well as pointer-driven: Up/Down move
 // the selection, Enter or Space activates it, and activation runs the same
@@ -46,12 +46,14 @@ Item {
     // Five near-identical declarations were five places to keep in step, and
     // the keyboard needs an index anyway. Hibernate REPLACES suspend: this machine hibernates rather than sleeps, and one path to
     // one feature means suspend is gone rather than kept beside it.
+    // Grouped by consequence: the session survives (lock, hibernate), or it
+    // ends (logout, reboot, shutdown). An armed tile names its verb.
     readonly property var actions: [
         { icon: "lock", label: "Lock", role: "lock", destructive: false },
-        { icon: "log-out", label: "Logout", role: "logout", destructive: true },
         { icon: "moon", label: "Hibernate", role: "hibernate", destructive: false },
-        { icon: "rotate-cw", label: "Reboot", role: "reboot", destructive: true },
-        { icon: "power", label: "Shutdown", role: "shutdown", destructive: true }
+        { icon: "log-out", label: "Log out", confirmLabel: "Log out?", role: "logout", destructive: true },
+        { icon: "rotate-cw", label: "Restart", confirmLabel: "Restart?", role: "reboot", destructive: true },
+        { icon: "power", label: "Shut down", confirmLabel: "Shut down?", role: "shutdown", destructive: true }
     ]
 
     // Opens on Lock: the harmless one. A power column that opens with shutdown
@@ -109,9 +111,12 @@ Item {
         registerHitRect: false // the host's full-scene catch region is the hit area
         shouldBeActive: root.active
         suppressed: root.fullscreen || root.scene.focusMode
+        // The body runs to the monitor's edge: the tiles keep one gutter from
+        // the monitor, not from the frame beside it.
+        edgeInset: 0
         // One token for spec-08's 96, shared with the button itself.
-        bodyWidth: QsmShellStyle.Style.tileWidth + QsmShellStyle.Style.rolloutPadding * 2
-        bodyHeight: column.implicitHeight + QsmShellStyle.Style.rolloutPadding * 2
+        bodyWidth: QsmShellStyle.Style.tileWidth + Theme.edgeGutter * 2
+        bodyHeight: column.implicitHeight + Theme.edgeGutter * 2
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
 
@@ -129,11 +134,6 @@ Item {
             ColumnLayout {
                 id: column
                 anchors.horizontalCenter: parent.horizontalCenter
-                // The column centres in the whole silhouette -- its own body
-                // plus the band it bulges out of -- not in the body alone.
-                // Centred in the body it sat half a band-depth left of the
-                // middle of the shape a person actually sees.
-                anchors.horizontalCenterOffset: rollout.contentCenterOffsetX
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: QsmShellStyle.Style.space2
 
@@ -157,16 +157,18 @@ Item {
                         label: modelData.label
                         // The armed tile names its next press: the fill alone
                         // differs from selected only in hue.
-                        confirmLabel: "Confirm"
+                        confirmLabel: modelData.confirmLabel ?? ""
                         // Selected is PRIMARY here, not the accent: the
                         // accent is spent on armed, and on this surface what
                         // happens next matters more than what is picked.
                         accent: Theme.primary
-                        // 08: shutdown, the one destructive action, is set
-                        // apart by a full step (space4 including the column's
-                        // own gap) and draws in danger.
+                        // 08: shutdown, the last and least reversible, draws in
+                        // danger at rest. The group that ends the session starts
+                        // a full step (space4 including the column's own gap)
+                        // below the group that keeps it.
                         danger: modelData.role === "shutdown"
-                        Layout.topMargin: modelData.role === "shutdown" ? QsmShellStyle.Style.space4 - QsmShellStyle.Style.space2 : 0
+                        Layout.topMargin: index > 0 && modelData.destructive && !root.actions[index - 1].destructive
+                            ? QsmShellStyle.Style.space4 - QsmShellStyle.Style.space2 : 0
                         buttonWidth: QsmShellStyle.Style.tileWidth
                         buttonHeight: QsmShellStyle.Style.tileHeight
                         selected: root.selectedIndex === index

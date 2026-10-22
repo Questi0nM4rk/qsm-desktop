@@ -150,7 +150,7 @@ Item {
         settleContent: false
         // Card heights and eviction already animate the column's actual extent.
         animateBodySize: false
-        padding: Theme.notificationGutter
+        padding: Theme.edgeGutter
         bodyWidth: notificationStack.implicitWidth + padding * 2
         bodyHeight: notificationStack.implicitHeight + padding * 2
         anchors.top: parent.top
@@ -169,7 +169,7 @@ Item {
         orientation: Qt.Vertical
         // The rollout's own inner padding, so both bodies inset the column
         // identically.
-        padding: Theme.notificationGutter
+        padding: Theme.edgeGutter
         bodySize: notificationStack.implicitWidth + padding * 2
         preferredLength: notificationStack.height + padding * 2
         anchors.top: parent.top

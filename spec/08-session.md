@@ -3,9 +3,10 @@
 Reference: `references/session-panel-right.png`.
 
 - **RATIFIED (2026-08-16, amended 2026-08-21)**: right-edge rollout, single column of action
-  buttons, opened from the rail's power entry. Set top→bottom: lock, logout, hibernate,
-  reboot, shutdown — mapping: hyprlock; hyprland exit; systemctl hibernate / reboot /
-  poweroff. Hibernate REPLACED suspend (owner 2026-08-21): this machine hibernates rather
+  buttons, opened from the rail's power entry. Set top→bottom, grouped by consequence: lock,
+  hibernate (the session survives), then log out, restart, shut down (the session ends), the
+  two groups a full step (16px) apart — mapping: hyprlock; systemctl hibernate; hyprland exit;
+  systemctl reboot / poweroff. Hibernate REPLACED suspend (owner 2026-08-21): this machine hibernates rather
   than sleeps, and one path to one feature means suspend is gone, not kept beside it.
 - **RATIFIED (2026-08-16)**: while open, everything else FADES BACK — desktop and windows dim
   and blur; only the rolled-out buttons stay in focus. Closing restores instantly. Opened by a
@@ -32,10 +33,14 @@ Reference: `references/session-panel-right.png`.
   next matters more than what is picked.
 - **DEFAULT (2026-08-16)**: buttons 96×72px, 8px spacing, column vertically centered on the
   right edge; icons LIVE-TUNE against `references/session-panel-right.png`.
+- **RULED (2026-10-22, owner)**: placement is measured from the monitor, never from the frame
+  band beside it. The body runs to the monitor's right edge (`Rollout.edgeInset: 0`) and is
+  112 wide (`tileWidth` + 2 x `Theme.edgeGutter`), so the tiles sit 8px from the monitor and
+  8px from the silhouette's other edge, and 8px from its top and bottom.
 - **DEFAULT (2026-08-16)**: an armed destructive button disarms after 3s or when the cursor
   leaves it.
-  The armed tile names its next press: its label reads "Confirm" while armed. Fill alone
-  separated armed from selected by hue only. The arm is the library's `ArmedAction`, one per tile.
+  The armed tile names its next press: its label is the verb with a question mark ("Shut
+  down?") while armed. Fill alone separated armed from selected by hue only. The arm is the library's `ArmedAction`, one per tile.
 - **RATIFIED (2026-10-16, owner)**: resting tiles fill with `surface` on the rollout's `band`.
-  Shut down, the one destructive action, is set apart from the other four by 16 px and its
-  glyph and label draw in `danger`, separated and named.
+  Shut down, the last and least reversible action, draws its glyph and label in `danger` at
+  rest.

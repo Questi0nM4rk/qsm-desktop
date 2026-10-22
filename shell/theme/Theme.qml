@@ -262,11 +262,12 @@ QtObject {
     readonly property int notificationBellCountedWidth: notificationBellPad * 2
         + QsmShellStyle.Style.iconSm + QsmShellStyle.Style.space1 + QsmShellStyle.Style.badgeWidth
     readonly property int notificationMenuHeight: 520
-    // The gap between a notification card and the screen edge it rolls out of,
-    // and between it and the silhouette's other edge: measured from the
-    // monitor, never from the frame that runs along it. One gap, so cards sit
-    // as far from the edges as they do from each other.
-    readonly property int notificationGutter: QsmShellStyle.Style.space2
+    // The gap between what a rollout holds (a notification card, an OSD track,
+    // a session tile) and the screen edge it rolls out of, and between it and
+    // the silhouette's other edge: measured from the monitor, never from the
+    // frame that runs along it. One gap, so content sits as far from the edges
+    // as it does from its neighbours.
+    readonly property int edgeGutter: QsmShellStyle.Style.space2
 
     // ── Handles ────────────────────────────────────────────────────────
     // The OSD circle nub and the top dot pair.
@@ -295,12 +296,10 @@ QtObject {
     readonly property int popoutDeviceListMax: 5
     // The OSD is a narrow surface with a fat track: the value rides a circle
     // that travels the track, so the thumb has to contain the reading and the
-    // track has to contain the thumb. A rollout is the band bulging, so its
-    // content centres in body plus band and shifts half a band depth toward the
-    // edge; the width is the one at which the track, the thumb's inset and
-    // that shift all close without the track's last pixels drawing under the
-    // frame.
-    readonly property int osdWidth: 56
+    // track has to contain the thumb. Its body runs to the monitor's right
+    // edge, so the track keeps one gutter from the monitor and one from the
+    // silhouette's other edge.
+    readonly property int osdWidth: osdTrackWidth + edgeGutter * 2
     readonly property int osdTrackWidth: 40
     readonly property int osdTrackHeight: 140
     readonly property int osdThumbSize: 28

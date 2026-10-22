@@ -652,8 +652,8 @@ PanelWindow {
         // The body runs to the monitor's top and right edges, so its content
         // is a gutter from the monitor, not from the frame beside it.
         edgeInset: 0
-        padding: Theme.notificationGutter
-        bodyWidth: QsmShellStyle.Style.notificationWidth + Theme.notificationGutter * 2
+        padding: Theme.edgeGutter
+        bodyWidth: QsmShellStyle.Style.notificationWidth + Theme.edgeGutter * 2
         bodyHeight: Math.min(
             Theme.notificationMenuHeight,
             root.height - QsmShellStyle.Style.space6 * 2)

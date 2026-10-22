@@ -18,7 +18,7 @@ require review.
 
 - Anchored top-right. Placement is measured from the monitor, never from the frame band: the
   body runs to the monitor's top and right edges and carries an 8px gutter
-  (`Theme.notificationGutter`), so the cards sit 8px from both edges, 8px from each other and
+  (`Theme.edgeGutter`), so the cards sit 8px from both edges, 8px from each other and
   8px from the body's free edges. Cards are 380px wide so short notifications sit close to the
   right edge and expanded body text wraps below. Small reveal tier (250ms), as an unbidden,
   occasional arrival. Over a fullscreen client there is no band to flush into, so the popup

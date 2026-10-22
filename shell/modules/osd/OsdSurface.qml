@@ -12,8 +12,13 @@ Item {
     required property var host
     readonly property bool active: OsdState.visible && OsdState.targetScreen === root.targetScreen
     readonly property bool fullscreen: root.scene.fullscreen
-    readonly property real leadingEdgeX: rollout.x
-    readonly property real openFraction: rollout.width / Theme.osdWidth
+    // The rollout runs to the monitor's right edge, so its own x passes the
+    // band's inner face long before anything shows: the nub rides the leading
+    // edge of what is visible, and the chevron turns with what is visible.
+    readonly property real _band: root.host.edge ?? QsmShellStyle.Style.frameThickness
+    readonly property real leadingEdgeX: Math.min(rollout.x, root.width - root._band)
+    readonly property real openFraction: Math.max(0, Math.min(1,
+        (rollout.width - root._band) / (Theme.osdWidth - root._band)))
     readonly property real rolloutTop: rollout.y
     readonly property real rolloutBottom: rollout.y + rollout.height
     readonly property real handleRadius: Theme.handleRadius
@@ -51,30 +56,6 @@ Item {
         : rollout.wantsOpen
     readonly property bool retentionHeld: root.active
         && (root.pointerIntent || osdContent.interactionHeld)
-
-    // Whole-shape centring must still leave the outside ring and grown thumb
-    // inside the clip aperture.
-    readonly property real _focusGap: QsmShellStyle.Style.spaceTight
-    function channelEnvelopeHalf(channel: OsdChannel): real {
-        if (!channel || !channel.visible)
-            return 0;
-        const ring = channel.thickness / 2 + root._focusGap;
-        return Math.max(channel.implicitWidth / 2, ring);
-    }
-    readonly property real contentEnvelopeHalf: Math.max(
-        osdContent.implicitWidth / 2,
-        root.channelEnvelopeHalf(osdContent.outputTarget),
-        root.channelEnvelopeHalf(osdContent.microphoneTarget),
-        root.channelEnvelopeHalf(osdContent.brightnessTarget))
-    readonly property real apertureHalf: (root.fullscreen
-        ? capsule.bodySize
-        : rollout.bodyWidth) / 2
-    readonly property real _contentOffsetLimit: Math.max(0,
-        root.apertureHalf - root.contentEnvelopeHalf)
-    readonly property real contentCenterOffsetX: Math.max(
-        -root._contentOffsetLimit,
-        Math.min(root._contentOffsetLimit,
-            root.fullscreen ? 0 : rollout.contentCenterOffsetX))
 
     anchors.fill: parent
 
@@ -210,8 +191,11 @@ Item {
         suppressed: root.fullscreen
         fullscreenDetached: false
         fullscreenCapsule: false
+        // The body runs to the monitor's edge: its track keeps one gutter from
+        // the monitor, not from the frame beside it.
+        edgeInset: 0
         bodyWidth: Theme.osdWidth
-        bodyHeight: osdContent.implicitHeight + QsmShellStyle.Style.rolloutPadding * 2
+        bodyHeight: osdContent.implicitHeight + Theme.edgeGutter * 2
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
         triggerAreas: [root._closedCorridor]
@@ -227,11 +211,11 @@ Item {
         enabled: root.active && root.fullscreen
         bodySize: Theme.osdWidth
         orientation: Qt.Vertical
-        preferredLength: osdContent.implicitHeight + QsmShellStyle.Style.rolloutPadding * 2
+        preferredLength: osdContent.implicitHeight + Theme.edgeGutter * 2
         padding: 0
         elevated: false
         anchors.right: parent.right
-        anchors.rightMargin: QsmShellStyle.Style.space4
+        anchors.rightMargin: Theme.edgeGutter
         anchors.verticalCenter: parent.verticalCenter
     }
 
@@ -240,7 +224,6 @@ Item {
         targetScreen: root.targetScreen
         parent: root.fullscreen ? capsule.contentItem : rollout.contentItem
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.horizontalCenterOffset: root.contentCenterOffsetX
         anchors.verticalCenter: parent.verticalCenter
     }
 
