@@ -24,7 +24,6 @@ Item {
     // The grip sits on whole device pixels in both directions: a round dot
     // that starts between two pixels rasterises soft and its peak loses the
     // contrast the `text` role gives it.
-    readonly property real pixelRatio: root.Window.window?.devicePixelRatio ?? 1
     readonly property real dotSize: QsmShellStyle.Style.stroke(Theme.dotGlyphSize, root)
     signal activated
     readonly property var actions: [({ name: "open-panel", invoke: () => root.activate() })]
@@ -62,8 +61,8 @@ Item {
 
     Row {
         id: grip
-        x: Math.round((root.width - width) * root.pixelRatio / 2) / root.pixelRatio
-        y: Math.floor((root.height - height) * root.pixelRatio / 2) / root.pixelRatio
+        x: QsmShellStyle.Style.snap((root.width - width) / 2, root)
+        y: QsmShellStyle.Style.snapDown((root.height - height) / 2, root)
         spacing: QsmShellStyle.Style.stroke(Theme.dotSpacing, root)
 
         Repeater {

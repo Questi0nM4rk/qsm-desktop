@@ -293,13 +293,12 @@ QsmShellComponents.Rollout {
         property string sizing: "content"
         readonly property bool shouldBeActive: root.hasCurrent && root.controller.kind === name
         readonly property bool shouldBeRendered: root.renderKind === name
-        readonly property real dpr: Window.window?.devicePixelRatio ?? 1
 
         // Centred in the padded body, on a whole device pixel: the body is
         // taller than its content by up to a step, and half of that is
         // seldom a whole pixel.
-        x: Math.round((parent.width - width) / 2 * dpr) / dpr
-        y: Math.round((parent.height - height) / 2 * dpr) / dpr
+        x: QsmShellStyle.Style.snap((parent.width - width) / 2, parent)
+        y: QsmShellStyle.Style.snap((parent.height - height) / 2, parent)
 
         active: shouldBeRendered
         enabled: shouldBeActive
