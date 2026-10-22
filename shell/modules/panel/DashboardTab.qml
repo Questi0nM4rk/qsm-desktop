@@ -198,7 +198,7 @@ GridLayout {
                 spacing: QsmShellStyle.Style.space3
 
                 QsmShellComponents.SvgIcon {
-                    name: "sunset"
+                    name: Glyphs.forWeather(WeatherService.code)
                     size: QsmShellStyle.Style.iconXxl
                     color: Theme.textMuted
                 }

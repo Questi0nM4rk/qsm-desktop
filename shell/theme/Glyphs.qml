@@ -80,4 +80,20 @@ QtObject {
         }
         return best.length > 0 ? best : root.deviceFallback;
     }
+
+    // wttr.in weather codes with a glyph of their own. The icon set has no
+    // cloud, rain or snow, so every other sky takes the thermometer, the
+    // reading beside it, rather than a glyph that says something else.
+    readonly property var weatherGlyphs: ({
+        "113": "brightness",
+        "200": "zap",
+        "386": "zap",
+        "389": "zap",
+        "392": "zap",
+        "395": "zap"
+    })
+
+    function forWeather(code: string): string {
+        return weatherGlyphs[String(code)] ?? "thermometer";
+    }
 }

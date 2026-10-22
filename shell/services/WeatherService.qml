@@ -12,6 +12,7 @@ QtObject {
     property bool available: false
     property string temperature: ""
     property string description: ""
+    property string code: ""
     property string feelsLike: ""
     property double fetchedAt: 0
 
@@ -35,6 +36,7 @@ QtObject {
                 temperature = `${current.temp_C}°`;
                 feelsLike = `feels ${current.FeelsLikeC}°`;
                 description = current.weatherDesc?.[0]?.value ?? "";
+                code = String(current.weatherCode ?? "");
                 fetchedAt = Date.now();
                 available = true;
             } catch (error) {
