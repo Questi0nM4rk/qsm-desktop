@@ -28,6 +28,7 @@ Open items only, one line each; what is fixed or historical is in git.
 
 ## Defects and gaps
 
+- Every config load logs `Unable to assign [undefined]` twice: `services/FullscreenService.qml:15` (`fullscreenCount`) and `state/ShellState.qml:88` (`modalBlocked`) evaluate before their inputs exist. Harmless today, but it hides a real assignment warning in the same log.
 - A text box is a whole number of logical pixels (a section header 14, a metadata line 14, the battery row 47), which is not a whole device pixel at 1.25, so rows below one sit 0.25 device px off the grid: 7 Surface, Card and IconButton nodes in the sound, network and battery rollouts. The popout card title takes the 4 px rhythm; the library `Prose` and `Section` need to own a snapped line box.
 - Right-aligned capsules in the network and bluetooth rollouts take their width from text, so their x lands 0.25 device px off the grid; the same library change covers it.
 - The dashboard weather glyph is the sun for clear, the bolt for a storm and the thermometer for every other sky: the library icon set has no cloud, rain, snow or fog glyph (`Glyphs.weatherGlyphs`).
