@@ -35,7 +35,7 @@ Item {
     // the gap between them. The host reads it and computes nothing.
     readonly property real preferredBodyHeight: Theme.clipboardMaxRows * Theme.clipboardRowHeight
         + (Theme.clipboardMaxRows - 1) * QsmShellStyle.Style.space1
-        + search.implicitHeight + QsmShellStyle.Style.space2 + QsmShellStyle.Style.rolloutPadding * 2
+        + search.implicitHeight + QsmShellStyle.Style.space2 + Theme.railPopoutPadding * 2
 
     // Why a read or a copy did not happen, shown where the list is. A failed
     // read is not an empty history, and a failed copy must not close the
@@ -196,7 +196,7 @@ exit 0`, "_", ...images.map(image => image.file)];
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: QsmShellStyle.Style.rolloutPadding
+        anchors.margins: Theme.railPopoutPadding
         spacing: QsmShellStyle.Style.space2
 
         SearchField {

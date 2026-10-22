@@ -193,7 +193,7 @@ Item {
     // kill list's wider gap scrolls, it never resizes the body.
     readonly property real preferredBodyHeight: Theme.launcherMaxRows * Theme.launcherRowHeight
         + (Theme.launcherMaxRows - 1) * QsmShellStyle.Style.space1
-        + QsmShellStyle.Style.size("TextField", "lg") + QsmShellStyle.Style.space4 + QsmShellStyle.Style.rolloutPadding * 2
+        + QsmShellStyle.Style.size("TextField", "lg") + QsmShellStyle.Style.space4 + Theme.railPopoutPadding * 2
 
     onModeChanged: {
         if (mode === "kill")
@@ -1122,7 +1122,7 @@ ps -eo pid,pcpu,comm --no-headers --sort=-pcpu | head -25 | awk '{printf "P|%s|%
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: QsmShellStyle.Style.rolloutPadding
+        anchors.margins: Theme.railPopoutPadding
         // The field and its results are two groups: the group gap, not the one
         // inside a group.
         spacing: QsmShellStyle.Style.space4

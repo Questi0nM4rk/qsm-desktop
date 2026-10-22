@@ -83,6 +83,7 @@ Item {
         bodyHeight: root.bodyHeight
         edgeInset: root.edgeInset
         padding: root.padding
+        radius: Theme.railPopoutRadius
 
         // Anchors are assigned imperatively: the declarative ternary form
         // (left/right/horizontalCenter all declared, resolving to undefined)
