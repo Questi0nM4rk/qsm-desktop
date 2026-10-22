@@ -58,18 +58,13 @@ Item {
                 }
 
                 // System updates (HyDE parity): directly under
-                // the mark. The pending count takes the glyph's place as an
-                // accent chip, because a chip beside a glyph in a capsule this
-                // narrow would cover it; at zero and while unknown the glyph
-                // returns, and an absent count never claims "up to date" (the
-                // hover card does the telling). Click opens the full upgrade
-                // in a terminal, the ONE action.
+                // the mark. The badge carries the pending count; click opens the
+                // full upgrade in a terminal — the ONE action. Hover names the
+                // state instead.
                 RailEntry {
-                    id: updatesCell
-
                     interactive: true
-                    icon: UpdateService.available ? "" : "updates"
-                    iconColor: Theme.textMuted
+                    icon: "updates"
+                    iconColor: UpdateService.available ? Theme.text : Theme.textMuted
                     popouts: root.popouts
                     popoutKind: "updates"
                     popoutTitle: "System updates"
@@ -80,14 +75,20 @@ Item {
                             : "Counting…"
                     onClicked: UpdateService.upgrade()
 
+                    // The count riding the cell's corner. Hidden at zero and while
+                    // unknown — an absent badge never claims "up to date"; the
+                    // hover card does the telling.
                     QsmShellComponents.Badge {
                         visible: UpdateService.available
-                        // Centred by arithmetic on the capsule: two digits take
-                        // the workspace chip's width, "99+" the whole capsule,
-                        // so every edge sits on a whole device pixel.
-                        x: (parent.width - width) / 2
-                        y: (parent.height - height) / 2
-                        width: text.length > 2 ? parent.width : Theme.railWorkspaceChipWidth
+                        // On the glyph's own top-right corner and no further than
+                        // the capsule: the chip's right edge is the capsule's, so
+                        // no pixel of it reaches the band's wall, and one rhythm
+                        // step above the cell's centre line it leaves the glyph's
+                        // body readable. All of its edges sit on whole device
+                        // pixels.
+                        anchors.right: parent.right
+                        anchors.bottom: parent.verticalCenter
+                        anchors.bottomMargin: QsmShellStyle.Style.space1
                         tone: "accent"
                         filled: true
                         text: UpdateService.count > 99 ? "99+" : String(UpdateService.count)
@@ -269,10 +270,8 @@ Item {
                 verticalAlignment: Text.AlignVCenter
                 visible: batteryCell.laptop
                 text: Math.round(batteryCell.charge * 100) + "%"
-                // Three digits and the sign at the small step fit the capsule.
-                font.pixelSize: QsmShellStyle.Style.textSm
+                font.pixelSize: QsmShellStyle.Style.textMd
                 font.weight: QsmShellStyle.Style.weightMedium
-                elide: Text.ElideNone
                 // Charging is the one state the number cannot state, so
                 // it says it in the accent rather than by growing a
                 // second glyph beside itself.

@@ -210,24 +210,21 @@ QtObject {
     readonly property int performanceSparklineHeight: 56
 
     // ── Frame, rail, notifications ─────────────────────────────────────
-    // The left band is wider than the others: the rail lives inside it. A
-    // glyph is centred between the screen edge and the band's wall, so the
-    // gap from its edge to a rollout is half of what the band leaves over
-    // after the glyph; the band, the capsule and the glyph leave a multiple
-    // of 8 over, so everything centred on the axis lands on whole device
-    // pixels at 1.25.
-    readonly property int reservedLeft: 40
+    // The left band is wider than the others: the rail lives inside it. Its
+    // width and the capsule's leave a multiple of 8 over, so everything
+    // centred on the band's axis lands on whole device pixels at 1.25.
+    readonly property int reservedLeft: 64
     // THE width of the band: every item (a glyph, the battery reading, the
     // clock, an app row, a tray icon) is this wide and answers on one hit
     // area, the capsule plus the band's left gutter. Height is the item's own:
     // a cell, an app row and the clock each take what their content needs.
-    readonly property int railWidth: QsmShellStyle.Style.size("Control", "sm")
-    // The capsule sits one space1 in from the screen edge, which leaves the
-    // rest of the band between it and the rollout's wall. Both gaps are whole
-    // device pixels at 1.25, 1.5 and 2 (multiples of 4): the hit area crosses
-    // the first to the true edge, and a selected pill reaches the wall across
-    // the second.
-    readonly property int railGutter: QsmShellStyle.Style.space1
+    readonly property int railWidth: QsmShellStyle.Style.size("Control", "lg")
+    // The capsule sits one space2 in from the screen edge, which leaves the rest
+    // of the band between it and the rollout's wall. Both gaps are whole device
+    // pixels at 1.25, 1.5 and 2 (multiples of 4), which a centred 6 and 6 is
+    // not: the hit area crosses the first to the true edge, and a selected
+    // pill reaches the wall across the second.
+    readonly property int railGutter: QsmShellStyle.Style.space2
     readonly property int railReach: reservedLeft - railGutter - railWidth
     // One gap inside a group; groups are told apart by space, and by a line
     // where the groups either side look alike.
@@ -241,8 +238,7 @@ QtObject {
     // coloured third-party glyph sits in the same tone as the rail's outline
     // glyphs.
     readonly property real trayGlyphBrightness: 0.5
-    // The rail clock: the time over a smaller numeric date, each in digit
-    // pairs, so the widest line is two characters of the capsule's width.
+    // The rail clock: time above a smaller numeric date.
     readonly property int railClockDigitSize: QsmShellStyle.Style.textLg
     readonly property int railClockDateSize: QsmShellStyle.Style.textSm
     // A tray menu's separators are short lines.
@@ -251,15 +247,26 @@ QtObject {
     // subdividing.
     readonly property int railDeviceMax: 4
     // The workspace strip: one capsule of the rail's width holding every
-    // workspace, one slot each at the pointer floor, tiled with no gap. A slot
-    // shows an empty ring or a filled dot; the selected one wears the accent
-    // chip with the number, which slides between slots.
-    readonly property int railWorkspaceSlot: QsmShellStyle.Style.size("Control", "xs")
+    // workspace, one slot each, tiled with no gap. The marks scale with the
+    // rail's Control size from the md they were drawn at and round UP to a
+    // multiple of 8: centred in the 48 capsule an odd-pixel mark (12 or 20) would
+    // sit half a device pixel off the axis at 1.25, and a mark never reads small.
+    // A slot shows an empty
+    // ring or a filled dot; the selected one wears the accent chip with the
+    // number, which slides between slots. A slot is one cell high (32), over
+    // the 24 pointer floor, so the chip and the hover growth stay inside it.
+    readonly property real railScale: QsmShellStyle.Style.size("Control", "lg")
+        / QsmShellStyle.Style.size("Control", "md")
+    function railMarkSize(px: real): int {
+        return Math.ceil(px * railScale / QsmShellStyle.Style.space2) * QsmShellStyle.Style.space2;
+    }
+    readonly property int railWorkspaceSlot: railCellHeight
     readonly property int railWorkspaceSlots: 10
-    readonly property int railWorkspaceDot: QsmShellStyle.Style.space2
-    readonly property int railWorkspaceChipWidth: QsmShellStyle.Style.space5
+    readonly property int railWorkspaceDot: railMarkSize(QsmShellStyle.Style.space2)
+    readonly property int railWorkspaceChipWidth: railMarkSize(QsmShellStyle.Style.space5)
+    readonly property int railWorkspaceChipHeight: railMarkSize(QsmShellStyle.Style.badgeHeight)
     // The ring around an urgent workspace's dot.
-    readonly property int railWorkspaceRing: QsmShellStyle.Style.iconSm
+    readonly property int railWorkspaceRing: railMarkSize(QsmShellStyle.Style.iconSm)
     // The dot is so small that the library's hover growth would be under half
     // a pixel, so it grows by half again to be seen at all.
     readonly property real railWorkspaceDotHoverScale: QsmShellStyle.Style.reducedMotion ? 1 : 1.5

@@ -78,11 +78,11 @@ Item {
         id: chip
 
         readonly property real stride: Theme.railWorkspaceSlot
-        x: (parent.width - Theme.railWorkspaceChipWidth) / 2 - root.chipGrowth
-        y: root.activeIndex * chip.stride + (chip.stride - QsmShellStyle.Style.badgeHeight) / 2
+        x: QsmShellStyle.Style.snap((parent.width - Theme.railWorkspaceChipWidth) / 2, chip) - root.chipGrowth
+        y: root.activeIndex * chip.stride + (chip.stride - Theme.railWorkspaceChipHeight) / 2
             - root.chipGrowth
         width: Theme.railWorkspaceChipWidth + 2 * root.chipGrowth
-        height: QsmShellStyle.Style.badgeHeight + 2 * root.chipGrowth
+        height: Theme.railWorkspaceChipHeight + 2 * root.chipGrowth
         visible: root.hasActive
         tone: "accent"
         filled: true
@@ -133,8 +133,10 @@ Item {
             // rounds to a whole LOGICAL pixel, which is between two device
             // pixels at 1.25 once hover has grown the body.
             Rectangle {
-                x: (parent.width - width) / 2
-                y: (parent.height - height) / 2
+                id: dotMark
+
+                x: QsmShellStyle.Style.snap((parent.width - width) / 2, dotMark)
+                y: QsmShellStyle.Style.snap((parent.height - height) / 2, dotMark)
                 width: Theme.railWorkspaceDot + 2 * dotLayer.growth
                 height: width
                 radius: QsmShellStyle.Style.radiusPill
@@ -158,8 +160,10 @@ Item {
             // An urgent workspace asks for attention, so its dot wears a
             // ring as well as the danger colour.
             Rectangle {
-                x: (parent.width - width) / 2
-                y: (parent.height - height) / 2
+                id: ringMark
+
+                x: QsmShellStyle.Style.snap((parent.width - width) / 2, ringMark)
+                y: QsmShellStyle.Style.snap((parent.height - height) / 2, ringMark)
                 width: Theme.railWorkspaceRing + 2 * dotLayer.growth
                 height: width
                 radius: QsmShellStyle.Style.radiusPill
@@ -177,7 +181,7 @@ Item {
                 id: dotLayer
                 anchors.fill: parent
                 anchors.leftMargin: -Theme.railGutter
-                extent: slot.active ? QsmShellStyle.Style.badgeHeight : Theme.railWorkspaceDot
+                extent: slot.active ? Theme.railWorkspaceChipHeight : Theme.railWorkspaceDot
                 hoverScale: slot.active ? QsmShellStyle.Motion.hoverScale
                     : Theme.railWorkspaceDotHoverScale
                 focused: slot.activeFocus
