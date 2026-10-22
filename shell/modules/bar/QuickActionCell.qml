@@ -34,7 +34,7 @@ RailEntry {
     iconSize: QsmShellStyle.Style.iconSm
     // The column sits inside its rollout's padding: the pill reaches that
     // rollout's edge, where the level-2 card begins.
-    reach: QsmShellStyle.Style.rolloutPadding
+    reach: Theme.railPopoutPadding
     required popoutKind
     popoutDetail: root.armed ? "Click again to confirm — this cannot be undone" : detail
     iconColor: root.armed ? Theme.danger : Theme.text

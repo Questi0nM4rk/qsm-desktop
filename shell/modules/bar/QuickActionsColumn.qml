@@ -1,5 +1,4 @@
 import QtQuick
-import qs.QsmShell.Style as QsmShellStyle
 import qs.services
 import qs.theme
 
@@ -25,24 +24,12 @@ Item {
     // own title. The column is the one place that knows which cell is which.
     signal interacted(string kind, string action, string title)
 
-    // CLEARANCE, not decoration. A detail card is centred on
-    // the cell that opened it, so for the FIRST and LAST cells it lands level
-    // with the column's own rounded corners — and a small card's square left
-    // edge meeting a 28px curve is a jagged seam.
-    //
-    // Reserving space above the first cell and below the last one moves that
-    // junction into the column's straight flank, where two flush rects read as
-    // one shape. Derivation: the tallest card here is a title plus two wrapped
-    // lines (~85px), so its top sits ~22px above the first cell's centre, which
-    // is itself 20px below the cells' top; clearing a 28px radius therefore
-    // needs ~50px, and BarPopouts already contributes 16 of it.
-    //
-    // Stretching the card to the column's full height instead would make the
-    // seam one straight line, but the cards are meant to stay small.
-    readonly property int clearance: QsmShellStyle.Style.space6 + QsmShellStyle.Style.space2
-
+    // As tall as the colour menu that hangs off it needs, so the seam between
+    // the two is one straight line, and its cells are centred in what that
+    // leaves. The room above the first cell and below the last also keeps a
+    // detail card's square edge off this column's own rounded corners.
     implicitWidth: Theme.railWidth
-    implicitHeight: cells.implicitHeight + clearance * 2
+    implicitHeight: Math.max(cells.implicitHeight, Theme.colorMenuMinHeight)
 
     // The actual cells, by role. A host reaches the real control through
     // `control()`; it never re-derives one from a cell's position.

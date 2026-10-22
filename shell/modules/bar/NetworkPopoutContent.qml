@@ -399,7 +399,7 @@ ColumnLayout {
 
     QsmShellComponents.Section {
         Layout.fillWidth: true
-        Layout.topMargin: QsmShellStyle.Style.space4
+        Layout.topMargin: QsmShellStyle.Style.space3
         visible: root.devices.length > 0
         title: "Wired"
 
@@ -423,7 +423,7 @@ ColumnLayout {
 
     QsmShellComponents.Section {
         Layout.fillWidth: true
-        Layout.topMargin: QsmShellStyle.Style.space4
+        Layout.topMargin: QsmShellStyle.Style.space3
         visible: root.vpns.length > 0
         title: "VPN"
 
