@@ -12,15 +12,15 @@ import qs.theme
 // changes size and nothing under it moves. A slot is as wide as the rail and
 // tall enough for a pointer, with a mark whose SHAPE is the state: an empty
 // workspace a ring, one with windows a filled dot, an urgent one a danger dot
-// in a ring. The selected slot wears the library's accent chip with the real
-// number in textOnPrimary. A switch plays three overlapping phases that settle
-// in about a quarter of a second: the lens slides to the new slot as a dot, the
-// dot widens into the lens with the number, and a rollout grows DOWN out of it
-// with the workspace's window icons (the slots below make room, so nothing
-// jumps under a resting pointer). Three icons show at once; with more windows
-// the list is a ring buffer the wheel turns over the rollout, and a "+N" count
-// says how many are out of sight. An empty workspace shows its number only.
-// Under reduced motion the end state lands at once. Wheel switches, click jumps.
+// in a ring. The selected slot wears the library's accent lens with the real
+// number in textOnPrimary. On a switch the lens slides to the new slot and
+// stretches DOWN into one long capsule: the number at its top, the workspace's
+// window icons fading in below it (the slots under it move down to make room,
+// so nothing jumps under a resting pointer). Three icons show at once; with
+// more windows the list is a ring buffer the wheel turns over the capsule, and
+// a "+N" count says how many are out of sight. An empty workspace is the number
+// only. A switch settles in about 210 ms; under reduced motion it lands at
+// once. Wheel switches, click jumps.
 Item {
     id: root
 
@@ -76,8 +76,8 @@ Item {
     readonly property real chipGrowth: root.hoveredIndex === root.activeIndex
         ? (root.activeSlot?.growth ?? 0) : 0
 
-    // What the rollout shows. It is a snapshot taken when the lens arrives, so
-    // the old rollout empties out under the old slot and not under the new one.
+    // What the lens holds. It is a snapshot taken when the lens arrives, so the
+    // old capsule empties out under the old slot and not under the new one.
     readonly property int bodyInset: QsmShellStyle.Style.space1
     readonly property real cueHeight: QsmShellStyle.Style.space5
     property int shownIndex: 0
@@ -93,12 +93,13 @@ Item {
     readonly property real targetHeight: hasActive ? bodyHeight(apps.length) : 0
     readonly property real maxRolloutHeight: bodyHeight(visibleRows + 1)
 
-    // The three animated quantities, in the order of the switch: where the lens
-    // is (in slots), how far the dot has widened into the lens (0 to 1), and how
-    // tall the rollout is.
+    // The two animated quantities: where the lens is (in slots) and how far it
+    // has stretched below its slot.
     property real lensPos: 0
-    property real expand: 1
     property real rolloutHeight: 0
+    // The icons fade in as the capsule opens.
+    readonly property real revealed: bodyHeight(shownCount) > 0
+        ? Math.min(1, rolloutHeight / bodyHeight(shownCount)) : 0
 
     // The ring buffer: the position (in rows) of the first visible icon.
     property int ringTarget: 0
@@ -136,7 +137,6 @@ Item {
         if (QsmShellStyle.Style.reducedMotion) {
             land();
             lensPos = activeIndex;
-            expand = hasActive ? 1 : 0;
             rolloutHeight = targetHeight;
         } else {
             switchAnim.start();
@@ -178,16 +178,6 @@ Item {
         }
         SequentialAnimation {
             NumberAnimation {
-                target: root; property: "expand"; to: 0
-                duration: QsmShellStyle.Motion.press; easing.type: QsmShellStyle.Motion.standardEasing
-            }
-            NumberAnimation {
-                target: root; property: "expand"; to: root.hasActive ? 1 : 0
-                duration: QsmShellStyle.Motion.micro; easing.type: QsmShellStyle.Motion.standardEasing
-            }
-        }
-        SequentialAnimation {
-            NumberAnimation {
                 target: root; property: "rolloutHeight"; to: 0
                 duration: root.rolloutHeight > 0 ? QsmShellStyle.Motion.press : 0
                 easing.type: QsmShellStyle.Motion.standardEasing
@@ -204,7 +194,7 @@ Item {
     NumberAnimation {
         id: resizeAnim
         target: root; property: "rolloutHeight"; to: root.targetHeight
-        duration: QsmShellStyle.Motion.fast; easing.type: QsmShellStyle.Motion.standardEasing
+        duration: QsmShellStyle.Motion.micro; easing.type: QsmShellStyle.Motion.standardEasing
     }
 
     NumberAnimation {
@@ -246,34 +236,57 @@ Item {
         color: Theme.surface
     }
 
-    // The rollout hangs from the active slot, inside the capsule: one step above
-    // it, clipped to its animated height so it grows downward out of the lens.
+    // The selected slot's lens: a pill with the number, stretched down into a
+    // long capsule while the workspace has windows. It sits under the slots'
+    // layers, which paint nothing but their hover tint.
+    Rectangle {
+        id: chip
+
+        readonly property real grown: root.chipGrowth
+        width: Theme.railWorkspaceChipWidth + 2 * grown
+        height: Theme.railWorkspaceChipHeight + root.rolloutHeight + 2 * grown
+        x: QsmShellStyle.Style.snap((parent.width - width) / 2, chip)
+        y: root.lensY(root.lensPos) + (Theme.railWorkspaceSlot - Theme.railWorkspaceChipHeight) / 2 - grown
+        radius: QsmShellStyle.Style.radiusPill
+        visible: root.hasActive
+        color: QsmShellStyle.Style.tone(Theme.accent, root.hoveredIndex === root.activeIndex,
+            root.pressedIndex === root.activeIndex, false, true, Theme.accent)
+        Accessible.ignored: true
+
+        QsmShellComponents.Prose {
+            y: chip.grown
+            width: parent.width
+            height: Theme.railWorkspaceChipHeight
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            role: "reading"
+            color: QsmShellStyle.Style.textOnPrimary
+            text: String(root.shownWorkspace)
+        }
+    }
+
+
+    // The icons hang below the number inside the lens, clipped to the lens's
+    // stretched height.
     Item {
         id: bodyBox
 
-        x: root.bodyInset
-        y: (root.shownIndex + 1) * Theme.railWorkspaceSlot
-        width: parent.width - 2 * root.bodyInset
-        height: root.rolloutHeight
+        x: QsmShellStyle.Style.snap((parent.width - width) / 2, bodyBox)
+        y: root.lensY(root.lensPos) + Theme.railWorkspaceSlot
+        width: Theme.railWorkspaceChipWidth
+        height: Math.max(0, root.rolloutHeight - root.bodyInset)
         clip: true
         visible: height > 0
-
-        Rectangle {
-            width: parent.width
-            height: root.bodyHeight(root.shownCount)
-            radius: QsmShellStyle.Style.radiusSm
-            color: Theme.overlay
-        }
 
         // Three rows, or five while a ring turns (one above and one below the
         // window), each at its own offset from the ring position.
         Item {
             id: viewport
 
-            y: root.bodyInset
             width: parent.width
             height: root.shownRows * Theme.railCellHeight
             clip: true
+            opacity: root.revealed
 
             Repeater {
                 model: root.ring ? root.visibleRows + 2 : root.shownRows
@@ -343,13 +356,12 @@ Item {
 
                     // The focused window is a state, not a hover. The row is
                     // clipped by the viewport, so it recolours and never grows.
-                    QsmShellComponents.Surface {
+                    Rectangle {
                         anchors.fill: parent
-                        radius: QsmShellStyle.Style.radiusSm
-                        base: "transparent"
-                        selected: appRow.current
-                        hovered: rowLayer.hovered
-                        pressed: rowLayer.pressed
+                        radius: QsmShellStyle.Style.radiusPill
+                        color: Qt.rgba(QsmShellStyle.Style.textOnPrimary.r, QsmShellStyle.Style.textOnPrimary.g,
+                            QsmShellStyle.Style.textOnPrimary.b, QsmShellStyle.Style.opacitySelected)
+                        visible: appRow.current
                     }
 
                     // Hover authority sits on the row, an ancestor of the icon.
@@ -372,7 +384,7 @@ Item {
                         anchors.fill: parent
                         growthCap: 0
                         focused: appRow.activeFocus
-                        focusRadius: QsmShellStyle.Style.radiusSm
+                        focusRadius: QsmShellStyle.Style.radiusPill
                         onClicked: appRow.focusWindow()
                     }
                 }
@@ -381,52 +393,22 @@ Item {
 
         // Past three windows the list loops, so there is no end to cue: the
         // count of windows out of sight says there is more, in text a reader
-        // can hear and without a colour or a motion of its own.
+        // can hear and without a motion of its own.
         QsmShellComponents.Prose {
             visible: root.ring
-            y: root.bodyInset + viewport.height
+            y: viewport.height
+            opacity: root.revealed
             width: parent.width
             height: root.cueHeight
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             role: "reading"
-            color: Theme.textMuted
+            color: QsmShellStyle.Style.textOnPrimary
             text: `+${root.shownCount - root.visibleRows}`
             Accessible.name: `${root.shownCount - root.visibleRows} more windows`
         }
     }
 
-    // The selected slot's mark: a dot while it travels, the lens with the number
-    // once it has arrived. It sits under the slots' layers, which paint nothing
-    // but their hover tint.
-    Rectangle {
-        id: chip
-
-        readonly property real grown: root.chipGrowth
-        readonly property real chipW: Theme.railWorkspaceDot
-            + root.expand * (Theme.railWorkspaceChipWidth - Theme.railWorkspaceDot)
-        readonly property real chipH: Theme.railWorkspaceDot
-            + root.expand * (Theme.railWorkspaceChipHeight - Theme.railWorkspaceDot)
-        width: chipW + 2 * grown
-        height: chipH + 2 * grown
-        x: QsmShellStyle.Style.snap((parent.width - width) / 2, chip)
-        y: root.lensY(root.lensPos) + (Theme.railWorkspaceSlot - height) / 2
-        radius: QsmShellStyle.Style.radiusPill
-        visible: root.hasActive
-        color: QsmShellStyle.Style.tone(Theme.accent, root.hoveredIndex === root.activeIndex,
-            root.pressedIndex === root.activeIndex, false, true, Theme.accent)
-        Accessible.ignored: true
-
-        QsmShellComponents.Prose {
-            anchors.fill: parent
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            role: "reading"
-            color: QsmShellStyle.Style.textOnPrimary
-            opacity: root.expand
-            text: String(root.shownWorkspace)
-        }
-    }
 
     Repeater {
         id: slots
