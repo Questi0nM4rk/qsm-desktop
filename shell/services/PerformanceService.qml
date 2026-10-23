@@ -93,7 +93,7 @@ QtObject {
     }
 
     onSamplingChanged: {
-        if (sampling) {
+        if (sampling && root.fixtures.length === 0) {
             prevTotal = 0;
             sample.running = true;
             pollTimer.start();
@@ -113,7 +113,7 @@ QtObject {
 
     property Process sample: Process {
         id: sample
-        command: root.fixtures.length > 0 ? ["cat", `${root.fixtures}/performance.json`] : ["bash", "-c", `
+        command: ["bash", "-c", `
 cpu=$(head -1 /proc/stat)
 mem=$(awk '/^MemTotal|^MemAvailable/ {print $2}' /proc/meminfo | tr '\\n' ' ')
 echo "CPU|$cpu"
@@ -149,14 +149,19 @@ echo "GBUSY|$gbusy"
 `, "qsm-performance", root.polling ? "detailed" : "glance"]
 
         stdout: StdioCollector {
-            onStreamFinished: root.fixtures.length > 0 ? root.applyReadings(text) : root.parse(text)
+            onStreamFinished: root.parse(text)
         }
     }
 
-    function applyReadings(text: string): void {
-        const readings = JSON.parse(text);
-        for (const key of Object.keys(readings))
-            root[key] = readings[key];
+    // A fixture run assigns the recorded readings once and never samples.
+    property FileView fixtureFile: FileView {
+        path: root.fixtures.length > 0 ? `${root.fixtures}/performance.json` : ""
+        onLoaded: {
+            const readings = JSON.parse(text());
+            for (const key of Object.keys(readings))
+                root[key] = readings[key];
+        }
+        onLoadFailed: console.error(`PerformanceService: no fixture at ${path}`)
     }
 
     function parse(text: string): void {

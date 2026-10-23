@@ -393,6 +393,8 @@ GridLayout {
             id: calendarContent
             // Small: the card shares the tab's height with the row above it.
             size: "sm"
+            shown: Clock.date
+            today: Clock.date
             anchors.fill: parent
             anchors.margins: root.cardPadding
         }

@@ -143,7 +143,12 @@ Item {
 
     // --- apps (frecency-boosted fuzzy) -------------------------------------
 
+    // Sorted by name, then id: DesktopEntries lists apps in an order that
+    // changes from one start to the next, and the ranking breaks its last tie
+    // by this index.
     readonly property var indexedEntries: !root.applicationsEnabled ? [] : DesktopEntries.applications.values
+        .slice()
+        .sort((left, right) => left.name.localeCompare(right.name) || left.id.localeCompare(right.id))
         .map(entry => ({
             entry: entry,
             text: `${entry.name} ${entry.genericName} ${entry.keywords.join(" ")}`,
@@ -379,8 +384,9 @@ Item {
         default: {
             const needle = query.trim();
             return indexedEntries
-                .map(item => ({
+                .map((item, index) => ({
                     item: item,
+                    index: index,
                     score: QsmShellComponents.Fuzzy.score(needle, item.text),
                     shown: QsmShellComponents.Fuzzy.score(needle, item.shown) >= 0
                 }))
@@ -392,14 +398,12 @@ Item {
                 // A row whose own text matches ranks above one that matches
                 // only a hidden keyword, frecency or not. Equal ranks: the
                 // SHORTER name wins ("Foot" before "Foot Server" on "foot"),
-                // then the name and the id — QML's sort is not stable, and the
-                // order DesktopEntries lists apps in changes from one start to
-                // the next, so any other tie-break reshuffles the list.
+                // then the sorted index — QML's sort is not stable, and an
+                // unbroken tie reshuffles per keystroke.
                 .sort((left, right) => Number(right.scored.shown) - Number(left.scored.shown)
                     || right.rank - left.rank
                     || left.scored.item.entry.name.length - right.scored.item.entry.name.length
-                    || left.scored.item.entry.name.localeCompare(right.scored.item.entry.name)
-                    || left.scored.item.entry.id.localeCompare(right.scored.item.entry.id))
+                    || left.scored.index - right.scored.index)
                 .slice(0, 8)
                 .map(ranked => ({
                     kind: "app",

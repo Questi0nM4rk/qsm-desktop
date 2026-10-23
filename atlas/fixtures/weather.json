@@ -1,0 +1,14 @@
+{
+  "current_condition": [
+    {
+      "temp_C": "10",
+      "FeelsLikeC": "9",
+      "weatherDesc": [
+        {
+          "value": "Overcast "
+        }
+      ],
+      "weatherCode": "122"
+    }
+  ]
+}
