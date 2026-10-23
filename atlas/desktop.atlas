@@ -135,3 +135,109 @@ journey clipboard-data
   hover-wait 500
   key SUPER V
   shot open
+
+journey launcher-commands
+  move-to 1100 700
+  key SUPER SPACE
+  type >
+  shot commands
+  type calc 12*(3+4)
+  shot calc
+  key CTRL A
+  type >kill
+  shot kill
+  key CTRL A
+  type >theme
+  shot theme
+  key CTRL A
+  type >action
+  shot action
+
+journey session-armed
+  move-to 1100 700
+  key CTRL ALT DELETE
+  key DOWN
+  key DOWN
+  key DOWN
+  key DOWN
+  key RETURN
+  shot armed
+
+journey lock
+  move-to 1100 700
+  key CTRL ALT DELETE
+  key RETURN
+  shot locked
+
+journey notifications-more
+  move-to 1100 700
+  ipc notifyPost "Anna Nováková" "Tady je delší zpráva, aby bylo vidět, jak se tělo notifikace zalomí: zítra v 9 ve druhém patře, přines prosím ty výkresy a nabíječku, ta moje odešla." normal 0 0 false
+  ipc notifyPost "Mail" "3 new messages" normal 0 0 false
+  ipc notifyPost "Calendar" "Standup in 5 minutes" normal 0 0 false
+  ipc notifyPost "Update" "12 packages can be upgraded" low 0 0 false
+  ipc notifyPost "Disk almost full" "/ has 2 GiB left" critical 0 0 false
+  ipc notifyPost "Music" "Now playing: Nils Frahm – Says" low 0 0 false
+  shot overflow
+  ipc notifyDnd true
+  shot dnd
+
+journey quick-actions-detail
+  move-to 32 676
+  hover-wait 500
+  move-to 96 676
+  move-to 96 604
+  hover-wait 500
+  shot detail-1
+  move-to 96 640
+  hover-wait 500
+  shot detail-2
+  move-to 96 676
+  hover-wait 500
+  shot detail-3
+  move-to 96 712
+  hover-wait 500
+  shot detail-4
+  move-to 96 748
+  hover-wait 500
+  shot detail-5
+
+journey rail-collapsed
+  move-to 1100 700
+  ipc railToggle
+  shot collapsed
+  move-to 2 432
+  hover-wait 600
+  shot peek
+
+journey focus-mode
+  exec foot sh -c 'sleep 900'
+  wait-clients 1
+  move-to 1100 700
+  ipc focusEnterTest
+  shot focus
+
+journey fullscreen
+  exec foot sh -c 'sleep 900'
+  wait-clients 1
+  move-to 1100 700
+  dispatch hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" })
+  shot fullscreen
+
+journey urgent
+  exec foot sh -c 'sleep 900'
+  wait-clients 1
+  dispatch hl.dsp.focus({ workspace = 2 })
+  exec foot -o bell.urgent=yes sh -c 'sleep 3; printf "\a"; sleep 900'
+  wait-clients 2
+  dispatch hl.dsp.focus({ workspace = 1 })
+  hover-wait 3000
+  move-to 1100 700
+  shot urgent
+
+journey theme-dusk
+  move-to 1100 700
+  ipc theme mountain-dusk
+  shot rest
+  move-to 32 784
+  hover-wait 500
+  shot sound
