@@ -2,6 +2,7 @@
 # Coordinates are logical px on the 1920x1080 @ 1.25 output; the pointer parks at 1100,700.
 desktop ~/Projects/qsm-desktop/shell
 hypr ~/.config/hypr/hyprland.lua
+clock 2026-10-22 10:00:00
 
 journey rest
   move-to 1100 700

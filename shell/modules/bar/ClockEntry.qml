@@ -1,7 +1,7 @@
 import QtQuick
-import Quickshell
 import qs.QsmShell.Components as QsmShellComponents
 import qs.QsmShell.Style as QsmShellStyle
+import qs.services
 import qs.theme
 
 // The larger time sits above one smaller numeric date, all in the technical
@@ -10,7 +10,7 @@ import qs.theme
 RailEntry {
     id: root
 
-    readonly property date now: clock.date
+    readonly property date now: Clock.date
 
     // Tall enough for its three lines at their reading sizes.
     implicitHeight: stack.implicitHeight + QsmShellStyle.Style.space2 * 2
@@ -21,13 +21,6 @@ RailEntry {
     popoutKind: "calendar"
     popoutTitle: Qt.formatDate(root.now, "MMMM yyyy")
     Accessible.name: "Calendar"
-
-    // One shared system clock at minute precision — the display shows no
-    // seconds, so a per-instance 1s timer was 60x the wakeups for nothing.
-    SystemClock {
-        id: clock
-        precision: SystemClock.Minutes
-    }
 
     // The two digit pairs swap in place: the clock changes every minute, a
     // thousand times a day, and a roll on each is motion nobody asked for. A

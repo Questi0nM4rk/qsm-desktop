@@ -263,6 +263,8 @@ QsmShellComponents.Rollout {
                 name: "calendar"
                 sourceComponent: QsmShellComponents.MonthCalendar {
                     width: Theme.popoutContentWidth
+                    shown: Clock.date
+                    today: Clock.date
                 }
             }
 

@@ -353,14 +353,7 @@ GridLayout {
         Layout.fillHeight: true
         Layout.preferredHeight: root.lowerRowHeight
 
-        property date now: new Date()
-
-        Timer {
-            interval: 60000
-            running: true
-            repeat: true
-            onTriggered: dateCard.now = new Date()
-        }
+        readonly property date now: Clock.date
 
         ColumnLayout {
             anchors.centerIn: parent

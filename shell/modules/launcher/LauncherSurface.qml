@@ -379,9 +379,8 @@ Item {
         default: {
             const needle = query.trim();
             return indexedEntries
-                .map((item, index) => ({
+                .map(item => ({
                     item: item,
-                    index: index,
                     score: QsmShellComponents.Fuzzy.score(needle, item.text),
                     shown: QsmShellComponents.Fuzzy.score(needle, item.shown) >= 0
                 }))
@@ -393,12 +392,14 @@ Item {
                 // A row whose own text matches ranks above one that matches
                 // only a hidden keyword, frecency or not. Equal ranks: the
                 // SHORTER name wins ("Foot" before "Foot Server" on "foot"),
-                // then the original index — QML's sort is not stable, and an
-                // unbroken tie reshuffles per keystroke.
+                // then the name and the id — QML's sort is not stable, and the
+                // order DesktopEntries lists apps in changes from one start to
+                // the next, so any other tie-break reshuffles the list.
                 .sort((left, right) => Number(right.scored.shown) - Number(left.scored.shown)
                     || right.rank - left.rank
                     || left.scored.item.entry.name.length - right.scored.item.entry.name.length
-                    || left.scored.index - right.scored.index)
+                    || left.scored.item.entry.name.localeCompare(right.scored.item.entry.name)
+                    || left.scored.item.entry.id.localeCompare(right.scored.item.entry.id))
                 .slice(0, 8)
                 .map(ranked => ({
                     kind: "app",
