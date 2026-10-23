@@ -1,0 +1,137 @@
+# The desktop atlas: a fixed set of named screens, run with `drive atlas run atlas/desktop.atlas`.
+# Coordinates are logical px on the 1920x1080 @ 1.25 output; the pointer parks at 1100,700.
+desktop ~/Projects/qsm-desktop/shell
+hypr ~/.config/hypr/hyprland.lua
+
+journey rest
+  move-to 1100 700
+  shot rest
+
+journey windows
+  exec foot sh -c 'sleep 900'
+  wait-clients 1
+  move-to 1100 700
+  shot one
+  exec foot sh -c 'sleep 900'
+  wait-clients 2
+  shot two
+  exec foot sh -c 'sleep 900'
+  wait-clients 3
+  shot three
+
+journey rail
+  move-to 32 32
+  hover-wait 500
+  shot entry-1
+  move-to 1100 700
+  move-to 32 68
+  hover-wait 500
+  shot entry-2
+  move-to 1100 700
+  move-to 32 104
+  hover-wait 500
+  shot entry-3
+  move-to 1100 700
+  move-to 32 180
+  hover-wait 500
+  shot clock
+  move-to 1100 700
+  move-to 32 418
+  hover-wait 500
+  shot workspaces
+  move-to 1100 700
+  move-to 32 628
+  hover-wait 500
+  shot battery
+  move-to 1100 700
+  move-to 32 676
+  hover-wait 500
+  shot quick-actions
+  move-to 1100 700
+  move-to 32 712
+  hover-wait 500
+  shot network
+  move-to 1100 700
+  move-to 32 748
+  hover-wait 500
+  shot bluetooth
+  move-to 1100 700
+  move-to 32 784
+  hover-wait 500
+  shot sound
+  move-to 1100 700
+  move-to 32 832
+  hover-wait 500
+  shot session
+
+journey launcher
+  move-to 1100 700
+  key SUPER SPACE
+  shot open
+  type foot
+  shot query
+
+journey quick-controls
+  move-to 1100 700
+  key SUPER A
+  shot open
+
+journey clipboard
+  move-to 1100 700
+  key SUPER V
+  shot open
+
+journey cheatsheet
+  move-to 1100 700
+  key SUPER SLASH
+  shot open
+
+journey overview
+  move-to 1100 700
+  key SUPER W
+  shot open
+
+journey session
+  move-to 1100 700
+  key CTRL ALT DELETE
+  shot open
+
+journey panel
+  move-to 800 12
+  click
+  move-to 1100 700
+  shot open
+
+journey panel-tabs
+  move-to 1100 700
+  ipc toggle dashboard
+  shot dashboard
+  ipc toggle media
+  shot media
+  ipc toggle performance
+  shot battery
+  ipc toggle workspaces
+  shot workspaces
+
+journey osd
+  move-to 1100 700
+  move-to 1530 432
+  hover-wait 600
+  shot open
+
+
+journey notifications
+  move-to 1100 700
+  ipc notifyPost "Anna Nováková" "Oběd ve 12? Mám stůl u okna." normal 0 0 false
+  ipc notifyPost "Build finished" "qsm-shell main: 63/63 stories passed" low 0 0 false
+  ipc notifyPost "Battery low" "12 % left, plug in soon" critical 0 0 false
+  shot popups
+  ipc toggle notifications
+  shot centre
+
+journey clipboard-data
+  exec sh -c 'printf "ssh qs@salonek.local\n" | cliphist store; printf "https://github.com/hyprwm/aquamarine/commit/7bb8bdf\n" | cliphist store; printf "Lunch at 12 by the window\n" | cliphist store'
+  move-to 1100 700
+  hover-wait 500
+  key SUPER V
+  shot open
