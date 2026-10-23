@@ -161,7 +161,8 @@ journey session-armed
   key DOWN
   key DOWN
   key RETURN
-  shot armed
+  hover-wait 300
+  shot-now armed
 
 journey lock
   move-to 1100 700
