@@ -225,13 +225,10 @@ journey fullscreen
   shot fullscreen
 
 journey urgent
-  exec foot sh -c 'sleep 900'
+  eval hl.window_rule({ name = "atlas-urgent", match = { class = "^atlas-urgent$" }, workspace = "10 silent" })
+  exec foot --app-id atlas-urgent -o bell.urgent=yes sh -c 'sleep 3; printf "\\a"; sleep 900'
   wait-clients 1
-  dispatch hl.dsp.focus({ workspace = 2 })
-  exec foot -o bell.urgent=yes sh -c 'sleep 3; printf "\a"; sleep 900'
-  wait-clients 2
-  dispatch hl.dsp.focus({ workspace = 1 })
-  hover-wait 3000
+  hover-wait 4000
   move-to 1100 700
   shot urgent
 
