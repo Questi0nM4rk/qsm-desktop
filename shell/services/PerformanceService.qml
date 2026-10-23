@@ -1,6 +1,7 @@
 pragma Singleton
 
 import QtQuick
+import Quickshell
 import Quickshell.Io
 
 // Sensor sampling for the Performance tab (06 DEFAULT sources, amended for
@@ -10,9 +11,13 @@ import Quickshell.Io
 // network rx/tx rate + session totals from /proc/net/dev (lo excluded).
 // CPU/memory poll while a visible handle watches; details only while a tab polls.
 // A missing sensor leaves its
-// value at -1 — its ring/row hides.
+// value at -1 — its ring/row hides. A visual test run (DRIVE_FIXTURES, a
+// directory) reads fixed readings from performance.json instead, so the tab
+// shows the same machine on every run.
 QtObject {
     id: root
+
+    readonly property string fixtures: Quickshell.env("DRIVE_FIXTURES") ?? ""
 
     property var detailedOwners: []
     readonly property bool polling: detailedOwners.length > 0
@@ -108,7 +113,7 @@ QtObject {
 
     property Process sample: Process {
         id: sample
-        command: ["bash", "-c", `
+        command: root.fixtures.length > 0 ? ["cat", `${root.fixtures}/performance.json`] : ["bash", "-c", `
 cpu=$(head -1 /proc/stat)
 mem=$(awk '/^MemTotal|^MemAvailable/ {print $2}' /proc/meminfo | tr '\\n' ' ')
 echo "CPU|$cpu"
@@ -144,8 +149,14 @@ echo "GBUSY|$gbusy"
 `, "qsm-performance", root.polling ? "detailed" : "glance"]
 
         stdout: StdioCollector {
-            onStreamFinished: root.parse(text)
+            onStreamFinished: root.fixtures.length > 0 ? root.applyReadings(text) : root.parse(text)
         }
+    }
+
+    function applyReadings(text: string): void {
+        const readings = JSON.parse(text);
+        for (const key of Object.keys(readings))
+            root[key] = readings[key];
     }
 
     function parse(text: string): void {

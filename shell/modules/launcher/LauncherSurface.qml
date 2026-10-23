@@ -1089,11 +1089,15 @@ Item {
         }
     }
 
+    // A visual test run (DRIVE_FIXTURES, a directory) lists the processes
+    // recorded in its ps file instead of the live ones, which change every run.
     Process {
         id: killProbe
         command: ["bash", "-c",
             `hyprctl clients -j | jq -r '.[] | "W|\\(.address)|\\(.class)|\\(.title)"'
-ps -eo pid,pcpu,comm --no-headers --sort=-pcpu | head -25 | awk '{printf "P|%s|%s|%s%% cpu\\n", $1, $3, $2}'`]
+if [ -n "$1" ]; then cat "$1/ps"; else ps -eo pid,pcpu,comm --no-headers --sort=-pcpu; fi \\
+  | head -25 | awk '{pid = $1; cpu = $2; $1 = $2 = ""; sub(/^ +/, ""); printf "P|%s|%s|%s%% cpu\\n", pid, $0, cpu}'`,
+            "qsm-kill", Quickshell.env("DRIVE_FIXTURES") ?? ""]
         stdout: StdioCollector {
             onStreamFinished: {
                 const targets = [];

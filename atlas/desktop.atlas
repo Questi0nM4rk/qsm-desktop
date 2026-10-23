@@ -3,20 +3,21 @@
 desktop ~/Projects/qsm-desktop/shell
 hypr ~/.config/hypr/hyprland.lua
 clock 2026-10-22 10:00:00
+fixtures ~/Projects/qsm-desktop/atlas/fixtures
 
 journey rest
   move-to 1100 700
   shot rest
 
 journey windows
-  exec foot sh -c 'sleep 900'
+  exec foot -o cursor.blink=no sh -c 'sleep 900'
   wait-clients 1
   move-to 1100 700
   shot one
-  exec foot sh -c 'sleep 900'
+  exec foot -o cursor.blink=no sh -c 'sleep 900'
   wait-clients 2
   shot two
-  exec foot sh -c 'sleep 900'
+  exec foot -o cursor.blink=no sh -c 'sleep 900'
   wait-clients 3
   shot three
 
@@ -212,24 +213,27 @@ journey rail-collapsed
   shot peek
 
 journey focus-mode
-  exec foot sh -c 'sleep 900'
+  exec foot -o cursor.blink=no sh -c 'sleep 900'
   wait-clients 1
   move-to 1100 700
   ipc focusEnterTest
   shot focus
 
 journey fullscreen
-  exec foot sh -c 'sleep 900'
+  exec foot -o cursor.blink=no sh -c 'sleep 900'
   wait-clients 1
   move-to 1100 700
   dispatch hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" })
+  # The window and the rail take a moment to answer; a still screen can come before them.
+  hover-wait 1500
   shot fullscreen
 
 journey urgent
   eval hl.window_rule({ name = "atlas-urgent", match = { class = "^atlas-urgent$" }, workspace = "10 silent" })
-  exec foot --app-id atlas-urgent -o bell.urgent=yes sh -c 'sleep 3; printf "\\a"; sleep 900'
+  exec foot -o cursor.blink=no --app-id atlas-urgent -o bell.urgent=yes sh -c 'sleep 3; printf "\\a"; sleep 900'
   wait-clients 1
-  hover-wait 4000
+  # The bell rings 3 s after foot starts, and foot can take a second to start in the slot.
+  hover-wait 6000
   move-to 1100 700
   shot urgent
 
