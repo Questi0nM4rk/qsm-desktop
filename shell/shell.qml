@@ -76,6 +76,8 @@ ShellRoot {
             entry.name = item.objectName;
         if (!item.visible)
             entry.visible = false;
+        if (item.enabled === false)
+            entry.enabled = false;
         if (item.opacity < 1)
             entry.opacity = Math.round(item.opacity * 100) / 100;
         if (item.z !== 0)
@@ -459,6 +461,12 @@ ShellRoot {
                 "screen": scene.modelData.name,
                 "width": scene.width,
                 "height": scene.height,
+                // What a disabled colour was blended toward and how far, so a
+                // check can recover the colour it was dimmed from.
+                "style": {
+                    "band": String(QsmShellStyle.Style.band),
+                    "opacityDisabled": QsmShellStyle.Style.opacityDisabled
+                },
                 "tree": root.inspectItem(scene.contentItem, visibleOnly)
             });
         }

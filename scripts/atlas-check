@@ -1,17 +1,56 @@
 #!/usr/bin/env bash
 # The desktop's laws for one atlas shot, run by `drive atlas` after every shot (the scenario's
-# `check` line) with ATLAS_SHOT and GEOM_TREE set. compuse measures; this file decides what must
-# hold. Every text reads against what is painted under it at the library's text floor, every
-# glyph at its graphic floor; the floors come from the library's tokens, never typed here.
+# `check` line) with ATLAS_SHOT, ATLAS_JOURNEY and GEOM_TREE set. compuse measures; this file
+# decides what must hold:
+#   - every enabled text reads against what is painted under it at the library's text floor, every
+#     enabled glyph at its graphic floor;
+#   - a disabled one is its enabled colour blended toward the band (Style.disabled), so the colour
+#     it was dimmed from must meet that floor;
+#   - a thing covered by something it should not be under fails, because the ground measured
+#     around it is the cover. An intended cover is not read through: under hyprlock nothing is
+#     read, and with the session layer open only the layer's own content is.
+# The floors come from the library's tokens and the blend from the tree, never typed here.
 set -uo pipefail
 
 tokens="$(dirname "$(readlink -f "$0")")/../vendor/qsm-shell/tokens/deep-night.json"
 [[ -f "$tokens" ]] || { echo "atlas-check: no library tokens at $tokens" >&2; exit 2; }
 [[ -f "${ATLAS_SHOT:-}" && -f "${GEOM_TREE:-}" ]] || { echo "atlas-check: needs ATLAS_SHOT and GEOM_TREE" >&2; exit 2; }
+text_min="$(jq -e '.contrast.text' "$tokens")" || exit 2
+glyph_min="$(jq -e '.contrast.graphic' "$tokens")" || exit 2
 
-drive contrast each 'Digits|Prose|Label' --min "$(jq -e '.contrast.text' "$tokens")" --shot "$ATLAS_SHOT"
-text=$?
-drive contrast each 'SvgIcon' --min "$(jq -e '.contrast.graphic' "$tokens")" --shot "$ATLAS_SHOT"
-glyph=$?
-# 2 (could not run) outranks 1 (a law failed).
-exit $((text > glyph ? text : glyph))
+if [[ "${ATLAS_JOURNEY:-}" == lock ]]; then
+  echo "lock: hyprlock covers the shell and is not in its tree; the pixel diff judges this shot"
+  exit 0
+fi
+scope=""
+if [[ -n "$(drive geom rects SessionSurface/Rollout)" ]]; then
+  scope="SessionSurface/"
+  echo "session layer open: only its own content is read"
+fi
+
+worst=0
+verdict() { ((${1} > worst)) && worst=$1; }
+
+drive contrast each "${scope}Digits|Prose|Label[enabled!=false]" --min "$text_min" --shot "$ATLAS_SHOT"
+verdict $?
+drive contrast each "${scope}SvgIcon[enabled!=false]" --min "$glyph_min" --shot "$ATLAS_SHOT"
+verdict $?
+
+# A disabled node's ink is band + (colour - band) * k; undo the blend and hold the colour it came from.
+band="$(jq -r '.style.band' "$GEOM_TREE")"
+k="$(jq -r '.style.opacityDisabled' "$GEOM_TREE")"
+disabled() {
+  local sel="$1" min="$2" line ink ground source
+  drive contrast each "$sel" --min 0 --shot "$ATLAS_SHOT" | while IFS= read -r line; do
+    ink="$(sed -n 's/.* ink \(#[0-9a-f]*\) on .*/\1/p' <<<"$line")"
+    ground="$(sed -n 's/.* on \(#[0-9a-f]*\) = .*/\1/p' <<<"$line")"
+    source="$(awk -v i="$ink" -v b="$band" -v k="$k" 'function c(h, n) { return strtonum("0x" substr(h, n, 2)) }
+      BEGIN { for (n = 2; n <= 6; n += 2) { v = c(b, n) + (c(i, n) - c(b, n)) / k; v = v < 0 ? 0 : v > 255 ? 255 : v; printf (n == 2 ? "#" : "") "%02x", v } }')"
+    printf 'disabled %s, dimmed from %s at %s: %s\n' "${line%% = *}" "$source" "$k" \
+      "$(drive contrast "$source" "$ground" --min "$min" | tail -1)"
+  done
+}
+dimmed="$(disabled "${scope}Digits|Prose|Label[enabled=false]" "$text_min"; disabled "${scope}SvgIcon[enabled=false]" "$glyph_min")"
+[[ -z "$dimmed" ]] || printf '%s\n' "$dimmed"
+! grep -q ': FAIL$' <<<"$dimmed" || verdict 1
+exit "$worst"
