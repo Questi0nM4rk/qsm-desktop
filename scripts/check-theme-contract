@@ -46,10 +46,8 @@ for file, found in role_sets.items():
 for name in sorted(roles - declared):
     problems.append(f'Theme does not answer the theme role "{name}"')
 
-sizes = re.search(r'property var sizes:\s*\(\{(.*?)\n    \}\)', theme, re.S)
-asked = [[kind, preset]
-         for kind, body in re.findall(r'(\w+):\s*\{([^}]*)\}', sizes.group(1) if sizes else '')
-         for preset in re.findall(r'(\w+):\s*\d+', body)]
+layout_sizes = json.loads(pathlib.Path('shell/theme/layout.json').read_text())['sizes']
+asked = [[kind, preset] for kind, presets in layout_sizes.items() for preset in presets]
 
 reply = subprocess.run(
     ['/usr/lib/qt6/bin/qml', '-I', 'vendor/qsm-shell/qml', 'scripts/public-names.qml', '--', json.dumps(asked)],
