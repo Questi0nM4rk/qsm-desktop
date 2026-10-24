@@ -53,7 +53,7 @@ QtObject {
     // so the first frame has them. A key the file lacks is an error here, never
     // a default. A string is the name of the library token the desktop chose: a
     // Style property ("space2"), or "<Type>.<size>" for a size-table entry
-    // ("Control.lg").
+    // ("Control.lg"). "a + b" is the sum of two.
     property FileView layoutFile: FileView {
         path: Quickshell.shellPath("theme/layout.json")
         blockLoading: true
@@ -70,6 +70,8 @@ QtObject {
     function resolveToken(entry: var): var {
         if (typeof entry !== "string")
             return Array.isArray(entry) ? entry.map(resolveToken) : entry;
+        if (entry.includes("+"))
+            return entry.split("+").reduce((sum, part) => sum + resolveToken(part.trim()), 0);
         const dot = entry.indexOf(".");
         if (dot > 0)
             return QsmShellStyle.Style.size(entry.slice(0, dot), entry.slice(dot + 1));
@@ -123,7 +125,7 @@ QtObject {
     // percent, warning to 90, danger above (the rail's readout thresholds). A
     // reading at rest is neutral; a colour appears only when the state is true.
     function loadTone(value: real): color {
-        return value >= 0.9 ? danger : value >= 0.7 ? warning : text;
+        return value >= layoutValue("loadDanger") ? danger : value >= layoutValue("loadWarning") ? warning : text;
     }
 
     // Theme-swap choreography: the library has no theme swap, so the fade is

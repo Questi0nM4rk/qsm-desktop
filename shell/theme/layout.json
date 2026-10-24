@@ -82,12 +82,14 @@
   "popoutDeviceListMax": 5,
   "osdTrackWidth": 40,
   "osdTrackHeight": 140,
+  "loadDanger": 0.9,
+  "loadWarning": 0.7,
   "osdThumbSize": 28,
   "osdWheelStep": 0.05,
   "railDrumSize": [
     "space2",
     "space2",
-    6,
+    "space1 + spaceTight",
     "space1",
     "space1",
     "space1"
