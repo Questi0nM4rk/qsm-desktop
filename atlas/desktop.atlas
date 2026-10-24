@@ -4,6 +4,7 @@ desktop ~/Projects/qsm-desktop/shell
 hypr ~/.config/hypr/hyprland.lua
 clock 2026-10-22 10:00:00
 fixtures ~/Projects/qsm-desktop/atlas/fixtures
+check ~/Projects/qsm-desktop/scripts/atlas-check
 
 journey rest
   move-to 1100 700

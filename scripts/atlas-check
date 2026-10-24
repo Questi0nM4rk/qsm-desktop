@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# The desktop's laws for one atlas shot, run by `drive atlas` after every shot (the scenario's
+# `check` line) with ATLAS_SHOT and GEOM_TREE set. compuse measures; this file decides what must
+# hold. Every text reads against what is painted under it at the library's text floor, every
+# glyph at its graphic floor; the floors come from the library's tokens, never typed here.
+set -uo pipefail
+
+tokens="$(dirname "$(readlink -f "$0")")/../vendor/qsm-shell/tokens/deep-night.json"
+[[ -f "$tokens" ]] || { echo "atlas-check: no library tokens at $tokens" >&2; exit 2; }
+[[ -f "${ATLAS_SHOT:-}" && -f "${GEOM_TREE:-}" ]] || { echo "atlas-check: needs ATLAS_SHOT and GEOM_TREE" >&2; exit 2; }
+
+drive contrast each 'Digits|Prose|Label' --min "$(jq -e '.contrast.text' "$tokens")" --shot "$ATLAS_SHOT"
+text=$?
+drive contrast each 'SvgIcon' --min "$(jq -e '.contrast.graphic' "$tokens")" --shot "$ATLAS_SHOT"
+glyph=$?
+# 2 (could not run) outranks 1 (a law failed).
+exit $((text > glyph ? text : glyph))
