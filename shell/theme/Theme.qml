@@ -62,7 +62,7 @@ QtObject {
     readonly property var layout: JSON.parse(layoutFile.text())
 
     function layoutKey(key: string): var {
-        if (!(key in layout))
+        if (!Object.hasOwn(layout, key))
             throw new Error("Theme: layout.json has no key " + key);
         return layout[key];
     }
