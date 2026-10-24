@@ -99,6 +99,7 @@
       "xl": 64
     }
   },
+  "railWorkspaceDotRestScale": 1,
   "railWorkspaceDotHoverScale": 1.5,
   "railWorkspaceChipWidth": "space5",
   "railWorkspaceChipHeight": "badgeHeight",

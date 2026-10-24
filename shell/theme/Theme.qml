@@ -313,7 +313,7 @@ QtObject {
     // Beyond this distance a dot is too faint to be a target.
     readonly property real railDrumReachable: layoutValue("railDrumReachable")
     // The hover growth of a dot: its few pixels would grow by under one.
-    readonly property real railWorkspaceDotHoverScale: QsmShellStyle.Style.reducedMotion ? 1 : layoutValue("railWorkspaceDotHoverScale")
+    readonly property real railWorkspaceDotHoverScale: QsmShellStyle.Style.reducedMotion ? layoutValue("railWorkspaceDotRestScale") : layoutValue("railWorkspaceDotHoverScale")
     // The bell corner: a bulge that retracts when everything is read, the glyph
     // resting on the band's corner; its menu is a top-right modal.
     readonly property int notificationBellWidth: layoutValue("notificationBellWidth")
