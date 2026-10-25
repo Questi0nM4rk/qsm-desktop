@@ -5,6 +5,8 @@ hypr ~/.config/hypr/hyprland.lua
 clock 2026-10-22 10:00:00
 fixtures ~/Projects/qsm-desktop/atlas/fixtures
 check ~/Projects/qsm-desktop/scripts/atlas-check
+# Mock notifications expire in 10 minutes, never within a journey: a low one expired 3 s after
+# its post, before or after the shot depending on timing.
 
 journey rest
   move-to 1100 700
@@ -125,8 +127,8 @@ journey osd
 
 journey notifications
   move-to 1100 700
-  ipc notifyPost "Anna Nováková" "Oběd ve 12? Mám stůl u okna." normal 0 0 false
-  ipc notifyPost "Build finished" "qsm-shell main: 63/63 stories passed" low 0 0 false
+  ipc notifyPost "Anna Nováková" "Oběd ve 12? Mám stůl u okna." normal 600000 0 false
+  ipc notifyPost "Build finished" "qsm-shell main: 63/63 stories passed" low 600000 0 false
   ipc notifyPost "Battery low" "12 % left, plug in soon" critical 0 0 false
   shot popups
   ipc toggle notifications
@@ -175,12 +177,12 @@ journey lock
 
 journey notifications-more
   move-to 1100 700
-  ipc notifyPost "Anna Nováková" "Tady je delší zpráva, aby bylo vidět, jak se tělo notifikace zalomí: zítra v 9 ve druhém patře, přines prosím ty výkresy a nabíječku, ta moje odešla." normal 0 0 false
-  ipc notifyPost "Mail" "3 new messages" normal 0 0 false
-  ipc notifyPost "Calendar" "Standup in 5 minutes" normal 0 0 false
-  ipc notifyPost "Update" "12 packages can be upgraded" low 0 0 false
+  ipc notifyPost "Anna Nováková" "Tady je delší zpráva, aby bylo vidět, jak se tělo notifikace zalomí: zítra v 9 ve druhém patře, přines prosím ty výkresy a nabíječku, ta moje odešla." normal 600000 0 false
+  ipc notifyPost "Mail" "3 new messages" normal 600000 0 false
+  ipc notifyPost "Calendar" "Standup in 5 minutes" normal 600000 0 false
+  ipc notifyPost "Update" "12 packages can be upgraded" low 600000 0 false
   ipc notifyPost "Disk almost full" "/ has 2 GiB left" critical 0 0 false
-  ipc notifyPost "Music" "Now playing: Nils Frahm – Says" low 0 0 false
+  ipc notifyPost "Music" "Now playing: Nils Frahm – Says" low 600000 0 false
   shot overflow
   ipc notifyDnd true
   shot dnd
