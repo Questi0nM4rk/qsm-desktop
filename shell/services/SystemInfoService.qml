@@ -1,7 +1,6 @@
 pragma Singleton
 
 import QtQuick
-import Quickshell
 import Quickshell.Io
 
 // Who and what: user, distro, WM and uptime for the dashboard identity card
@@ -40,8 +39,7 @@ QtObject {
     property Process probe: Process {
         id: probe
         command: ["bash", "-c",
-            `id -un; . /etc/os-release && echo "$PRETTY_NAME"; awk '{print int($1)}' "\${1:-/proc}/uptime"`,
-            "qsm-system-info", Quickshell.env("DRIVE_FIXTURES") ?? ""]
+            `id -un; . /etc/os-release && echo "$PRETTY_NAME"; awk '{print int($1)}' /proc/uptime`]
         running: true
 
         stdout: StdioCollector {
@@ -49,7 +47,8 @@ QtObject {
                 const [userLine, distroLine, uptimeLine] = text.trim().split("\n");
                 root.user = userLine ?? "";
                 root.distro = distroLine ?? "";
-                root.uptime = root.formatUptime(parseInt(uptimeLine, 10) || 0);
+                // The mock record `uptime` (seconds) stands in for /proc/uptime.
+                root.uptime = root.formatUptime(Mock.records.uptime ?? (parseInt(uptimeLine, 10) || 0));
             }
         }
     }

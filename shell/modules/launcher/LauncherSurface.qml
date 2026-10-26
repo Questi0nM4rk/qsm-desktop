@@ -1093,15 +1093,15 @@ Item {
         }
     }
 
-    // A visual test run (DRIVE_FIXTURES, a directory) lists the processes
-    // recorded in its ps file instead of the live ones, which change every run.
+    // The mock record `processes` ([{pid, cpu, name}], Mock) stands in for the
+    // live list, which changes every run; it goes through the same parse.
     Process {
         id: killProbe
         command: ["bash", "-c",
             `hyprctl clients -j | jq -r '.[] | "W|\\(.address)|\\(.class)|\\(.title)"'
-if [ -n "$1" ]; then cat "$1/ps"; else ps -eo pid,pcpu,comm --no-headers --sort=-pcpu; fi \\
+if [ -n "$1" ]; then jq -r '.[] | "\\(.pid) \\(.cpu) \\(.name)"' <<<"$1"; else ps -eo pid,pcpu,comm --no-headers --sort=-pcpu; fi \\
   | head -25 | awk '{pid = $1; cpu = $2; $1 = $2 = ""; sub(/^ +/, ""); printf "P|%s|%s|%s%% cpu\\n", pid, $0, cpu}'`,
-            "qsm-kill", Quickshell.env("DRIVE_FIXTURES") ?? ""]
+            "qsm-kill", Mock.records.processes ? JSON.stringify(Mock.records.processes) : ""]
         stdout: StdioCollector {
             onStreamFinished: {
                 const targets = [];

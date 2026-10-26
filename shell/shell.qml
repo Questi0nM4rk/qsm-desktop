@@ -340,6 +340,13 @@ ShellRoot {
             return ShellState.togglePanel("");
         }
 
+        // A visual test run's readings (Mock): replaces one named record, so a
+        // journey can change what a service shows at one step.
+        function mock(name: string, json: string): bool {
+            Mock.set(name, JSON.parse(json));
+            return true;
+        }
+
         // Keep value/muted in the public IPC signature; services own the state.
         function osd(kind: string, value: real, muted: bool): bool {
             if (kind === "brightness")

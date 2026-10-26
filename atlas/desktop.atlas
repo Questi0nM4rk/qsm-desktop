@@ -2,8 +2,7 @@
 # Coordinates are logical px on the 1920x1080 @ 1.25 output; the pointer parks at 1100,700.
 desktop ~/Projects/qsm-desktop/shell
 hypr ~/.config/hypr/hyprland.lua
-clock 2026-10-22 10:00:00
-fixtures ~/Projects/qsm-desktop/atlas/fixtures
+mock ~/Projects/qsm-desktop/atlas/mock.json
 check ~/Projects/qsm-desktop/scripts/atlas-check
 # Mock notifications expire in 10 minutes, never within a journey: a low one expired 3 s after
 # its post, before or after the shot depending on timing.

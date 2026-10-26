@@ -11,13 +11,21 @@ import Quickshell.Io
 // network rx/tx rate + session totals from /proc/net/dev (lo excluded).
 // CPU/memory poll while a visible handle watches; details only while a tab polls.
 // A missing sensor leaves its
-// value at -1 — its ring/row hides. A visual test run (DRIVE_FIXTURES, a
-// directory) reads fixed readings from performance.json instead, so the tab
-// shows the same machine on every run.
+// value at -1 — its ring/row hides. The mock record `performance` (Mock)
+// replaces sampling with fixed readings, so the tab shows the same machine on
+// every run.
 QtObject {
     id: root
 
-    readonly property string fixtures: Quickshell.env("DRIVE_FIXTURES") ?? ""
+    readonly property var mock: Mock.records.performance ?? null
+    onMockChanged: applyMock()
+    Component.onCompleted: applyMock()
+    function applyMock(): void {
+        if (root.mock === null)
+            return;
+        for (const key of Object.keys(root.mock))
+            root[key] = root.mock[key];
+    }
 
     property var detailedOwners: []
     readonly property bool polling: detailedOwners.length > 0
@@ -93,7 +101,7 @@ QtObject {
     }
 
     onSamplingChanged: {
-        if (sampling && root.fixtures.length === 0) {
+        if (sampling && root.mock === null) {
             prevTotal = 0;
             sample.running = true;
             pollTimer.start();
@@ -153,16 +161,6 @@ echo "GBUSY|$gbusy"
         }
     }
 
-    // A fixture run assigns the recorded readings once and never samples.
-    property FileView fixtureFile: FileView {
-        path: root.fixtures.length > 0 ? `${root.fixtures}/performance.json` : ""
-        onLoaded: {
-            const readings = JSON.parse(text());
-            for (const key of Object.keys(readings))
-                root[key] = readings[key];
-        }
-        onLoadFailed: console.error(`PerformanceService: no fixture at ${path}`)
-    }
 
     function parse(text: string): void {
         for (const line of text.split("\n")) {
