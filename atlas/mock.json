@@ -34,19 +34,6 @@
       "tx_rate": 21606.4
     }
   },
-  "hwmon": [
-    {
-      "name": "k10temp",
-      "temp1_input": 65000
-    },
-    {
-      "name": "amdgpu",
-      "temp1_input": 54000,
-      "device": {
-        "gpu_busy_percent": 78
-      }
-    }
-  ],
   "df": {
     "/": {
       "used": 247147315,
@@ -194,5 +181,275 @@
         "mute": false
       }
     ]
+  },
+  "sys": {
+    "hwmon": {
+      "hwmon0": {
+        "name": "k10temp",
+        "temp1_input": 65000
+      },
+      "hwmon1": {
+        "name": "amdgpu",
+        "temp1_input": 54000,
+        "device": {
+          "gpu_busy_percent": 78
+        }
+      }
+    },
+    "backlight": {
+      "amdgpu_bl1": {
+        "brightness": 39321,
+        "actual_brightness": 39321,
+        "max_brightness": 65535
+      }
+    }
+  },
+  "dbus": {
+    "system": {
+      "org.freedesktop.UPower": {
+        "/org/freedesktop/UPower": {
+          "org.freedesktop.UPower": {
+            "DaemonVersion": "1.91.5",
+            "OnBattery": true,
+            "LidIsClosed": false,
+            "LidIsPresent": true,
+            "EnumerateDevices": [
+              "/org/freedesktop/UPower/devices/battery_BAT0",
+              "/org/freedesktop/UPower/devices/line_power_ADP0"
+            ],
+            "GetDisplayDevice": "/org/freedesktop/UPower/devices/DisplayDevice"
+          }
+        },
+        "/org/freedesktop/UPower/devices/DisplayDevice": {
+          "org.freedesktop.UPower.Device": {
+            "NativePath": "",
+            "Vendor": "",
+            "Model": "",
+            "Serial": "",
+            "UpdateTime": 1793351734,
+            "Type": 2,
+            "PowerSupply": true,
+            "HasHistory": false,
+            "HasStatistics": false,
+            "Online": false,
+            "Energy": 24.32,
+            "EnergyEmpty": 0,
+            "EnergyFull": 33.78,
+            "EnergyFullDesign": 0,
+            "EnergyRate": 9.6,
+            "Voltage": 0,
+            "ChargeCycles": 0,
+            "Luminosity": 0,
+            "TimeToEmpty": 9120,
+            "TimeToFull": 0,
+            "Percentage": 72,
+            "Temperature": 0,
+            "IsPresent": true,
+            "State": 2,
+            "IsRechargeable": false,
+            "Capacity": 0,
+            "Technology": 0,
+            "WarningLevel": 1,
+            "BatteryLevel": 1,
+            "IconName": "battery-full-symbolic",
+            "ChargeStartThreshold": 0,
+            "ChargeEndThreshold": 0,
+            "ChargeThresholdEnabled": false,
+            "ChargeThresholdSupported": false,
+            "ChargeThresholdSettingsSupported": 0,
+            "VoltageMinDesign": 0,
+            "VoltageMaxDesign": 0,
+            "CapacityLevel": ""
+          }
+        },
+        "/org/freedesktop/UPower/devices/battery_BAT0": {
+          "org.freedesktop.UPower.Device": {
+            "NativePath": "BAT0",
+            "Vendor": "SMP",
+            "Model": "L19M3PF7",
+            "Serial": "17393",
+            "UpdateTime": 1793462788,
+            "Type": 2,
+            "PowerSupply": true,
+            "HasHistory": true,
+            "HasStatistics": true,
+            "Online": false,
+            "Energy": 24.32,
+            "EnergyEmpty": 0,
+            "EnergyFull": 33.78,
+            "EnergyFullDesign": 45.51,
+            "EnergyRate": 9.6,
+            "Voltage": 12.424,
+            "ChargeCycles": 17,
+            "Luminosity": 0,
+            "TimeToEmpty": 9120,
+            "TimeToFull": 0,
+            "Percentage": 72,
+            "Temperature": 0,
+            "IsPresent": true,
+            "State": 2,
+            "IsRechargeable": true,
+            "Capacity": 74.225,
+            "Technology": 1,
+            "WarningLevel": 1,
+            "BatteryLevel": 1,
+            "IconName": "battery-full-symbolic",
+            "ChargeStartThreshold": 0,
+            "ChargeEndThreshold": 0,
+            "ChargeThresholdEnabled": false,
+            "ChargeThresholdSupported": true,
+            "ChargeThresholdSettingsSupported": 4,
+            "VoltageMinDesign": 11.1,
+            "VoltageMaxDesign": 0,
+            "CapacityLevel": "Full"
+          }
+        },
+        "/org/freedesktop/UPower/devices/line_power_ADP0": {
+          "org.freedesktop.UPower.Device": {
+            "NativePath": "ADP0",
+            "Vendor": "",
+            "Model": "",
+            "Serial": "",
+            "UpdateTime": 1793351735,
+            "Type": 1,
+            "PowerSupply": true,
+            "HasHistory": false,
+            "HasStatistics": false,
+            "Online": false,
+            "Energy": 0,
+            "EnergyEmpty": 0,
+            "EnergyFull": 0,
+            "EnergyFullDesign": 0,
+            "EnergyRate": 0,
+            "Voltage": 0,
+            "ChargeCycles": -1,
+            "Luminosity": 0,
+            "TimeToEmpty": 0,
+            "TimeToFull": 0,
+            "Percentage": 0,
+            "Temperature": 0,
+            "IsPresent": false,
+            "State": 0,
+            "IsRechargeable": false,
+            "Capacity": 0,
+            "Technology": 0,
+            "WarningLevel": 1,
+            "BatteryLevel": 1,
+            "IconName": "ac-adapter-symbolic",
+            "ChargeStartThreshold": 0,
+            "ChargeEndThreshold": 100,
+            "ChargeThresholdEnabled": false,
+            "ChargeThresholdSupported": false,
+            "ChargeThresholdSettingsSupported": 0,
+            "VoltageMinDesign": 0,
+            "VoltageMaxDesign": 0,
+            "CapacityLevel": ""
+          }
+        }
+      },
+      "org.freedesktop.UPower.PowerProfiles": {
+        "/org/freedesktop/UPower/PowerProfiles": {
+          "org.freedesktop.UPower.PowerProfiles": {
+            "ActiveProfile": "balanced",
+            "PerformanceInhibited": "",
+            "PerformanceDegraded": "",
+            "Profiles": [
+              {
+                "Profile": {
+                  "type": "s",
+                  "data": "power-saver"
+                },
+                "PlatformDriver": {
+                  "type": "s",
+                  "data": "platform_profile"
+                },
+                "Driver": {
+                  "type": "s",
+                  "data": "platform_profile"
+                }
+              },
+              {
+                "Profile": {
+                  "type": "s",
+                  "data": "balanced"
+                },
+                "PlatformDriver": {
+                  "type": "s",
+                  "data": "platform_profile"
+                },
+                "Driver": {
+                  "type": "s",
+                  "data": "platform_profile"
+                }
+              },
+              {
+                "Profile": {
+                  "type": "s",
+                  "data": "performance"
+                },
+                "PlatformDriver": {
+                  "type": "s",
+                  "data": "platform_profile"
+                },
+                "Driver": {
+                  "type": "s",
+                  "data": "platform_profile"
+                }
+              }
+            ],
+            "Actions": [
+              "trickle_charge"
+            ],
+            "ActionsInfo": [
+              {
+                "Name": {
+                  "type": "s",
+                  "data": "trickle_charge"
+                },
+                "Description": {
+                  "type": "s",
+                  "data": "Configure power supply to trickle charge"
+                },
+                "Enabled": {
+                  "type": "b",
+                  "data": true
+                }
+              },
+              {
+                "Name": {
+                  "type": "s",
+                  "data": "amdgpu_panel_power"
+                },
+                "Description": {
+                  "type": "s",
+                  "data": "Panel Power Savings (may affect color quality)"
+                },
+                "Enabled": {
+                  "type": "b",
+                  "data": false
+                }
+              },
+              {
+                "Name": {
+                  "type": "s",
+                  "data": "amdgpu_dpm"
+                },
+                "Description": {
+                  "type": "s",
+                  "data": "Adjust GPU dynamic power management"
+                },
+                "Enabled": {
+                  "type": "b",
+                  "data": false
+                }
+              }
+            ],
+            "ActiveProfileHolds": [],
+            "Version": "0.30",
+            "BatteryAware": true
+          }
+        }
+      }
+    }
   }
 }

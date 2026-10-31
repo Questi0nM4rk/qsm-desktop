@@ -252,3 +252,14 @@ journey theme-dusk
   move-to 32 784
   hover-wait 500
   shot sound
+
+# The battery runs low while the desktop is up: UPower announces it and the rail follows.
+journey battery-low
+  mock .dbus.system["org.freedesktop.UPower"]["/org/freedesktop/UPower/devices/DisplayDevice"]["org.freedesktop.UPower.Device"].Energy 4.05
+  mock .dbus.system["org.freedesktop.UPower"]["/org/freedesktop/UPower/devices/DisplayDevice"]["org.freedesktop.UPower.Device"].TimeToEmpty 1519
+  mock .dbus.system["org.freedesktop.UPower"]["/org/freedesktop/UPower/devices/DisplayDevice"]["org.freedesktop.UPower.Device"].Percentage 12
+  move-to 1100 700
+  shot rest
+  move-to 32 628
+  hover-wait 500
+  shot battery
