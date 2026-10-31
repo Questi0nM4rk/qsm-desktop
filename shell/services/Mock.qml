@@ -5,8 +5,7 @@ import Quickshell
 import Quickshell.Io
 
 // The one place a visual test run puts the readings the desktop shows instead
-// of the machine's: named records (clock, uptime, performance, weather,
-// processes, ...). They come from the JSON file in DRIVE_MOCK, read blocking
+// of the machine's: named records (uptime, performance, processes). They come from the JSON file in DRIVE_MOCK, read blocking
 // so the first frame has them, and change during a run only through the
 // `mock` IPC call. A service shows its record when there is one and its live
 // source when there is none; a run without DRIVE_MOCK has no records at all.

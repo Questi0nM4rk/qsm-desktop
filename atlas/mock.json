@@ -141,20 +141,6 @@
       26416
     ]
   },
-  "weather": {
-    "current_condition": [
-      {
-        "temp_C": "10",
-        "FeelsLikeC": "9",
-        "weatherDesc": [
-          {
-            "value": "Overcast "
-          }
-        ],
-        "weatherCode": "122"
-      }
-    ]
-  },
   "processes": [
     {
       "pid": 3477338,
@@ -251,5 +237,21 @@
       "cpu": 0.4,
       "name": "qs"
     }
-  ]
+  ],
+  "http": {
+    "https://wttr.in/?format=j1": {
+      "current_condition": [
+        {
+          "temp_C": "10",
+          "FeelsLikeC": "9",
+          "weatherDesc": [
+            {
+              "value": "Overcast "
+            }
+          ],
+          "weatherCode": "122"
+        }
+      ]
+    }
+  }
 }
