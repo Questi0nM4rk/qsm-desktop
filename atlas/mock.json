@@ -149,5 +149,50 @@
       "pcpu": 0.4,
       "comm": "qs"
     }
-  ]
+  ],
+  "pipewire": {
+    "default.audio.sink": "alsa_output.pci-0000_05_00.6.analog-stereo",
+    "default.audio.source": "alsa_input.usb-fifinemicrophone.com_FIFINE_Microphone_000000000000-00.mono-fallback",
+    "nodes": [
+      {
+        "node.name": "alsa_output.pci-0000_05_00.6.analog-stereo",
+        "node.description": "Ryzen HD Audio Controller Analog Stereo",
+        "media.class": "Audio/Sink",
+        "channelVolumes": [
+          0.216,
+          0.216
+        ],
+        "mute": false
+      },
+      {
+        "node.name": "alsa_output.pci-0000_01_00.1.hdmi-surround71",
+        "node.description": "HDA NVidia Digital Surround 7.1 (HDMI)",
+        "media.class": "Audio/Sink",
+        "channelVolumes": [
+          1,
+          1
+        ],
+        "mute": false
+      },
+      {
+        "node.name": "alsa_input.pci-0000_05_00.6.analog-stereo",
+        "node.description": "Ryzen HD Audio Controller Analog Stereo",
+        "media.class": "Audio/Source",
+        "channelVolumes": [
+          1,
+          1
+        ],
+        "mute": false
+      },
+      {
+        "node.name": "alsa_input.usb-fifinemicrophone.com_FIFINE_Microphone_000000000000-00.mono-fallback",
+        "node.description": "FIFINE Microphone Mono",
+        "media.class": "Audio/Source",
+        "channelVolumes": [
+          0.512
+        ],
+        "mute": false
+      }
+    ]
+  }
 }
