@@ -451,5 +451,92 @@
         }
       }
     }
-  }
+  },
+  "nm": {
+    "device": [
+      {
+        "TYPE": "wifi",
+        "STATE": "connected",
+        "CONNECTION": "Dusk Loft",
+        "DEVICE": "wlan0"
+      },
+      {
+        "TYPE": "ethernet",
+        "STATE": "unavailable",
+        "CONNECTION": "",
+        "DEVICE": "eno1"
+      },
+      {
+        "TYPE": "loopback",
+        "STATE": "connected (externally)",
+        "CONNECTION": "lo",
+        "DEVICE": "lo"
+      }
+    ],
+    "wifi": [
+      {
+        "IN-USE": "*",
+        "SSID": "Dusk Loft",
+        "SIGNAL": "78",
+        "SECURITY": "WPA2",
+        "DEVICE": "wlan0"
+      },
+      {
+        "IN-USE": "",
+        "SSID": "Dusk Loft",
+        "SIGNAL": "52",
+        "SECURITY": "WPA2",
+        "DEVICE": "wlan0"
+      },
+      {
+        "IN-USE": "",
+        "SSID": "Cedar Library",
+        "SIGNAL": "44",
+        "SECURITY": "",
+        "DEVICE": "wlan0"
+      },
+      {
+        "IN-USE": "",
+        "SSID": "Night Tram: Guest",
+        "SIGNAL": "31",
+        "SECURITY": "WPA2 802.1X",
+        "DEVICE": "wlan0"
+      }
+    ],
+    "connection": [
+      {
+        "NAME": "Dusk Loft",
+        "TYPE": "802-11-wireless",
+        "ACTIVE": "yes"
+      },
+      {
+        "NAME": "lo",
+        "TYPE": "loopback",
+        "ACTIVE": "yes"
+      },
+      {
+        "NAME": "Cedar Library",
+        "TYPE": "802-11-wireless",
+        "ACTIVE": "no"
+      },
+      {
+        "NAME": "Home VPN",
+        "TYPE": "wireguard",
+        "ACTIVE": "no"
+      }
+    ],
+    "radio": [
+      {
+        "WIFI": "enabled"
+      }
+    ],
+    "connectivity": "full"
+  },
+  "updates": [
+    "aom 3.15.2-1 -> 3.15.3-1",
+    "appstream 1.2.1-1 -> 1.2.2-1",
+    "arch-install-scripts 31-2 -> 32-1",
+    "archiso 91-1 -> 92-1",
+    "atuin 18.24.2-1 -> 18.24.4-1"
+  ]
 }
