@@ -47,8 +47,7 @@ QtObject {
                 const [userLine, distroLine, uptimeLine] = text.trim().split("\n");
                 root.user = userLine ?? "";
                 root.distro = distroLine ?? "";
-                // The mock record `uptime` (seconds) stands in for /proc/uptime.
-                root.uptime = root.formatUptime(Mock.records.uptime ?? (parseInt(uptimeLine, 10) || 0));
+                root.uptime = root.formatUptime(parseInt(uptimeLine, 10) || 0);
             }
         }
     }

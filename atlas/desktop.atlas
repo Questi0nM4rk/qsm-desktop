@@ -109,10 +109,16 @@ journey panel
 journey panel-tabs
   move-to 1100 700
   ipc toggle dashboard
+  # CPU usage is a delta of two samples 2 s apart: with this Hyprland config it shows 4.3 s
+  # after the panel opens (measured three times), so the shot waits well past it.
+  hover-wait 7000
   shot dashboard
   ipc toggle media
   shot media
   ipc toggle performance
+  # The network rate needs two detailed samples and the sparkline two rates; samples run every
+  # 2 s and the first detailed one can come a tick after the tab opens.
+  hover-wait 10000
   shot battery
   ipc toggle workspaces
   shot workspaces

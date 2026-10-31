@@ -1093,15 +1093,12 @@ Item {
         }
     }
 
-    // The mock record `processes` ([{pid, cpu, name}], Mock) stands in for the
-    // live list, which changes every run; it goes through the same parse.
     Process {
         id: killProbe
         command: ["bash", "-c",
             `hyprctl clients -j | jq -r '.[] | "W|\\(.address)|\\(.class)|\\(.title)"'
-if [ -n "$1" ]; then jq -r '.[] | "\\(.pid) \\(.cpu) \\(.name)"' <<<"$1"; else ps -eo pid,pcpu,comm --no-headers --sort=-pcpu; fi \\
-  | head -25 | awk '{pid = $1; cpu = $2; $1 = $2 = ""; sub(/^ +/, ""); printf "P|%s|%s|%s%% cpu\\n", pid, $0, cpu}'`,
-            "qsm-kill", Mock.records.processes ? JSON.stringify(Mock.records.processes) : ""]
+ps -eo pid,pcpu,comm --no-headers --sort=-pcpu \\
+  | head -25 | awk '{pid = $1; cpu = $2; $1 = $2 = ""; sub(/^ +/, ""); printf "P|%s|%s|%s%% cpu\\n", pid, $0, cpu}'`]
         stdout: StdioCollector {
             onStreamFinished: {
                 const targets = [];

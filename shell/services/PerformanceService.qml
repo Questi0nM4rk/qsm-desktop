@@ -8,24 +8,13 @@ import Quickshell.Io
 // the caelestia-parity card grid): CPU usage from /proc/stat deltas, CPU
 // temp from hwmon (k10temp/coretemp/zenpower autodetect), GPU from amdgpu
 // hwmon or nvidia-smi, memory from /proc/meminfo, storage from df /,
-// network rx/tx rate + session totals from /proc/net/dev (lo excluded).
+// network rx/tx rate + session totals from /sys/class/net/*/statistics (lo
+// excluded), the rate over the /proc/uptime read beside the counters.
 // CPU/memory poll while a visible handle watches; details only while a tab polls.
 // A missing sensor leaves its
-// value at -1 — its ring/row hides. The mock record `performance` (Mock)
-// replaces sampling with fixed readings, so the tab shows the same machine on
-// every run.
+// value at -1 — its ring/row hides.
 QtObject {
     id: root
-
-    readonly property var mock: Mock.records.performance ?? null
-    onMockChanged: applyMock()
-    Component.onCompleted: applyMock()
-    function applyMock(): void {
-        if (root.mock === null)
-            return;
-        for (const key of Object.keys(root.mock))
-            root[key] = root.mock[key];
-    }
 
     property var detailedOwners: []
     readonly property bool polling: detailedOwners.length > 0
@@ -76,10 +65,10 @@ QtObject {
     property double prevTotal: 0
     property double prevIdle: 0
 
-    // Previous /proc/net/dev totals + wall-clock time for the rate delta.
+    // Previous network totals + the uptime they were read at, for the rate.
     property double netPrevRx: -1
     property double netPrevTx: -1
-    property double netPrevTime: 0
+    property double netPrevUptime: 0
 
     function formatBytes(bytes: real): string {
         if (!(bytes > 0))
@@ -101,7 +90,7 @@ QtObject {
     }
 
     onSamplingChanged: {
-        if (sampling && root.mock === null) {
+        if (sampling) {
             prevTotal = 0;
             sample.running = true;
             pollTimer.start();
@@ -128,7 +117,15 @@ echo "CPU|$cpu"
 echo "MEM|$mem"
 [ "$1" = detailed ] || exit 0
 disk=$(df --output=used,size -k / 2>/dev/null | tail -1)
-net=$(awk -F: 'NR>2{gsub(/^[ \\t]+/,"",$1); if($1!="lo"){split($2,f," "); rx+=f[1]; tx+=f[9]}} END{print rx" "tx}' /proc/net/dev)
+rx=0
+tx=0
+for n in /sys/class/net/*; do
+  [ "\${n##*/}" = lo ] || [ ! -r "$n/statistics/rx_bytes" ] && continue
+  rx=$((rx + $(<"$n/statistics/rx_bytes")))
+  tx=$((tx + $(<"$n/statistics/tx_bytes")))
+done
+read -r up _ </proc/uptime
+net="$rx $tx $up"
 ctemp=""
 gtemp=""
 gbusy=""
@@ -194,10 +191,9 @@ echo "GBUSY|$gbusy"
                     storageUsed = usedKb / sizeKb;
                 }
             } else if (key === "NET") {
-                const [rx, tx] = value.split(/\s+/).map(Number);
-                const now = Date.now();
-                if (netPrevTime > 0 && rx >= netPrevRx && tx >= netPrevTx) {
-                    const dt = (now - netPrevTime) / 1000;
+                const [rx, tx, uptime] = value.split(/\s+/).map(Number);
+                if (netPrevUptime > 0 && rx >= netPrevRx && tx >= netPrevTx) {
+                    const dt = uptime - netPrevUptime;
                     if (dt > 0) {
                         netRxRate = (rx - netPrevRx) / dt;
                         netTxRate = (tx - netPrevTx) / dt;
@@ -211,7 +207,7 @@ echo "GBUSY|$gbusy"
                 netTxTotalText = formatBytes(tx);
                 netPrevRx = rx;
                 netPrevTx = tx;
-                netPrevTime = now;
+                netPrevUptime = uptime;
             } else if (key === "CTEMP") {
                 cpuTemp = value.length > 0 ? parseInt(value, 10) : -1;
             } else if (key === "GTEMP") {
