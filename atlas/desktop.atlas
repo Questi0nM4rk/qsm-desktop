@@ -4,6 +4,9 @@ desktop ~/Projects/qsm-desktop/shell
 hypr ~/.config/hypr/hyprland.lua
 mock ~/Projects/qsm-desktop/atlas/mock.json
 check ~/Projects/qsm-desktop/scripts/atlas-check
+# The shell counts pending updates 5 s after it starts: every journey begins after that, or the
+# badge lands between a shot and its item tree.
+ready 6
 # Mock notifications expire in 10 minutes, never within a journey: a low one expired 3 s after
 # its post, before or after the shot depending on timing.
 

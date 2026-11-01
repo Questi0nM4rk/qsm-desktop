@@ -216,7 +216,7 @@ QtObject {
     property Process connectivityProbe: Process {
         id: connectivityProbe
         // Without 'check' nmcli only reads NetworkManager's cached result.
-        command: ["timeout", "5s", "nmcli", "-t", "general", "connectivity"]
+        command: ["timeout", "5s", "nmcli", "-t", "networking", "connectivity"]
         stdout: StdioCollector { onStreamFinished: root.connectivityOutput = text }
         // qmllint disable signal-handler-parameters
         onExited: (code, status) => root.connectivity.observe(code === 0 && status === 0
