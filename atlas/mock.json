@@ -453,6 +453,7 @@
     }
   },
   "nm": {
+    "running": true,
     "device": [
       {
         "TYPE": "wifi",

@@ -29,79 +29,79 @@ journey windows
 journey rail
   move-to 32 32
   hover-wait 500
-  shot entry-1
+  shot entry-1 @Rail
   move-to 1100 700
   move-to 32 68
   hover-wait 500
-  shot entry-2
+  shot entry-2 @DescriptionPopout
   move-to 1100 700
   move-to 32 104
   hover-wait 500
-  shot entry-3
+  shot entry-3 @DescriptionPopout
   move-to 1100 700
   move-to 32 180
   hover-wait 500
-  shot clock
+  shot clock @MonthCalendar
   move-to 1100 700
   move-to 32 418
   hover-wait 500
-  shot workspaces
+  shot workspaces @WorkspaceStrip
   move-to 1100 700
   move-to 32 628
   hover-wait 500
-  shot battery
+  shot battery @BatteryPopoutContent
   move-to 1100 700
   move-to 32 676
   hover-wait 500
-  shot quick-actions
+  shot quick-actions @QuickActionsColumn
   move-to 1100 700
   move-to 32 712
   hover-wait 500
-  shot network
+  shot network @NetworkPopoutContent
   move-to 1100 700
   move-to 32 748
   hover-wait 500
-  shot bluetooth
+  shot bluetooth @BluetoothPopoutContent
   move-to 1100 700
   move-to 32 784
   hover-wait 500
-  shot sound
+  shot sound @SoundPopoutContent
   move-to 1100 700
   move-to 32 832
   hover-wait 500
-  shot session
+  shot session @DescriptionPopout
 
 journey launcher
   move-to 1100 700
   key SUPER SPACE
-  shot open
+  shot open @LauncherSurface
   type foot
-  shot query
+  shot query @LauncherSurface
 
 journey quick-controls
   move-to 1100 700
   key SUPER A
-  shot open
+  shot open @LauncherSurface
 
 journey clipboard
   move-to 1100 700
   key SUPER V
-  shot open
+  shot open @ClipboardSurface
 
 journey cheatsheet
   move-to 1100 700
   key SUPER SLASH
-  shot open
+  shot open @CheatSheetSurface
 
 journey overview
   move-to 1100 700
   key SUPER W
-  shot open
+  shot open @PanelSurface/FocusScope
 
 journey session
   move-to 1100 700
   key CTRL ALT DELETE
-  shot open
+  shot open @SessionSurface/FocusScope
 
 journey panel
   move-to 800 12
@@ -115,22 +115,22 @@ journey panel-tabs
   # CPU usage is a delta of two samples 2 s apart: with this Hyprland config it shows 4.3 s
   # after the panel opens (measured three times), so the shot waits well past it.
   hover-wait 7000
-  shot dashboard
+  shot dashboard @PanelSurface/FocusScope
   ipc toggle media
-  shot media
+  shot media @PanelSurface/FocusScope
   ipc toggle performance
   # The network rate needs two detailed samples and the sparkline two rates; samples run every
   # 2 s and the first detailed one can come a tick after the tab opens.
   hover-wait 10000
-  shot battery
+  shot battery @PanelSurface/FocusScope
   ipc toggle workspaces
-  shot workspaces
+  shot workspaces @PanelSurface/FocusScope
 
 journey osd
   move-to 1100 700
   move-to 1530 432
   hover-wait 600
-  shot open
+  shot open @OsdContent
 
 
 journey notifications
@@ -138,33 +138,33 @@ journey notifications
   ipc notifyPost "Anna Nováková" "Oběd ve 12? Mám stůl u okna." normal 600000 0 false
   ipc notifyPost "Build finished" "qsm-shell main: 63/63 stories passed" low 600000 0 false
   ipc notifyPost "Battery low" "12 % left, plug in soon" critical 0 0 false
-  shot popups
+  shot popups @NotificationStack
   ipc toggle notifications
-  shot centre
+  shot centre @NotificationCenterSurface
 
 journey clipboard-data
   exec sh -c 'printf "ssh qs@salonek.local\n" | cliphist store; printf "https://github.com/hyprwm/aquamarine/commit/7bb8bdf\n" | cliphist store; printf "Lunch at 12 by the window\n" | cliphist store'
   move-to 1100 700
   hover-wait 500
   key SUPER V
-  shot open
+  shot open @ClipboardSurface
 
 journey launcher-commands
   move-to 1100 700
   key SUPER SPACE
   type >
-  shot commands
+  shot commands @LauncherSurface
   type calc 12*(3+4)
-  shot calc
+  shot calc @LauncherSurface
   key CTRL A
   type >kill
-  shot kill
+  shot kill @LauncherSurface
   key CTRL A
   type >theme
-  shot theme
+  shot theme @LauncherSurface
   key CTRL A
   type >action
-  shot action
+  shot action @LauncherSurface
 
 journey session-armed
   move-to 1100 700
@@ -175,7 +175,7 @@ journey session-armed
   key DOWN
   key RETURN
   hover-wait 300
-  shot-now armed
+  shot-now armed @SessionSurface/FocusScope
 
 journey lock
   move-to 1100 700
@@ -191,9 +191,9 @@ journey notifications-more
   ipc notifyPost "Update" "12 packages can be upgraded" low 600000 0 false
   ipc notifyPost "Disk almost full" "/ has 2 GiB left" critical 0 0 false
   ipc notifyPost "Music" "Now playing: Nils Frahm – Says" low 600000 0 false
-  shot overflow
+  shot overflow @NotificationStack
   ipc notifyDnd true
-  shot dnd
+  shot dnd @NotificationStack
 
 journey quick-actions-detail
   move-to 32 676
@@ -201,19 +201,19 @@ journey quick-actions-detail
   move-to 96 676
   move-to 96 604
   hover-wait 500
-  shot detail-1
+  shot detail-1 @DescriptionPopout
   move-to 96 640
   hover-wait 500
-  shot detail-2
+  shot detail-2 @DescriptionPopout
   move-to 96 676
   hover-wait 500
-  shot detail-3
+  shot detail-3 @DescriptionPopout
   move-to 96 712
   hover-wait 500
-  shot detail-4
+  shot detail-4 @DescriptionPopout
   move-to 96 748
   hover-wait 500
-  shot detail-5
+  shot detail-5 @ColorPickContent
 
 journey rail-collapsed
   move-to 1100 700
@@ -221,7 +221,7 @@ journey rail-collapsed
   shot collapsed
   move-to 2 432
   hover-wait 600
-  shot peek
+  shot peek @Rail
 
 journey focus-mode
   exec foot -o cursor.blink=no sh -c 'sleep 900'
@@ -246,7 +246,7 @@ journey urgent
   # The bell rings 3 s after foot starts, and foot can take a second to start in the slot.
   hover-wait 6000
   move-to 1100 700
-  shot urgent
+  shot urgent @WorkspaceStrip
 
 journey theme-dusk
   move-to 1100 700
@@ -254,7 +254,7 @@ journey theme-dusk
   shot rest
   move-to 32 784
   hover-wait 500
-  shot sound
+  shot sound @SoundPopoutContent
 
 # The battery runs low while the desktop is up: UPower announces it and the rail follows.
 journey battery-low
@@ -265,4 +265,124 @@ journey battery-low
   shot rest
   move-to 32 628
   hover-wait 500
-  shot battery
+  shot battery @BatteryPopoutContent
+
+# The network states the owner's priority order names, one mock of the nm record each: the
+# before shots of the network glyph work. Today the rail and the popout do not read the Internet
+# state, so portal and no-internet look like the connected shots. The shell reads NetworkManager
+# on a 10 s poll, so each mock waits out one poll; the rail is shot at rest, the popout hovered.
+journey network-states
+  move-to 1100 700
+  mock .nm.connectivity "portal"
+  hover-wait 11000
+  shot rail-portal @Rail
+  move-to 32 712
+  hover-wait 500
+  shot portal @NetworkPopoutContent
+  move-to 1100 700
+  mock .nm.connectivity "none"
+  hover-wait 11000
+  shot rail-no-internet @Rail
+  move-to 32 712
+  hover-wait 500
+  shot no-internet @NetworkPopoutContent
+  move-to 1100 700
+  mock .nm.connectivity "full"
+  mock .nm.device[0].STATE "connecting (getting IP configuration)"
+  hover-wait 11000
+  shot rail-connecting @Rail
+  move-to 32 712
+  hover-wait 500
+  shot connecting @NetworkPopoutContent
+  move-to 1100 700
+  mock .nm.device[0].STATE "connected"
+  mock .nm.device[1].STATE "connected"
+  mock .nm.device[1].CONNECTION "Wired connection 1"
+  hover-wait 11000
+  shot rail-ethernet @Rail
+  move-to 32 712
+  hover-wait 500
+  shot ethernet @NetworkPopoutContent
+  move-to 1100 700
+  mock .nm.device[1].STATE "unavailable"
+  mock .nm.device[1].CONNECTION ""
+  mock .nm.connectivity "none"
+  mock .nm.device[0].STATE "disconnected"
+  mock .nm.device[0].CONNECTION ""
+  mock .nm.wifi[0]["IN-USE"] ""
+  mock .nm.connection[0].ACTIVE "no"
+  hover-wait 11000
+  shot rail-disconnected @Rail
+  move-to 32 712
+  hover-wait 500
+  shot disconnected @NetworkPopoutContent
+  move-to 1100 700
+  mock .nm.radio[0].WIFI "disabled"
+  mock .nm.device[0].STATE "unavailable"
+  hover-wait 11000
+  shot rail-radio-off @Rail
+  move-to 32 712
+  hover-wait 500
+  shot radio-off @NetworkPopoutContent
+  move-to 1100 700
+  mock .nm.running false
+  hover-wait 11000
+  shot rail-nm-unavailable @Rail
+  move-to 32 712
+  hover-wait 500
+  shot nm-unavailable @NetworkPopoutContent
+
+# The battery states UPower reports, one change of the display device each; the shell follows
+# UPower's PropertiesChanged, so no wait beyond the settle.
+journey battery-states
+  mock .dbus.system["org.freedesktop.UPower"]["/org/freedesktop/UPower/devices/DisplayDevice"]["org.freedesktop.UPower.Device"].Percentage 3
+  mock .dbus.system["org.freedesktop.UPower"]["/org/freedesktop/UPower/devices/DisplayDevice"]["org.freedesktop.UPower.Device"].Energy 1.01
+  mock .dbus.system["org.freedesktop.UPower"]["/org/freedesktop/UPower/devices/DisplayDevice"]["org.freedesktop.UPower.Device"].TimeToEmpty 380
+  move-to 1100 700
+  shot rail-critical @Rail
+  move-to 32 628
+  hover-wait 500
+  shot critical @BatteryPopoutContent
+  move-to 1100 700
+  mock .dbus.system["org.freedesktop.UPower"]["/org/freedesktop/UPower"]["org.freedesktop.UPower"].OnBattery false
+  mock .dbus.system["org.freedesktop.UPower"]["/org/freedesktop/UPower/devices/DisplayDevice"]["org.freedesktop.UPower.Device"].State 1
+  mock .dbus.system["org.freedesktop.UPower"]["/org/freedesktop/UPower/devices/DisplayDevice"]["org.freedesktop.UPower.Device"].TimeToEmpty 0
+  mock .dbus.system["org.freedesktop.UPower"]["/org/freedesktop/UPower/devices/DisplayDevice"]["org.freedesktop.UPower.Device"].TimeToFull 2700
+  mock .dbus.system["org.freedesktop.UPower"]["/org/freedesktop/UPower/devices/DisplayDevice"]["org.freedesktop.UPower.Device"].EnergyRate 24.5
+  mock .dbus.system["org.freedesktop.UPower"]["/org/freedesktop/UPower/devices/DisplayDevice"]["org.freedesktop.UPower.Device"].Percentage 64
+  mock .dbus.system["org.freedesktop.UPower"]["/org/freedesktop/UPower/devices/DisplayDevice"]["org.freedesktop.UPower.Device"].Energy 21.62
+  hover-wait 500
+  shot rail-charging @Rail
+  move-to 32 628
+  hover-wait 500
+  shot charging @BatteryPopoutContent
+  move-to 1100 700
+  mock .dbus.system["org.freedesktop.UPower"]["/org/freedesktop/UPower/devices/DisplayDevice"]["org.freedesktop.UPower.Device"].State 4
+  mock .dbus.system["org.freedesktop.UPower"]["/org/freedesktop/UPower/devices/DisplayDevice"]["org.freedesktop.UPower.Device"].TimeToFull 0
+  mock .dbus.system["org.freedesktop.UPower"]["/org/freedesktop/UPower/devices/DisplayDevice"]["org.freedesktop.UPower.Device"].EnergyRate 0
+  mock .dbus.system["org.freedesktop.UPower"]["/org/freedesktop/UPower/devices/DisplayDevice"]["org.freedesktop.UPower.Device"].Percentage 100
+  mock .dbus.system["org.freedesktop.UPower"]["/org/freedesktop/UPower/devices/DisplayDevice"]["org.freedesktop.UPower.Device"].Energy 33.78
+  hover-wait 500
+  shot rail-full @Rail
+  move-to 32 628
+  hover-wait 500
+  shot full @BatteryPopoutContent
+
+journey launcher-empty
+  move-to 1100 700
+  key SUPER SPACE
+  type zzqx
+  shot no-results @LauncherSurface
+
+# States the inventory knows and no journey shoots yet: BlueZ is not faked, PipeWire changes only
+# at start, and the update count is read 5 s after start and then every 30 min.
+todo @BluetoothPopoutContent radio-off
+todo @BluetoothPopoutContent connected-device
+todo @BluetoothPopoutContent pairing
+todo @SoundPopoutContent output-muted
+todo @SoundPopoutContent no-output-device
+todo @NotificationCenterSurface empty
+todo @ClipboardSurface empty
+todo @OsdContent brightness
+todo @DescriptionPopout updates-up-to-date
+todo @PanelSurface/FocusScope opened-by-the-handle
