@@ -13,7 +13,8 @@
   `Rail.qml` reads them and pulses on `connecting`; the launcher keeps `glyph`. qsm-shell gains
   `link.svg`. Proof: the network-states journey's rail shots draw the requirement's glyph and
   colour in each state, read from their pixels (the tree names no glyph) and their colour from the
-  tree; the pulse shows as the one 18x18 area two unmasked connecting shots differ in.
+  tree; the pulse shows as the glyph-sized area two unmasked connecting shots differ in (one
+  18x18 area at 31,881 device px between the rail-connecting shots of runs 141031 and 141431).
 - [x] 2.2 `NetworkService.qml`: the `nmcli monitor` Process with the 150 ms coalescing timer and
   the restart. Proof: the journey's rail shot follows a mock change with no 26 s wait.
 
