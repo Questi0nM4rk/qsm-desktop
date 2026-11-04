@@ -104,10 +104,11 @@ journey session
   shot open @SessionSurface/FocusScope
 
 journey panel
+  # The handle opens the panel on entry, and the panel closes 180 ms after the pointer leaves
+  # the handle and the panel (06), so the pointer goes down into the panel and stays there.
   move-to 800 12
-  click
-  move-to 1100 700
-  shot open
+  move-to 800 300
+  shot open @PanelSurface/FocusScope
 
 journey panel-tabs
   move-to 1100 700
@@ -387,4 +388,3 @@ todo @NotificationCenterSurface empty
 todo @ClipboardSurface empty
 todo @OsdContent brightness
 todo @DescriptionPopout updates-up-to-date
-todo @PanelSurface/FocusScope opened-by-the-handle
