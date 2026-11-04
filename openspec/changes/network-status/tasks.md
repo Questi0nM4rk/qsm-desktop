@@ -19,7 +19,7 @@
 ## 3. One notification per result
 
 - [x] 3.1 `NetworkService.qml`: the 3 s settle timer, the baseline, the copy of the design;
-  `ConnectivityState.qml` loses `lost`, `restored` and the sample count. Proof: the journey shoots
+  `NetworkStatus.qml` replaces `ConnectivityState.qml` and its two-sample rule. Proof: the journey shoots
   one notification (no Internet), and the toast shows the design's summary; connecting sends none
   (no toast in its shot window).
 

@@ -20,7 +20,7 @@ Wi-Fi dropped only when they notice it themselves.
   connecting never notifies, and the status a session starts in is the baseline, not news. This
   replaces the loss and restore notifications on the second poll.
 - NetworkService learns of a change from `nmcli monitor` as it happens, not from the next poll.
-  The 10 s poll stays for Wi-Fi signal strength, which the monitor does not report.
+  The 10 s poll reads only the Wi-Fi signal, which the monitor does not report.
 - A device read that fails resets the link state, so a stopped NetworkManager is never read as
   the connection it had before.
 - The popout names a stopped NetworkManager, a portal and a missing Internet in its reason line,
@@ -41,7 +41,8 @@ Wi-Fi dropped only when they notice it themselves.
 
 ## Impact
 
-- `shell/services/NetworkService.qml`, `shell/services/ConnectivityState.qml`,
+- `shell/services/NetworkService.qml`, `shell/services/NetworkStatus.qml` (in place of
+  `ConnectivityState.qml`; the workbench fixture uses it too),
   `shell/modules/bar/Rail.qml`, `shell/modules/bar/NetworkPopoutContent.qml`.
 - `spec/03-rail.md` (the glyph line and the notification paragraph), `spec/04-notifications.md`
   (the network example is now the real producer).

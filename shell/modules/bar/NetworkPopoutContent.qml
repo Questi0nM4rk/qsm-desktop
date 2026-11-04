@@ -377,18 +377,10 @@ ColumnLayout {
     // switched-off radio looks like a shell that stopped finding networks, and
     // a portal looks like the network it is on.
     QsmShellComponents.Prose {
-        readonly property string name: NetworkService.linkName
-        readonly property var reasons: ({
-            unavailable: "NetworkManager is not running, so the network cannot be read or changed",
-            portal: `${name} asks for a sign-in before it gives Internet access`,
-            offline: NetworkService.internetState === "limited" ? `${name} has limited Internet access`
-                : `${name} is connected, but has no Internet access`,
-            "radio-off": "Wi-Fi radio is off — nothing can be seen until it is back on"
-        })
         role: "body"
-        visible: text.length > 0
+        visible: NetworkService.presentation.problem
         Layout.fillWidth: true
-        text: reasons[NetworkService.status] ?? ""
+        text: NetworkService.presentation.detail
         // Broken or switched off is danger; a network that holds back the
         // Internet needs attention, not alarm.
         color: NetworkService.status === "portal" || NetworkService.status === "offline"

@@ -67,7 +67,7 @@ Item {
                     { label: "Portal sample" }, { label: "Unknown sample" }] }],
             apply: (group, option) => {
                 if (group === 1 && option >= 0 && option < 4) {
-                    NetworkService.connectivity.observe(["full", "none", "portal", "unknown"][option]);
+                    NetworkService.reading.observe(["full", "none", "portal", "unknown"][option]);
                     return true;
                 }
                 if (group !== 0 || option < 0 || option > 4) return false;
