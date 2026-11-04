@@ -113,9 +113,10 @@ intent separately from the backend result, with no password in event payloads.
   the next fires, 3s disarm) — it is the one control in that popout able to take the machine
   off the network it is being used over. Turning it back ON is a single click: restoring
   connectivity is never the mistake. An off radio reads LOUD — danger-coloured pill, `wifi-off`
-  glyph, "Wi-Fi OFF · click to enable" — and the empty network list carries its reason, because
-  a radio switched off three minutes ago otherwise looks like a shell that stopped finding
-  networks.
+  glyph, "Turn Wi-Fi on" (owner 2026-11-04: the longer "Wi-Fi OFF · click to enable" pushed
+  Rescan out of the 248px popout, and a capsule does not elide) — and the empty network list
+  carries its reason, because a radio switched off three minutes ago otherwise looks like a
+  shell that stopped finding networks.
 - **RATIFIED (2026-08-24, owner)**: **Rescan reports.** `nmcli device wifi rescan` returns in
   ~50ms and the scan lands seconds later, so refreshing on its exit re-read the same list and
   the button did visibly nothing (measured). Rescan now shows "Scanning…" and re-reads three

@@ -211,11 +211,13 @@ ColumnLayout {
         QsmShellComponents.Capsule {
             size: "sm"
             // The glyph says which way round this is even before the words are
-            // read, and the OFF state is LOUD: danger-coloured, naming itself,
-            // and saying what a click does about it, so it never reads as an
-            // ordinary inactive pill next to an empty list.
+            // read, and the OFF state is LOUD: danger-coloured, and saying what
+            // a click does about it, so it never reads as an ordinary inactive
+            // pill next to an empty list; the line under the list names the
+            // cause. The label stays as short as the armed one: a capsule does
+            // not elide, and a longer label pushed Rescan out of the popout.
             icon: root.wifiEnabled ? "wifi" : "wifi-off"
-            label: !root.wifiEnabled ? "Wi-Fi OFF · click to enable"
+            label: !root.wifiEnabled ? "Turn Wi-Fi on"
                 : root.wifiOffArmed ? "Turn Wi-Fi off?"
                 : "Wi-Fi on"
             active: !root.wifiEnabled || root.wifiOffArmed
