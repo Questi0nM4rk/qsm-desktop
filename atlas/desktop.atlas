@@ -344,8 +344,9 @@ journey network-states
 journey network-notifications
   # The results network-states does not reach. A change is seen within a second and named once
   # it has held 3 s, so a notification arrives about 3.7 s after it and a low one leaves at 6.7 s.
-  # Every step adds the 0.6 s settle, so a notification shot lands about 4.2 s after its change,
-  # and its item tree, read after the shot stills, well before the notification leaves.
+  # A notification times out, so it is shot at once (shot-now) about 4.5 s after its change (the
+  # 0.6 s settle after the mock and 3.9 s): fully in, its tree read 2 s before it leaves. A still
+  # wait can run past that and find it gone.
   move-to 1100 700
   # A loss that comes back inside 3 s was never news: this one lasts about 1.7 s (the settle after
   # the mock, the wait and the settle after it), well inside the hold.
@@ -356,14 +357,14 @@ journey network-notifications
   shot flip-back-silent
   # Another network is news too.
   mock .nm.device[0].CONNECTION "Cedar Library"
-  hover-wait 3000
-  shot moved @NotificationStack
+  hover-wait 3900
+  shot-now moved @NotificationStack
   hover-wait 6000
   # A cable that connects is named.
   mock .nm.device[1].CONNECTION "Wired connection 1"
   mock .nm.device[1].STATE "connected"
-  hover-wait 3000
-  shot cable @NotificationStack
+  hover-wait 3900
+  shot-now cable @NotificationStack
   hover-wait 6000
   # A cable pulled shows on the rail within a second: shot-now, about 0.95 s after the change
   # (the 0.6 s settle after the mock and 0.35 s), before anything is named.
