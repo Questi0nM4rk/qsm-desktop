@@ -216,11 +216,14 @@ ColumnLayout {
             // pill next to an empty list; the line under the list names the
             // cause. The label stays as short as the armed one: a capsule does
             // not elide, and a longer label pushed Rescan out of the popout.
-            icon: root.wifiEnabled ? "wifi" : "wifi-off"
-            label: !root.wifiEnabled ? "Turn Wi-Fi on"
+            // With no Wi-Fi to switch (NetworkManager down, or no adapter) it
+            // says so, and never that the radio is off.
+            icon: root.wifiEnabled || !NetworkService.wifiAvailable ? "wifi" : "wifi-off"
+            label: !NetworkService.wifiAvailable ? "No Wi-Fi"
+                : !root.wifiEnabled ? "Turn Wi-Fi on"
                 : root.wifiOffArmed ? "Turn Wi-Fi off?"
                 : "Wi-Fi on"
-            active: !root.wifiEnabled || root.wifiOffArmed
+            active: NetworkService.wifiAvailable && (!root.wifiEnabled || root.wifiOffArmed)
             enabled: NetworkService.wifiAvailable && !NetworkService.busy
             accentColor: !root.wifiEnabled || root.wifiOffArmed ? Theme.danger : Theme.accent
             onClicked: root.toggleWifi()

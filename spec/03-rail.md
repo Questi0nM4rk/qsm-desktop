@@ -128,7 +128,8 @@ intent separately from the backend result, with no password in event payloads.
   glyph, "Turn Wi-Fi on" (owner 2026-11-04: the longer "Wi-Fi OFF · click to enable" pushed
   Rescan out of the 248px popout, and a capsule does not elide) — and the empty network list
   carries its reason, because a radio switched off three minutes ago otherwise looks like a
-  shell that stopped finding networks.
+  shell that stopped finding networks. With no Wi-Fi to switch (NetworkManager down, no adapter)
+  the capsule reads "No Wi-Fi", disabled, and never that the radio is off.
 - **RATIFIED (2026-08-24, owner)**: **Rescan reports.** `nmcli device wifi rescan` returns in
   ~50ms and the scan lands seconds later, so refreshing on its exit re-read the same list and
   the button did visibly nothing (measured). Rescan now shows "Scanning…" and re-reads three

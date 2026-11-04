@@ -12,7 +12,8 @@
   link state on a failed read, `status` and `statusKey`, `glyph` and `glyphMuted` over the status.
   `Rail.qml` reads them and pulses on `connecting`; the launcher keeps `glyph`. qsm-shell gains
   `link.svg`. Proof: the network-states journey's rail shots draw the requirement's glyph and
-  colour in each state, read from the item tree.
+  colour in each state, read from their pixels (the tree names no glyph) and their colour from the
+  tree; the pulse shows as the one 18x18 area two unmasked connecting shots differ in.
 - [x] 2.2 `NetworkService.qml`: the `nmcli monitor` Process with the 150 ms coalescing timer and
   the restart. Proof: the journey's rail shot follows a mock change with no 26 s wait.
 
@@ -21,7 +22,9 @@
 - [x] 3.1 `NetworkService.qml`: the 3 s settle timer, the baseline, the copy of the design;
   `NetworkStatus.qml` replaces `ConnectivityState.qml` and its two-sample rule. Proof: the journey shoots
   one notification (no Internet), and the toast shows the design's summary; connecting sends none
-  (no toast in its shot window).
+  (no toast in its shot window). The network-notifications journey shows a loss that returns
+  inside 3 s sending nothing, a move to another network and a connected cable each notifying,
+  and a pulled cable leaving the rail within a second.
 
 ## 4. The popout and the documents
 

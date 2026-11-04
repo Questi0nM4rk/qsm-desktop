@@ -56,14 +56,18 @@ QtObject {
     // The last result notified; empty until the session's first settled status,
     // which is the baseline and not news.
     property string reportedKey: ""
+    // The first device read has answered. Before it the status is only the
+    // defaults, and a slow start held them past the settle and made the real
+    // first status read as news (measured in the atlas slot).
+    property bool read: false
 
     readonly property string statusKey: reading.statusKey
-    onStatusKeyChanged: settle.restart()
+    onStatusKeyChanged: if (read) settle.restart()
     // A status is a result once it has held 3 s (owner): one that flips back
     // inside that window was never news, and connecting is never a result.
     property Timer settle: Timer {
         interval: 3000
-        running: true
+        running: false
         onTriggered: {
             if (root.status === "connecting" || root.statusKey === root.reportedKey) return;
             const baseline = root.reportedKey === "";
@@ -85,6 +89,8 @@ QtObject {
         command: ["nmcli", "monitor"]
         running: true
         stdout: SplitParser { onRead: changed.restart() }
+        // What changed while it was not watching is read once it watches.
+        onStarted: changed.restart()
         onExited: code => {
             console.warn(`NetworkService: nmcli monitor exited (${code}), restarting`);
             monitorRestart.restart();
@@ -95,7 +101,8 @@ QtObject {
         interval: 150
         // A probe still reading would skip this refresh, and the change with it.
         onTriggered: {
-            if (probe.running || radioProbe.running || connectivityProbe.running) restart();
+            if (probe.running || radioProbe.running || connectivityProbe.running || vpnProbe.running
+                || wifiListProbe.running) restart();
             else root.refresh();
         }
     }
@@ -266,6 +273,7 @@ QtObject {
         // running"), and nothing it said before still holds.
         onExited: code => {
             root.available = code === 0;
+            if (!root.read) { root.read = true; root.settle.restart(); }
             if (code !== 0) { root.deviceRows = []; root.networks = []; }
         }
     }

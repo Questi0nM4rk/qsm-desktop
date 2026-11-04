@@ -34,7 +34,8 @@ keeps out; any change to connect, disconnect, VPN or the password prompt.
 - **The notification owner is a settle timer in `NetworkService`.** Each change of `statusKey`
   (the status plus the connection it names) restarts a 3 s timer; when it fires and the key
   differs from the last one reported, the service notifies and stores the key. The first fire of
-  a session stores the key without notifying. `connecting` restarts the timer and is never
+  a session stores the key without notifying, and the timer first runs once the first device read
+  has answered: a slow start held the defaults past 3 s and made the real first status news. `connecting` restarts the timer and is never
   reported. This replaces `ConnectivityState`'s two-sample rule, which existed to drop a single
   bad reading: the 3 s hold drops it as well, and a second rule for the same job would be a second
   owner.
@@ -42,21 +43,23 @@ keeps out; any change to connect, disconnect, VPN or the password prompt.
   any line calls `refresh()` through a 150 ms coalescing timer, because the monitor prints several
   lines for one change. The probes stay the one reader of state, so the monitor's line format
   never becomes a parser to maintain. A change that lands while a probe still reads waits for it
-  rather than being skipped. When the monitor exits, it is started again after 2 s. The 10 s poll
+  rather than being skipped. When the monitor exits, it is started again after 2 s, and a start
+  refreshes, so a change made while it was not watching is read. The 10 s poll
   reads only the Wi-Fi list, because the monitor reports every change but the signal strength.
 - **The connecting pulse is an opacity loop on the rail glyph** of period `Motion.pulse`, the
   library's breath of a waiting surface, which doubles under reduced motion (a loop calms by
   getting slower, the library's law).
-- **Notification copy** (summary, body):
+- **Notification copy** (summary, body; the body is also the popout's reason line for a problem):
   - `wifi`: "Connected to SSID", "Wi-Fi".
   - `ethernet`: "Connected by cable", the connection name.
   - `idle`: "Disconnected", "Not connected to any network."
-  - `radio-off`: "Wi-Fi is off", "Turn it on in the network popout."
+  - `radio-off`: "Wi-Fi is off", "Wi-Fi radio is off — nothing can be seen until it is back on."
   - `offline`: "No Internet connection", "CONNECTION is connected, but has no Internet access."
     (limited: "has limited Internet access").
   - `portal`: "Sign in to the network", "CONNECTION asks for a sign-in before it gives Internet
     access."
-  - `unavailable`: "Network status unavailable", "NetworkManager is not running."
+  - `unavailable`: "Network status unavailable", "NetworkManager is not running, so the network
+    cannot be read or changed."
 
 ## Risks / Trade-offs
 
