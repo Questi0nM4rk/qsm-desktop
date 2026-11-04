@@ -289,8 +289,8 @@ Item {
         // Connectivity and audio devices.
         RailEntry {
             icon: NetworkService.glyph
-            iconColor: NetworkService.ethernetActive || NetworkService.wifiConnected
-                ? Theme.text : Theme.textMuted
+            iconColor: NetworkService.glyphMuted ? Theme.textMuted : Theme.text
+            pulsing: NetworkService.status === "connecting"
             interactive: true
             popouts: root.popouts
             popoutKind: "network"

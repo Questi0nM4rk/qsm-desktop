@@ -16,6 +16,7 @@ Item {
     default property alias content: contentSlot.data
     property string icon
     property color iconColor: Theme.text
+    property bool pulsing
     property bool active
     // Destructive-flavored entry (power): slight danger-tinted base.
     property bool danger
@@ -121,6 +122,7 @@ Item {
     }
 
     QsmShellComponents.SvgIcon {
+        id: glyph
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
         // An empty name means the cell paints its own content in the slot
@@ -129,6 +131,16 @@ Item {
         name: root.icon
         size: root.iconSize
         color: root.iconColor
+
+        // A state that is on its way (connecting) breathes until it lands: the
+        // library Skeleton's breath, its period and its half-strength trough.
+        SequentialAnimation on opacity {
+            running: root.pulsing
+            loops: Animation.Infinite
+            onStopped: glyph.opacity = 1
+            NumberAnimation { to: 0.5; duration: QsmShellStyle.Motion.pulse / 2; easing.type: QsmShellStyle.Motion.moveEasing }
+            NumberAnimation { to: 1; duration: QsmShellStyle.Motion.pulse / 2; easing.type: QsmShellStyle.Motion.moveEasing }
+        }
     }
 
     // Custom cell content (the BLE cell's split glyph grid, and anything like

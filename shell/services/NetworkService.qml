@@ -10,15 +10,36 @@ import qs.services
 QtObject {
     id: root
 
-    property bool ethernetActive: false
-    property bool wifiConnected: false
+    // The last device read's rows, [type, state, connection, device], wired and
+    // Wi-Fi only; every link fact is read from them (NetworkStatus), so a failed
+    // read that empties them leaves nothing of the connection it had.
+    property var deviceRows: []
+    // NetworkManager answered the last device read. It starts true so a session
+    // does not open on "not running" before the first read has said anything.
+    property bool available: true
     property bool wifiEnabled: false
-    property bool wifiAvailable: false
     property int wifiSignal: 0
+    property NetworkStatus reading: NetworkStatus {
+        available: root.available
+        rows: root.deviceRows
+        wifiEnabled: root.wifiEnabled
+        wifiSignal: root.wifiSignal
+    }
+    readonly property bool ethernetActive: reading.ethernetActive
+    readonly property bool wifiConnected: reading.wifiConnected
+    readonly property bool wifiAvailable: reading.wifiAvailable
+    readonly property string linkName: reading.linkName
+    readonly property string internetState: reading.internet
+    readonly property string internetDescription: reading.internetDescription
+    readonly property string status: reading.status
+    readonly property var presentation: reading.presentation
+    readonly property string glyph: presentation.glyph
+    readonly property bool glyphMuted: presentation.muted
+    readonly property var wiredDevices: deviceRows.filter(row => row[0] === "ethernet" && row[3])
+        .map(row => ({ device: row[3], type: row[0], state: row[1], connection: row[2] }))
     property bool vpnAvailable: false
     property bool vpnActive: false
     property string vpnName: ""
-    property var wiredDevices: []
     property var vpnProfiles: []
     property var networks: []
     property string operationState: "idle"
@@ -29,23 +50,62 @@ QtObject {
     property bool scanning: false
     property string scanError: ""
     property string connectivityOutput: ""
-    readonly property string internetState: connectivity.state
-    readonly property string internetDescription: connectivity.description
-    property ConnectivityState connectivity: ConnectivityState {
-        onLost: state => NotificationService.notify("Internet connection lost", {
-            appName: "Network", body: state === "portal" ? "Sign in to the network to restore access."
-                : "The network no longer reports Internet access. Check your connection.", urgency: "normal"
-        })
-        onRestored: NotificationService.notify("Internet connection restored", {
-            appName: "Network", body: "NetworkManager reports full Internet access again.", urgency: "low"
-        })
-    }
     property string _password: ""
     signal operated(string operation, string phase, var value)
 
-    readonly property string glyph: ethernetActive ? "cable"
-        : !wifiEnabled || !wifiConnected ? "wifi-off"
-        : wifiSignal >= 55 ? "wifi" : "wifi-low"
+    // The last result notified; empty until the session's first settled status,
+    // which is the baseline and not news.
+    property string reportedKey: ""
+    // The first device read has answered. Before it the status is only the
+    // defaults, and a slow start held them past the settle and made the real
+    // first status read as news (measured in the atlas slot).
+    property bool read: false
+
+    readonly property string statusKey: reading.statusKey
+    onStatusKeyChanged: if (read) settle.restart()
+    // A status is a result once it has held 3 s (owner): one that flips back
+    // inside that window was never news, and connecting is never a result.
+    property Timer settle: Timer {
+        interval: 3000
+        running: false
+        onTriggered: {
+            if (root.status === "connecting" || root.statusKey === root.reportedKey) return;
+            const baseline = root.reportedKey === "";
+            root.reportedKey = root.statusKey;
+            if (!baseline) root.notifyStatus();
+        }
+    }
+
+    function notifyStatus(): void {
+        NotificationService.notify(root.presentation.summary, { appName: "Network", body: root.presentation.detail,
+            urgency: root.status === "wifi" || root.status === "ethernet" ? "low" : "normal" });
+    }
+
+    // NetworkManager's own change stream: any line it prints is a change, and the
+    // probes read what it was, so its wording is never parsed. One change prints
+    // several lines, which one refresh answers. It does not report the Wi-Fi
+    // signal, which the poll reads.
+    property Process monitor: Process {
+        command: ["nmcli", "monitor"]
+        running: true
+        stdout: SplitParser { onRead: changed.restart() }
+        // What changed while it was not watching is read once it watches.
+        onStarted: changed.restart()
+        onExited: code => {
+            console.warn(`NetworkService: nmcli monitor exited (${code}), restarting`);
+            monitorRestart.restart();
+        }
+    }
+    property Timer monitorRestart: Timer { interval: 2000; onTriggered: root.monitor.running = true }
+    property Timer changed: Timer {
+        interval: 150
+        // A probe still reading would skip this refresh, and the change with it.
+        onTriggered: {
+            if (probe.running || radioProbe.running || connectivityProbe.running || vpnProbe.running
+                || wifiListProbe.running) restart();
+            else root.refresh();
+        }
+    }
 
     // Terse mode escapes the separator and the escape character, so an SSID may
     // legitimately contain a colon. Splitting on ":" produced broken networks.
@@ -155,7 +215,11 @@ QtObject {
         root.refresh();
     }
 
-    property Timer poll: Timer { interval: 10000; repeat: true; running: true; onTriggered: root.refresh() }
+    // The stream reports every change but the Wi-Fi signal, so the poll reads only that.
+    property Timer poll: Timer {
+        interval: 10000; repeat: true; running: true
+        onTriggered: if (root.wifiEnabled && !wifiListProbe.running) wifiListProbe.running = true
+    }
     property Timer deadline: Timer {
         interval: 35000
         onTriggered: {
@@ -201,16 +265,16 @@ QtObject {
         environment: ({ LC_ALL: "C" })
         stdout: StdioCollector {
             onStreamFinished: {
-                const devices = text.trim().split("\n").map(line => root.fields(line));
-                root.wiredDevices = devices.filter(device => device[0] === "ethernet" && device[3])
-                    .map(device => ({ device: device[3], type: device[0], state: device[1], connection: device[2] }));
-                root.ethernetActive = devices.some(device => device[0] === "ethernet" && device[1] === "connected");
-                root.wifiAvailable = devices.some(device => device[0] === "wifi");
-                root.wifiConnected = devices.some(device => device[0] === "wifi" && device[1] === "connected");
+                root.deviceRows = text.trim().split("\n").map(line => root.fields(line))
+                    .filter(device => device[0] === "ethernet" || device[0] === "wifi");
             }
         }
+        // A failed read is a NetworkManager that does not answer (8 is "not
+        // running"), and nothing it said before still holds.
         onExited: code => {
-            if (code !== 0) { root.wifiAvailable = false; root.networks = []; root.wiredDevices = []; }
+            root.available = code === 0;
+            if (!root.read) { root.read = true; root.settle.restart(); }
+            if (code !== 0) { root.deviceRows = []; root.networks = []; }
         }
     }
     property Process connectivityProbe: Process {
@@ -219,7 +283,7 @@ QtObject {
         command: ["timeout", "5s", "nmcli", "-t", "networking", "connectivity"]
         stdout: StdioCollector { onStreamFinished: root.connectivityOutput = text }
         // qmllint disable signal-handler-parameters
-        onExited: (code, status) => root.connectivity.observe(code === 0 && status === 0
+        onExited: (code, status) => root.reading.observe(code === 0 && status === 0
             ? root.connectivityOutput : "unknown")
         // qmllint enable signal-handler-parameters
     }

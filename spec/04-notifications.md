@@ -191,11 +191,10 @@ same lifetime, archive, replacement and popup-record pipeline described above.
   No event registry, subscription DSL, caller-managed timers or generic rule engine
   is required to make an ordinary handler one or two lines.
 
-The network example is a target usage, not an existing network event API.
-`NetworkService` currently publishes Wi-Fi/Ethernet link state and polls it;
-it does not establish Internet reachability. A real Internet-loss event needs
-an initialized, coherent connectivity state and a confirmed online-to-offline
-transition before wiring this call. Link loss must not be labelled Internet loss.
+`NetworkService` is the network's producer: it notifies each change of its one
+status once the status has held 3 s (03, Entries), naming the result ("No Internet
+connection", "Connected to Dusk Loft"). Link loss is "Disconnected" and never
+labelled Internet loss.
 
 ## Notification center
 

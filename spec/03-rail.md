@@ -18,11 +18,23 @@ The 40px left band hosting entries top-to-bottom; the only always-visible surfac
 
 NetworkManager's cached Internet state is separate from the radio/link. The
 network action-menu reading distinguishes full access, limited access, captive
-portal and unknown. A previously online connection needs two consecutive valid
-loss samples before one loss notification; continued polling cannot duplicate it.
-Full access restores that episode once. Startup offline and failed/unknown probes
-never fabricate an outage. The query is read-only, bounded to five seconds and
-does not request an active connectivity check.
+portal and unknown. The query is read-only, bounded to five seconds and does not
+request an active connectivity check.
+
+**RATIFIED (2026-11-02, owner)**: the network has ONE status, the most important
+that holds, a problem before a connection: NetworkManager not answering
+(`network`, muted), a captive portal (`circle-alert`), no or limited Internet
+(`alert-triangle`), connecting (`link`, breathing), ethernet (`cable`), Wi-Fi
+(`wifi` / `wifi-low` below 55 %), no link with the radio on (`network`, muted),
+the radio off (`wifi-off`, muted). Portal and no Internet count only while a link
+is up. The rail cell and the launcher draw that glyph, and the popout's reason
+line names a stopped NetworkManager, a portal, a missing Internet and an off
+radio. Every change of the status is a notification once it has held 3 s, for
+results only: connecting never notifies, a status that flips back inside 3 s
+never does, and the status a session starts in is the baseline. A problem is a
+normal notification and a connection a low one. NetworkService learns of a change
+from `nmcli monitor` (owner 2026-11-04) and still polls every 10 s for the Wi-Fi
+signal, which the monitor does not report.
 
 The network popout and command picker share NetworkService for radio, scanning,
 connect/disconnect and VPN operation lifetime. Passwords go through stdin, never
@@ -113,9 +125,11 @@ intent separately from the backend result, with no password in event payloads.
   the next fires, 3s disarm) — it is the one control in that popout able to take the machine
   off the network it is being used over. Turning it back ON is a single click: restoring
   connectivity is never the mistake. An off radio reads LOUD — danger-coloured pill, `wifi-off`
-  glyph, "Wi-Fi OFF · click to enable" — and the empty network list carries its reason, because
-  a radio switched off three minutes ago otherwise looks like a shell that stopped finding
-  networks.
+  glyph, "Turn Wi-Fi on" (owner 2026-11-04: the longer "Wi-Fi OFF · click to enable" pushed
+  Rescan out of the 248px popout, and a capsule does not elide) — and the empty network list
+  carries its reason, because a radio switched off three minutes ago otherwise looks like a
+  shell that stopped finding networks. With no Wi-Fi to switch (NetworkManager down, no adapter)
+  the capsule reads "No Wi-Fi", disabled, and never that the radio is off.
 - **RATIFIED (2026-08-24, owner)**: **Rescan reports.** `nmcli device wifi rescan` returns in
   ~50ms and the scan lands seconds later, so refreshing on its exit re-read the same list and
   the button did visibly nothing (measured). Rescan now shows "Scanning…" and re-reads three
@@ -235,7 +249,7 @@ intent separately from the backend result, with no password in event payloads.
 - **RATIFIED (2026-10-16, owner)**: quick-menu cells (the rail's own and the second rail's) are
   the rail capsule (32x32, target-frequent) with a 16px glyph. A connected/active state draws the glyph in
   `text`; an off/inactive state in `textMuted` with the "off" glyph SHAPE. Glyphs change shape
-  for state, never colour alone: network = cable / wifi by signal / wifi-off; bluetooth = the
+  for state, never colour alone: network = its status's glyph (see Entries); bluetooth = the
   mark, or the connected device's glyph (the ONE device cell that becomes what is connected,
   subdividing up to four); sound = volume / volume-muted (hover popout settings, click mutes).
 - Its popout is not a card but a **SECOND RAIL**: glyph cells stacked under each other, 32px,

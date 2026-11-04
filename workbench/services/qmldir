@@ -9,7 +9,7 @@ singleton ColorPickService 1.0 ColorPickService.qml
 singleton FullscreenService 1.0 FullscreenService.qml
 singleton NightLightService 1.0 NightLightService.qml
 singleton NetworkService 1.0 NetworkService.qml
-ConnectivityState 1.0 ConnectivityState.qml
+NetworkStatus 1.0 NetworkStatus.qml
 singleton PowerProfileService 1.0 PowerProfileService.qml
 singleton Delegate 1.0 Delegate.qml
 singleton PerformanceService 1.0 PerformanceService.qml

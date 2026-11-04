@@ -211,14 +211,19 @@ ColumnLayout {
         QsmShellComponents.Capsule {
             size: "sm"
             // The glyph says which way round this is even before the words are
-            // read, and the OFF state is LOUD: danger-coloured, naming itself,
-            // and saying what a click does about it, so it never reads as an
-            // ordinary inactive pill next to an empty list.
-            icon: root.wifiEnabled ? "wifi" : "wifi-off"
-            label: !root.wifiEnabled ? "Wi-Fi OFF · click to enable"
+            // read, and the OFF state is LOUD: danger-coloured, and saying what
+            // a click does about it, so it never reads as an ordinary inactive
+            // pill next to an empty list; the line under the list names the
+            // cause. The label stays as short as the armed one: a capsule does
+            // not elide, and a longer label pushed Rescan out of the popout.
+            // With no Wi-Fi to switch (NetworkManager down, or no adapter) it
+            // says so, and never that the radio is off.
+            icon: root.wifiEnabled || !NetworkService.wifiAvailable ? "wifi" : "wifi-off"
+            label: !NetworkService.wifiAvailable ? "No Wi-Fi"
+                : !root.wifiEnabled ? "Turn Wi-Fi on"
                 : root.wifiOffArmed ? "Turn Wi-Fi off?"
                 : "Wi-Fi on"
-            active: !root.wifiEnabled || root.wifiOffArmed
+            active: NetworkService.wifiAvailable && (!root.wifiEnabled || root.wifiOffArmed)
             enabled: NetworkService.wifiAvailable && !NetworkService.busy
             accentColor: !root.wifiEnabled || root.wifiOffArmed ? Theme.danger : Theme.accent
             onClicked: root.toggleWifi()
@@ -371,14 +376,18 @@ ColumnLayout {
         }
     }
 
-    // The empty list gets a reason. Without one, a switched-off radio looks
-    // like a shell that stopped finding networks.
+    // A status that is a problem gets its reason here. Without one, a
+    // switched-off radio looks like a shell that stopped finding networks, and
+    // a portal looks like the network it is on.
     QsmShellComponents.Prose {
         role: "body"
-        visible: !root.wifiEnabled
+        visible: NetworkService.presentation.problem
         Layout.fillWidth: true
-        text: "Wi-Fi radio is off — nothing can be seen until it is back on"
-        color: Theme.danger
+        text: NetworkService.presentation.detail
+        // Broken or switched off is danger; a network that holds back the
+        // Internet needs attention, not alarm.
+        color: NetworkService.status === "portal" || NetworkService.status === "offline"
+            ? Theme.warning : Theme.danger
     }
 
     QsmShellComponents.Prose {

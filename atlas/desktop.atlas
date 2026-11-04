@@ -104,10 +104,11 @@ journey session
   shot open @SessionSurface/FocusScope
 
 journey panel
+  # The handle opens the panel on entry, and the panel closes 180 ms after the pointer leaves
+  # the handle and the panel (06), so the pointer goes down into the panel and stays there.
   move-to 800 12
-  click
-  move-to 1100 700
-  shot open
+  move-to 800 300
+  shot open @PanelSurface/FocusScope
 
 journey panel-tabs
   move-to 1100 700
@@ -274,16 +275,21 @@ journey battery-low
 # 5 s toast): each mock waits 26 s, two polls and the toast's life, so every run shoots the same
 # screen. The rail is shot at rest, the popout hovered.
 journey network-states
+  # The desktop sees a change within a second (nmcli monitor) and notifies a result once it has
+  # held 3 s; a normal notification stays 5 s. Each state waits 10 s, so its shots hold no
+  # notification, and no-internet shoots the one it sends.
   move-to 1100 700
   mock .nm.connectivity "portal"
-  hover-wait 26000
+  hover-wait 10000
   shot rail-portal @Rail
   move-to 32 712
   hover-wait 500
   shot portal @NetworkPopoutContent
   move-to 1100 700
   mock .nm.connectivity "none"
-  hover-wait 26000
+  hover-wait 4500
+  shot notification-no-internet @NotificationStack
+  hover-wait 6000
   shot rail-no-internet @Rail
   move-to 32 712
   hover-wait 500
@@ -291,16 +297,17 @@ journey network-states
   move-to 1100 700
   mock .nm.connectivity "full"
   mock .nm.device[0].STATE "connecting (getting IP configuration)"
-  hover-wait 26000
-  shot rail-connecting @Rail
+  # Connecting is no result, so it sends nothing. Its glyph pulses, so the shots mask it.
+  hover-wait 2000
+  shot rail-connecting @Rail ~@RailEntry[5]/SvgIcon
   move-to 32 712
   hover-wait 500
-  shot connecting @NetworkPopoutContent
+  shot connecting @NetworkPopoutContent ~@RailEntry[5]/SvgIcon
   move-to 1100 700
   mock .nm.device[0].STATE "connected"
   mock .nm.device[1].STATE "connected"
   mock .nm.device[1].CONNECTION "Wired connection 1"
-  hover-wait 26000
+  hover-wait 10000
   shot rail-ethernet @Rail
   move-to 32 712
   hover-wait 500
@@ -313,7 +320,7 @@ journey network-states
   mock .nm.device[0].CONNECTION ""
   mock .nm.wifi[0]["IN-USE"] ""
   mock .nm.connection[0].ACTIVE "no"
-  hover-wait 26000
+  hover-wait 10000
   shot rail-disconnected @Rail
   move-to 32 712
   hover-wait 500
@@ -321,18 +328,48 @@ journey network-states
   move-to 1100 700
   mock .nm.radio[0].WIFI "disabled"
   mock .nm.device[0].STATE "unavailable"
-  hover-wait 26000
+  hover-wait 10000
   shot rail-radio-off @Rail
   move-to 32 712
   hover-wait 500
   shot radio-off @NetworkPopoutContent
   move-to 1100 700
   mock .nm.running false
-  hover-wait 26000
+  hover-wait 10000
   shot rail-nm-unavailable @Rail
   move-to 32 712
   hover-wait 500
   shot nm-unavailable @NetworkPopoutContent
+
+journey network-notifications
+  # The results network-states does not reach. A change is seen within a second and named once
+  # it has held 3 s, so a notification arrives about 3.7 s after it and a low one leaves at 6.7 s.
+  # Every step adds the 0.6 s settle, so a notification shot lands about 4.2 s after its change,
+  # and its item tree, read after the shot stills, well before the notification leaves.
+  move-to 1100 700
+  # A loss that comes back inside 3 s was never news: this one lasts about 1.7 s (the settle after
+  # the mock, the wait and the settle after it), well inside the hold.
+  mock .nm.connectivity "none"
+  hover-wait 500
+  mock .nm.connectivity "full"
+  hover-wait 5000
+  shot flip-back-silent
+  # Another network is news too.
+  mock .nm.device[0].CONNECTION "Cedar Library"
+  hover-wait 3000
+  shot moved @NotificationStack
+  hover-wait 6000
+  # A cable that connects is named.
+  mock .nm.device[1].CONNECTION "Wired connection 1"
+  mock .nm.device[1].STATE "connected"
+  hover-wait 3000
+  shot cable @NotificationStack
+  hover-wait 6000
+  # A cable pulled shows on the rail within a second: shot-now, about 0.95 s after the change
+  # (the 0.6 s settle after the mock and 0.35 s), before anything is named.
+  mock .nm.device[1].STATE "unavailable"
+  hover-wait 350
+  shot-now cable-gone-within-a-second @Rail
 
 # The battery states UPower reports, one change of the display device each; the shell follows
 # UPower's PropertiesChanged, so no wait beyond the settle.
@@ -387,4 +424,3 @@ todo @NotificationCenterSurface empty
 todo @ClipboardSurface empty
 todo @OsdContent brightness
 todo @DescriptionPopout updates-up-to-date
-todo @PanelSurface/FocusScope opened-by-the-handle

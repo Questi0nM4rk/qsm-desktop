@@ -22,16 +22,23 @@ QtObject {
     readonly property bool busy: operationState === "pending"
     property bool nextConnectFails: false
     property bool desiredState: false
-    readonly property string glyph: wifiEnabled ? "wifi" : "wifi-off"
     signal operated(string operation, string phase, var value)
-    readonly property string internetDescription: connectivity.description
-    readonly property string internetState: connectivity.state
-    property int internetLosses: 0
-    property int internetRecoveries: 0
-    property ConnectivityState connectivity: ConnectivityState {
-        onLost: state => { root.internetLosses++; root.operated("internet", "lost", state); }
-        onRestored: { root.internetRecoveries++; root.operated("internet", "restored", "full"); }
+    // The shell's own status over the fixture's answers, as nmcli's device rows.
+    readonly property var activeNetwork: networks.find(network => network.active)
+    property NetworkStatus reading: NetworkStatus {
+        rows: (root.wifiAvailable ? [["wifi", root.wifiEnabled && root.activeNetwork ? "connected" : "disconnected",
+            root.activeNetwork?.ssid ?? "", "preview-wifi"]] : [])
+            .concat(root.wiredDevices.map(device => ["ethernet", device.state, device.connection, device.device]))
+        wifiEnabled: root.wifiEnabled
+        wifiSignal: root.activeNetwork?.signal ?? 0
     }
+    readonly property string internetDescription: reading.internetDescription
+    readonly property string internetState: reading.internet
+    readonly property string status: reading.status
+    readonly property var presentation: reading.presentation
+    readonly property string linkName: reading.linkName
+    readonly property string glyph: presentation.glyph
+    readonly property bool glyphMuted: presentation.muted
 
     function refresh(): void {}
     function start(name: string, target: string): bool {
@@ -79,10 +86,7 @@ QtObject {
         return root.start("vpn", name);
     }
     function reset(): void {
-        connectivity.reset();
-        connectivity.observe("full");
-        internetLosses = 0;
-        internetRecoveries = 0;
+        reading.observe("full");
         reply.stop();
         scanReply.stop();
         root.wifiEnabled = true;
