@@ -26,12 +26,7 @@ QtObject {
     signal operated(string operation, string phase, var value)
     readonly property string internetDescription: connectivity.description
     readonly property string internetState: connectivity.state
-    property int internetLosses: 0
-    property int internetRecoveries: 0
-    property ConnectivityState connectivity: ConnectivityState {
-        onLost: state => { root.internetLosses++; root.operated("internet", "lost", state); }
-        onRestored: { root.internetRecoveries++; root.operated("internet", "restored", "full"); }
-    }
+    property ConnectivityState connectivity: ConnectivityState {}
 
     function refresh(): void {}
     function start(name: string, target: string): bool {
@@ -79,10 +74,7 @@ QtObject {
         return root.start("vpn", name);
     }
     function reset(): void {
-        connectivity.reset();
         connectivity.observe("full");
-        internetLosses = 0;
-        internetRecoveries = 0;
         reply.stop();
         scanReply.stop();
         root.wifiEnabled = true;

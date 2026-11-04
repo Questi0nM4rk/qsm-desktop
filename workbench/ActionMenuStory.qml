@@ -165,8 +165,6 @@ Item {
             "wifi-enabled": () => NetworkService.wifiEnabled,
             "wifi-available": () => NetworkService.wifiAvailable,
             "internet-state": () => NetworkService.internetState,
-            "internet-losses": () => NetworkService.internetLosses,
-            "internet-recoveries": () => NetworkService.internetRecoveries,
             "wifi-count": () => NetworkService.networks.length,
             "wifi-state": () => NetworkService.operationState,
             "wifi-scanning": () => NetworkService.scanning,

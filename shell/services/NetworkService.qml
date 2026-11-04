@@ -31,21 +31,94 @@ QtObject {
     property string connectivityOutput: ""
     readonly property string internetState: connectivity.state
     readonly property string internetDescription: connectivity.description
-    property ConnectivityState connectivity: ConnectivityState {
-        onLost: state => NotificationService.notify("Internet connection lost", {
-            appName: "Network", body: state === "portal" ? "Sign in to the network to restore access."
-                : "The network no longer reports Internet access. Check your connection.", urgency: "normal"
-        })
-        onRestored: NotificationService.notify("Internet connection restored", {
-            appName: "Network", body: "NetworkManager reports full Internet access again.", urgency: "low"
-        })
-    }
+    property ConnectivityState connectivity: ConnectivityState {}
     property string _password: ""
     signal operated(string operation, string phase, var value)
 
-    readonly property string glyph: ethernetActive ? "cable"
-        : !wifiEnabled || !wifiConnected ? "wifi-off"
-        : wifiSignal >= 55 ? "wifi" : "wifi-low"
+    // NetworkManager answered the last device read. It starts true so a session
+    // does not open on "not running" before the first read has said anything.
+    property bool available: true
+    property bool linkConnecting: false
+    // The connection the status names: the cable's, else the Wi-Fi's.
+    property string linkName: ""
+    readonly property bool linkUp: ethernetActive || wifiConnected
+
+    // The one network status, the first that holds (owner: a problem before a
+    // connection). Portal and offline need a link, because NetworkManager
+    // reports no Internet for a machine with no link at all as well.
+    readonly property string status: !available ? "unavailable"
+        : linkUp && internetState === "portal" ? "portal"
+        : linkUp && (internetState === "none" || internetState === "limited") ? "offline"
+        : linkConnecting ? "connecting"
+        : ethernetActive ? "ethernet"
+        : wifiConnected ? "wifi"
+        : wifiAvailable && !wifiEnabled ? "radio-off"
+        : "idle"
+    readonly property string glyph: ({
+        unavailable: "network", portal: "circle-alert", offline: "alert-triangle",
+        connecting: "link", ethernet: "cable", wifi: wifiSignal >= 55 ? "wifi" : "wifi-low",
+        idle: "network", "radio-off": "wifi-off"
+    })[status]
+    // No connection to speak of: the glyph reads muted.
+    readonly property bool glyphMuted: ["unavailable", "idle", "radio-off"].includes(status)
+    // What a notification reports: moving to another network is news too.
+    readonly property string statusKey: `${status}:${linkUp ? linkName : ""}`
+    // The last result notified; empty until the session's first settled status,
+    // which is the baseline and not news.
+    property string reportedKey: ""
+
+    onStatusKeyChanged: settle.restart()
+    // A status is a result once it has held 3 s (owner): one that flips back
+    // inside that window was never news, and connecting is never a result.
+    property Timer settle: Timer {
+        interval: 3000
+        running: true
+        onTriggered: {
+            if (root.status === "connecting" || root.statusKey === root.reportedKey) return;
+            const baseline = root.reportedKey === "";
+            root.reportedKey = root.statusKey;
+            if (!baseline) root.notifyStatus();
+        }
+    }
+
+    function notifyStatus(): void {
+        const name = root.linkName;
+        const copy = {
+            wifi: [`Connected to ${name}`, "Wi-Fi"],
+            ethernet: ["Connected by cable", name],
+            idle: ["Disconnected", "Not connected to any network."],
+            "radio-off": ["Wi-Fi is off", "Turn it on in the network popout."],
+            offline: ["No Internet connection", root.internetState === "limited"
+                ? `${name} has limited Internet access.` : `${name} is connected, but has no Internet access.`],
+            portal: ["Sign in to the network", `${name} asks for a sign-in before it gives Internet access.`],
+            unavailable: ["Network status unavailable", "NetworkManager is not running."]
+        }[root.status];
+        NotificationService.notify(copy[0], { appName: "Network", body: copy[1],
+            urgency: root.status === "wifi" || root.status === "ethernet" ? "low" : "normal" });
+    }
+
+    // NetworkManager's own change stream: any line it prints is a change, and the
+    // probes read what it was, so its wording is never parsed. One change prints
+    // several lines, which one refresh answers. The 10 s poll stays for the Wi-Fi
+    // signal, which the stream does not report.
+    property Process monitor: Process {
+        command: ["nmcli", "monitor"]
+        running: true
+        stdout: SplitParser { onRead: changed.restart() }
+        onExited: code => {
+            console.warn(`NetworkService: nmcli monitor exited (${code}), restarting`);
+            monitorRestart.restart();
+        }
+    }
+    property Timer monitorRestart: Timer { interval: 2000; onTriggered: root.monitor.running = true }
+    property Timer changed: Timer {
+        interval: 150
+        // A probe still reading would skip this refresh, and the change with it.
+        onTriggered: {
+            if (probe.running || radioProbe.running || connectivityProbe.running) restart();
+            else root.refresh();
+        }
+    }
 
     // Terse mode escapes the separator and the escape character, so an SSID may
     // legitimately contain a colon. Splitting on ":" produced broken networks.
@@ -204,13 +277,28 @@ QtObject {
                 const devices = text.trim().split("\n").map(line => root.fields(line));
                 root.wiredDevices = devices.filter(device => device[0] === "ethernet" && device[3])
                     .map(device => ({ device: device[3], type: device[0], state: device[1], connection: device[2] }));
-                root.ethernetActive = devices.some(device => device[0] === "ethernet" && device[1] === "connected");
-                root.wifiAvailable = devices.some(device => device[0] === "wifi");
-                root.wifiConnected = devices.some(device => device[0] === "wifi" && device[1] === "connected");
+                const links = devices.filter(device => device[0] === "ethernet" || device[0] === "wifi");
+                const cable = links.find(device => device[0] === "ethernet" && device[1] === "connected");
+                const wifi = links.find(device => device[0] === "wifi" && device[1] === "connected");
+                root.ethernetActive = !!cable;
+                root.wifiAvailable = links.some(device => device[0] === "wifi");
+                root.wifiConnected = !!wifi;
+                root.linkConnecting = links.some(device => device[1].startsWith("connecting"));
+                root.linkName = (cable ?? wifi)?.[2] ?? "";
             }
         }
+        // A failed read is a NetworkManager that does not answer (8 is "not
+        // running"), and nothing it said before still holds.
         onExited: code => {
-            if (code !== 0) { root.wifiAvailable = false; root.networks = []; root.wiredDevices = []; }
+            root.available = code === 0;
+            if (code === 0) return;
+            root.ethernetActive = false;
+            root.wifiConnected = false;
+            root.wifiAvailable = false;
+            root.linkConnecting = false;
+            root.linkName = "";
+            root.networks = [];
+            root.wiredDevices = [];
         }
     }
     property Process connectivityProbe: Process {
