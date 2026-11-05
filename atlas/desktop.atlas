@@ -55,8 +55,10 @@ journey rail
   hover-wait 500
   shot quick-actions @QuickActionsColumn
   move-to 1100 700
+  record network-opens @NetworkPopoutContent
   move-to 32 712
   hover-wait 500
+  stop
   shot network @NetworkPopoutContent
   move-to 1100 700
   move-to 32 748
@@ -75,7 +77,9 @@ journey launcher
   move-to 1100 700
   key SUPER SPACE
   shot open @LauncherSurface
+  record typing @LauncherSurface
   type foot
+  stop
   shot query @LauncherSurface
 
 journey quick-controls
@@ -142,7 +146,9 @@ journey notifications
   shot popups @NotificationStack
   ipc toggle notifications
   shot centre @NotificationCenterSurface
+  record search-typing @NotificationCenterSurface
   type build
+  stop
   shot search @NotificationCenterSurface
   key CTRL A
   type zzqx
@@ -154,7 +160,9 @@ journey clipboard-data
   hover-wait 500
   key SUPER V
   shot open @ClipboardSurface
+  record search-typing @ClipboardSurface
   type github
+  stop
   shot search @ClipboardSurface
   key CTRL A
   type zzqx
