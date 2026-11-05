@@ -142,6 +142,11 @@ journey notifications
   shot popups @NotificationStack
   ipc toggle notifications
   shot centre @NotificationCenterSurface
+  type build
+  shot search @NotificationCenterSurface
+  key CTRL A
+  type zzqx
+  shot search-no-match @NotificationCenterSurface
 
 journey clipboard-data
   exec sh -c 'printf "ssh qs@salonek.local\n" | cliphist store; printf "https://github.com/hyprwm/aquamarine/commit/7bb8bdf\n" | cliphist store; printf "Lunch at 12 by the window\n" | cliphist store'
@@ -149,6 +154,11 @@ journey clipboard-data
   hover-wait 500
   key SUPER V
   shot open @ClipboardSurface
+  type github
+  shot search @ClipboardSurface
+  key CTRL A
+  type zzqx
+  shot search-no-match @ClipboardSurface
 
 journey launcher-commands
   move-to 1100 700
