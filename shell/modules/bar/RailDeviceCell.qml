@@ -83,7 +83,7 @@ RailEntry {
                     : (grid.height - height) / 2
                 size: root.glyphSize
                 name: Glyphs.forDevice(modelData.icon, modelData.name)
-                color: Theme.textMuted
+                color: root.ink(Theme.textMuted)
             }
         }
 

@@ -85,8 +85,7 @@ QsmShellComponents.ListRow {
             size: root.glyphSize
             // A kill row must not look like a launch row: the glyph carries
             // the danger colour; the text stays ordinary.
-            color: (root.item?.kind ?? "").startsWith("kill")
-                ? Theme.danger : Theme.text
+            color: root.ink((root.item?.kind ?? "").startsWith("kill") ? Theme.danger : Theme.text)
         }
     }
 }

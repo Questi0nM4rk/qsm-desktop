@@ -55,6 +55,8 @@ Item {
     // the rail's inner wall so it visually plugs into the column.
     readonly property bool selected: popouts !== null && popoutKind.length > 0
         && popouts.kind === popoutKind && popouts.anchor === root
+    // What a cell's own content wears: the role held on the cell's current body.
+    function ink(role: color): color { return cell.ink(role); }
     signal clicked
     // What this cell did, in the words the cell owns: hover-entered,
     // hover-left, clicked. The controller answers OPENING and nothing here
@@ -96,6 +98,7 @@ Item {
     // (danger: the danger role) at opacitySelected over a transparent base,
     // which is Surface's own answer to "selected".
     QsmShellComponents.Surface {
+        id: cell
         anchors.fill: parent
         // Hover grows the body by whole device pixels on every side and leaves
         // the glyph alone. Selected: the right side reaches the band's inner
@@ -130,7 +133,7 @@ Item {
         visible: root.icon.length > 0
         name: root.icon
         size: root.iconSize
-        color: root.iconColor
+        color: cell.ink(root.iconColor)
 
         // A state that is on its way (connecting) breathes until it lands: the
         // library Skeleton's breath, its period and its half-strength trough.

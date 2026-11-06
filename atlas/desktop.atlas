@@ -26,50 +26,51 @@ journey windows
   wait-clients 3
   shot three
 
+# The pointer rests beside a glyph, never on it: the check would read the cursor as its ground.
 journey rail
-  move-to 32 32
+  move-to 50 32
   hover-wait 500
   shot entry-1 @Rail
   move-to 1100 700
-  move-to 32 68
+  move-to 50 68
   hover-wait 500
   shot entry-2 @DescriptionPopout
   move-to 1100 700
-  move-to 32 104
+  move-to 50 104
   hover-wait 500
   shot entry-3 @DescriptionPopout
   move-to 1100 700
-  move-to 32 180
+  move-to 50 180
   hover-wait 500
   shot clock @MonthCalendar
   move-to 1100 700
-  move-to 32 418
+  move-to 50 418
   hover-wait 500
   shot workspaces @WorkspaceStrip
   move-to 1100 700
-  move-to 32 628
+  move-to 50 628
   hover-wait 500
   shot battery @BatteryPopoutContent
   move-to 1100 700
-  move-to 32 676
+  move-to 50 676
   hover-wait 500
   shot quick-actions @QuickActionsColumn
   move-to 1100 700
   record network-opens @NetworkPopoutContent
-  move-to 32 712
+  move-to 50 712
   hover-wait 500
   stop
   shot network @NetworkPopoutContent
   move-to 1100 700
-  move-to 32 748
+  move-to 50 748
   hover-wait 500
   shot bluetooth @BluetoothPopoutContent
   move-to 1100 700
-  move-to 32 784
+  move-to 50 784
   hover-wait 500
   shot sound @SoundPopoutContent
   move-to 1100 700
-  move-to 32 832
+  move-to 50 832
   hover-wait 500
   shot session @DescriptionPopout
 
@@ -215,7 +216,7 @@ journey notifications-more
   shot dnd @NotificationStack
 
 journey quick-actions-detail
-  move-to 32 676
+  move-to 50 676
   hover-wait 500
   move-to 96 676
   move-to 96 604
@@ -271,7 +272,7 @@ journey theme-dusk
   move-to 1100 700
   ipc theme mountain-dusk
   shot rest
-  move-to 32 784
+  move-to 50 784
   hover-wait 500
   shot sound @SoundPopoutContent
 
@@ -282,7 +283,7 @@ journey battery-low
   mock .dbus.system["org.freedesktop.UPower"]["/org/freedesktop/UPower/devices/DisplayDevice"]["org.freedesktop.UPower.Device"].Percentage 12
   move-to 1100 700
   shot rest
-  move-to 32 628
+  move-to 50 628
   hover-wait 500
   shot battery @BatteryPopoutContent
 
@@ -300,7 +301,7 @@ journey network-states
   mock .nm.connectivity "portal"
   hover-wait 10000
   shot rail-portal @Rail
-  move-to 32 712
+  move-to 50 712
   hover-wait 500
   shot portal @NetworkPopoutContent
   move-to 1100 700
@@ -309,7 +310,7 @@ journey network-states
   shot notification-no-internet @NotificationStack
   hover-wait 6000
   shot rail-no-internet @Rail
-  move-to 32 712
+  move-to 50 712
   hover-wait 500
   shot no-internet @NetworkPopoutContent
   move-to 1100 700
@@ -318,7 +319,7 @@ journey network-states
   # Connecting is no result, so it sends nothing. Its glyph pulses, so the shots mask it.
   hover-wait 2000
   shot rail-connecting @Rail ~@RailEntry[5]/SvgIcon
-  move-to 32 712
+  move-to 50 712
   hover-wait 500
   shot connecting @NetworkPopoutContent ~@RailEntry[5]/SvgIcon
   move-to 1100 700
@@ -327,7 +328,7 @@ journey network-states
   mock .nm.device[1].CONNECTION "Wired connection 1"
   hover-wait 10000
   shot rail-ethernet @Rail
-  move-to 32 712
+  move-to 50 712
   hover-wait 500
   shot ethernet @NetworkPopoutContent
   move-to 1100 700
@@ -340,7 +341,7 @@ journey network-states
   mock .nm.connection[0].ACTIVE "no"
   hover-wait 10000
   shot rail-disconnected @Rail
-  move-to 32 712
+  move-to 50 712
   hover-wait 500
   shot disconnected @NetworkPopoutContent
   move-to 1100 700
@@ -348,14 +349,14 @@ journey network-states
   mock .nm.device[0].STATE "unavailable"
   hover-wait 10000
   shot rail-radio-off @Rail
-  move-to 32 712
+  move-to 50 712
   hover-wait 500
   shot radio-off @NetworkPopoutContent
   move-to 1100 700
   mock .nm.running false
   hover-wait 10000
   shot rail-nm-unavailable @Rail
-  move-to 32 712
+  move-to 50 712
   hover-wait 500
   shot nm-unavailable @NetworkPopoutContent
 
@@ -398,7 +399,7 @@ journey battery-states
   mock .dbus.system["org.freedesktop.UPower"]["/org/freedesktop/UPower/devices/DisplayDevice"]["org.freedesktop.UPower.Device"].TimeToEmpty 380
   move-to 1100 700
   shot rail-critical @Rail
-  move-to 32 628
+  move-to 50 628
   hover-wait 500
   shot critical @BatteryPopoutContent
   move-to 1100 700
@@ -411,7 +412,7 @@ journey battery-states
   mock .dbus.system["org.freedesktop.UPower"]["/org/freedesktop/UPower/devices/DisplayDevice"]["org.freedesktop.UPower.Device"].Energy 21.62
   hover-wait 500
   shot rail-charging @Rail
-  move-to 32 628
+  move-to 50 628
   hover-wait 500
   shot charging @BatteryPopoutContent
   move-to 1100 700
@@ -422,7 +423,7 @@ journey battery-states
   mock .dbus.system["org.freedesktop.UPower"]["/org/freedesktop/UPower/devices/DisplayDevice"]["org.freedesktop.UPower.Device"].Energy 33.78
   hover-wait 500
   shot rail-full @Rail
-  move-to 32 628
+  move-to 50 628
   hover-wait 500
   shot full @BatteryPopoutContent
 

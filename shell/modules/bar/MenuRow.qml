@@ -62,7 +62,7 @@ ColumnLayout {
             visible: root.hasSubmenu
             name: root.expanded ? "chevron-down" : "chevron-right"
             size: QsmShellStyle.Style.iconXs
-            color: Theme.textMuted
+            color: row.ink(Theme.textMuted)
         }
     }
 

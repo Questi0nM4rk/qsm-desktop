@@ -28,6 +28,6 @@ QsmShellComponents.TextField {
     leading: QsmShellComponents.SvgIcon {
         name: "search"
         size: QsmShellStyle.Style.glyphBeside(root.fieldHeight)
-        color: QsmShellStyle.Style.textMuted
+        color: root.ink(QsmShellStyle.Style.textMuted)
     }
 }

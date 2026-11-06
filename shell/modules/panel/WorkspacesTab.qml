@@ -169,6 +169,7 @@ Item {
                     // layer below grows it, while what is drawn on it keeps its
                     // size.
                     QsmShellComponents.Surface {
+                        id: tileBody
                         anchors.fill: parent
                         anchors.margins: -tileLayer.growth
                         radius: tile.radius
@@ -186,7 +187,7 @@ Item {
                         anchors.left: parent.left
                         anchors.topMargin: root.areaInset
                         anchors.leftMargin: root.areaInset
-                        color: tile.current ? Theme.accent : Theme.textMuted
+                        color: tileBody.ink(tile.current ? Theme.accent : Theme.textMuted)
                         text: tile.modelData.id
                     }
 

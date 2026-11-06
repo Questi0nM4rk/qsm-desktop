@@ -18,8 +18,8 @@ QtObject {
     readonly property string error: root.operationError || root.statusFailure
     readonly property string actionLabel: root.disabled ? "Enable main keyboard" : "Disable main keyboard"
     readonly property string description: root.busy ? "Updating main keyboard…"
-        : root.error ? root.error + " · retry"
-        : !root.available ? "Main keyboard unavailable"
+        : !root.available ? root.statusFailure || "Main keyboard unavailable"
+        : root.operationError ? root.operationError + " · retry"
         : root.disabled ? "Disabled · enable with Super+Ctrl+Shift+D or click"
         : "Enabled · disable with Super+Ctrl+D or click"
     signal operated(string operation, string phase, var value)
