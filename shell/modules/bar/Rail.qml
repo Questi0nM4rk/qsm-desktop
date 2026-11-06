@@ -132,6 +132,7 @@ Item {
                         // The capsule every rail item is: it recolours and grows by
                         // whole device pixels, the glyph keeps its size.
                         QsmShellComponents.Surface {
+                            id: trayBody
                             anchors.fill: parent
                             anchors.margins: -trayLayer.growth
                             radius: QsmShellStyle.Style.radiusMd
@@ -152,7 +153,7 @@ Item {
                             layer.enabled: true
                             layer.effect: MultiEffect {
                                 colorization: 1
-                                colorizationColor: Theme.textMuted
+                                colorizationColor: trayBody.ink(Theme.textMuted)
                                 brightness: Theme.trayGlyphBrightness
                             }
                         }
@@ -256,9 +257,9 @@ Item {
                 // Charging is the one state the number cannot state, so
                 // it says it in the accent rather than by growing a
                 // second glyph beside itself.
-                color: batteryCell.low ? Theme.danger
+                color: batteryCell.ink(batteryCell.low ? Theme.danger
                     : batteryCell.charging ? Theme.accent
-                    : Theme.text
+                    : Theme.text)
 
                 Behavior on color {
                     ColorAnimation { duration: QsmShellStyle.Motion.micro; easing.type: QsmShellStyle.Motion.standardEasing }

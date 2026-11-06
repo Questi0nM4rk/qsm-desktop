@@ -275,7 +275,7 @@ exit 0`, "_", ...images.map(image => image.file)];
                         visible: clipRow.selected
                         icon: "trash-2"
                         size: "xs"
-                        color: QsmShellStyle.Style.textMuted
+                        color: clipRow.ink(QsmShellStyle.Style.textMuted)
                         accessibleName: "Remove from history"
                         onClicked: root.remove(clipRow.index)
                     }

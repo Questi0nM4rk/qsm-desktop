@@ -55,7 +55,7 @@ QsmShellComponents.ListRow {
         visible: root.badgeIcon.length > 0
         name: root.badgeIcon
         size: QsmShellStyle.Style.iconXs
-        color: QsmShellStyle.Style.textMuted
+        color: root.ink(QsmShellStyle.Style.textMuted)
     }
 
     QsmShellComponents.Prose {
@@ -64,7 +64,7 @@ QsmShellComponents.ListRow {
         // face for technical values: "72%" is one, "connected" is a word, and
         // deciding that per call site is how the two drifted apart.
         role: /\d/.test(root.value) ? "reading" : "metadata"
-        muted: true
+        color: root.ink(QsmShellStyle.Style.textMuted)
         text: root.value
     }
 
@@ -77,7 +77,7 @@ QsmShellComponents.ListRow {
         // colour once the pointer is on its row — three red bins down the side
         // of a device list shout louder than anything the list is for.
         color: !root.hovered ? QsmShellStyle.Style.recede(Theme.textMuted)
-            : root.actionDanger ? Theme.danger : Theme.textMuted
+            : root.ink(root.actionDanger ? Theme.danger : Theme.textMuted)
         onClicked: root.actionTriggered()
 
         Behavior on color {

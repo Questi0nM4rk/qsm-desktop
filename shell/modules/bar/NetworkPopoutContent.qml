@@ -345,7 +345,7 @@ ColumnLayout {
                         leading: QsmShellComponents.SvgIcon {
                             name: root.promptState === "ok" ? "check" : "lock"
                             size: QsmShellStyle.Style.iconSm
-                            color: root.promptState === "ok" ? Theme.accent : Theme.textMuted
+                            color: passwordInput.ink(root.promptState === "ok" ? Theme.accent : Theme.textMuted)
                         }
                         trailing: QsmShellComponents.ControlLabel {
                             icon: root.passwordVisible ? "eye-off" : "eye"
