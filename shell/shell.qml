@@ -63,15 +63,17 @@ ShellRoot {
 
     // Defaults are omitted from entries (visible:true, opacity:1, z:0) so a
     // full-scene dump stays small enough for one IPC reply.
+    // Where an item paints on screen, to a tenth of a pixel: the box around its
+    // mapped rect, because a rotated or scaled item's own (0, 0) can land on any
+    // corner of it.
+    function boxOf(item: var): var {
+        const r = item.mapToItem(null, 0, 0, item.width, item.height);
+        const tenth = v => Math.round(v * 10) / 10;
+        return { "x": tenth(r.x), "y": tenth(r.y), "w": tenth(r.width), "h": tenth(r.height) };
+    }
+
     function inspectItem(item: var, visibleOnly: bool): var {
-        const origin = item.mapToItem(null, 0, 0);
-        const entry = {
-            "type": inspectTypeName(item),
-            "x": Math.round(origin.x * 10) / 10,
-            "y": Math.round(origin.y * 10) / 10,
-            "w": Math.round(item.width * 10) / 10,
-            "h": Math.round(item.height * 10) / 10
-        };
+        const entry = Object.assign({ "type": inspectTypeName(item) }, boxOf(item));
         if (item.objectName !== "")
             entry.name = item.objectName;
         if (!item.visible)
@@ -102,14 +104,9 @@ ShellRoot {
         if (item.hoverScale !== undefined && item.growth !== undefined) {
             entry.growthPx = Math.round(item.growth * 1000) / 1000;
             if (item.maxGrowth > 0) {
-                const rect = item.mapToItem(null, 0, 0);
-                entry.growth = {
-                    "x": Math.round(rect.x * 10) / 10,
-                    "y": Math.round(rect.y * 10) / 10,
-                    "w": Math.round(item.width * 10) / 10,
-                    "h": Math.round(item.height * 10) / 10,
+                entry.growth = Object.assign(boxOf(item), {
                     "pad": Math.round(item.maxGrowth * 1000) / 1000
-                };
+                });
             }
         }
         if (item.text !== undefined) {
@@ -163,15 +160,10 @@ ShellRoot {
             if (local.x < 0 || local.y < 0 || local.x > child.width || local.y > child.height)
                 continue;
             const handlers = root.hoverHandlersOf(child);
-            out.push({
-                "type": root.inspectTypeName(child),
-                "x": Math.round(child.mapToItem(null, 0, 0).x * 10) / 10,
-                "y": Math.round(child.mapToItem(null, 0, 0).y * 10) / 10,
-                "w": Math.round(child.width * 10) / 10,
-                "h": Math.round(child.height * 10) / 10,
+            out.push(Object.assign({ "type": root.inspectTypeName(child) }, root.boxOf(child), {
                 "handlers": handlers,
                 "blocksBelow": handlers.length > 0
-            });
+            }));
             root.probeItem(child, x, y, out);
         }
     }
