@@ -28,12 +28,14 @@ if [[ -n "$(drive geom rects SessionSurface/Rollout)" ]]; then
   echo "session layer open: only its own content is read"
 fi
 
+# A count badge rides its glyph's corner by the owner's choice: the ring under it is no glyph's ground.
+glyph_covers=(--over Badge)
 worst=0
 verdict() { ((${1} > worst)) && worst=$1; }
 
 drive contrast each "${scope}Digits|Prose|Label[enabled!=false]" --min "$text_min" --shot "$ATLAS_SHOT"
 verdict $?
-drive contrast each "${scope}SvgIcon[enabled!=false]" --min "$glyph_min" --shot "$ATLAS_SHOT"
+drive contrast each "${scope}SvgIcon[enabled!=false]" --min "$glyph_min" --shot "$ATLAS_SHOT" "${glyph_covers[@]}"
 verdict $?
 
 # A disabled node's ink is band + (colour - band) * k; undo the blend and hold the colour it came from.
@@ -41,7 +43,7 @@ band="$(jq -r '.style.band' "$GEOM_TREE")"
 k="$(jq -r '.style.opacityDisabled' "$GEOM_TREE")"
 disabled() {
   local sel="$1" min="$2" line ink ground source
-  drive contrast each "$sel" --min 0 --shot "$ATLAS_SHOT" | while IFS= read -r line; do
+  drive contrast each "$sel" --min 0 --shot "$ATLAS_SHOT" "${@:3}" | while IFS= read -r line; do
     ink="$(sed -n 's/.* ink \(#[0-9a-f]*\) on .*/\1/p' <<<"$line")"
     ground="$(sed -n 's/.* on \(#[0-9a-f]*\) = .*/\1/p' <<<"$line")"
     source="$(awk -v i="$ink" -v b="$band" -v k="$k" 'function c(h, n) { return strtonum("0x" substr(h, n, 2)) }
@@ -50,7 +52,7 @@ disabled() {
       "$(drive contrast "$source" "$ground" --min "$min" | tail -1)"
   done
 }
-dimmed="$(disabled "${scope}Digits|Prose|Label[enabled=false]" "$text_min"; disabled "${scope}SvgIcon[enabled=false]" "$glyph_min")"
+dimmed="$(disabled "${scope}Digits|Prose|Label[enabled=false]" "$text_min"; disabled "${scope}SvgIcon[enabled=false]" "$glyph_min" "${glyph_covers[@]}")"
 [[ -z "$dimmed" ]] || printf '%s\n' "$dimmed"
 ! grep -q ': FAIL$' <<<"$dimmed" || verdict 1
 exit "$worst"
