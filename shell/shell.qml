@@ -1,3 +1,8 @@
+//@ pragma Env QSG_DISTANCEFIELD_ANTIALIASING=gray
+// Every text antialiases gray. Qt Quick gives a text subpixel antialiasing only
+// until its node is rebuilt, as a colour change on hover or selection does:
+// QSGDistanceFieldGlyphNode::recycle() resets the mode to gray and the reused
+// node never gets it back. Without this a text's look depends on its history.
 import QtQuick
 import Quickshell
 import Quickshell.Hyprland
